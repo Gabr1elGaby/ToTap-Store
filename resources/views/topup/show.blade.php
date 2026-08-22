@@ -273,7 +273,10 @@
                 // 1. JIKA ID BENAR (result: true): LANGSUNG SUBMIT TANPA POP-UP KONFIRMASI LAGI
                 if (data.result === true) {
                     submitBtn.innerHTML = 'ID Valid! Mengalihkan ke Pembayaran...';
-                    form.submit();
+                    submitBtn.disabled = false;
+                    
+                    // Native HTML form submission
+                    HTMLFormElement.prototype.submit.call(form);
                 } else {
                     // 2. JIKA ID SALAH (result: false): BLOKIR DAN BERITAHU TANPA SURUH LANJUT
                     submitBtn.innerHTML = originalText;
