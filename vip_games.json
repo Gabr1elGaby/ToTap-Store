@@ -1,0 +1,9 @@
+{
+    "result": false,
+    "data": {
+        "sign": "d41d8cd98f00b204e9800998ecf8427e",
+        "type": "services",
+        "filter_type": "game"
+    },
+    "message": "Permintaan tidak terdeteksi (periksa parameter Anda)."
+}

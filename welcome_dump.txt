@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>ToTap Store - Enterprise Software Solutions</title>
+        <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+        <style>
+            html { scroll-behavior: smooth; }
+            body { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif; }
+            .bg-grid-pattern {
+                background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+                                  linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+                background-size: 40px 40px;
+            }
+        </style>
+        <link rel="icon" href="{{ asset('images/totap-logo-circle.png') . '?v=' . time() }}" type="image/png">
+</head>
+    <body class="antialiased text-gray-900 bg-gray-50" x-data="{ showLogin: false, showRegister: false }" :class="{ 'overflow-hidden': showLogin || showRegister }">
+        
+        <!-- Navbar -->
+        <nav class="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-20">
+                    <div class="flex items-center gap-2">
+                        <img src="{{ asset('images/totap-logo.png') . '?v=' . time() }}" alt="TTS" class="h-16 w-auto object-contain">
+                        <span class="-ml-3 text-2xl text-white tracking-widest whitespace-nowrap" style="font-family: 'Righteous', cursive; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">TOTAP STORE</span>
+                        
+                    </div>
+                    <div class="hidden md:flex items-center space-x-8">
+                        <a href="#beranda" class="text-gray-300 text-sm font-semibold hover:text-white transition">Beranda</a>
+                        <a href="#keunggulan" class="text-gray-300 text-sm font-semibold hover:text-white transition">Keunggulan</a>
+                        <a href="#products" class="text-gray-300 text-sm font-semibold hover:text-white transition">Solusi Produk</a>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        @if (Route::has('login'))
+                            @auth
+                                <x-dropdown align="right" width="48">
+                                    <x-slot name="trigger">
+                                        <button class="flex items-center gap-2 px-3 py-1.5 rounded border border-gray-700 hover:bg-gray-800 transition">
+                                            <span class="font-medium text-sm text-gray-300">{{ Auth::user()->name }}</span>
+                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                        </button>
+                                    </x-slot>
+                                    <x-slot name="content">
+                                        @if(Auth::user()->role === 'superadmin')
+                                            <x-dropdown-link :href="route('admin.dashboard')">Dashboard Admin</x-dropdown-link>
+                                        @endif
+                                        <x-dropdown-link :href="route('profile.edit')">Profil Saya</x-dropdown-link>
+                                        <form method="POST" action="{{ route('logout') }}">
+                                            @csrf
+                                            <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();" class="text-red-600">
+                                                Log Out
+                                            </x-dropdown-link>
+                                        </form>
+                                    </x-slot>
+                                </x-dropdown>
+                            @else
+                                <a href="#" @click.prevent="showLogin = true; showRegister = false" class="text-gray-300 text-sm font-semibold hover:text-white transition">Masuk</a>
+                                @if (Route::has('register'))
+                                    <a href="#" @click.prevent="showRegister = true; showLogin = false" class="bg-blue-600 text-white text-sm px-4 py-2 rounded font-semibold hover:bg-blue-700 transition">Daftar</a>
+                                @endif
+                            @endauth
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="relative bg-gray-900 border-b border-gray-800 pt-20 pb-24 overflow-hidden" id="beranda" 
+            x-data="{ scrollY: 0 }" 
+            @scroll.window="scrollY = window.scrollY">
+            
+            <!-- Parallax Background -->
+            <div class="absolute inset-0 bg-grid-pattern opacity-20" 
+                 :style="`transform: translateY(${scrollY * 0.5}px);`"></div>
+            
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10" 
+                 :style="`transform: translateY(${scrollY * 0.3}px); opacity: ${1 - (scrollY / 400)};`">
+                <div class="text-center max-w-4xl mx-auto">
+                    <h1 class="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-6 tracking-tight">
+                        Infrastruktur Perangkat Lunak <br>
+                        <span class="text-blue-500">Untuk Skala Bisnis Anda.</span>
+                    </h1>
+                    <p class="text-lg text-gray-400 mb-10 leading-relaxed max-w-2xl mx-auto">
+                        Sistem manajemen enterprise-grade yang dirancang khusus untuk memonitor, mengelola, dan mengotomatisasi operasional perusahaan Anda secara real-time.
+                    </p>
+                    <div class="flex justify-center items-center gap-4">
+                        <a href="#products" class="px-8 py-3 bg-blue-600 text-white rounded font-bold text-sm uppercase tracking-wider hover:bg-blue-700 transition">
+                            Lihat Solusi
+                        </a>
+                        <a href="#keunggulan" class="px-8 py-3 bg-transparent text-white border border-gray-600 rounded font-bold text-sm uppercase tracking-wider hover:bg-gray-800 transition">
+                            Pelajari Sistem
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Choose Us -->
+        <section id="keunggulan" class="py-20 bg-white border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-16" data-aos="fade-right">
+                    <h2 class="text-blue-600 font-bold uppercase tracking-widest text-xs mb-2">Keunggulan Sistem</h2>
+                    <h3 class="text-3xl font-extrabold text-gray-900">Arsitektur yang Handal & Aman</h3>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    <div class="p-6 border border-gray-200 rounded hover:border-blue-500 transition shadow-sm bg-white" data-aos="fade-up" data-aos-delay="0">
+                        <div class="w-12 h-12 bg-gray-900 rounded flex items-center justify-center text-white mb-6">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                        <h4 class="text-lg font-bold text-gray-900 mb-2">Deploy Instan</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed">Tanpa proses setup manual. Segera setelah administrasi selesai, instansi aplikasi Anda langsung berjalan dan siap digunakan oleh tim.</p>
+                    </div>
+                    
+                    <div class="p-6 border border-gray-200 rounded hover:border-blue-500 transition shadow-sm bg-white" data-aos="fade-up" data-aos-delay="100">
+                        <div class="w-12 h-12 bg-gray-900 rounded flex items-center justify-center text-white mb-6">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        </div>
+                        <h4 class="text-lg font-bold text-gray-900 mb-2">Keamanan Data Tinggi</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed">Data perusahaan Anda terisolasi dan dienkripsi dengan standar industri. Kami menjamin privasi dan integritas database Anda.</p>
+                    </div>
+                    
+                    <div class="p-6 border border-gray-200 rounded hover:border-blue-500 transition shadow-sm bg-white" data-aos="fade-up" data-aos-delay="200">
+                        <div class="w-12 h-12 bg-gray-900 rounded flex items-center justify-center text-white mb-6">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <h4 class="text-lg font-bold text-gray-900 mb-2">Manajemen Terpusat</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed">Pantau seluruh cabang dan titik penjualan (POS) Anda dari satu dashboard admin. Mempermudah proses audit dan pelaporan keuangan.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+                <!-- Top Up Games Section -->
+        <section id="topup" class="py-20 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16" data-aos="fade-up">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Top Up Game Termurah</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">Top up otomatis 24 jam untuk game favorit Anda.</p>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    @php
+                        $activeGames = \App\Models\Game::where('is_active', true)->get();
+                    @endphp
+                    @foreach($activeGames as $game)
+                    @php
+                        $promoProduct = $game->products()->where('is_promo', true)->where('status', 'available')->where('price_normal', '>', 0)->orderByRaw('((price_normal - price_sell) / price_normal) DESC')->first();
+                        $maxDiscount = 0;
+                        if ($promoProduct) {
+                            $maxDiscount = floor((($promoProduct->price_normal - $promoProduct->price_sell) / $promoProduct->price_normal) * 100);
+                        }
+                    @endphp
+                    <a href="{{ route('topup.show', $game->slug) }}" class="relative block bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group" data-aos="fade-up" data-aos-delay="100">
+                        @if($maxDiscount > 0)
+                            <!-- BADGE PROMO RIBBON -->
+                            <div class="absolute top-5 -right-10 w-40 transform rotate-45 bg-gradient-to-r from-red-600 to-rose-500 text-white text-[10px] font-extrabold py-1 text-center shadow-md z-20 animate-pulse tracking-wider">
+                                DISKON {{ $maxDiscount }}%
+                            </div>
+                        @endif
+                        <div class="w-full h-48 relative overflow-hidden bg-gray-200">
+                            @if($game->thumbnail)
+                            <img src="{{ $game->thumbnail }}" alt="{{ $game->name }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                            @else
+                            <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl">{{ substr($game->name, 0, 1) }}</div>
+                            @endif
+                        </div>
+                        <div class="p-4 text-center">
+                            <h3 class="font-bold text-gray-900 truncate">{{ $game->name }}</h3>
+                            <p class="text-xs text-indigo-600 font-semibold mt-1">Beli Sekarang</p>
+                        </div>
+                    </a>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section id="products" class="py-20 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-16 text-center" data-aos="fade-up">
+                    <h2 class="text-blue-600 font-bold uppercase tracking-widest text-xs mb-2">Katalog Sistem</h2>
+                    <h3 class="text-3xl font-extrabold text-gray-900">Solusi Berbasis Lisensi</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    @forelse($products as $index => $product)
+                    <div class="bg-white rounded border border-gray-200 shadow-sm overflow-hidden flex flex-col" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
+                        <div class="p-8 border-b border-gray-100 flex-1">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ $product->name }}</h3>
+                            <p class="text-gray-500 text-sm mb-6 h-10">{{ $product->description }}</p>
+                            
+                            @if($product->features)
+                                <ul class="space-y-3 mb-8">
+                                    @foreach(explode("\n", str_replace("\r", "", $product->features)) as $feature)
+                                        @if(trim($feature))
+                                        <li class="flex items-start gap-3 text-sm text-gray-700">
+                                            <svg class="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            {{ trim($feature) }}
+                                        </li>
+                                        @endif
+                                    @endforeach
+                                </ul>
+                            @else
+                                <ul class="space-y-3 mb-8">
+                                    <li class="flex items-start gap-3 text-sm text-gray-500 italic">
+                                        Fitur belum ditambahkan.
+                                    </li>
+                                </ul>
+                            @endif
+                        </div>
+                        <div class="p-8 bg-gray-50 flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">
+                                    @if($product->slug === 'cv-maker')
+                                        Harga Template
+                                    @else
+                                        Lisensi Bulanan
+                                    @endif
+                                </p>
+                                <p class="text-3xl font-extrabold text-gray-900">
+                                    @if($product->plans->count() > 0)
+                                        Rp {{ number_format($product->plans->first()->price, 0, ',', '.') }}
+                                    @else
+                                        -
+                                    @endif
+                                </p>
+                            </div>
+                            @if($product->slug === 'cv-maker')
+                                <a href="{{ route('cv.index') }}" class="px-6 py-3 bg-gray-900 text-white font-bold rounded text-sm hover:bg-gray-800 transition">Buat CV</a>
+                            @else
+                                <a href="{{ route('product.show', $product->slug) }}" class="px-6 py-3 bg-gray-900 text-white font-bold rounded text-sm hover:bg-gray-800 transition">Beli Lisensi</a>
+                            @endif
+                        </div>
+                    </div>
+                    @empty
+                    <div class="col-span-full text-center text-gray-500">
+                        Belum ada produk yang tersedia.
+                    </div>
+                    @endforelse
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-gray-400 py-8 border-t border-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center" data-aos="fade-in">
+                <div class="flex items-center gap-1 mb-4 md:mb-0">
+                    <img src="{{ asset('images/totap-logo.png') . '?v=' . time() }}" alt="ToTap Store" class="h-20 w-auto object-contain grayscale hover:grayscale-0 transition-all">
+                    <span class="-ml-2 text-xl text-white tracking-widest whitespace-nowrap" style="font-family: 'Righteous', cursive;">TOTAP STORE</span>
+                </div>
+                <div class="text-sm">&copy; {{ date('Y') }} ToTap Store. Hak Cipta Dilindungi.</div>
+            </div>
+        </footer>
+
+        <!-- Auth Modals -->
+        <div x-show="showLogin" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/80 p-4" x-transition.opacity>
+            <div class="w-full max-w-sm bg-white rounded shadow-2xl p-6" @click.away="showLogin = false" x-data="{ errors: {}, loading: false }" @submit.prevent="
+                loading = true; errors = {};
+                fetch('{{ route('login') }}', {
+                    method: 'POST', body: new FormData($event.target), headers: { 'Accept': 'application/json' }
+                }).then(async response => {
+                    if (response.ok) { window.location.reload(); }
+                    else if (response.status === 422) { errors = (await response.json()).errors; }
+                    loading = false;
+                });
+            ">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-900">Masuk Akun</h2>
+                    <button @click="showLogin = false" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <form class="space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Email</label>
+                        <input class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500" type="email" name="email" required autofocus>
+                        <template x-if="errors.email"><span class="text-red-600 text-xs mt-1 block" x-text="errors.email[0]"></span></template>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Password</label>
+                        <input class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500" type="password" name="password" required>
+                        <template x-if="errors.password"><span class="text-red-600 text-xs mt-1 block" x-text="errors.password[0]"></span></template>
+                    </div>
+                    <button type="submit" :disabled="loading" class="w-full bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700 transition mt-2 disabled:opacity-50">
+                        <span x-show="!loading">Masuk</span>
+                        <span x-show="loading">Memproses...</span>
+                    </button>
+                </form>
+                <div class="mt-4 text-center text-sm text-gray-600">
+                    Belum punya lisensi? <a href="#" @click.prevent="showLogin = false; showRegister = true" class="text-blue-600 hover:underline font-bold">Daftar</a>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="showRegister" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/80 p-4" x-transition.opacity>
+            <div class="w-full max-w-sm bg-white rounded shadow-2xl p-6" @click.away="showRegister = false" x-data="{ errors: {}, loading: false, step: 'register', phone: '' }">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-900" x-text="step === 'register' ? 'Registrasi Klien Baru' : 'Verifikasi WhatsApp'"></h2>
+                    <button @click="showRegister = false" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                
+                <form x-show="step === 'register'" class="space-y-4" @submit.prevent="
+                    loading = true; errors = {};
+                    fetch('{{ route('register') }}', {
+                        method: 'POST', body: new FormData($event.target), headers: { 'Accept': 'application/json' }
+                    }).then(async response => {
+                        if (response.ok) { 
+                            let data = await response.json();
+                            if (data.requires_otp) {
+                                step = 'otp';
+                                phone = data.phone;
+                            } else {
+                                window.location.reload(); 
+                            }
+                        }
+                        else if (response.status === 422) { errors = (await response.json()).errors; }
+                        loading = false;
+                    });
+                ">
+                    @csrf
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Nama Organisasi / Pemilik</label>
+                        <input class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500" type="text" name="name" required autofocus>
+                        <template x-if="errors.name"><span class="text-red-600 text-xs mt-1 block" x-text="errors.name[0]"></span></template>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Email Perusahaan</label>
+                        <input class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500" type="email" name="email" required>
+                        <template x-if="errors.email"><span class="text-red-600 text-xs mt-1 block" x-text="errors.email[0]"></span></template>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Nomor WhatsApp / HP</label>
+                        <input class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500" type="text" name="phone_number" required placeholder="08123456789">
+                        <template x-if="errors.phone_number"><span class="text-red-600 text-xs mt-1 block" x-text="errors.phone_number[0]"></span></template>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Password Akses</label>
+                        <input class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500" type="password" name="password" required>
+                        <template x-if="errors.password"><span class="text-red-600 text-xs mt-1 block" x-text="errors.password[0]"></span></template>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Konfirmasi Password</label>
+                        <input class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500" type="password" name="password_confirmation" required>
+                    </div>
+                    <button type="submit" :disabled="loading" class="w-full bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700 transition mt-2 disabled:opacity-50">
+                        <span x-show="!loading">Daftar</span>
+                        <span x-show="loading">Memproses...</span>
+                    </button>
+                </form>
+
+                <form x-show="step === 'otp'" style="display: none;" class="space-y-4" @submit.prevent="
+                    loading = true; errors = {};
+                    let formData = new FormData($event.target);
+                    formData.append('phone', phone);
+                    formData.append('_token', '{{ csrf_token() }}');
+                    fetch('{{ route('register.verify-otp') }}', {
+                        method: 'POST', body: formData, headers: { 'Accept': 'application/json' }
+                    }).then(async response => {
+                        if (response.ok) { window.location.reload(); }
+                        else if (response.status === 422) { errors = (await response.json()).errors; }
+                        loading = false;
+                    });
+                ">
+                    <div class="text-sm text-gray-600 mb-4">
+                        Kami telah mengirimkan 6 digit kode OTP ke nomor WhatsApp <strong x-text="phone"></strong>.
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Kode OTP</label>
+                        <input class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-center tracking-widest text-lg font-bold" type="text" name="otp" required maxlength="6">
+                        <template x-if="errors.otp"><span class="text-red-600 text-xs mt-1 block" x-text="errors.otp[0]"></span></template>
+                    </div>
+                    <button type="submit" :disabled="loading" class="w-full bg-green-600 text-white font-bold py-2 rounded hover:bg-green-700 transition mt-2 disabled:opacity-50">
+                        <span x-show="!loading">Verifikasi OTP</span>
+                        <span x-show="loading">Memproses...</span>
+                    </button>
+                    <div class="text-center mt-3">
+                        <button type="button" @click="step = 'register'" class="text-xs text-gray-500 hover:text-gray-800 underline">Ganti Nomor HP</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Floating WhatsApp Button -->
+        <a href="https://wa.me/6281328972073?text=Halo%20Tim%20Gabriel%20Systems,%20saya%20ingin%20bertanya%20tentang%20sistem%20Anda." target="_blank" class="fixed bottom-6 right-6 bg-[#25D366] text-white p-3.5 rounded-full shadow-xl hover:scale-110 hover:shadow-2xl transition-transform duration-300 z-50 flex items-center justify-center group border-2 border-white" title="Hubungi Customer Service">
+            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
+            </svg>
+            <span class="absolute right-full mr-4 bg-gray-900 text-white text-sm font-bold px-3 py-1.5 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-gray-700">
+                Hubungi Kami
+            </span>
+        </a>
+
+        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+        <script>
+            AOS.init({
+                once: false,
+                offset: 50,
+                duration: 800,
+            });
+        </script>
+    </body>
+</html>
