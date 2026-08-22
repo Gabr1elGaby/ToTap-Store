@@ -64,10 +64,15 @@ Route::get('/produk/{slug}', [\App\Http\Controllers\PublicProductController::cla
 Route::get('/cv', [\App\Http\Controllers\CvController::class, 'index'])->name('cv.index');
 Route::get('/cv/create', [\App\Http\Controllers\CvController::class, 'create'])->name('cv.create');
 Route::get('/cv/preview-example/{slug}', [\App\Http\Controllers\CvController::class, 'previewExample'])->name('cv.previewExample');
+// Topup Game Routes (Publik & Guest Friendly)
 Route::get('/topup', [\App\Http\Controllers\TopUpController::class, 'index'])->name('topup.index');
 Route::get('/topup/{slug}', [\App\Http\Controllers\TopUpController::class, 'show'])->name('topup.show');
+Route::post('/topup/{slug}/check-nickname', [\App\Http\Controllers\TopUpController::class, 'checkNickname'])->name('topup.check-nickname');
+Route::post('/topup/{slug}/process', [\App\Http\Controllers\TopUpController::class, 'process'])->name('topup.process');
+Route::get('/topup/checkout/{id}', [\App\Http\Controllers\TopUpPaymentController::class, 'show'])->name('topup.checkout.show');
+Route::post('/topup/checkout/{id}/verify', [\App\Http\Controllers\TopUpPaymentController::class, 'verify'])->name('topup.checkout.verify');
 
-// Rute Transaksi / Aksi (Backend Auth Lock)
+// Rute Transaksi / Aksi CV & Software (Backend Auth Lock)
 Route::middleware(['auth'])->group(function () {
     Route::post('/cv', [\App\Http\Controllers\CvController::class, 'store'])->name('cv.store');
     Route::get('/cv/download/{id}', [\App\Http\Controllers\CvController::class, 'download'])->name('cv.download');
@@ -75,12 +80,6 @@ Route::middleware(['auth'])->group(function () {
     
     Route::get('/checkout/cv/{cv_id}', [\App\Http\Controllers\CvPaymentController::class, 'show'])->name('cv.checkout.show');
     Route::post('/payment/cv/simulate/{cv_id}', [\App\Http\Controllers\CvPaymentController::class, 'simulate'])->name('cv.payment.simulate');
-
-    Route::post('/topup/{slug}/process', [\App\Http\Controllers\TopUpController::class, 'process'])->name('topup.process');
-    Route::post('/topup/{slug}/check-nickname', [\App\Http\Controllers\TopUpController::class, 'checkNickname'])->name('topup.check-nickname');
-    
-    Route::get('/topup/checkout/{id}', [\App\Http\Controllers\TopUpPaymentController::class, 'show'])->name('topup.checkout.show');
-    Route::post('/topup/checkout/{id}/verify', [\App\Http\Controllers\TopUpPaymentController::class, 'verify'])->name('topup.checkout.verify');
 });
 
 Route::middleware(['auth'])->group(function () {
