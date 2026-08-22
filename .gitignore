@@ -1,4 +1,21 @@
 *.log
+
+# Helper/debug scripts (tidak perlu di repo)
+update_*.php
+fix_*.php
+add_*.php
+restore_*.php
+revert_*.php
+rewrite_*.php
+test_*.php
+check_*.php
+prepare_*.php
+wipe.php
+smart_*.php
+scratch/
+welcome_dump.txt
+vip_games.json
+
 .DS_Store
 .env
 .env.backup
