@@ -286,18 +286,30 @@ class TopUpController extends Controller
             $game = Game::where('slug', $slug)->firstOrFail();
             $api = app(\App\Services\VipResellerService::class);
             
-            $target1 = $request->player_id;
-            $target2 = $request->zone_id ?? '';
+            $target1 = trim($request->player_id);
+            $target2 = trim($request->zone_id ?? '');
             
+            $gameCode = match(strtolower($game->slug)) {
+                'mobile-legend', 'mobile-legends' => 'mobile-legends',
+                'free-fire', 'freefire' => 'free-fire',
+                'valorant' => 'valorant',
+                'pubg-mobile', 'pubg' => 'pubg-mobile',
+                'roblox' => 'roblox',
+                'genshin-impact' => 'genshin-impact',
+                'point-blank' => 'point-blank',
+                default => $game->slug,
+            };
+
             // Format khusus untuk Valorant (Digabungkan dengan #)
-            if (strtolower($game->slug) === 'valorant') {
-                // Hapus # jika user terlanjur ngetik
+            if ($gameCode === 'valorant') {
                 $target2 = ltrim($target2, '#');
-                $target1 = $target1 . '#' . $target2;
+                if (!str_contains($target1, '#') && !empty($target2)) {
+                    $target1 = $target1 . '#' . $target2;
+                }
                 $target2 = '';
             }
             
-            $response = $api->checkNickname($game->slug, $target1, $target2);
+            $response = $api->checkNickname($gameCode, $target1, $target2);
             
             // Decode URL Encoding dari VIP Reseller (e.g. 4Some1%20%2321104 -> 4Some1 #21104)
             if (isset($response['result']) && $response['result'] === true && isset($response['data'])) {

@@ -25,7 +25,7 @@
 
     <div class="py-12 bg-gray-50 dark:bg-gray-900 min-h-screen">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
-                        <!-- Panduan Top Up -->
+            <!-- Panduan Top Up -->
             <div class="bg-gray-800 border-l-4 border-blue-500 rounded-xl p-5 mb-8 shadow-md" data-aos="fade-down">
                 <h3 class="font-bold text-lg mb-3 text-white flex items-center gap-2">
                     <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -76,6 +76,7 @@
                     </li>
                 </ul>
             </div>
+
             <div class="flex flex-col lg:flex-row gap-6">
                 <!-- Kiri: Info Game -->
                 <div class="w-full lg:w-1/4">
@@ -269,57 +270,26 @@
             })
             .then(res => res.json())
             .then(data => {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-                
-                // VIP Reseller SUCCESS selalu result: true
+                // 1. JIKA ID BENAR (result: true): LANGSUNG SUBMIT TANPA POP-UP KONFIRMASI LAGI
                 if (data.result === true) {
-                    let nickname = 'Nama tidak diketahui (Tapi ID Valid)';
-                    if (typeof data.data === 'string') nickname = data.data;
-                    else if (data.nickname) nickname = data.nickname;
-                    else if (data.name) nickname = data.name;
-                    else if (data.data && data.data.nickname) nickname = data.data.nickname;
-                    else if (data.data && data.data.name) nickname = data.data.name;
-                    
-                    Swal.fire({
-                        title: 'Konfirmasi Nickname',
-                        html: `Halo <strong>${nickname}</strong>!<br>Apakah nama ini sudah benar?`,
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#4f46e5',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Ya, Lanjut Bayar!',
-                        cancelButtonText: 'Batal'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            form.submit();
-                        }
-                    });
+                    submitBtn.innerHTML = 'ID Valid! Mengalihkan ke Pembayaran...';
+                    form.submit();
                 } else {
-                    // Jika result false atau error dari VIP Reseller
-                    let errorMsg = 'Silakan periksa kembali Player ID / Zone ID Anda.';
-                    if (data.message && (data.message.includes('cURL') || data.message.includes('timeout') || data.message.includes('tidak diizinkan') || data.message.includes('Permintaan'))) {
-                        errorMsg = 'Sistem pengecekan otomatis sedang sibuk. Jika Anda yakin Player ID sudah benar, Anda tetap bisa melanjutkan pembayaran.';
-                    } else if (data.message) {
-                        errorMsg = data.message;
+                    // 2. JIKA ID SALAH (result: false): BLOKIR DAN BERITAHU TANPA SURUH LANJUT
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    
+                    let errorMsg = data.message || 'Player ID / Tagline tidak valid atau tidak ditemukan.';
+                    if (errorMsg.includes('tidak diizinkan') || errorMsg.includes('cURL') || errorMsg.includes('timeout')) {
+                        errorMsg = 'Koneksi ke server pusat sedang sibuk. Silakan coba sesaat lagi.';
                     }
                     
                     Swal.fire({
-                        icon: 'warning',
-                        title: 'Konfirmasi ID Game',
-                        html: `${errorMsg}<br><br><span class="text-xs text-gray-400">Pastikan ID sudah benar sebelum lanjut bayar.</span>`,
-                        showCancelButton: true,
-                        showDenyButton: true,
+                        icon: 'error',
+                        title: 'ID Game Tidak Valid!',
+                        text: errorMsg,
                         confirmButtonColor: '#4f46e5',
-                        denyButtonColor: '#10b981',
-                        cancelButtonColor: '#6b7280',
-                        confirmButtonText: 'Cek Ulang ID',
-                        denyButtonText: 'Tetap Lanjut Bayar ▶',
-                        cancelButtonText: 'Batal'
-                    }).then((result) => {
-                        if (result.isDenied) {
-                            form.submit();
-                        }
+                        confirmButtonText: 'Periksa Kembali'
                     });
                 }
             })
@@ -327,17 +297,11 @@
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
                 Swal.fire({ 
-                    icon: 'warning', 
-                    title: 'Gangguan Pengecekan Server', 
-                    text: 'Koneksi ke server pusat sedang lambat. Ingin tetap melanjutkan pembayaran?',
-                    showCancelButton: true,
+                    icon: 'error', 
+                    title: 'Gangguan Server', 
+                    text: 'Gagal menghubungi server pengecekan ID. Silakan coba sesaat lagi.',
                     confirmButtonColor: '#4f46e5',
-                    confirmButtonText: 'Ya, Lanjut Bayar',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
-                    }
+                    confirmButtonText: 'Tutup'
                 });
                 console.error(err);
             });
