@@ -311,18 +311,47 @@ class TopUpController extends Controller
             
             $response = $api->checkNickname($gameCode, $target1, $target2);
             
-            // Decode URL Encoding dari VIP Reseller (e.g. 4Some1%20%2321104 -> 4Some1 #21104)
+            // 1. Jika berhasil diverifikasi oleh API VIP Reseller
             if (isset($response['result']) && $response['result'] === true && isset($response['data'])) {
                 if (is_string($response['data'])) {
                     $response['data'] = urldecode($response['data']);
                 }
+                return response()->json($response);
             }
             
-            return response()->json($response);
-        } catch (\Exception $e) {
+            $msg = strtolower($response['message'] ?? '');
+            
+            // 2. Jika error berasal dari IP Whitelist / Server Provider VIP Reseller belum whitelisted
+            // (Bukan salah ID pembeli, jadi loloskan langsung agar pembeli yang benar bisa lanjut bayar)
+            if (
+                str_contains($msg, 'tidak diizinkan') || 
+                str_contains($msg, 'not permitted') || 
+                str_contains($msg, 'ip ') || 
+                str_contains($msg, 'permintaan tidak terdeteksi') || 
+                str_contains($msg, 'maintenance') || 
+                str_contains($msg, 'gangguan') ||
+                str_contains($msg, 'timeout') || 
+                empty($response)
+            ) {
+                return response()->json([
+                    'result' => true,
+                    'data' => $target1,
+                    'bypass' => true
+                ]);
+            }
+            
+            // 3. Jika murni ID salah dari database game
             return response()->json([
                 'result' => false,
-                'message' => 'Gangguan Server: ' . $e->getMessage()
+                'message' => $response['message'] ?? 'Player ID atau Tagline tidak ditemukan. Pastikan data yang dimasukkan benar.'
+            ]);
+            
+        } catch (\Exception $e) {
+            // Jika ada exception / timeout jaringan server, tetap loloskan agar pembeli tidak terhambat
+            return response()->json([
+                'result' => true,
+                'data' => $request->player_id,
+                'bypass' => true
             ]);
         }
     }
