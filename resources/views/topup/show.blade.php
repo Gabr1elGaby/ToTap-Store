@@ -296,25 +296,49 @@
                         }
                     });
                 } else {
-                    // Jika result false atau error dari Laravel Exception
+                    // Jika result false atau error dari VIP Reseller
                     let errorMsg = 'Silakan periksa kembali Player ID / Zone ID Anda.';
-                    if (data.message && data.message.includes('cURL')) {
-                        errorMsg = 'Koneksi ke server pusat sedang gangguan (Timeout). Silakan coba lagi.';
+                    if (data.message && (data.message.includes('cURL') || data.message.includes('timeout') || data.message.includes('tidak diizinkan') || data.message.includes('Permintaan'))) {
+                        errorMsg = 'Sistem pengecekan otomatis sedang sibuk. Jika Anda yakin Player ID sudah benar, Anda tetap bisa melanjutkan pembayaran.';
                     } else if (data.message) {
                         errorMsg = data.message;
                     }
                     
                     Swal.fire({
-                        icon: 'error',
-                        title: 'ID Tidak Valid atau Gangguan Server!',
-                        text: errorMsg
+                        icon: 'warning',
+                        title: 'Konfirmasi ID Game',
+                        html: `${errorMsg}<br><br><span class="text-xs text-gray-400">Pastikan ID sudah benar sebelum lanjut bayar.</span>`,
+                        showCancelButton: true,
+                        showDenyButton: true,
+                        confirmButtonColor: '#4f46e5',
+                        denyButtonColor: '#10b981',
+                        cancelButtonColor: '#6b7280',
+                        confirmButtonText: 'Cek Ulang ID',
+                        denyButtonText: 'Tetap Lanjut Bayar ▶',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isDenied) {
+                            form.submit();
+                        }
                     });
                 }
             })
             .catch(err => {
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
-                Swal.fire({ icon: 'error', title: 'Error Server', text: 'Terjadi kesalahan internal saat mengecek ID.' });
+                Swal.fire({ 
+                    icon: 'warning', 
+                    title: 'Gangguan Pengecekan Server', 
+                    text: 'Koneksi ke server pusat sedang lambat. Ingin tetap melanjutkan pembayaran?',
+                    showCancelButton: true,
+                    confirmButtonColor: '#4f46e5',
+                    confirmButtonText: 'Ya, Lanjut Bayar',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
                 console.error(err);
             });
         });

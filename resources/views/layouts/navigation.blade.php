@@ -35,7 +35,9 @@
                         <x-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.plans.*')">
                             {{ __('Plans') }}
                         </x-nav-link>
-                        
+                        <x-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">
+                            <span class="mr-1 text-amber-400">⭐</span> {{ __('Ulasan') }}
+                        </x-nav-link>
                         <!-- Other admin links will go here -->
                     @else
                         <x-nav-link href="/">
@@ -45,7 +47,6 @@
                             <x-nav-link href="#keunggulan">
                                 {{ __('Keunggulan') }}
                             </x-nav-link>
-                            
                         @endif
                     @endif
                 </div>

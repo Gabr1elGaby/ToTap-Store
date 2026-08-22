@@ -43,8 +43,16 @@ Route::get('/', function () {
         ->whereColumn('price_normal', '>', 'price')
         ->selectRaw('MAX(ROUND(((price_normal - price) / price_normal) * 100)) as max_discount')
         ->value('max_discount') ?? 0;
-    return view('welcome', compact('products', 'totalUsers', 'totalTransactions', 'maxGameDiscount', 'maxSoftwareDiscount'));
+
+    // CUSTOMER REVIEWS STATS (100% REAL DATA ONLY)
+    $totalReviews = \App\Models\CustomerReview::count();
+    $avgRating = $totalReviews > 0 ? round((float) \App\Models\CustomerReview::avg('rating'), 1) : 0.0;
+
+    return view('welcome', compact('products', 'totalUsers', 'totalTransactions', 'maxGameDiscount', 'maxSoftwareDiscount', 'avgRating', 'totalReviews'));
 });
+
+// SUBMIT CUSTOMER REVIEW
+Route::post('/api/reviews', [\App\Http\Controllers\CustomerReviewController::class, 'store'])->name('reviews.store');
 
 
 
@@ -108,6 +116,9 @@ Route::middleware(['auth', 'verified', 'role:superadmin'])->prefix('admin')->nam
     Route::get('games/{game}/products/sync', [\App\Http\Controllers\Admin\GameProductController::class, 'syncForm'])->name('games.products.sync');
     Route::post('games/{game}/products/sync', [\App\Http\Controllers\Admin\GameProductController::class, 'syncProcess'])->name('games.products.sync.process');
     Route::resource('games.products', \App\Http\Controllers\Admin\GameProductController::class)->except(['create', 'store', 'show']);
+
+    // Customer Reviews & Feedback Management
+    Route::resource('reviews', \App\Http\Controllers\Admin\ReviewController::class)->only(['index', 'destroy']);
 });
 
 require __DIR__.'/auth.php';

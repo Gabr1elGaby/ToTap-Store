@@ -106,6 +106,65 @@
             </div>
         </div>
     </div>
+
+    {{-- Rating & Feedback Modal for Topup --}}
+    <div id="ratingModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 max-w-md w-full text-center space-y-5 shadow-2xl border border-gray-100 dark:border-gray-700">
+            <div class="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-500 flex items-center justify-center text-3xl mx-auto">
+                ✓
+            </div>
+            
+            <div>
+                <h3 class="text-2xl font-black text-gray-900 dark:text-white">Pembayaran Berhasil!</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Item voucher/game sedang otomatis dikirim ke akun Anda.</p>
+            </div>
+
+            <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-2xl border border-gray-200 dark:border-gray-600 text-left space-y-3">
+                <div class="text-center">
+                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Rating Layanan</span>
+                    <h5 class="text-sm font-bold text-gray-900 dark:text-white mt-0.5">Bagaimana Pengalaman Top Up Anda?</h5>
+                </div>
+
+                <form id="topupReviewForm" onsubmit="submitTopupReview(event)" class="space-y-3">
+                    @csrf
+                    <input type="hidden" name="order_id" value="{{ $transaction->id }}">
+                    <input type="hidden" name="order_type" value="topup">
+                    <input type="hidden" name="customer_name" value="{{ $transaction->user_id_game ?? 'Gamer ToTap' }}">
+                    <input type="hidden" name="customer_contact" value="{{ $transaction->whatsapp ?? '' }}">
+                    <input type="hidden" name="product_name" value="{{ $transaction->game_name ?? 'Top Up Game' }}">
+                    <input type="hidden" id="topup-selected-rating" name="rating" value="5">
+
+                    {{-- Star Picker --}}
+                    <div class="flex flex-col items-center justify-center gap-1">
+                        <div class="flex items-center gap-2 text-3xl cursor-pointer" id="topup-star-container">
+                            <span class="star text-amber-400 transition transform hover:scale-125" onclick="setTopupRating(1)">★</span>
+                            <span class="star text-amber-400 transition transform hover:scale-125" onclick="setTopupRating(2)">★</span>
+                            <span class="star text-amber-400 transition transform hover:scale-125" onclick="setTopupRating(3)">★</span>
+                            <span class="star text-amber-400 transition transform hover:scale-125" onclick="setTopupRating(4)">★</span>
+                            <span class="star text-amber-400 transition transform hover:scale-125" onclick="setTopupRating(5)">★</span>
+                        </div>
+                        <span id="topup-rating-label" class="text-xs font-bold text-amber-500 mt-1">5/5 - Sangat Cepat & Puas! ⭐</span>
+                    </div>
+
+                    <div>
+                        <textarea name="review_text" rows="2" placeholder="Tuliskan saran atau kritik Anda..." class="w-full text-xs p-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 resize-none"></textarea>
+                    </div>
+
+                    <button type="submit" id="topup-review-btn" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 text-white font-bold rounded-xl text-xs shadow-md transition">
+                        Kirim Ulasan & Selesai ⭐
+                    </button>
+                </form>
+
+                <div id="topup-review-success" class="hidden text-center py-2">
+                    <p class="text-xs text-emerald-600 font-bold">✓ Terima kasih! Ulasan Anda telah disimpan.</p>
+                </div>
+            </div>
+
+            <a href="/" class="block text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 font-semibold">
+                Lewati & Kembali ke Beranda →
+            </a>
+        </div>
+    </div>
     
     <script>
         // Timer Mundur Sederhana (24 Jam)
@@ -134,9 +193,9 @@
             .then(data => {
                 if(data.success) {
                     isPaid = true;
-                    document.getElementById('verify-button').innerHTML = 'Pembayaran Berhasil! Mengalihkan...';
+                    document.getElementById('verify-button').innerHTML = 'Pembayaran Berhasil!';
                     document.getElementById('verify-button').classList.replace('bg-indigo-600', 'bg-green-500');
-                    setTimeout(() => window.location.href = '/', 2000);
+                    document.getElementById('ratingModal').classList.remove('hidden');
                 }
             });
         };
@@ -147,6 +206,60 @@
             checkStatus();
         };
 
+        // Star Rating for Topup
+        const topupRatingLabels = {
+            1: '1/5 - Sangat Buruk',
+            2: '2/5 - Kurang Memuaskan',
+            3: '3/5 - Cukup',
+            4: '4/5 - Cepat & Bagus',
+            5: '5/5 - Sangat Cepat & Puas! ⭐'
+        };
+
+        function setTopupRating(num) {
+            document.getElementById('topup-selected-rating').value = num;
+            document.getElementById('topup-rating-label').innerText = topupRatingLabels[num] || `${num}/5`;
+            
+            const stars = document.querySelectorAll('#topup-star-container .star');
+            stars.forEach((star, idx) => {
+                if (idx < num) {
+                    star.classList.remove('text-gray-300', 'dark:text-gray-600');
+                    star.classList.add('text-amber-400');
+                } else {
+                    star.classList.remove('text-amber-400');
+                    star.classList.add('text-gray-300', 'dark:text-gray-600');
+                }
+            });
+        }
+
+        function submitTopupReview(e) {
+            e.preventDefault();
+            const form = document.getElementById('topupReviewForm');
+            const formData = new FormData(form);
+            const btn = document.getElementById('topup-review-btn');
+            btn.disabled = true;
+            btn.innerText = 'Mengirim...';
+
+            fetch('/api/reviews', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                form.classList.add('hidden');
+                document.getElementById('topup-review-success').classList.remove('hidden');
+                setTimeout(() => window.location.href = '/', 2000);
+            })
+            .catch(() => {
+                form.classList.add('hidden');
+                document.getElementById('topup-review-success').classList.remove('hidden');
+                setTimeout(() => window.location.href = '/', 2000);
+            });
+        }
+
         // Fungsi Salin VA
         function copyVA() {
             const vaNumber = document.getElementById('va-text').innerText;
@@ -154,7 +267,6 @@
                 const copyBtn = document.getElementById('copy-btn');
                 const copyText = document.getElementById('copy-text');
                 
-                // Ubah tampilan sesaat
                 copyBtn.classList.replace('bg-indigo-50', 'bg-green-100');
                 copyBtn.classList.replace('text-indigo-600', 'text-green-700');
                 copyText.innerText = 'Tersalin!';

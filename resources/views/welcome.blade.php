@@ -56,6 +56,21 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10" 
                  :style="`transform: translateY(${scrollY * 0.3}px); opacity: ${1 - (scrollY / 400)};`">
                 <div class="text-center max-w-4xl mx-auto">
+                    {{-- Rating Social Proof Badge (Only appears with real reviews or clean real counter) --}}
+                    @if($totalReviews > 0)
+                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-xs font-semibold mb-6 shadow-sm">
+                            <span class="text-amber-400">⭐</span>
+                            <span class="font-bold text-white">{{ number_format($avgRating, 1) }} / 5.0</span>
+                            <span class="text-gray-400">· Rating Kepuasan Pelanggan ({{ number_format($totalReviews) }} Ulasan)</span>
+                        </div>
+                    @else
+                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-xs font-semibold mb-6 shadow-sm">
+                            <span class="text-amber-400">⭐</span>
+                            <span class="font-bold text-white">Layanan Terpercaya</span>
+                            <span class="text-gray-400">· Transaksi Otomatis 24/7</span>
+                        </div>
+                    @endif
+
                     <h1 class="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-6 tracking-tight">
                         Pusat Layanan Digital <br>
                         <span class="text-blue-500">& Top Up Terlengkap.</span>
@@ -82,10 +97,10 @@
         </section>
 
         <!-- Why Choose Us -->
-                <!-- Stats Section -->
+        <!-- Stats Section -->
         <section class="border-b border-gray-800 bg-gray-900 py-12 relative z-20 shadow-xl">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
                     <div class="p-4" data-aos="fade-up" data-aos-delay="100">
                         <p class="text-4xl font-extrabold text-white mb-2" style="font-family: 'Orbitron', sans-serif;">{{ number_format($totalUsers) }}<span class="text-blue-500"></span></p>
                         <p class="text-gray-400 text-sm font-semibold tracking-wider uppercase">Total Pengguna</p>
@@ -93,6 +108,19 @@
                     <div class="p-4" data-aos="fade-up" data-aos-delay="200">
                         <p class="text-4xl font-extrabold text-white mb-2" style="font-family: 'Orbitron', sans-serif;">{{ number_format($totalTransactions) }}<span class="text-blue-500"></span></p>
                         <p class="text-gray-400 text-sm font-semibold tracking-wider uppercase">Total Transaksi Berhasil</p>
+                    </div>
+                    <div class="p-4" data-aos="fade-up" data-aos-delay="300">
+                        @if($totalReviews > 0)
+                            <p class="text-4xl font-extrabold text-white mb-2 flex items-center justify-center gap-2" style="font-family: 'Orbitron', sans-serif;">
+                                <span class="text-amber-400 text-3xl">⭐</span> {{ number_format($avgRating, 1) }}<span class="text-blue-500 text-2xl font-normal">/5.0</span>
+                            </p>
+                            <p class="text-gray-400 text-sm font-semibold tracking-wider uppercase">Rating Kepuasan ({{ $totalReviews }} Ulasan)</p>
+                        @else
+                            <p class="text-4xl font-extrabold text-white mb-2 flex items-center justify-center gap-2" style="font-family: 'Orbitron', sans-serif;">
+                                <span class="text-amber-400 text-3xl">⭐</span> -<span class="text-blue-500 text-2xl font-normal">/5.0</span>
+                            </p>
+                            <p class="text-gray-400 text-sm font-semibold tracking-wider uppercase">Belum Ada Ulasan</p>
+                        @endif
                     </div>
                 </div>
             </div>
