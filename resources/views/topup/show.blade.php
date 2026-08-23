@@ -113,7 +113,31 @@
                 </div>
 
                 <!-- Kanan: Form Pembelian -->
-                <div class="w-full lg:w-3/4 space-y-6" x-data="{ selectedProduct: null, selectedPayment: 'qris' }">
+                <div class="w-full lg:w-3/4 space-y-6" x-data="{ 
+                    selectedProduct: sessionStorage.getItem('totap_product_{{ $game->slug }}') || null, 
+                    selectedPayment: sessionStorage.getItem('totap_payment_{{ $game->slug }}') || 'qris',
+                    playerId: sessionStorage.getItem('totap_player_id_{{ $game->slug }}') || '',
+                    zoneId: sessionStorage.getItem('totap_zone_id_{{ $game->slug }}') || '',
+                    init() {
+                        this.$watch('selectedProduct', v => sessionStorage.setItem('totap_product_{{ $game->slug }}', v || ''));
+                        this.$watch('selectedPayment', v => sessionStorage.setItem('totap_payment_{{ $game->slug }}', v || ''));
+                        this.$watch('playerId', v => sessionStorage.setItem('totap_player_id_{{ $game->slug }}', v || ''));
+                        this.$watch('zoneId', v => sessionStorage.setItem('totap_zone_id_{{ $game->slug }}', v || ''));
+                        
+                        // Jika setelah login ada tanda auto-submit, jalankan submit otomatis
+                        if (sessionStorage.getItem('totap_auto_submit_{{ $game->slug }}') === '1') {
+                            sessionStorage.removeItem('totap_auto_submit_{{ $game->slug }}');
+                            @auth
+                                this.$nextTick(() => {
+                                    if (this.selectedProduct && this.playerId) {
+                                        const formEl = document.getElementById('topup-form');
+                                        if (formEl) formEl.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                                    }
+                                });
+                            @endauth
+                        }
+                    }
+                }">
                     <form action="{{ route('topup.process', $game->slug) }}" method="POST" id="topup-form">
                         @csrf
                         <input type="hidden" name="product_id" x-model="selectedProduct">
@@ -130,12 +154,12 @@
                                     </div>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <input type="text" name="player_id" placeholder="{{ $game->target_field_1 }}" required
+                                            <input type="text" name="player_id" x-model="playerId" placeholder="{{ $game->target_field_1 }}" required
                                                 class="w-full rounded-xl border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
                                         </div>
                                         @if($game->requires_zone_id)
                                         <div>
-                                            <input type="text" name="zone_id" placeholder="{{ $game->target_field_2 ?? 'Zone ID' }}" required
+                                            <input type="text" name="zone_id" x-model="zoneId" placeholder="{{ $game->target_field_2 ?? 'Zone ID' }}" required
                                                 class="w-full rounded-xl border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
                                         </div>
                                         @endif
@@ -262,8 +286,9 @@
         form.addEventListener('submit', function(e) {
             e.preventDefault(); // Cegah submit langsung
             
-            // JIKA USER BELUM LOGIN: TAMPILKAN MODAL LOGIN SAAT MAU MEMBAYAR
+            // JIKA USER BELUM LOGIN: SIMPAN STATUS SUBMIT & TAMPILKAN MODAL LOGIN
             @guest
+                sessionStorage.setItem('totap_auto_submit_{{ $game->slug }}', '1');
                 window.dispatchEvent(new CustomEvent('open-login'));
                 return;
             @endguest
@@ -298,6 +323,13 @@
                 if (data.result === true) {
                     submitBtn.innerHTML = 'ID Valid! Mengalihkan ke Pembayaran...';
                     submitBtn.disabled = false;
+                    
+                    // Bersihkan sessionStorage karena pesanan sudah sukses diproses
+                    sessionStorage.removeItem('totap_product_{{ $game->slug }}');
+                    sessionStorage.removeItem('totap_payment_{{ $game->slug }}');
+                    sessionStorage.removeItem('totap_player_id_{{ $game->slug }}');
+                    sessionStorage.removeItem('totap_zone_id_{{ $game->slug }}');
+                    sessionStorage.removeItem('totap_auto_submit_{{ $game->slug }}');
                     
                     // Native HTML form submission
                     HTMLFormElement.prototype.submit.call(form);
