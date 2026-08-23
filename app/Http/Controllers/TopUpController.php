@@ -37,13 +37,16 @@ class TopUpController extends Controller
             return (float) $dbSetting;
         });
 
-        $allProducts = $game->products()->where('status', 'available')->orderBy('price_sell')->get();
+        $allProducts = $game->products()->where('price_modal', '>', 0)->orderBy('price_sell')->get();
 
         $uniqueProducts = collect();
         $seenKeys = [];
 
         foreach ($allProducts as $product) {
-            $product->is_out_of_stock = ($vipBalance !== null && $product->price_modal > $vipBalance);
+            $product->is_out_of_stock = (
+                strtolower($product->status) !== 'available' || 
+                ($vipBalance !== null && $product->price_modal > $vipBalance)
+            );
             $name = strtolower(trim($product->name));
             
             // 1. FILTERING STRICT: Hapus produk Skin, Charisma, dan NON-IDN (Global/Luar Negeri)
@@ -189,9 +192,9 @@ class TopUpController extends Controller
         
         $product = GameProduct::findOrFail($request->product_id);
         
-        // Pengecekan Keamanan Saldo VIP Reseller
-        $vipBalance = Cache::get('vip_reseller_balance');
-        if ($vipBalance !== null && $product->price_modal > $vipBalance) {
+        // Pengecekan Keamanan Saldo & Status VIP Reseller
+        $vipBalance = Cache::get('vip_reseller_balance') ?? (float)\App\Models\Setting::get('vip_reseller_balance', 0);
+        if ($product->status !== 'available' || ($vipBalance !== null && $product->price_modal > $vipBalance)) {
             return back()->with('error', 'Mohon maaf, nominal ' . $product->name . ' sedang habis atau dalam pemeliharaan. Silakan pilih nominal lainnya.');
         }
         
