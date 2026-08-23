@@ -35,6 +35,9 @@
                         <x-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.plans.*')">
                             {{ __('Plans') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.transactions.index')" :active="request()->routeIs('admin.transactions.*')">
+                            {{ __('Transaksi') }}
+                        </x-nav-link>
                         <x-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">
                             <span class="mr-1 text-amber-400">⭐</span> {{ __('Ulasan') }}
                         </x-nav-link>
@@ -42,6 +45,9 @@
                     @else
                         <x-nav-link href="/">
                             {{ __('Beranda') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('transactions.history')" :active="request()->routeIs('transactions.*')">
+                            {{ __('Riwayat Transaksi') }}
                         </x-nav-link>
                         @if(request()->is('/'))
                             <x-nav-link href="#keunggulan">
@@ -55,7 +61,7 @@
                         <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 @auth
-                <x-dropdown align="right" width="48">
+                <x-dropdown align="right" width="56">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-semibold rounded-md text-gray-300 dark:text-white bg-gray-800 hover:text-gray-700 dark:hover:text-blue-400 focus:outline-none transition ease-in-out duration-150">
                             <div>{{ Auth::user()->name }}</div>
@@ -70,7 +76,11 @@
 
                     <x-slot name="content">
                         <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
+                            <i class="fas fa-user mr-2 text-gray-400"></i> {{ __('Profile') }}
+                        </x-dropdown-link>
+
+                        <x-dropdown-link :href="route('transactions.history')">
+                            <i class="fas fa-receipt mr-2 text-indigo-400"></i> {{ __('Riwayat Transaksi') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->
@@ -80,7 +90,7 @@
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Log Out') }}
+                                <i class="fas fa-sign-out-alt mr-2 text-red-400"></i> {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>
@@ -101,9 +111,15 @@
                 <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                     {{ __('Dashboard') }}
                 </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.transactions.index')" :active="request()->routeIs('admin.transactions.*')">
+                    {{ __('Transaksi') }}
+                </x-responsive-nav-link>
             @else
                 <x-responsive-nav-link href="/">
                     {{ __('Beranda') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('transactions.history')" :active="request()->routeIs('transactions.*')">
+                    {{ __('Riwayat Transaksi') }}
                 </x-responsive-nav-link>
             @endif
         </div>
@@ -119,6 +135,10 @@
             <div class="mt-3 space-y-1">
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('transactions.history')">
+                    {{ __('Riwayat Transaksi') }}
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->

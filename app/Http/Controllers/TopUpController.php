@@ -164,11 +164,13 @@ class TopUpController extends Controller
         // Simpan ke Database
         $transaction = \App\Models\Transaction::create([
             'id' => $orderId,
+            'user_id' => auth()->id(),
             'game_id' => $game->id,
             'game_product_id' => $product->id,
             'target_field_1' => $request->player_id,
             'target_field_2' => $request->zone_id,
             'amount' => $product->price_sell,
+            'payment_method' => $request->payment_method,
             'status' => 'pending',
         ]);
         

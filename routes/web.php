@@ -91,6 +91,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/payment/success/{order_number}', [\App\Http\Controllers\PaymentController::class, 'success'])->name('payment.success');
     Route::get('/subscription/active/{product_id}', [\App\Http\Controllers\SubscriptionController::class, 'active'])->name('subscription.active');
 
+    Route::get('/transactions', [\App\Http\Controllers\TransactionHistoryController::class, 'index'])->name('transactions.history');
+    Route::get('/transactions/{id}/invoice', [\App\Http\Controllers\TransactionHistoryController::class, 'invoice'])->name('transactions.invoice');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -115,6 +118,10 @@ Route::middleware(['auth', 'verified', 'role:superadmin'])->prefix('admin')->nam
     Route::get('games/{game}/products/sync', [\App\Http\Controllers\Admin\GameProductController::class, 'syncForm'])->name('games.products.sync');
     Route::post('games/{game}/products/sync', [\App\Http\Controllers\Admin\GameProductController::class, 'syncProcess'])->name('games.products.sync.process');
     Route::resource('games.products', \App\Http\Controllers\Admin\GameProductController::class)->except(['create', 'store', 'show']);
+
+    // Admin Transactions & Invoices Management
+    Route::get('/transactions', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'index'])->name('transactions.index');
+    Route::get('/transactions/{id}/invoice', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'invoice'])->name('transactions.invoice');
 
     // Customer Reviews & Feedback Management
     Route::resource('reviews', \App\Http\Controllers\Admin\ReviewController::class)->only(['index', 'destroy']);
