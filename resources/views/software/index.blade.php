@@ -5,26 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Software Enterprise - ToTap Store</title>
     <link rel="icon" href="{{ asset('images/logo-totap-v2.png') }}" type="image/png">
+    
+    <!-- Early Theme Initialization -->
+    <script>
+        if (localStorage.getItem('totap_theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.style.backgroundColor = '#f8fafc';
+        } else {
+            document.documentElement.classList.add('dark');
+            document.documentElement.style.backgroundColor = '#111827';
+        }
+    </script>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-gray-900 text-white font-sans antialiased" x-data="{ showLogin: false, showRegister: false }" @open-login.window="showLogin = true" @open-register.window="showRegister = true" :class="{ 'overflow-hidden': showLogin || showRegister }">
+<body class="bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white font-sans antialiased min-h-screen transition-colors duration-200" x-data="{ showLogin: false, showRegister: false }" @open-login.window="showLogin = true" @open-register.window="showRegister = true" :class="{ 'overflow-hidden': showLogin || showRegister }">
     
     @include('layouts.navigation')
 
-    <div class="py-20">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="mb-16 text-center">
-                <h2 class="text-blue-500 font-bold uppercase tracking-widest text-xs mb-2">SOFTWARE ENTERPRISE</h2>
-                <h3 class="text-3xl font-extrabold text-white">Solusi Berbasis Lisensi</h3>
+    <div class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-14 text-center">
+                <h2 class="text-blue-600 dark:text-blue-500 font-bold uppercase tracking-widest text-xs mb-2">SOFTWARE ENTERPRISE</h2>
+                <h3 class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">Solusi Berbasis Lisensi</h3>
             </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                 @foreach($softwareProducts as $product)
                 <!-- Card -->
-                <div class="bg-gray-800 rounded-lg border border-gray-700 shadow flex flex-col p-8 relative overflow-hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-md flex flex-col p-8 relative overflow-hidden transition-all duration-200 hover:shadow-xl">
                     @php
                         $bestPlan = $product->plans->first();
                         $discountPercent = 0;
@@ -39,51 +52,49 @@
                     </div>
                     @endif
 
-                    <h3 class="text-xl font-bold text-white mb-2">{{ $product->name }}</h3>
-                    <p class="text-sm text-gray-400 mb-6">{{ $product->description }}</p>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ $product->name }}</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">{{ $product->description }}</p>
                     
                     <ul class="space-y-3 mb-8 flex-1">
                         @if($product->features)
                             @foreach(explode("\n", str_replace("\r", "", $product->features)) as $feature)
                                 @if(trim($feature))
                                 <li class="flex items-start">
-                                    <svg class="h-5 w-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg class="h-5 w-5 text-blue-600 dark:text-blue-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                     </svg>
-                                    <span class="text-sm text-gray-300">{{ trim($feature) }}</span>
+                                    <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">{{ trim($feature) }}</span>
                                 </li>
                                 @endif
                             @endforeach
                         @else
-                            <li class="flex items-start"><span class="text-sm text-gray-500 italic">Fitur segera hadir...</span></li>
+                            <li class="flex items-start"><span class="text-sm text-gray-400 italic">Fitur segera hadir...</span></li>
                         @endif
                     </ul>
 
-                    <div class="mt-auto border-t border-gray-700 pt-6">
+                    <div class="mt-auto border-t border-gray-100 dark:border-gray-700/80 pt-6">
                         @if($product->slug === 'sistem-kasir-pos')
-                            <a href="/produk/sistem-kasir-pos" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white rounded font-bold transition text-sm shadow-md" style="padding: 12px 24px; letter-spacing: 0.5px;">Beli Layanan</a>
+                            <a href="/produk/sistem-kasir-pos" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition text-sm shadow-md py-3" style="letter-spacing: 0.5px;">Beli Layanan</a>
                         @else
                             <div class="flex justify-between items-center">
                                 <div>
-                                    <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">HARGA MULAI</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-1">HARGA MULAI</p>
                                     @if($bestPlan)
                                         @if($bestPlan->price_normal > 0 && $bestPlan->price_normal > $bestPlan->price)
-                                            <div class="text-sm text-gray-500 line-through mb-1">Rp {{ number_format($bestPlan->price_normal, 0, ',', '.') }}</div>
+                                            <div class="text-xs text-gray-400 line-through mb-0.5">Rp {{ number_format($bestPlan->price_normal, 0, ',', '.') }}</div>
                                         @endif
-                                        <p class="text-3xl font-bold text-white">Rp {{ number_format($bestPlan->price, 0, ',', '.') }}</p>
+                                        <p class="text-2xl font-extrabold text-gray-900 dark:text-white">Rp {{ number_format($bestPlan->price, 0, ',', '.') }}</p>
                                     @else
-                                        <p class="text-xl font-bold text-white">Belum tersedia</p>
+                                        <p class="text-lg font-bold text-gray-900 dark:text-white">Belum tersedia</p>
                                     @endif
                                 </div>
-                                <a href="/cv" class="bg-blue-600 hover:bg-blue-700 text-white rounded font-bold transition text-sm shadow-md" style="padding: 10px 24px; letter-spacing: 0.5px;">Beli Layanan</a>
+                                <a href="/cv" class="bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition text-sm shadow-md px-6 py-2.5" style="letter-spacing: 0.5px;">Beli Layanan</a>
                             </div>
                         @endif
                     </div>
                 </div>
                 @endforeach
             </div>
-        </div>
-    </div>
         </div>
     </div>
 

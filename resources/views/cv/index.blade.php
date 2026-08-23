@@ -1,28 +1,41 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sistem Pembuat CV Profesional - ToTap Store</title>
+    <link rel="icon" href="{{ asset('images/logo-totap-v2.png') }}" type="image/png">
+    
+    <!-- Early Theme Initialization -->
+    <script>
+        if (localStorage.getItem('totap_theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.style.backgroundColor = '#f8fafc';
+        } else {
+            document.documentElement.classList.add('dark');
+            document.documentElement.style.backgroundColor = '#111827';
+        }
+    </script>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Righteous&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gray-900 text-white font-sans antialiased min-h-screen" x-data="{ showLogin: false, showRegister: false, previewOpen: false, previewSlug: '', scale: 1 }" @open-login.window="showLogin = true" @open-register.window="showRegister = true" :class="{ 'overflow-hidden': showLogin || showRegister || previewOpen }">
+<body class="bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white font-sans antialiased min-h-screen transition-colors duration-200" x-data="{ showLogin: false, showRegister: false, previewOpen: false, previewSlug: '', scale: 1 }" @open-login.window="showLogin = true" @open-register.window="showRegister = true" :class="{ 'overflow-hidden': showLogin || showRegister || previewOpen }">
     
     <!-- Navbar -->
     @include('layouts.navigation')
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <!-- Header -->
         <div class="text-center mb-12">
-            <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-4">
+            <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 mb-4">
                 <i class="fas fa-file-alt"></i> CV & Resume Builder ATS-Friendly
             </span>
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-3 tracking-tight">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">
                 Buat CV Profesionalmu
             </h1>
-            <p class="text-base text-gray-400 max-w-2xl mx-auto">
+            <p class="text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                 Pilih template favorit Anda, isi formulir dengan mudah, dan unduh CV format PDF standar HRD dalam hitungan menit.
             </p>
         </div>
@@ -30,10 +43,10 @@
         <!-- Grid of CV Templates -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @forelse($templates as $template)
-                <div class="bg-gray-800 rounded-2xl border border-gray-700 shadow-xl overflow-hidden flex flex-col group hover:border-indigo-500 transition-all duration-300 transform hover:-translate-y-1">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-xl overflow-hidden flex flex-col group hover:border-indigo-500 transition-all duration-300 transform hover:-translate-y-1">
                     
                     <!-- Preview Container -->
-                    <div class="relative bg-gray-950 overflow-hidden cursor-pointer h-72 flex items-start justify-center border-b border-gray-700 group"
+                    <div class="relative bg-slate-100 dark:bg-gray-950 overflow-hidden cursor-pointer h-72 flex items-start justify-center border-b border-gray-200 dark:border-gray-700 group"
                          @click="previewOpen = true; previewSlug = '{{ $template->slug }}'">
                         
                         <!-- Mini Interactive Iframe / Thumbnail Centered -->
@@ -42,7 +55,7 @@
                         </div>
 
                         <!-- Hover Overlay -->
-                        <div class="absolute inset-0 bg-gray-900/40 group-hover:bg-gray-900/60 transition duration-300 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gray-900/30 group-hover:bg-gray-900/50 transition duration-300 flex items-center justify-center">
                             <span class="px-4 py-2 rounded-full font-bold text-xs bg-indigo-600 text-white shadow-lg shadow-indigo-600/40 opacity-0 group-hover:opacity-100 transition transform scale-90 group-hover:scale-100 flex items-center gap-2">
                                 <i class="fas fa-eye"></i> Lihat Ukuran Penuh
                             </span>
@@ -59,23 +72,23 @@
                     <!-- Template Info & Action -->
                     <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
                         <div>
-                            <h3 class="text-lg font-bold text-white mb-1 group-hover:text-indigo-400 transition">
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition">
                                 {{ $template->name }}
                             </h3>
-                            <p class="text-xs text-gray-400 leading-relaxed line-clamp-2">
+                            <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-2">
                                 {{ $template->description }}
                             </p>
                         </div>
 
-                        <div class="border-t border-gray-700/80 pt-4 flex items-center justify-between">
+                        <div class="border-t border-gray-100 dark:border-gray-700/80 pt-4 flex items-center justify-between">
                             <div>
-                                <div class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Biaya Unduh</div>
+                                <div class="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">Biaya Unduh</div>
                                 <div class="flex items-baseline gap-2">
-                                    <span class="text-lg font-black text-indigo-400">
+                                    <span class="text-lg font-black text-indigo-600 dark:text-indigo-400">
                                         Rp{{ number_format($template->price, 0, ',', '.') }}
                                     </span>
                                     @if($template->price_normal && $template->price_normal > $template->price)
-                                        <span class="text-xs text-gray-500 line-through">
+                                        <span class="text-xs text-gray-400 line-through">
                                             Rp{{ number_format($template->price_normal, 0, ',', '.') }}
                                         </span>
                                     @endif
@@ -95,8 +108,8 @@
                     </div>
                 </div>
             @empty
-                <div class="col-span-full py-16 text-center text-gray-400">
-                    <i class="fas fa-folder-open text-5xl text-gray-600 mb-3"></i>
+                <div class="col-span-full py-16 text-center text-gray-500 dark:text-gray-400">
+                    <i class="fas fa-folder-open text-5xl text-gray-400 dark:text-gray-600 mb-3"></i>
                     <p class="text-lg font-semibold">Sedang memperbarui daftar template CV...</p>
                 </div>
             @endforelse
@@ -107,19 +120,19 @@
     <div x-cloak x-show="previewOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-950/80 backdrop-blur-sm p-4" style="display: none;">
         <div class="absolute inset-0" @click="previewOpen = false"></div>
         
-        <div class="relative bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col w-full max-w-4xl max-h-[92vh]" @click.stop>
+        <div class="relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col w-full max-w-4xl max-h-[92vh]" @click.stop>
             <!-- Modal Header -->
-            <div class="px-6 py-4 border-b border-gray-700 flex justify-between items-center bg-gray-850">
-                <h3 class="text-white font-bold text-base flex items-center gap-2">
-                    <i class="fas fa-eye text-indigo-400"></i> Preview Template CV (Ukuran Penuh)
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-850">
+                <h3 class="text-gray-900 dark:text-white font-bold text-base flex items-center gap-2">
+                    <i class="fas fa-eye text-indigo-600 dark:text-indigo-400"></i> Preview Template CV (Ukuran Penuh)
                 </h3>
-                <button @click="previewOpen = false" class="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-gray-700 transition">
+                <button @click="previewOpen = false" class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white p-1 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition">
                     <i class="fas fa-times text-lg"></i>
                 </button>
             </div>
             
             <!-- Modal Body (Iframe) -->
-            <div class="flex-1 bg-gray-950 overflow-y-auto flex justify-center p-4 sm:p-6">
+            <div class="flex-1 bg-slate-100 dark:bg-gray-950 overflow-y-auto flex justify-center p-4 sm:p-6">
                 <div class="w-full flex justify-center" x-init="
                     $watch('previewOpen', v => {
                         if (v) scale = window.innerWidth < 850 ? Math.min(0.9, (window.innerWidth - 64) / 794) : 1;
@@ -136,8 +149,8 @@
             </div>
             
             <!-- Modal Footer -->
-            <div class="px-6 py-4 border-t border-gray-700 bg-gray-850 flex items-center justify-between">
-                <button @click="previewOpen = false" class="px-4 py-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white bg-gray-700 hover:bg-gray-600 transition">
+            <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-850 flex items-center justify-between">
+                <button @click="previewOpen = false" class="px-4 py-2 rounded-xl text-xs font-bold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
                     Tutup Preview
                 </button>
                 @guest
