@@ -25,6 +25,20 @@
 
     <div class="py-12 bg-gray-50 dark:bg-gray-900 min-h-screen">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+            @if(session('error'))
+                <div class="bg-red-500/20 border border-red-500 text-red-200 p-4 rounded-xl mb-6 shadow-md flex items-center gap-3">
+                    <svg class="w-6 h-6 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <div>
+                        <strong class="font-bold">Gagal: </strong> {{ session('error') }}
+                    </div>
+                </div>
+            @endif
+            @if(session('success'))
+                <div class="bg-green-500/20 border border-green-500 text-green-200 p-4 rounded-xl mb-6 shadow-md flex items-center gap-3">
+                    <svg class="w-6 h-6 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                    <div>{{ session('success') }}</div>
+                </div>
+            @endif
             <!-- Panduan Top Up -->
             <div class="bg-gray-800 border-l-4 border-blue-500 rounded-xl p-5 mb-8 shadow-md" data-aos="fade-down">
                 <h3 class="font-bold text-lg mb-3 text-white flex items-center gap-2">

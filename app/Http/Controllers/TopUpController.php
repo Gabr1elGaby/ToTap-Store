@@ -140,6 +140,133 @@ class TopUpController extends Controller
             }
         }
 
+    public function show($slug)
+    {
+        $game = Game::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        
+        $allProducts = $game->products()->where('status', 'available')->orderBy('price_sell')->get();
+
+        $uniqueProducts = collect();
+        $seenKeys = [];
+
+        foreach ($allProducts as $product) {
+            $name = strtolower(trim($product->name));
+            
+            // 1. FILTERING STRICT: Hapus produk Skin, Charisma, dan NON-IDN (Global/Luar Negeri)
+            if (
+                str_contains($name, 'skin') || 
+                str_contains($name, 'charisma') || 
+                str_contains($name, 'p.ace') || 
+                str_contains($name, 'champion') || 
+                str_contains($name, 'lightborn') || 
+                str_contains($name, 'epic') ||
+                str_contains($name, 'global') ||
+                str_contains($name, 'brazil') ||
+                str_contains($name, 'br') || // hati-hati br bisa match "bronze", but usually they use (BR)
+                str_contains($name, 'my') ||
+                str_contains($name, 'malaysia') ||
+                str_contains($name, 'ph') ||
+                str_contains($name, 'philippines')
+            ) {
+                // Jangan buang kalau "bundle" atau kata lain yang ngandung br/my secara kebetulan
+                // Lebih aman kita cek dengan spasi atau kurung
+                if (preg_match('/\b(global|brazil|br|my|malaysia|ph|philippines|skin|charisma|p\.ace|champion|lightborn|epic)\b/i', $name)) {
+                    continue;
+                }
+            }
+            
+            // Hilangkan titik (.) yang digunakan sebagai pemisah ribuan agar 1.446 terbaca 1446
+            $nameForMath = str_replace('.', '', $name);
+
+            // 2. CEK KATEGORI PASS / MEMBER / BUNDLE
+            $isPass = (str_contains($name, 'pass') || str_contains($name, 'weekly') || str_contains($name, 'starlight') || str_contains($name, 'twilight') || str_contains($name, 'member') || str_contains($name, 'bundle'));
+            
+            $uniqueKey = $name;
+            $qty = 0; // Inisialisasi variabel jumlah
+
+            if ($isPass) {
+                $uniqueKey = preg_replace('/[^a-z0-9]/', '', $name);
+                // Untuk pass, coba cari angka jika ada
+                if (preg_match('/^(\d+)/', $nameForMath, $m)) {
+                    $qty = (int)$m[1];
+                }
+            } else {
+                // UNTUK DIAMOND: Ekstrak jumlah total diamond dengan pintar
+                if (preg_match('/^(\d+)\s*\+\s*(\d+)\s*diamond/i', $nameForMath, $m)) {
+                    $qty = (int)$m[1] + (int)$m[2]; 
+                } 
+                elseif (preg_match('/^(\d+)\s*diamond/i', $nameForMath, $m)) {
+                    $qty = (int)$m[1]; 
+                }
+                elseif (preg_match('/(\d+)\s*\+\s*(\d+)/', $nameForMath, $m)) {
+                    $qty = (int)$m[1] + (int)$m[2];
+                }
+                elseif (preg_match('/(\d+)/', $nameForMath, $m)) {
+                    $qty = (int)$m[1];
+                }
+
+                if ($qty > 0) {
+                    $uniqueKey = 'qty_' . $qty; 
+                } else {
+                    $uniqueKey = preg_replace('/[^a-z0-9]/', '', $name);
+                }
+            }
+            
+            $product->_qty = $qty;
+            
+            // Buat nama pendek yang rapi (Hapus tulisan bonus dalam kurung agar rapi di HP)
+            $shortName = $product->name;
+            $shortName = preg_replace('/\(.*?\)/', '', $shortName); // Hapus semua dalam kurung
+            $shortName = str_ireplace('Diamonds', 'DM', $shortName); // Ubah Diamonds jadi DM biar makin pendek
+            $shortName = str_ireplace('Diamond', 'DM', $shortName);
+            $shortName = str_ireplace('Bonus', '', $shortName);
+            $shortName = str_ireplace('First Top Up', '', $shortName);
+            $shortName = preg_replace('/\s+\+\s+/', ' ', $shortName); // Hapus spasi + spasi
+            // Jika nama hasil regex kosong, pakai qty saja
+            if (trim($shortName) == '' || trim($shortName) == 'DM' || trim($shortName) == '+') {
+                $shortName = $qty . ' DM';
+            }
+            $product->_short_name = trim($shortName);
+
+            // 3. DEDUPLIKASI: Simpan hanya versi termurah
+            if (!isset($seenKeys[$uniqueKey])) {
+                $seenKeys[$uniqueKey] = true;
+                $uniqueProducts->push($product);
+            }
+        }
+
+        // 4. PENGELOMPOKAN KE KATEGORI (Universal untuk Semua Game)
+        $categories = [
+            'Pass & Member' => collect(),  // Battle Pass, Starlight, Weekly, Member
+            'Item & Lainnya' => collect(), // Name Change, Squad, dll
+            'Mata Uang Game' => collect(), // Diamonds, Robux, Points, Cash
+        ];
+
+        foreach ($uniqueProducts as $product) {
+            $name = strtolower($product->name);
+            
+            if (str_contains($name, 'weekly') || str_contains($name, 'pass') || str_contains($name, 'starlight') || str_contains($name, 'member') || str_contains($name, 'battle') || str_contains($name, 'subscription')) {
+                $categories['Pass & Member']->push($product);
+            } elseif (str_contains($name, 'name') || str_contains($name, 'nama') || str_contains($name, 'squad') || str_contains($name, 'twilight') || str_contains($name, 'crystal') || str_contains($name, 'ticket') || str_contains($name, 'token') || str_contains($name, 'gift card')) {
+                $categories['Item & Lainnya']->push($product);
+            } else {
+                $categories['Mata Uang Game']->push($product);
+            }
+        }
+
+        // Urutkan produk di dalam kategori berdasarkan jumlah (_qty) terkecil ke terbesar!
+        $finalCategories = [];
+        foreach ($categories as $catName => $items) {
+            if ($items->isNotEmpty()) {
+                $finalCategories[$catName] = $items->sort(function ($a, $b) {
+                    if ($a->_qty == $b->_qty) {
+                        return $a->price_sell <=> $b->price_sell;
+                    }
+                    return $a->_qty <=> $b->_qty;
+                })->values(); // Reset index
+            }
+        }
+
         return view('topup.show', [
             'game' => $game,
             'categories' => $finalCategories
@@ -178,8 +305,9 @@ class TopUpController extends Controller
         ]);
         
         // Konfigurasi Midtrans
-        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
-        \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+        \Midtrans\Config::$serverKey = config('services.midtrans.server_key', env('MIDTRANS_SERVER_KEY', 'Mid-server-ckZHwiXrG6K0f-NXv3ykujHi'));
+        \Midtrans\Config::$clientKey = config('services.midtrans.client_key', env('MIDTRANS_CLIENT_KEY', 'Mid-client-j5_lQIPsu4FpDtlk'));
+        \Midtrans\Config::$isProduction = config('services.midtrans.is_production', env('MIDTRANS_IS_PRODUCTION', false));
         \Midtrans\Config::$isSanitized = true;
         \Midtrans\Config::$is3ds = true;
         
@@ -206,11 +334,11 @@ class TopUpController extends Controller
             ],
             'customer_details' => [
                 'first_name' => $request->player_id,
-                'email' => 'customer@totap.com', // Opsional, bisa minta user email nanti
+                'email' => 'customer@totap.com',
             ]
         ];
         
-                try {
+        try {
             // GUNAKAN CORE API (Native QRIS / VA)
             if ($request->payment_method === 'qris') {
                 $coreParams = [
@@ -267,7 +395,7 @@ class TopUpController extends Controller
                 $snapData = json_encode(['type' => 'va', 'bank' => strtoupper($bank), 'va_number' => $vaNumber]);
                 $transaction->update(['snap_token' => $snapData]);
             } else {
-                // Fallback to snap if needed, but we don't need it.
+                // Fallback to snap if needed
                 $snapToken = \Midtrans\Snap::getSnapToken($params);
                 $transaction->update(['snap_token' => $snapToken]);
             }
@@ -276,6 +404,7 @@ class TopUpController extends Controller
             return redirect()->route('topup.checkout.show', $transaction->id);
             
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Midtrans TopUp Error: ' . $e->getMessage());
             return back()->with('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
         }
     }

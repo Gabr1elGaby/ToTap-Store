@@ -41,4 +41,11 @@ return [
         'base_url' => env('VIP_RESELLER_BASE_URL', 'https://vip-reseller.co.id/api'),
     ],
 
+    'midtrans' => [
+        'merchant_id' => env('MIDTRANS_MERCHANT_ID', 'M720440362'),
+        'client_key' => env('MIDTRANS_CLIENT_KEY', 'Mid-client-j5_lQIPsu4FpDtlk'),
+        'server_key' => env('MIDTRANS_SERVER_KEY', 'Mid-server-ckZHwiXrG6K0f-NXv3ykujHi'),
+        'is_production' => env('MIDTRANS_IS_PRODUCTION', false),
+    ],
+
 ];
