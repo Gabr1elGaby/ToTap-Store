@@ -13,7 +13,7 @@ class GameController extends Controller
     public function index()
     {
         $games = Game::withCount('products')->latest()->paginate(15);
-        $vipBalance = (float) \App\Models\Setting::get('vip_reseller_balance', 100000);
+        $vipBalance = (float) \App\Models\Setting::get('vip_reseller_balance', 0);
         return view('admin.games.index', compact('games', 'vipBalance'));
     }
 

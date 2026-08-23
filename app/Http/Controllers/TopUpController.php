@@ -33,7 +33,7 @@ class TopUpController extends Controller
                 Log::warning("Gagal cek saldo VIP Reseller API: " . $e->getMessage());
             }
             
-            $dbSetting = \App\Models\Setting::get('vip_reseller_balance', 100000);
+            $dbSetting = \App\Models\Setting::get('vip_reseller_balance', 0);
             return (float) $dbSetting;
         });
 
