@@ -1,34 +1,144 @@
 <x-app-layout>
-    <div class="py-12 bg-gray-900 min-h-screen text-gray-100">
+    <div class="py-12 bg-gray-900 min-h-screen text-gray-100" x-data="{ activeTab: 'all' }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
             
             <!-- Header -->
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-xl">
                 <div>
                     <h1 class="text-2xl font-black text-white flex items-center gap-3">
-                        <i class="fas fa-history text-indigo-500"></i> Riwayat Transaksi
+                        <i class="fas fa-history text-indigo-500"></i> Riwayat Transaksi Anda
                     </h1>
-                    <p class="text-sm text-gray-400 mt-1">Lihat seluruh riwayat pembelian top up game dan produk digital Anda.</p>
+                    <p class="text-sm text-gray-400 mt-1">Pantau seluruh riwayat pembelian lisensi software, sistem aplikasi, dan top up game Anda.</p>
                 </div>
-                <a href="{{ route('topup.index') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition shadow-lg shadow-indigo-600/30">
-                    <i class="fas fa-gamepad"></i> Top Up Lagi
-                </a>
+                <div class="flex items-center gap-3">
+                    <a href="/software" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 transition shadow-lg shadow-blue-600/30">
+                        <i class="fas fa-desktop"></i> Beli Software
+                    </a>
+                    <a href="{{ route('topup.index') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition shadow-lg shadow-indigo-600/30">
+                        <i class="fas fa-gamepad"></i> Top Up Game
+                    </a>
+                </div>
             </div>
 
-            <!-- Top Up Game Transactions -->
-            <div class="bg-gray-800 rounded-2xl border border-gray-700 shadow-xl overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-700 flex items-center justify-between">
+            <!-- Tab Buttons -->
+            <div class="flex items-center gap-2 bg-gray-800 p-1.5 rounded-2xl border border-gray-700 w-fit">
+                <button @click="activeTab = 'all'" 
+                        :class="activeTab === 'all' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'"
+                        class="px-5 py-2.5 rounded-xl font-bold text-sm transition">
+                    Semua Transaksi
+                </button>
+                <button @click="activeTab = 'software'" 
+                        :class="activeTab === 'software' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'"
+                        class="px-5 py-2.5 rounded-xl font-bold text-sm transition flex items-center gap-2">
+                    <i class="fas fa-desktop text-blue-400"></i> Pembelian Sistem & Software ({{ $orders->total() }})
+                </button>
+                <button @click="activeTab = 'topup'" 
+                        :class="activeTab === 'topup' ? 'bg-purple-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'"
+                        class="px-5 py-2.5 rounded-xl font-bold text-sm transition flex items-center gap-2">
+                    <i class="fas fa-gamepad text-purple-400"></i> Top Up Game ({{ $topups->total() }})
+                </button>
+            </div>
+
+            <!-- Section 1: Pembelian Sistem / Software / POS -->
+            <div x-show="activeTab === 'all' || activeTab === 'software'" class="bg-gray-800 rounded-2xl border border-gray-700 shadow-xl overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-700 flex items-center justify-between bg-gray-850">
                     <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                        <i class="fas fa-bolt text-yellow-400"></i> Top Up Game
+                        <i class="fas fa-desktop text-blue-400"></i> Pembelian Sistem & Lisensi Software
                     </h2>
-                    <span class="text-xs text-gray-400 font-medium">Total: {{ $topups->total() }} Transaksi</span>
+                    <span class="text-xs text-blue-400 font-bold bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
+                        {{ $orders->total() }} Pesanan
+                    </span>
+                </div>
+
+                @if($orders->isEmpty())
+                    <div class="p-10 text-center text-gray-400">
+                        <i class="fas fa-laptop-code text-4xl mb-3 text-gray-600"></i>
+                        <p class="text-sm font-semibold">Belum ada pembelian sistem software atau lisensi POS.</p>
+                        <a href="/software" class="text-xs text-blue-400 hover:underline mt-1 inline-block">Lihat Katalog Software Kami &rarr;</a>
+                    </div>
+                @else
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-900/50 text-gray-400 text-xs uppercase tracking-wider border-b border-gray-700">
+                                    <th class="py-3.5 px-6">No. Order</th>
+                                    <th class="py-3.5 px-6">Sistem / Software</th>
+                                    <th class="py-3.5 px-6">Paket Lisensi</th>
+                                    <th class="py-3.5 px-6">Total Biaya</th>
+                                    <th class="py-3.5 px-6">Status Bayar</th>
+                                    <th class="py-3.5 px-6">Tanggal</th>
+                                    <th class="py-3.5 px-6 text-center">Aksi / Invoice</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-700 text-sm">
+                                @foreach($orders as $ord)
+                                    <tr class="hover:bg-gray-750 transition">
+                                        <td class="py-4 px-6 font-mono text-xs text-blue-400 font-bold">
+                                            {{ $ord->order_number }}
+                                        </td>
+                                        <td class="py-4 px-6">
+                                            <div class="font-bold text-white flex items-center gap-2">
+                                                <i class="fas fa-box text-blue-400"></i> {{ $ord->product->name ?? 'Software' }}
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-6">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-gray-700 text-gray-200">
+                                                {{ $ord->plan->name ?? 'Standard Plan' }}
+                                            </span>
+                                        </td>
+                                        <td class="py-4 px-6 font-bold text-white">
+                                            Rp{{ number_format($ord->amount, 0, ',', '.') }}
+                                        </td>
+                                        <td class="py-4 px-6">
+                                            @if($ord->payment_status === 'PAID')
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/20 text-green-400 border border-green-500/30">
+                                                    <i class="fas fa-check-circle text-[10px]"></i> Lunas / Aktif
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                                                    <i class="fas fa-clock text-[10px]"></i> {{ $ord->payment_status }}
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="py-4 px-6 text-xs text-gray-400 whitespace-nowrap">
+                                            {{ $ord->created_at->format('d M Y, H:i') }}
+                                        </td>
+                                        <td class="py-4 px-6 text-center whitespace-nowrap">
+                                            <div class="flex items-center justify-center gap-2">
+                                                <a href="{{ route('transactions.invoice', $ord->order_number) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 transition shadow-sm">
+                                                    <i class="fas fa-file-invoice"></i> Invoice
+                                                </a>
+                                                @if($ord->payment_status === 'PAID' && $ord->product && $ord->product->slug === 'totap-pos')
+                                                    <a href="https://totap-kasir-production.up.railway.app" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold text-green-400 bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 transition shadow-sm">
+                                                        <i class="fas fa-external-link-alt"></i> Buka POS
+                                                    </a>
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+            </div>
+
+            <!-- Section 2: Top Up Game Transactions -->
+            <div x-show="activeTab === 'all' || activeTab === 'topup'" class="bg-gray-800 rounded-2xl border border-gray-700 shadow-xl overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-700 flex items-center justify-between bg-gray-850">
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fas fa-gamepad text-purple-400"></i> Transaksi Top Up Game
+                    </h2>
+                    <span class="text-xs text-purple-400 font-bold bg-purple-500/10 px-3 py-1 rounded-full border border-purple-500/20">
+                        {{ $topups->total() }} Transaksi
+                    </span>
                 </div>
 
                 @if($topups->isEmpty())
-                    <div class="p-12 text-center text-gray-400">
-                        <i class="fas fa-receipt text-5xl mb-3 text-gray-600"></i>
-                        <p class="text-base font-semibold">Belum ada riwayat top up game.</p>
-                        <p class="text-xs text-gray-500 mt-1">Lakukan pembelian top up pertama Anda sekarang.</p>
+                    <div class="p-10 text-center text-gray-400">
+                        <i class="fas fa-receipt text-4xl mb-3 text-gray-600"></i>
+                        <p class="text-sm font-semibold">Belum ada riwayat top up game.</p>
+                        <a href="{{ route('topup.index') }}" class="text-xs text-indigo-400 hover:underline mt-1 inline-block">Top Up Sekarang &rarr;</a>
                     </div>
                 @else
                     <div class="overflow-x-auto">
@@ -85,7 +195,7 @@
                                         <td class="py-4 px-6 text-xs text-gray-400 whitespace-nowrap">
                                             {{ $trx->created_at->format('d M Y, H:i') }}
                                         </td>
-                                        <td class="py-4 px-6 text-center">
+                                        <td class="py-4 px-6 text-center whitespace-nowrap">
                                             <a href="{{ route('transactions.invoice', $trx->id) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-indigo-400 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 transition">
                                                 <i class="fas fa-file-invoice"></i> Invoice
                                             </a>
@@ -102,68 +212,6 @@
                     @endif
                 @endif
             </div>
-
-            <!-- Software / License Orders (Jika Ada) -->
-            @if($orders->isNotEmpty())
-            <div class="bg-gray-800 rounded-2xl border border-gray-700 shadow-xl overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-700 flex items-center justify-between">
-                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                        <i class="fas fa-desktop text-blue-400"></i> Langganan Software / Lisensi POS
-                    </h2>
-                    <span class="text-xs text-gray-400 font-medium">Total: {{ $orders->total() }} Pesanan</span>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-gray-900/50 text-gray-400 text-xs uppercase tracking-wider border-b border-gray-700">
-                                <th class="py-3.5 px-6">No. Order</th>
-                                <th class="py-3.5 px-6">Software / Paket</th>
-                                <th class="py-3.5 px-6">Total</th>
-                                <th class="py-3.5 px-6">Status Bayar</th>
-                                <th class="py-3.5 px-6">Tanggal</th>
-                                <th class="py-3.5 px-6 text-center">Invoice</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-700 text-sm">
-                            @foreach($orders as $ord)
-                                <tr class="hover:bg-gray-750 transition">
-                                    <td class="py-4 px-6 font-mono text-xs text-blue-400 font-bold">
-                                        {{ $ord->order_number }}
-                                    </td>
-                                    <td class="py-4 px-6">
-                                        <div class="font-bold text-white">{{ $ord->product->name ?? 'Software' }}</div>
-                                        <div class="text-xs text-gray-400">{{ $ord->plan->name ?? '-' }}</div>
-                                    </td>
-                                    <td class="py-4 px-6 font-bold text-white">
-                                        Rp{{ number_format($ord->amount, 0, ',', '.') }}
-                                    </td>
-                                    <td class="py-4 px-6">
-                                        @if($ord->payment_status === 'PAID')
-                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/20 text-green-400 border border-green-500/30">
-                                                <i class="fas fa-check-circle text-[10px]"></i> Lunas
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                                                <i class="fas fa-clock text-[10px]"></i> {{ $ord->payment_status }}
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td class="py-4 px-6 text-xs text-gray-400 whitespace-nowrap">
-                                        {{ $ord->created_at->format('d M Y, H:i') }}
-                                    </td>
-                                    <td class="py-4 px-6 text-center">
-                                        <a href="{{ route('transactions.invoice', $ord->order_number) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 transition">
-                                            <i class="fas fa-file-invoice"></i> Invoice
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            @endif
 
         </div>
     </div>
