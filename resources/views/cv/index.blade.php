@@ -33,12 +33,12 @@
                 <div class="bg-gray-800 rounded-2xl border border-gray-700 shadow-xl overflow-hidden flex flex-col group hover:border-indigo-500 transition-all duration-300 transform hover:-translate-y-1">
                     
                     <!-- Preview Container -->
-                    <div class="relative bg-gray-950 overflow-hidden cursor-pointer h-72 flex items-center justify-center border-b border-gray-700 group"
+                    <div class="relative bg-gray-950 overflow-hidden cursor-pointer h-72 flex items-start justify-center border-b border-gray-700 group"
                          @click="previewOpen = true; previewSlug = '{{ $template->slug }}'">
                         
-                        <!-- Mini Interactive Iframe / Thumbnail -->
-                        <div class="w-full h-full transform scale-[0.45] origin-top pointer-events-none opacity-90 group-hover:opacity-100 group-hover:scale-[0.48] transition duration-300">
-                            <iframe src="{{ route('cv.previewExample', $template->slug) }}" class="w-[794px] h-[1123px] bg-white border-0"></iframe>
+                        <!-- Mini Interactive Iframe / Thumbnail Centered -->
+                        <div class="w-[794px] h-[1123px] transform scale-[0.44] origin-top pointer-events-none opacity-90 group-hover:opacity-100 group-hover:scale-[0.46] transition duration-300 shadow-2xl bg-white flex-shrink-0 mt-3 rounded-t-lg overflow-hidden">
+                            <iframe src="{{ route('cv.previewExample', $template->slug) }}" class="w-full h-full border-0 pointer-events-none"></iframe>
                         </div>
 
                         <!-- Hover Overlay -->
@@ -54,10 +54,6 @@
                                 Diskon {{ round((($template->price_normal - $template->price) / $template->price_normal) * 100) }}%
                             </div>
                         @endif
-
-                        <div class="absolute top-3 right-3 bg-gray-900/80 backdrop-blur-sm text-yellow-400 text-xs font-bold px-2.5 py-1 rounded-lg border border-gray-700 flex items-center gap-1 shadow">
-                            <i class="fas fa-star text-[10px]"></i> 4.9
-                        </div>
                     </div>
 
                     <!-- Template Info & Action -->
