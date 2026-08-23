@@ -316,39 +316,16 @@ class TopUpController extends Controller
                 return response()->json($response);
             }
             
-            $msg = strtolower($response['message'] ?? '');
-            
-            // 2. Jika error berasal dari IP Whitelist / Server Provider VIP Reseller belum whitelisted
-            // (Bukan salah ID pembeli, jadi loloskan langsung agar pembeli yang benar bisa lanjut bayar)
-            if (
-                str_contains($msg, 'tidak diizinkan') || 
-                str_contains($msg, 'not permitted') || 
-                str_contains($msg, 'ip ') || 
-                str_contains($msg, 'permintaan tidak terdeteksi') || 
-                str_contains($msg, 'maintenance') || 
-                str_contains($msg, 'gangguan') ||
-                str_contains($msg, 'timeout') || 
-                empty($response)
-            ) {
-                return response()->json([
-                    'result' => true,
-                    'data' => $target1,
-                    'bypass' => true
-                ]);
-            }
-            
-            // 3. Jika murni ID salah dari database game
+            // 2. Jika gagal atau ID salah, tolak secara tegas (tanpa bypass)
             return response()->json([
                 'result' => false,
-                'message' => $response['message'] ?? 'Player ID atau Tagline tidak ditemukan. Pastikan data yang dimasukkan benar.'
+                'message' => $response['message'] ?? 'Player ID atau Tagline tidak valid atau tidak ditemukan.'
             ]);
             
         } catch (\Exception $e) {
-            // Jika ada exception / timeout jaringan server, tetap loloskan agar pembeli tidak terhambat
             return response()->json([
-                'result' => true,
-                'data' => $request->player_id,
-                'bypass' => true
+                'result' => false,
+                'message' => 'Gangguan koneksi server: ' . $e->getMessage()
             ]);
         }
     }
