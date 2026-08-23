@@ -262,6 +262,12 @@
         form.addEventListener('submit', function(e) {
             e.preventDefault(); // Cegah submit langsung
             
+            // JIKA USER BELUM LOGIN: TAMPILKAN MODAL LOGIN SAAT MAU MEMBAYAR
+            @guest
+                window.dispatchEvent(new CustomEvent('open-login'));
+                return;
+            @endguest
+            
             const formData = new FormData(form);
             if (!formData.get('product_id')) {
                 Swal.fire({ icon: 'warning', title: 'Oops...', text: 'Pilih nominal top up terlebih dahulu!' });

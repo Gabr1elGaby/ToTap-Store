@@ -20,11 +20,7 @@
                         $maxDiscount = floor((($promoProduct->price_normal - $promoProduct->price_sell) / $promoProduct->price_normal) * 100);
                     }
                 @endphp
-                @guest
-                <a href="#" @click.prevent="window.dispatchEvent(new CustomEvent('open-login'))" class="relative block bg-gray-800 border border-gray-700 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
-                @else
                 <a href="{{ route('topup.show', $game->slug) }}" class="relative block bg-gray-800 border border-gray-700 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
-                @endauth
                     @if($maxDiscount > 0)
                         <!-- BADGE PROMO RIBBON -->
                         <div class="absolute top-5 -right-10 w-40 transform rotate-45 bg-gradient-to-r from-red-600 to-rose-500 text-white text-[10px] font-extrabold py-1 text-center shadow-md z-20 animate-pulse tracking-wider">
