@@ -79,6 +79,10 @@
                             <i class="fas fa-user mr-2 text-gray-400"></i> {{ __('Profile') }}
                         </x-dropdown-link>
 
+                        <x-dropdown-link :href="route('transactions.history')">
+                            <i class="fas fa-receipt mr-2 text-indigo-400"></i> {{ __('Riwayat Transaksi & Invoice') }}
+                        </x-dropdown-link>
+
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -148,7 +152,7 @@
                 </form>
             </div>
         @else
-            <!-- Khusus Customer: Hanya Profile dan Log Out -->
+            <!-- Khusus Customer: Profile, Riwayat Transaksi & Invoice, dan Log Out -->
             @auth
             <div class="pt-3 pb-2 space-y-1">
                 <div class="px-4 mb-3">
@@ -160,6 +164,10 @@
 
                 <x-responsive-nav-link :href="route('profile.edit')">
                     <i class="fas fa-user mr-2 text-gray-400"></i> {{ __('Profile') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('transactions.history')">
+                    <i class="fas fa-receipt mr-2 text-indigo-400"></i> {{ __('Riwayat Transaksi & Invoice') }}
                 </x-responsive-nav-link>
 
                 <form method="POST" action="{{ route('logout') }}">
