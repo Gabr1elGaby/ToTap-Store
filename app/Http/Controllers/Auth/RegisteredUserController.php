@@ -54,22 +54,29 @@ class RegisteredUserController extends Controller
         // Simpan OTP
         \Illuminate\Support\Facades\Cache::put('otp_' . $phone, $otp, now()->addMinutes(10));
 
-        // Panggil server WhatsApp Bot (Node.js) untuk mengirim pesan
+        // Panggil WhatsApp Gateway (Fonnte) untuk mengirim pesan OTP
         try {
-            $waResponse = \Illuminate\Support\Facades\Http::timeout(20)->post('http://127.0.0.1:3001/send-otp', [
-                'phone' => $phone,
-                'otp' => $otp
+            $fonnteToken = config('services.fonnte.token', env('FONNTE_TOKEN', 'gdHv7cHH3YfhUA7E5iCM'));
+            $message = "*[ ToTap Store - Verifikasi WhatsApp ]*\n\nKode OTP pendaftaran akun Anda adalah:\n\n👉 *{$otp}*\n\nKode ini berlaku selama 10 menit. Jangan berikan kode ini kepada siapa pun demi keamanan akun Anda.\n\nTerima kasih telah bergabung di ToTap Store.";
+            
+            $waResponse = \Illuminate\Support\Facades\Http::timeout(15)->withHeaders([
+                'Authorization' => $fonnteToken,
+            ])->post('https://api.fonnte.com/send', [
+                'target' => $phone,
+                'message' => $message,
+                'countryCode' => '62',
             ]);
             
-            if (!$waResponse->successful()) {
-                $errorMsg = $waResponse->json('error') ?? 'Gagal mengirim pesan WhatsApp. Pastikan nomor HP aktif.';
+            $resData = $waResponse->json();
+            if (!$waResponse->successful() || (isset($resData['status']) && $resData['status'] === false)) {
+                $errorReason = $resData['reason'] ?? ($resData['message'] ?? 'Gagal mengirim pesan WhatsApp. Pastikan nomor HP aktif dan terdaftar di WhatsApp.');
                 return response()->json([
-                    'errors' => ['phone_number' => [$errorMsg]]
+                    'errors' => ['phone_number' => [$errorReason]]
                 ], 422);
             }
         } catch (\Exception $e) {
             return response()->json([
-                'errors' => ['phone_number' => ['Gagal terhubung ke Server WhatsApp Bot. Pastikan server bot sedang berjalan.']]
+                'errors' => ['phone_number' => ['Gangguan pengiriman WhatsApp: ' . $e->getMessage()]]
             ], 422);
         }
 
