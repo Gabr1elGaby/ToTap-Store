@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Models\Product;
 use Illuminate\Support\Str;
 
@@ -27,14 +26,14 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'features' => 'nullable|string',
             'demo_url' => 'nullable|url',
-            'is_active' => 'boolean',
         ]);
         
+        $data['is_active'] = $request->has('is_active');
         $data['slug'] = Str::slug($data['name']);
         
         Product::create($data);
 
-        return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
+        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dibuat.');
     }
 
     public function edit(Product $product)
@@ -49,19 +48,19 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'features' => 'nullable|string',
             'demo_url' => 'nullable|url',
-            'is_active' => 'boolean',
         ]);
         
+        $data['is_active'] = $request->has('is_active');
         $data['slug'] = Str::slug($data['name']);
         
         $product->update($data);
 
-        return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
+        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui.');
     }
 
     public function destroy(Product $product)
     {
         $product->delete();
-        return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
+        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dihapus.');
     }
 }

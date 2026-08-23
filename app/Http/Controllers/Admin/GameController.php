@@ -12,7 +12,7 @@ class GameController extends Controller
 {
     public function index()
     {
-        $games = Game::latest()->get();
+        $games = Game::withCount('products')->latest()->paginate(15);
         return view('admin.games.index', compact('games'));
     }
 
@@ -30,14 +30,12 @@ class GameController extends Controller
             'thumbnail' => 'nullable|mimes:jpeg,png,jpg,gif,webp,svg,avif|max:5120',
             'cover_image' => 'nullable|mimes:jpeg,png,jpg,gif,webp,svg,avif|max:5120',
             'guide_text' => 'nullable|string',
-            'is_active' => 'boolean',
-            'requires_zone_id' => 'boolean',
-            'target_field_1' => 'nullable|string',
-            'target_field_2' => 'nullable|string',
             'target_field_1' => 'nullable|string',
             'target_field_2' => 'nullable|string',
         ]);
 
+        $validated['is_active'] = $request->has('is_active');
+        $validated['requires_zone_id'] = $request->has('requires_zone_id');
         $validated['slug'] = Str::slug($validated['name']);
 
         if ($request->hasFile('thumbnail')) {
@@ -69,13 +67,12 @@ class GameController extends Controller
             'thumbnail' => 'nullable|mimes:jpeg,png,jpg,gif,webp,svg,avif|max:5120',
             'cover_image' => 'nullable|mimes:jpeg,png,jpg,gif,webp,svg,avif|max:5120',
             'guide_text' => 'nullable|string',
-            'is_active' => 'boolean',
-            'requires_zone_id' => 'boolean',
-            'target_field_1' => 'nullable|string',
-            'target_field_2' => 'nullable|string',
             'target_field_1' => 'nullable|string',
             'target_field_2' => 'nullable|string',
         ]);
+
+        $validated['is_active'] = $request->has('is_active');
+        $validated['requires_zone_id'] = $request->has('requires_zone_id');
 
         if ($request->name !== $game->name) {
             $validated['slug'] = Str::slug($validated['name']);
