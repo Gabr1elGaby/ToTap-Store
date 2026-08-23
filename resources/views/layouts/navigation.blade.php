@@ -23,39 +23,29 @@
                     </a>
                 </div>
 
-                <!-- Desktop Navigation Links -->
+                <!-- Desktop Navigation Links (Super Admin Only) -->
+                @if(Auth::check() && Auth::user()->role === 'superadmin')
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    @if(Auth::check() && Auth::user()->role === 'superadmin')
-                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
-                            {{ __('Dashboard') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.*')">
-                            {{ __('Products') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.games.index')" :active="request()->routeIs('admin.games.*')">
-                            {{ __('Top Up Game') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.plans.*')">
-                            {{ __('Plans') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.transactions.index')" :active="request()->routeIs('admin.transactions.*')">
-                            {{ __('Transaksi') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">
-                            <span class="mr-1 text-amber-400">⭐</span> {{ __('Ulasan') }}
-                        </x-nav-link>
-                    @else
-                        <x-nav-link href="/">
-                            {{ __('Beranda') }}
-                        </x-nav-link>
-                        <x-nav-link href="/software" :active="request()->is('software*')">
-                            {{ __('Software & POS') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('topup.index')" :active="request()->routeIs('topup.*')">
-                            {{ __('Top Up Game') }}
-                        </x-nav-link>
-                    @endif
+                    <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
+                        {{ __('Dashboard') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.*')">
+                        {{ __('Products') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('admin.games.index')" :active="request()->routeIs('admin.games.*')">
+                        {{ __('Top Up Game') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.plans.*')">
+                        {{ __('Plans') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('admin.transactions.index')" :active="request()->routeIs('admin.transactions.*')">
+                        {{ __('Transaksi') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">
+                        <span class="mr-1 text-amber-400">⭐</span> {{ __('Ulasan') }}
+                    </x-nav-link>
                 </div>
+                @endif
             </div>
 
             <!-- Desktop User Dropdown / Login Buttons -->
