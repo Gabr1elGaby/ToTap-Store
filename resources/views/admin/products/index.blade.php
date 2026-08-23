@@ -25,7 +25,7 @@
                             </thead>
                             <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                                 @foreach ($products as $product)
-                                    <tr class="hover:bg-slate-50 dark:hover:bg-gray-750 transition">
+                                    <tr class="hover:bg-slate-100 dark:hover:bg-gray-700/60 transition">
                                         <td class="py-4 px-6 font-bold text-gray-900 dark:text-white">{{ $product->name }}</td>
                                         <td class="py-4 px-6">
                                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold {{ $product->is_active ? 'bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20' : 'bg-gray-500/10 text-gray-600 dark:text-gray-400 border border-gray-500/20' }}">

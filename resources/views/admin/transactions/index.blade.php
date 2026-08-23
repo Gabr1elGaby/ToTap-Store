@@ -65,7 +65,7 @@
                             </thead>
                             <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                                 @foreach($orders as $ord)
-                                    <tr class="hover:bg-slate-50 dark:hover:bg-gray-750 transition">
+                                    <tr class="hover:bg-slate-100 dark:hover:bg-gray-700/60 transition">
                                         <td class="py-4 px-6 font-mono text-xs text-blue-600 dark:text-blue-400 font-bold">
                                             {{ $ord->order_number }}
                                         </td>
@@ -186,7 +186,7 @@
                                 </thead>
                                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                                     @foreach($transactions as $trx)
-                                        <tr class="hover:bg-slate-50 dark:hover:bg-gray-750 transition">
+                                        <tr class="hover:bg-slate-100 dark:hover:bg-gray-700/60 transition">
                                             <td class="py-4 px-6 font-mono text-xs text-indigo-600 dark:text-indigo-400 font-bold">
                                                 {{ $trx->id }}
                                             </td>

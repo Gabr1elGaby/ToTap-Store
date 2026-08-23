@@ -47,9 +47,9 @@
 
             @if(str_contains(strtolower($product->name), 'cv'))
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-2xl border border-gray-200 dark:border-gray-700">
-                <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-slate-50 dark:bg-gray-850">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-slate-50 dark:bg-gray-900/80">
                     <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                        <i class="fas fa-file-alt text-indigo-500"></i> Pengaturan Harga Template CV
+                        <i class="fas fa-file-alt text-indigo-600 dark:text-indigo-400"></i> Pengaturan Harga Template CV
                     </h3>
                 </div>
                 <div class="p-6">
@@ -68,7 +68,7 @@
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                 @foreach($cvTemplates as $t)
-                                <tr class="hover:bg-slate-50 dark:hover:bg-gray-750 transition">
+                                <tr class="hover:bg-slate-100 dark:hover:bg-gray-700/60 transition">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-bold text-gray-900 dark:text-white">{{ $t->name }}</div>
                                         <div class="text-xs text-gray-500 dark:text-gray-400 font-mono">{{ $t->slug }}</div>

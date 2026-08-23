@@ -125,7 +125,7 @@
                         </thead>
                         <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                             @forelse($reviews as $rev)
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-750 transition">
+                                <tr class="hover:bg-slate-100 dark:hover:bg-gray-700/60 transition">
                                     <td class="py-3 px-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
                                         {{ $rev->created_at->format('d M Y, H:i') }}
                                         @if($rev->order_id)
