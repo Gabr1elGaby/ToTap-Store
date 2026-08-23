@@ -114,6 +114,7 @@ Route::middleware(['auth', 'verified', 'role:superadmin'])->prefix('admin')->nam
     Route::post('/customers/{subscription}/revoke', [\App\Http\Controllers\AdminCustomerController::class, 'revokeAccess'])->name('customers.revoke');
 
     // Game Top-Up Management
+    Route::post('games/update-balance', [\App\Http\Controllers\Admin\GameController::class, 'updateBalance'])->name('games.update-balance');
     Route::resource('games', \App\Http\Controllers\Admin\GameController::class);
     Route::get('games/{game}/products/sync', [\App\Http\Controllers\Admin\GameProductController::class, 'syncForm'])->name('games.products.sync');
     Route::post('games/{game}/products/sync', [\App\Http\Controllers\Admin\GameProductController::class, 'syncProcess'])->name('games.products.sync.process');

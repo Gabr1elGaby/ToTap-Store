@@ -25,12 +25,16 @@ class TopUpController extends Controller
                 $vipApi = app(VipResellerService::class);
                 $profile = $vipApi->getProfile();
                 if (isset($profile['result']) && $profile['result'] === true && isset($profile['data']['balance'])) {
-                    return (float) $profile['data']['balance'];
+                    $liveBal = (float) $profile['data']['balance'];
+                    \App\Models\Setting::set('vip_reseller_balance', (string)$liveBal);
+                    return $liveBal;
                 }
             } catch (\Exception $e) {
-                Log::warning("Gagal cek saldo VIP Reseller: " . $e->getMessage());
+                Log::warning("Gagal cek saldo VIP Reseller API: " . $e->getMessage());
             }
-            return null;
+            
+            $dbSetting = \App\Models\Setting::get('vip_reseller_balance', 100000);
+            return (float) $dbSetting;
         });
 
         $allProducts = $game->products()->where('status', 'available')->orderBy('price_sell')->get();

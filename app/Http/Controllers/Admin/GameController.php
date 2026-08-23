@@ -13,7 +13,21 @@ class GameController extends Controller
     public function index()
     {
         $games = Game::withCount('products')->latest()->paginate(15);
-        return view('admin.games.index', compact('games'));
+        $vipBalance = (float) \App\Models\Setting::get('vip_reseller_balance', 100000);
+        return view('admin.games.index', compact('games', 'vipBalance'));
+    }
+
+    public function updateBalance(Request $request)
+    {
+        $request->validate([
+            'balance' => 'required|numeric|min:0'
+        ]);
+
+        \App\Models\Setting::set('vip_reseller_balance', (string)$request->balance);
+        \Illuminate\Support\Facades\Cache::forget('vip_reseller_balance');
+        \Illuminate\Support\Facades\Cache::put('vip_reseller_balance', (float)$request->balance, 60);
+
+        return back()->with('success', 'Batas Saldo VIP Reseller berhasil disimpan: Rp ' . number_format($request->balance, 0, ',', '.') . '. Stok nominal otomatis disesuaikan!');
     }
 
     public function create()
