@@ -49,7 +49,7 @@
         <section class="py-16 bg-slate-50 dark:bg-gray-900 transition-colors duration-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 class="text-3xl font-extrabold text-center text-gray-900 dark:text-white mb-12 tracking-tight">Pilih Paket Anda</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto justify-center">
+                <div class="flex flex-wrap justify-center gap-8 max-w-4xl mx-auto">
                     @forelse ($product->plans as $plan)
                         @php
                               $discountPercent = 0;
@@ -57,7 +57,7 @@
                                   $discountPercent = round((($plan->price_normal - $plan->price) / $plan->price_normal) * 100);
                               }
                           @endphp
-                          <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-8 shadow-sm dark:shadow-md hover:shadow-xl transition-all duration-200 flex flex-col relative overflow-hidden">
+                          <div class="w-full md:w-[calc(50%-1rem)] max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-8 shadow-sm dark:shadow-md hover:shadow-xl transition-all duration-200 flex flex-col relative overflow-hidden">
                               @if($discountPercent > 0)
                               <div class="absolute top-0 right-0 bg-red-600 text-white font-black text-[10px] px-3 py-1 uppercase tracking-wider z-20" style="border-bottom-left-radius: 12px; box-shadow: -2px 2px 5px rgba(0,0,0,0.3);">
                                   Diskon {{ $discountPercent }}%

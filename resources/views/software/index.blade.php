@@ -42,10 +42,10 @@
                 <h3 class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">Solusi Berbasis Lisensi</h3>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div class="flex flex-wrap justify-center gap-8 max-w-4xl mx-auto">
                 @foreach($softwareProducts as $product)
                 <!-- Card -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-md flex flex-col p-8 relative overflow-hidden transition-all duration-200 hover:shadow-xl">
+                <div class="w-full md:w-[calc(50%-1rem)] max-w-md bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-md flex flex-col p-8 relative overflow-hidden transition-all duration-200 hover:shadow-xl">
                     @php
                         $bestPlan = $product->plans->first();
                         $discountPercent = 0;
