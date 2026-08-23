@@ -39,7 +39,7 @@
     }
 </style>
 </head>
-    <body class="antialiased text-white bg-gray-900" x-data="{ showLogin: false, showRegister: false }" @open-login.window="showLogin = true" :class="{ 'overflow-hidden': showLogin || showRegister }">
+    <body class="antialiased text-white bg-gray-900" x-data="{ showLogin: false, showRegister: false }" @open-login.window="showLogin = true" @open-register.window="showRegister = true" :class="{ 'overflow-hidden': showLogin || showRegister }">
         
         <!-- Navbar -->
         @include('layouts.navigation')

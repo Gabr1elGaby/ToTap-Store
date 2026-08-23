@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">        <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
     </head>
-    <body class="font-sans antialiased text-white bg-gray-900" x-data="{ showLogin: {{ $errors->has('email') && !old('name') ? 'true' : 'false' }}, showRegister: {{ $errors->any() && old('name') ? 'true' : 'false' }} }" :class="{ 'overflow-hidden': showLogin || showRegister }">
+    <body class="font-sans antialiased text-white bg-gray-900" x-data="{ showLogin: false, showRegister: false }" @open-login.window="showLogin = true" @open-register.window="showRegister = true" :class="{ 'overflow-hidden': showLogin || showRegister }">
         <!-- Navbar -->
         @include('layouts.navigation')
 

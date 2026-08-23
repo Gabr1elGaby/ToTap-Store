@@ -27,7 +27,7 @@
         }
     </style>
 </head>
-    <body class="font-sans antialiased text-white bg-gray-900" x-data="{ showLogin: false, showRegister: false }" @open-login.window="showLogin = true" :class="{ 'overflow-hidden': showLogin || showRegister }">
+    <body class="font-sans antialiased text-white bg-gray-900" x-data="{ showLogin: false, showRegister: false }" @open-login.window="showLogin = true" @open-register.window="showRegister = true" :class="{ 'overflow-hidden': showLogin || showRegister }">
         <div class="min-h-screen bg-gray-900">
             @include('layouts.navigation')
 
