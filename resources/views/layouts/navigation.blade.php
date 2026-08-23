@@ -54,11 +54,6 @@
                         <x-nav-link :href="route('topup.index')" :active="request()->routeIs('topup.*')">
                             {{ __('Top Up Game') }}
                         </x-nav-link>
-                        @auth
-                            <x-nav-link :href="route('transactions.history')" :active="request()->routeIs('transactions.*')">
-                                {{ __('Riwayat Transaksi') }}
-                            </x-nav-link>
-                        @endauth
                     @endif
                 </div>
             </div>
@@ -66,7 +61,7 @@
             <!-- Desktop User Dropdown / Login Buttons -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 @auth
-                <x-dropdown align="right" width="56">
+                <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-semibold rounded-md text-gray-300 dark:text-white bg-gray-800 hover:text-gray-700 dark:hover:text-blue-400 focus:outline-none transition ease-in-out duration-150">
                             <div>{{ Auth::user()->name }}</div>
@@ -82,10 +77,6 @@
                     <x-slot name="content">
                         <x-dropdown-link :href="route('profile.edit')">
                             <i class="fas fa-user mr-2 text-gray-400"></i> {{ __('Profile') }}
-                        </x-dropdown-link>
-
-                        <x-dropdown-link :href="route('transactions.history')">
-                            <i class="fas fa-receipt mr-2 text-indigo-400"></i> {{ __('Riwayat Transaksi') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->
@@ -122,8 +113,9 @@
 
     <!-- Responsive Mobile Navigation Drawer -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-gray-800 border-t border-gray-700 pb-3">
-        <div class="pt-2 pb-3 space-y-1">
-            @if(Auth::check() && Auth::user()->role === 'superadmin')
+        @if(Auth::check() && Auth::user()->role === 'superadmin')
+            <!-- Khusus Super Admin: Menu Dashboard Lengkap -->
+            <div class="pt-2 pb-3 space-y-1">
                 <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                     <i class="fas fa-chart-line mr-2 text-indigo-400"></i> {{ __('Dashboard') }}
                 </x-responsive-nav-link>
@@ -142,56 +134,44 @@
                 <x-responsive-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">
                     <i class="fas fa-star mr-2 text-amber-400"></i> {{ __('Ulasan') }}
                 </x-responsive-nav-link>
-            @else
-                <x-responsive-nav-link href="/" :active="request()->is('/')">
-                    <i class="fas fa-home mr-2 text-indigo-400"></i> {{ __('Beranda') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link href="/software" :active="request()->is('software*')">
-                    <i class="fas fa-desktop mr-2 text-blue-400"></i> {{ __('Software & POS') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('topup.index')" :active="request()->routeIs('topup.*')">
-                    <i class="fas fa-gamepad mr-2 text-purple-400"></i> {{ __('Top Up Game') }}
-                </x-responsive-nav-link>
-                @auth
-                    <x-responsive-nav-link :href="route('transactions.history')" :active="request()->routeIs('transactions.*')">
-                        <i class="fas fa-receipt mr-2 text-yellow-400"></i> {{ __('Riwayat Transaksi') }}
-                    </x-responsive-nav-link>
-                @endauth
-            @endif
-        </div>
-
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-2 border-t border-gray-700">
-            @auth
-            <div class="px-4 mb-3">
-                <div class="font-bold text-base text-white flex items-center gap-2">
-                    <i class="fas fa-user-circle text-indigo-400"></i> {{ Auth::user()->name }}
-                </div>
-                <div class="font-medium text-xs text-gray-400">{{ Auth::user()->email }}</div>
             </div>
-
-            <div class="space-y-1">
+            <div class="pt-4 pb-2 border-t border-gray-700 space-y-1">
                 <x-responsive-nav-link :href="route('profile.edit')">
-                    <i class="fas fa-user-cog mr-2 text-gray-400"></i> {{ __('Profile Saya') }}
+                    <i class="fas fa-user-cog mr-2 text-gray-400"></i> {{ __('Profile') }}
                 </x-responsive-nav-link>
-
-                <x-responsive-nav-link :href="route('transactions.history')">
-                    <i class="fas fa-history mr-2 text-indigo-400"></i> {{ __('Riwayat Transaksi') }}
-                </x-responsive-nav-link>
-
-                <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-
                     <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
+                            onclick="event.preventDefault(); this.closest('form').submit();">
+                        <i class="fas fa-sign-out-alt mr-2 text-red-400"></i> {{ __('Log Out') }}
+                    </x-responsive-nav-link>
+                </form>
+            </div>
+        @else
+            <!-- Khusus Customer: Hanya Profile dan Log Out -->
+            @auth
+            <div class="pt-3 pb-2 space-y-1">
+                <div class="px-4 mb-3">
+                    <div class="font-bold text-base text-white flex items-center gap-2">
+                        <i class="fas fa-user-circle text-indigo-400"></i> {{ Auth::user()->name }}
+                    </div>
+                    <div class="font-medium text-xs text-gray-400">{{ Auth::user()->email }}</div>
+                </div>
+
+                <x-responsive-nav-link :href="route('profile.edit')">
+                    <i class="fas fa-user mr-2 text-gray-400"></i> {{ __('Profile') }}
+                </x-responsive-nav-link>
+
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <x-responsive-nav-link :href="route('logout')"
+                            onclick="event.preventDefault(); this.closest('form').submit();">
                         <i class="fas fa-sign-out-alt mr-2 text-red-400"></i> {{ __('Log Out') }}
                     </x-responsive-nav-link>
                 </form>
             </div>
             @else
-            <div class="px-4 pt-2 space-y-2">
+            <div class="px-4 pt-4 pb-2 space-y-2">
                 <button @click="window.dispatchEvent(new CustomEvent('open-login')); open = false" class="w-full text-center py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition block">
                     Masuk (Login)
                 </button>
@@ -200,6 +180,6 @@
                 </button>
             </div>
             @endauth
-        </div>
+        @endif
     </div>
 </nav>
