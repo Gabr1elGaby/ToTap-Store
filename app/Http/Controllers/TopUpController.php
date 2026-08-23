@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Game;
 use App\Models\GameProduct;
+use App\Services\VipResellerService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class TopUpController extends Controller
 {
@@ -17,12 +20,26 @@ class TopUpController extends Controller
     {
         $game = Game::where('slug', $slug)->where('is_active', true)->firstOrFail();
         
+        $vipBalance = Cache::remember('vip_reseller_balance', 60, function () {
+            try {
+                $vipApi = app(VipResellerService::class);
+                $profile = $vipApi->getProfile();
+                if (isset($profile['result']) && $profile['result'] === true && isset($profile['data']['balance'])) {
+                    return (float) $profile['data']['balance'];
+                }
+            } catch (\Exception $e) {
+                Log::warning("Gagal cek saldo VIP Reseller: " . $e->getMessage());
+            }
+            return null;
+        });
+
         $allProducts = $game->products()->where('status', 'available')->orderBy('price_sell')->get();
 
         $uniqueProducts = collect();
         $seenKeys = [];
 
         foreach ($allProducts as $product) {
+            $product->is_out_of_stock = ($vipBalance !== null && $product->price_modal > $vipBalance);
             $name = strtolower(trim($product->name));
             
             // 1. FILTERING STRICT: Hapus produk Skin, Charisma, dan NON-IDN (Global/Luar Negeri)
@@ -157,6 +174,12 @@ class TopUpController extends Controller
         $request->validate($rules);
         
         $product = GameProduct::findOrFail($request->product_id);
+        
+        // Pengecekan Keamanan Saldo VIP Reseller
+        $vipBalance = Cache::get('vip_reseller_balance');
+        if ($vipBalance !== null && $product->price_modal > $vipBalance) {
+            return back()->with('error', 'Mohon maaf, nominal ' . $product->name . ' sedang habis atau dalam pemeliharaan. Silakan pilih nominal lainnya.');
+        }
         
         // Buat ID Transaksi Unik (Order ID)
         $orderId = 'TRX-' . time() . '-' . rand(100, 999);
