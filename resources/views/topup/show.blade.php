@@ -301,9 +301,6 @@
                     submitBtn.disabled = false;
                     
                     let errorMsg = data.message || 'Player ID / Tagline tidak valid atau tidak ditemukan.';
-                    if (errorMsg.includes('tidak diizinkan') || errorMsg.includes('cURL') || errorMsg.includes('timeout')) {
-                        errorMsg = 'Koneksi ke server pusat sedang sibuk. Silakan coba sesaat lagi.';
-                    }
                     
                     Swal.fire({
                         icon: 'error',
