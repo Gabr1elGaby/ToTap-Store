@@ -13,7 +13,13 @@ class GameProductController extends Controller
 {
     public function index(Game $game)
     {
-        $products = $game->products()->orderBy('price_modal')->get();
+        // Hanya tampilkan produk yang available dan memiliki harga modal valid
+        $products = $game->products()
+            ->where('status', 'available')
+            ->where('price_modal', '>', 0)
+            ->orderBy('price_modal')
+            ->get();
+            
         return view('admin.games.products.index', compact('game', 'products'));
     }
 
@@ -32,6 +38,10 @@ class GameProductController extends Controller
 
         $product->update($validated);
 
+        if ($validated['status'] !== 'available') {
+            $product->delete();
+        }
+
         return redirect()->route('admin.games.products.index', $game)->with('success', 'Produk berhasil diperbarui.');
     }
 
@@ -46,7 +56,7 @@ class GameProductController extends Controller
         return view('admin.games.products.sync', compact('game'));
     }
 
-        public function syncProcess(Request $request, Game $game, VipResellerService $api)
+    public function syncProcess(Request $request, Game $game, VipResellerService $api)
     {
         // Cegah PHP membunuh proses sebelum selesai (Beri waktu 5 menit)
         set_time_limit(300);
@@ -65,7 +75,7 @@ class GameProductController extends Controller
                 return back()->with('error', 'Gagal menarik data dari VIP Reseller. ' . ($response['message'] ?? ''));
             }
         } catch (\Exception $e) {
-            return back()->with('error', 'Koneksi ke VIP Reseller terputus atau sangat lambat (Time Out). Ini biasanya karena server pusat sedang kepenuhan/sibuk. Silakan coba lagi beberapa saat. Detail: ' . $e->getMessage());
+            return back()->with('error', 'Koneksi ke VIP Reseller terputus atau time out. Detail: ' . $e->getMessage());
         }
 
         $items = $response['data'];
@@ -75,15 +85,14 @@ class GameProductController extends Controller
             $name = trim($item['name']);
             $nameUpper = strtoupper($name);
             $nameLower = strtolower($name);
-            // Gunakan harga H2H (Special/H2H) paling murah, jika tidak ada fallback ke premium/basic
             $modal = $item['price']['special'] ?? ($item['price']['h2h'] ?? ($item['price']['premium'] ?? ($item['price']['basic'] ?? 0)));
 
-            // 1. FILTER SAMPAH
+            // 1. FILTER SAMPAH & HARGA MODAL NOL
             if ($modal <= 0) continue; 
             if (str_contains($nameUpper, 'OPEN') || str_contains($nameUpper, 'CLOSE') || str_contains($nameUpper, 'INFO') || str_contains($nameUpper, 'RATE') || str_contains($nameUpper, 'TESTING') || str_contains($nameUpper, 'DUMMY')) continue;
             
-            // 2. FILTER STATUS GANGGUAN / EMPTY
-            if (strtolower($item['status']) === 'empty' || strtolower($item['status']) === 'gangguan' || strtolower($item['status']) === 'error') {
+            // 2. FILTER STATUS EMPTY & GANGGUAN (HANYA AMBIL YANG STATUS AVAILABLE)
+            if (strtolower($item['status']) !== 'available') {
                 continue; 
             }
 
@@ -93,7 +102,6 @@ class GameProductController extends Controller
             }
 
             if (stripos($item['game'], $request->filter_value) !== false) {
-                // HARI INI KITA DEDUPLIKASI!
                 $isPass = (str_contains($nameLower, 'pass') || str_contains($nameLower, 'weekly') || str_contains($nameLower, 'starlight') || str_contains($nameLower, 'twilight') || str_contains($nameLower, 'member') || str_contains($nameLower, 'bundle'));
                 
                 $nameForMath = str_replace('.', '', $nameLower);
@@ -124,7 +132,7 @@ class GameProductController extends Controller
                         'code' => $item['code'],
                         'name' => $item['name'],
                         'modal' => $modal,
-                        'status' => $item['status'],
+                        'status' => 'available',
                         'unique_key' => $uniqueKey,
                     ];
                 }
@@ -138,19 +146,15 @@ class GameProductController extends Controller
             foreach ($cheapestItems as $uniqueKey => $cItem) {
                 $percentProfit = $cItem['modal'] * ($request->markup_percent / 100);
                 $jual = $cItem['modal'] + $percentProfit + $request->markup_flat;
-                // Bulatkan harga jual (hilangkan desimal)
                 $jual = ceil($jual);
 
                 // Trik Diskon Masal
                 $isPromo = $request->has('mass_promo_active');
                 $priceNormal = null;
                 if ($isPromo) {
-                    // Rumus Diskon Terbalik: priceNormal = priceSell / (1 - (discount / 100))
                     $discountDec = $request->mass_promo_percent / 100;
-                    if ($discountDec >= 1) $discountDec = 0.99; // Cegah error bagi 0
+                    if ($discountDec >= 1) $discountDec = 0.99;
                     $priceNormal = ceil($jual / (1 - $discountDec));
-                    
-                    // Agar harganya terlihat cantik (berakhiran 00)
                     $priceNormal = round($priceNormal / 100) * 100;
                 }
 
@@ -163,7 +167,7 @@ class GameProductController extends Controller
                         'name' => $cItem['name'],
                         'price_modal' => $cItem['modal'],
                         'price_sell' => $jual,
-                        'status' => $cItem['status'],
+                        'status' => 'available',
                         'is_promo' => $isPromo,
                         'price_normal' => $priceNormal
                     ]
@@ -172,16 +176,20 @@ class GameProductController extends Controller
                 $count++;
             }
 
-            // Non-aktifkan produk lama yang sudah tidak ada di API
+            // Hapus permanen produk lama yang statusnya empty atau tidak ada di API
             if (!empty($syncedCodes)) {
                 GameProduct::where('game_id', $game->id)
                     ->whereNotIn('product_code', $syncedCodes)
-                    ->update(['status' => 'empty']);
+                    ->delete();
             }
+            
+            GameProduct::where('game_id', $game->id)
+                ->where('status', '!=', 'available')
+                ->delete();
 
-            return redirect()->route('admin.games.products.index', $game)->with('success', "Berhasil mensinkronisasi $count produk unik Termurah secara otomatis.");
+            return redirect()->route('admin.games.products.index', $game)->with('success', "Sinkronisasi Berhasil! {$count} item aktif dan valid berhasil diperbarui.");
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal menyimpan produk: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memproses data: ' . $e->getMessage());
         }
     }
 }
