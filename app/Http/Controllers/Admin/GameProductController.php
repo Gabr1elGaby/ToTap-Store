@@ -130,42 +130,57 @@ class GameProductController extends Controller
             }
         }
 
-        // HAPUS SEMUA PRODUK GAME INI DI DATABASE (KITA REFRESH TOTAL)
-        GameProduct::where('game_id', $game->id)->delete();
+        try {
+            $count = 0;
+            $syncedCodes = [];
 
-        $count = 0;
-        foreach ($cheapestItems as $uniqueKey => $cItem) {
-            $percentProfit = $cItem['modal'] * ($request->markup_percent / 100);
-            $jual = $cItem['modal'] + $percentProfit + $request->markup_flat;
-            // Bulatkan harga jual (hilangkan desimal)
-            $jual = ceil($jual);
+            foreach ($cheapestItems as $uniqueKey => $cItem) {
+                $percentProfit = $cItem['modal'] * ($request->markup_percent / 100);
+                $jual = $cItem['modal'] + $percentProfit + $request->markup_flat;
+                // Bulatkan harga jual (hilangkan desimal)
+                $jual = ceil($jual);
 
-            // Trik Diskon Masal
-            $isPromo = $request->has('mass_promo_active');
-            $priceNormal = null;
-            if ($isPromo) {
-                // Rumus Diskon Terbalik: priceNormal = priceSell / (1 - (discount / 100))
-                $discountDec = $request->mass_promo_percent / 100;
-                if ($discountDec >= 1) $discountDec = 0.99; // Cegah error bagi 0
-                $priceNormal = ceil($jual / (1 - $discountDec));
-                
-                // Agar harganya terlihat cantik (berakhiran 00)
-                $priceNormal = round($priceNormal / 100) * 100;
+                // Trik Diskon Masal
+                $isPromo = $request->has('mass_promo_active');
+                $priceNormal = null;
+                if ($isPromo) {
+                    // Rumus Diskon Terbalik: priceNormal = priceSell / (1 - (discount / 100))
+                    $discountDec = $request->mass_promo_percent / 100;
+                    if ($discountDec >= 1) $discountDec = 0.99; // Cegah error bagi 0
+                    $priceNormal = ceil($jual / (1 - $discountDec));
+                    
+                    // Agar harganya terlihat cantik (berakhiran 00)
+                    $priceNormal = round($priceNormal / 100) * 100;
+                }
+
+                GameProduct::updateOrCreate(
+                    [
+                        'game_id' => $game->id, 
+                        'product_code' => $cItem['code'],
+                    ],
+                    [
+                        'name' => $cItem['name'],
+                        'price_modal' => $cItem['modal'],
+                        'price_sell' => $jual,
+                        'status' => $cItem['status'],
+                        'is_promo' => $isPromo,
+                        'price_normal' => $priceNormal
+                    ]
+                );
+                $syncedCodes[] = $cItem['code'];
+                $count++;
             }
 
-            GameProduct::create([
-                'game_id' => $game->id, 
-                'product_code' => $cItem['code'],
-                'name' => $cItem['name'],
-                'price_modal' => $cItem['modal'],
-                'price_sell' => $jual,
-                'status' => $cItem['status'],
-                'is_promo' => $isPromo,
-                'price_normal' => $priceNormal
-            ]);
-            $count++;
-        }
+            // Non-aktifkan produk lama yang sudah tidak ada di API
+            if (!empty($syncedCodes)) {
+                GameProduct::where('game_id', $game->id)
+                    ->whereNotIn('product_code', $syncedCodes)
+                    ->update(['status' => 'empty']);
+            }
 
-        return redirect()->route('admin.games.products.index', $game)->with('success', "Berhasil mensinkronisasi $count produk unik Termurah secara otomatis.");
+            return redirect()->route('admin.games.products.index', $game)->with('success', "Berhasil mensinkronisasi $count produk unik Termurah secara otomatis.");
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menyimpan produk: ' . $e->getMessage());
+        }
     }
 }
