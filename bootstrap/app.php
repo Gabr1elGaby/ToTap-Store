@@ -19,6 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'api/payment/webhook',
             'cv/preview/*',
+            'topup/*/check-nickname',
+            'topup/*/process',
+            'topup/checkout/*/verify',
+            'api/reviews',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

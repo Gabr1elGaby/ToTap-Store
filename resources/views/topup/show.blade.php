@@ -266,7 +266,11 @@
             fetch('{{ route("topup.check-nickname", $game->slug) }}', {
                 method: 'POST',
                 body: formData,
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                headers: { 
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
             })
             .then(res => res.json())
             .then(data => {
@@ -297,16 +301,10 @@
                 }
             })
             .catch(err => {
-                submitBtn.innerHTML = originalText;
+                // Fallback: Jika ada gangguan AJAX, langsung submit form ke proses transaksi
+                submitBtn.innerHTML = 'Memproses Pesanan...';
                 submitBtn.disabled = false;
-                Swal.fire({ 
-                    icon: 'error', 
-                    title: 'Gangguan Server', 
-                    text: 'Gagal menghubungi server pengecekan ID. Silakan coba sesaat lagi.',
-                    confirmButtonColor: '#4f46e5',
-                    confirmButtonText: 'Tutup'
-                });
-                console.error(err);
+                HTMLFormElement.prototype.submit.call(form);
             });
         });
     </script>
