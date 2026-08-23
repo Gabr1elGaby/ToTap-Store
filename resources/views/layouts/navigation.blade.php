@@ -8,7 +8,7 @@
         border-bottom-color: #60A5FA !important;
     }
 </style>
-<nav x-data="{ open: false }" class="bg-gray-800 border-b border-gray-700">
+<nav x-data="{ open: false }" class="bg-gray-800 border-b border-gray-700 sticky top-0 z-50">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -16,11 +16,14 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="/" class="no-underline">
-                        <div class="flex items-center gap-2"><img src="{{ asset('images/logo-totap-v2.png') }}" class="h-10 w-auto object-contain drop-shadow-md"><span class="text-xl text-white tracking-widest whitespace-nowrap" style="font-family: 'Righteous', cursive; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">TOTAP STORE</span></div>
+                        <div class="flex items-center gap-2">
+                            <img src="{{ asset('images/logo-totap-v2.png') }}" class="h-10 w-auto object-contain drop-shadow-md" alt="Logo">
+                            <span class="text-xl text-white tracking-widest whitespace-nowrap" style="font-family: 'Righteous', cursive; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">TOTAP STORE</span>
+                        </div>
                     </a>
                 </div>
 
-                <!-- Navigation Links -->
+                <!-- Desktop Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     @if(Auth::check() && Auth::user()->role === 'superadmin')
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
@@ -41,24 +44,26 @@
                         <x-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">
                             <span class="mr-1 text-amber-400">⭐</span> {{ __('Ulasan') }}
                         </x-nav-link>
-                        <!-- Other admin links will go here -->
                     @else
                         <x-nav-link href="/">
                             {{ __('Beranda') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('transactions.history')" :active="request()->routeIs('transactions.*')">
-                            {{ __('Riwayat Transaksi') }}
+                        <x-nav-link href="/software" :active="request()->is('software*')">
+                            {{ __('Software & POS') }}
                         </x-nav-link>
-                        @if(request()->is('/'))
-                            <x-nav-link href="#keunggulan">
-                                {{ __('Keunggulan') }}
+                        <x-nav-link :href="route('topup.index')" :active="request()->routeIs('topup.*')">
+                            {{ __('Top Up Game') }}
+                        </x-nav-link>
+                        @auth
+                            <x-nav-link :href="route('transactions.history')" :active="request()->routeIs('transactions.*')">
+                                {{ __('Riwayat Transaksi') }}
                             </x-nav-link>
-                        @endif
+                        @endauth
                     @endif
                 </div>
             </div>
 
-                        <!-- Settings Dropdown -->
+            <!-- Desktop User Dropdown / Login Buttons -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 @auth
                 <x-dropdown align="right" width="56">
@@ -102,43 +107,76 @@
                 </div>
                 @endauth
             </div>
+
+            <!-- Hamburger Button (Mobile 3 Lines) -->
+            <div class="-me-2 flex items-center sm:hidden">
+                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-xl text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:bg-gray-700 transition duration-150 ease-in-out">
+                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
+    <!-- Responsive Mobile Navigation Drawer -->
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-gray-800 border-t border-gray-700 pb-3">
         <div class="pt-2 pb-3 space-y-1">
             @if(Auth::check() && Auth::user()->role === 'superadmin')
                 <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
-                    {{ __('Dashboard') }}
+                    <i class="fas fa-chart-line mr-2 text-indigo-400"></i> {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.*')">
+                    <i class="fas fa-boxes mr-2 text-blue-400"></i> {{ __('Products') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.games.index')" :active="request()->routeIs('admin.games.*')">
+                    <i class="fas fa-gamepad mr-2 text-purple-400"></i> {{ __('Top Up Game') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.plans.*')">
+                    <i class="fas fa-tags mr-2 text-green-400"></i> {{ __('Plans') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.transactions.index')" :active="request()->routeIs('admin.transactions.*')">
-                    {{ __('Transaksi') }}
+                    <i class="fas fa-receipt mr-2 text-yellow-400"></i> {{ __('Kelola Transaksi') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">
+                    <i class="fas fa-star mr-2 text-amber-400"></i> {{ __('Ulasan') }}
                 </x-responsive-nav-link>
             @else
-                <x-responsive-nav-link href="/">
-                    {{ __('Beranda') }}
+                <x-responsive-nav-link href="/" :active="request()->is('/')">
+                    <i class="fas fa-home mr-2 text-indigo-400"></i> {{ __('Beranda') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('transactions.history')" :active="request()->routeIs('transactions.*')">
-                    {{ __('Riwayat Transaksi') }}
+                <x-responsive-nav-link href="/software" :active="request()->is('software*')">
+                    <i class="fas fa-desktop mr-2 text-blue-400"></i> {{ __('Software & POS') }}
                 </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('topup.index')" :active="request()->routeIs('topup.*')">
+                    <i class="fas fa-gamepad mr-2 text-purple-400"></i> {{ __('Top Up Game') }}
+                </x-responsive-nav-link>
+                @auth
+                    <x-responsive-nav-link :href="route('transactions.history')" :active="request()->routeIs('transactions.*')">
+                        <i class="fas fa-receipt mr-2 text-yellow-400"></i> {{ __('Riwayat Transaksi') }}
+                    </x-responsive-nav-link>
+                @endauth
             @endif
         </div>
 
-                <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
+        <!-- Responsive Settings Options -->
+        <div class="pt-4 pb-2 border-t border-gray-700">
             @auth
-            <div class="px-4">
-                <div class="font-medium text-base text-white">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-300">{{ Auth::user()->email }}</div>
+            <div class="px-4 mb-3">
+                <div class="font-bold text-base text-white flex items-center gap-2">
+                    <i class="fas fa-user-circle text-indigo-400"></i> {{ Auth::user()->name }}
+                </div>
+                <div class="font-medium text-xs text-gray-400">{{ Auth::user()->email }}</div>
             </div>
 
-            <div class="mt-3 space-y-1">
+            <div class="space-y-1">
                 <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
+                    <i class="fas fa-user-cog mr-2 text-gray-400"></i> {{ __('Profile Saya') }}
                 </x-responsive-nav-link>
 
                 <x-responsive-nav-link :href="route('transactions.history')">
-                    {{ __('Riwayat Transaksi') }}
+                    <i class="fas fa-history mr-2 text-indigo-400"></i> {{ __('Riwayat Transaksi') }}
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->
@@ -148,34 +186,20 @@
                     <x-responsive-nav-link :href="route('logout')"
                             onclick="event.preventDefault();
                                         this.closest('form').submit();">
-                        {{ __('Log Out') }}
+                        <i class="fas fa-sign-out-alt mr-2 text-red-400"></i> {{ __('Log Out') }}
                     </x-responsive-nav-link>
                 </form>
             </div>
             @else
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link href="#" @click.prevent="window.dispatchEvent(new CustomEvent('open-login'))">Login</x-responsive-nav-link>
-                <x-responsive-nav-link href="#" @click.prevent="window.dispatchEvent(new CustomEvent('open-login'))">Register</x-responsive-nav-link>
+            <div class="px-4 pt-2 space-y-2">
+                <button @click="window.dispatchEvent(new CustomEvent('open-login')); open = false" class="w-full text-center py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition block">
+                    Masuk (Login)
+                </button>
+                <button @click="window.dispatchEvent(new CustomEvent('open-register')); open = false" class="w-full text-center py-2.5 rounded-xl font-bold text-gray-200 bg-gray-700 hover:bg-gray-600 transition block">
+                    Daftar Akun Baru
+                </button>
             </div>
             @endauth
-        </div>
-
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
-
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
-                </form>
-            </div>
         </div>
     </div>
 </nav>
