@@ -75,7 +75,8 @@ class GameProductController extends Controller
             $name = trim($item['name']);
             $nameUpper = strtoupper($name);
             $nameLower = strtolower($name);
-            $modal = $item['price']['basic'] ?? 0;
+            // Gunakan harga H2H (Special/H2H) paling murah, jika tidak ada fallback ke premium/basic
+            $modal = $item['price']['special'] ?? ($item['price']['h2h'] ?? ($item['price']['premium'] ?? ($item['price']['basic'] ?? 0)));
 
             // 1. FILTER SAMPAH
             if ($modal <= 0) continue; 

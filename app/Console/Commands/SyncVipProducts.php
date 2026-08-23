@@ -69,8 +69,8 @@ class SyncVipProducts extends Command
                         'game_id' => $game->id,
                         'name' => $item['name'],
                         'provider' => 'vip_reseller',
-                        'price_modal' => $item['price']['basic'] ?? $item['price'],
-                        'price_sell' => ceil(($item['price']['basic'] ?? $item['price']) * 1.1),
+                        'price_modal' => $item['price']['special'] ?? ($item['price']['h2h'] ?? ($item['price']['premium'] ?? ($item['price']['basic'] ?? ($item['price'] ?? 0)))),
+                        'price_sell' => ceil(($item['price']['special'] ?? ($item['price']['h2h'] ?? ($item['price']['premium'] ?? ($item['price']['basic'] ?? ($item['price'] ?? 0))))) * 1.1),
                         'status' => $item['status'], 
                         'is_active' => ($item['status'] === 'available'),
                     ]
