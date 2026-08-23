@@ -114,8 +114,7 @@
 <section id="keunggulan" class="py-20 bg-gray-800 border-b border-gray-700">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="mb-16" data-aos="fade-right">
-                    
-                    <h3 class="text-3xl font-extrabold text-white">Mengapa Harus di ToTap Store?</h3>
+                    <h3 class="text-3xl font-extrabold text-white">Kenapa ToTap Store</h3>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
