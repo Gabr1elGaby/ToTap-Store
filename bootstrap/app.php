@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'topup/*/process',
             'topup/checkout/*/verify',
             'api/reviews',
+            'admin/games/*/products/sync',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
