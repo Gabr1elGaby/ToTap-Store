@@ -127,16 +127,26 @@ class TopUpController extends Controller
         // 4. PENGELOMPOKAN KE KATEGORI
         $categories = [
             'Pass & Member' => collect(),
-            'Item & Lainnya' => collect(),
             'Mata Uang Game' => collect(),
+            'Item & Lainnya' => collect(),
         ];
 
         foreach ($uniqueProducts as $product) {
             $name = strtolower($product->name);
             
-            if (str_contains($name, 'weekly') || str_contains($name, 'pass') || str_contains($name, 'starlight') || str_contains($name, 'member') || str_contains($name, 'battle') || str_contains($name, 'subscription')) {
+            if (
+                str_contains($name, 'weekly') || 
+                str_contains($name, 'monthly') || 
+                str_contains($name, 'bundle') || 
+                str_contains($name, 'pass') || 
+                str_contains($name, 'twilight') || 
+                str_contains($name, 'starlight') || 
+                str_contains($name, 'member') || 
+                str_contains($name, 'battle') || 
+                str_contains($name, 'subscription')
+            ) {
                 $categories['Pass & Member']->push($product);
-            } elseif (str_contains($name, 'name') || str_contains($name, 'nama') || str_contains($name, 'squad') || str_contains($name, 'twilight') || str_contains($name, 'crystal') || str_contains($name, 'ticket') || str_contains($name, 'token') || str_contains($name, 'gift card')) {
+            } elseif (str_contains($name, 'name') || str_contains($name, 'nama') || str_contains($name, 'squad') || str_contains($name, 'crystal') || str_contains($name, 'ticket') || str_contains($name, 'token') || str_contains($name, 'gift card')) {
                 $categories['Item & Lainnya']->push($product);
             } else {
                 $categories['Mata Uang Game']->push($product);
