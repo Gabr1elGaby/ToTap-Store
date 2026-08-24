@@ -95,13 +95,17 @@
                 <!-- Kiri: Info Game -->
                 <div class="w-full lg:w-1/4">
                     <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-lg rounded-2xl overflow-hidden sticky top-24">
-                        @if($game->cover_image)
-                            <img src="{{ $game->cover_image }}" alt="Cover" class="w-full h-64 lg:h-48 object-cover">
-                        @else
-                            <div class="w-full h-64 lg:h-48 bg-indigo-50 dark:bg-gray-700 flex items-center justify-center">
-                                <span class="text-indigo-600 dark:text-indigo-400 font-bold">No Cover</span>
+                        <div class="relative w-full h-64 lg:h-48 bg-gradient-to-tr from-slate-900 via-indigo-950 to-slate-900 flex items-center justify-center overflow-hidden">
+                            @if($game->cover_image)
+                                <img src="{{ $game->cover_image }}" alt="{{ $game->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                            @endif
+                            <div class="{{ $game->cover_image ? 'hidden' : '' }} flex flex-col items-center justify-center p-4 text-center">
+                                <div class="w-14 h-14 rounded-2xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center text-3xl mb-2 text-indigo-400">
+                                    🎮
+                                </div>
+                                <span class="text-white font-black text-base tracking-wide">{{ $game->name }}</span>
                             </div>
-                        @endif
+                        </div>
                         <div class="p-6">
                             <h3 class="text-xl font-black text-gray-900 dark:text-white mb-1">{{ $game->name }}</h3>
                             <p class="text-gray-500 dark:text-gray-400 text-sm mb-4">{{ $game->developer ?? 'T-Store' }}</p>

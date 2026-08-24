@@ -12,22 +12,8 @@ class GameController extends Controller
 {
     public function index()
     {
-        $games = Game::withCount('products')->latest()->paginate(15);
-        $vipBalance = (float) \App\Models\Setting::get('vip_reseller_balance', 0);
-        return view('admin.games.index', compact('games', 'vipBalance'));
-    }
-
-    public function updateBalance(Request $request)
-    {
-        $request->validate([
-            'balance' => 'required|numeric|min:0'
-        ]);
-
-        \App\Models\Setting::set('vip_reseller_balance', (string)$request->balance);
-        \Illuminate\Support\Facades\Cache::forget('vip_reseller_balance');
-        \Illuminate\Support\Facades\Cache::put('vip_reseller_balance', (float)$request->balance, 60);
-
-        return back()->with('success', 'Batas Saldo VIP Reseller berhasil disimpan: Rp ' . number_format($request->balance, 0, ',', '.') . '. Stok nominal otomatis disesuaikan!');
+        $games = Game::withCount('products')->get();
+        return view('admin.games.index', compact('games'));
     }
 
     public function create()
@@ -52,14 +38,24 @@ class GameController extends Controller
         $validated['requires_zone_id'] = $request->has('requires_zone_id');
         $validated['slug'] = Str::slug($validated['name']);
 
+        // Pastikan folder penyimpanan langsung ada
+        $uploadDir = public_path('images/games');
+        if (!is_dir($uploadDir)) {
+            @mkdir($uploadDir, 0777, true);
+        }
+
         if ($request->hasFile('thumbnail')) {
-            $path = $request->file('thumbnail')->store('games', 'public');
-            $validated['thumbnail'] = Storage::url($path);
+            $file = $request->file('thumbnail');
+            $fileName = time() . '_thumb_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $file->move($uploadDir, $fileName);
+            $validated['thumbnail'] = '/images/games/' . $fileName;
         }
 
         if ($request->hasFile('cover_image')) {
-            $path = $request->file('cover_image')->store('games', 'public');
-            $validated['cover_image'] = Storage::url($path);
+            $file = $request->file('cover_image');
+            $fileName = time() . '_cover_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $file->move($uploadDir, $fileName);
+            $validated['cover_image'] = '/images/games/' . $fileName;
         }
         
         Game::create($validated);
@@ -92,14 +88,23 @@ class GameController extends Controller
             $validated['slug'] = Str::slug($validated['name']);
         }
 
+        $uploadDir = public_path('images/games');
+        if (!is_dir($uploadDir)) {
+            @mkdir($uploadDir, 0777, true);
+        }
+
         if ($request->hasFile('thumbnail')) {
-            $path = $request->file('thumbnail')->store('games', 'public');
-            $validated['thumbnail'] = Storage::url($path);
+            $file = $request->file('thumbnail');
+            $fileName = time() . '_thumb_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $file->move($uploadDir, $fileName);
+            $validated['thumbnail'] = '/images/games/' . $fileName;
         }
 
         if ($request->hasFile('cover_image')) {
-            $path = $request->file('cover_image')->store('games', 'public');
-            $validated['cover_image'] = Storage::url($path);
+            $file = $request->file('cover_image');
+            $fileName = time() . '_cover_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $file->move($uploadDir, $fileName);
+            $validated['cover_image'] = '/images/games/' . $fileName;
         }
 
         $game->update($validated);
