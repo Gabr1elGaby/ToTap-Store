@@ -23,8 +23,13 @@ class GameController extends Controller
             'balance' => 'required|numeric|min:0'
         ]);
 
-        Setting::set('vip_balance_threshold', $request->balance);
-        Setting::set('vip_reseller_balance', $request->balance);
+        $val = (string) $request->balance;
+        Setting::set('vip_balance_threshold', $val);
+        Setting::set('vip_reseller_balance', $val);
+
+        if (function_exists('opcache_reset')) {
+            @opcache_reset();
+        }
 
         return back()->with('success', 'Batas saldo modal VIP Reseller berhasil diperbarui.');
     }
