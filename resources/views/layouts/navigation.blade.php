@@ -155,10 +155,10 @@
                 </button>
 
                 <!-- Hamburger Button (Mobile 3 Lines) -->
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-xl text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none transition duration-150 ease-in-out">
+                <button type="button" onclick="toggleMobileMenu()" class="inline-flex items-center justify-center p-2 rounded-xl text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none transition duration-150 ease-in-out cursor-pointer">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        <path id="hamburger-bars" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        <path id="hamburger-close" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
@@ -166,7 +166,7 @@
     </div>
 
     <!-- Responsive Mobile Navigation Drawer -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 pb-3 transition-colors duration-200">
+    <div id="mobile-menu-drawer" class="hidden sm:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 pb-3 transition-colors duration-200">
         @if(Auth::check() && Auth::user()->role === 'superadmin')
             <!-- Khusus Super Admin: Menu Dashboard Lengkap -->
             <div class="pt-2 pb-3 space-y-1">
@@ -230,10 +230,10 @@
             </div>
             @else
             <div class="px-4 pt-4 pb-2 space-y-2">
-                <button @click="window.dispatchEvent(new CustomEvent('open-login')); open = false" class="w-full text-center py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition block">
+                <button type="button" onclick="openLoginModal(); toggleMobileMenu();" class="w-full text-center py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition block cursor-pointer">
                     Masuk (Login)
                 </button>
-                <button @click="window.dispatchEvent(new CustomEvent('open-register')); open = false" class="w-full text-center py-2.5 rounded-xl font-bold text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition block">
+                <button type="button" onclick="openRegisterModal(); toggleMobileMenu();" class="w-full text-center py-2.5 rounded-xl font-bold text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition block cursor-pointer">
                     Daftar Akun Baru
                 </button>
             </div>
@@ -241,3 +241,18 @@
         @endif
     </div>
 </nav>
+
+<script>
+    function toggleMobileMenu() {
+        const drawer = document.getElementById('mobile-menu-drawer');
+        const bars = document.getElementById('hamburger-bars');
+        const close = document.getElementById('hamburger-close');
+        if (drawer) {
+            drawer.classList.toggle('hidden');
+            if (bars && close) {
+                bars.classList.toggle('hidden');
+                close.classList.toggle('hidden');
+            }
+        }
+    }
+</script>
