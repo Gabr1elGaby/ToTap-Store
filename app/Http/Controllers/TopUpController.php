@@ -21,9 +21,8 @@ class TopUpController extends Controller
         $game = Game::where('slug', $slug)->where('is_active', true)->firstOrFail();
 
         // 1. Ambil Saldo Modal VIP Reseller (Proteksi Stok dari Admin)
-        $t1 = (float) \App\Models\Setting::get('vip_balance_threshold', 0);
-        $t2 = (float) \App\Models\Setting::get('vip_reseller_balance', 0);
-        $vipBalance = ($t1 > 0 ? $t1 : ($t2 > 0 ? $t2 : 100000.0));
+        $threshold = \App\Models\Setting::get('vip_balance_threshold');
+        $vipBalance = ($threshold !== null && $threshold !== '') ? (float)$threshold : 0.0;
         
         try {
             $vipApi = app(VipResellerService::class);

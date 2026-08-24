@@ -191,8 +191,8 @@
                                             @foreach($catProducts as $product)
                                                 @php
                                                     $modal = (float) $product->price_modal;
-                                                    $limit = (isset($vipBalance) && (float)$vipBalance > 0) ? (float)$vipBalance : 100000.0;
-                                                    $isOut = ($modal > $limit);
+                                                    $balance = isset($vipBalance) ? (float)$vipBalance : 0.0;
+                                                    $isOut = ($balance <= 0 || $modal > $balance);
                                                 @endphp
 
                                                 @if($isOut)
