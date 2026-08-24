@@ -99,28 +99,30 @@ class GameController extends Controller
             $validated['slug'] = Str::slug($validated['name']);
         }
 
-        $uploadDir = public_path('images/games');
-        if (!is_dir($uploadDir)) {
-            @mkdir($uploadDir, 0777, true);
-        }
+        $dest1 = base_path('images/games');
+        $dest2 = public_path('images/games');
+        @mkdir($dest1, 0777, true);
+        @mkdir($dest2, 0777, true);
 
         if ($request->hasFile('thumbnail')) {
             $file = $request->file('thumbnail');
             $fileName = time() . '_thumb_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $file->move($uploadDir, $fileName);
+            $file->move($dest1, $fileName);
+            @copy($dest1 . '/' . $fileName, $dest2 . '/' . $fileName);
             $validated['thumbnail'] = '/images/games/' . $fileName;
         }
 
         if ($request->hasFile('cover_image')) {
             $file = $request->file('cover_image');
             $fileName = time() . '_cover_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $file->move($uploadDir, $fileName);
+            $file->move($dest1, $fileName);
+            @copy($dest1 . '/' . $fileName, $dest2 . '/' . $fileName);
             $validated['cover_image'] = '/images/games/' . $fileName;
         }
 
         $game->update($validated);
 
-        return redirect()->route('admin.games.index')->with('success', 'Game berhasil diperbarui.');
+        return redirect()->route('admin.games.edit', $game)->with('success', 'Game dan gambar berhasil disimpan!');
     }
 
     public function destroy(Game $game)

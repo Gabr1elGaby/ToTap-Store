@@ -12,6 +12,11 @@
 
     <div class="py-12 bg-slate-50 dark:bg-gray-900 min-h-screen">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            @if(session('success'))
+                <div class="bg-green-500/10 border border-green-500 text-green-600 dark:text-green-400 px-5 py-4 rounded-2xl flex items-center gap-3 shadow-sm font-bold text-sm mb-6">
+                    <i class="fas fa-check-circle text-lg"></i> {{ session('success') }}
+                </div>
+            @endif
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-3xl border border-gray-200 dark:border-gray-700 p-8">
                 <form action="{{ route('admin.games.update', $game) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                     @csrf
