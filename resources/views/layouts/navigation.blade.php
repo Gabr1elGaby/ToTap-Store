@@ -83,40 +83,40 @@
                 </button>
 
                 @auth
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-gray-200 dark:border-gray-700 text-sm leading-4 font-semibold rounded-xl text-gray-700 dark:text-white bg-gray-50 dark:bg-gray-800 hover:text-indigo-600 dark:hover:text-blue-400 focus:outline-none transition ease-in-out duration-150 shadow-sm">
-                            <div>{{ Auth::user()->name }}</div>
+                <div class="relative" id="user-menu-dropdown-wrapper">
+                    <button type="button" 
+                            onclick="toggleUserDropdownMenu(event)" 
+                            class="inline-flex items-center px-3.5 py-2 border border-gray-300 dark:border-gray-700 text-sm leading-4 font-bold rounded-xl text-gray-800 dark:text-white bg-white dark:bg-gray-800 hover:text-indigo-600 dark:hover:text-blue-400 focus:outline-none transition ease-in-out duration-150 shadow-sm cursor-pointer">
+                        <div>{{ Auth::user()->name }}</div>
 
-                            <div class="ms-1.5">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-                    </x-slot>
+                        <div class="ms-1.5">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </button>
 
-                    <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            <i class="fas fa-user mr-2 text-gray-400"></i> {{ __('Profile') }}
-                        </x-dropdown-link>
+                    <div id="user-menu-dropdown-menu" 
+                         class="hidden absolute right-0 z-[100] mt-2 w-56 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden py-1.5 animate-in fade-in zoom-in-95 duration-100">
+                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-indigo-600 flex items-center transition">
+                            <i class="fas fa-user mr-2.5 text-gray-400"></i> {{ __('Profile') }}
+                        </a>
 
-                        <x-dropdown-link :href="route('transactions.history')">
-                            <i class="fas fa-receipt mr-2 text-indigo-500"></i> {{ __('Riwayat Transaksi & Invoice') }}
-                        </x-dropdown-link>
+                        <a href="{{ route('transactions.history') }}" class="block px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-indigo-600 flex items-center transition">
+                            <i class="fas fa-receipt mr-2.5 text-indigo-500"></i> {{ __('Riwayat Transaksi') }}
+                        </a>
+
+                        <div class="border-t border-gray-100 dark:border-gray-700 my-1"></div>
 
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                <i class="fas fa-sign-out-alt mr-2 text-red-500"></i> {{ __('Log Out') }}
-                            </x-dropdown-link>
+                            <button type="submit" class="w-full text-start px-4 py-2.5 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 flex items-center transition">
+                                <i class="fas fa-sign-out-alt mr-2.5 text-red-500"></i> {{ __('Log Out') }}
+                            </button>
                         </form>
-                    </x-slot>
-                </x-dropdown>
+                    </div>
+                </div>
                 @else
                 <div class="space-x-3 flex items-center">
                     <button type="button" onclick="openLoginModal()" class="font-semibold text-sm text-gray-700 hover:text-indigo-600 dark:text-gray-200 dark:hover:text-white px-3 py-2 rounded-lg transition cursor-pointer">Login</button>
@@ -243,6 +243,22 @@
 </nav>
 
 <script>
+    function toggleUserDropdownMenu(e) {
+        if (e) e.stopPropagation();
+        const menu = document.getElementById('user-menu-dropdown-menu');
+        if (menu) {
+            menu.classList.toggle('hidden');
+        }
+    }
+
+    document.addEventListener('click', function(e) {
+        const menu = document.getElementById('user-menu-dropdown-menu');
+        const wrapper = document.getElementById('user-menu-dropdown-wrapper');
+        if (menu && wrapper && !wrapper.contains(e.target)) {
+            menu.classList.add('hidden');
+        }
+    });
+
     function toggleMobileMenu() {
         const drawer = document.getElementById('mobile-menu-drawer');
         const bars = document.getElementById('hamburger-bars');
