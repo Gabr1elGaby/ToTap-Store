@@ -1,162 +1,103 @@
-<!-- Auth Modals -->
-<div x-data="{ showLogin: false, showRegister: false }" 
-     @open-login.window="showLogin = true; showRegister = false" 
-     @open-register.window="showRegister = true; showLogin = false"
-     id="auth-modals-container">
-    <div x-show="showLogin" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/80 p-4" x-transition.opacity>
-    <div class="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6" x-data="{ errors: {}, loading: false }" @submit.prevent="
-        loading = true; errors = {};
-        fetch('{{ route('login') }}', {
-            method: 'POST', 
-            body: new FormData($event.target), 
-            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
-        }).then(async response => {
-            if (response.ok) { 
-                window.location.reload(); 
-            } else if (response.status === 422) { 
-                const data = await response.json();
-                errors = data.errors || { email: [data.message || 'Email atau password salah.'] }; 
-            } else if (response.status === 419) {
-                errors = { email: ['Sesi kedaluwarsa. Silakan refresh halaman ini.'] };
-            } else {
-                errors = { email: ['Gagal masuk. Periksa kembali email & password Anda.'] };
-            }
-            loading = false;
-        }).catch(err => {
-            errors = { email: ['Terjadi kesalahan koneksi server.'] };
-            loading = false;
-        });
-    ">
+<!-- Auth Modals (High Reliability System) -->
+<div id="modal-login-backdrop" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-gray-950/80 backdrop-blur-sm p-4 transition-all duration-200">
+    <div class="w-full max-w-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-3xl shadow-2xl p-6 relative animate-in fade-in zoom-in-95 duration-150">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-bold text-gray-900">Masuk Akun</h2>
-            <button @click="showLogin = false" class="text-gray-400 hover:text-gray-600">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-        </div>
-        <form class="space-y-4">
-            @csrf
-            <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1">Email</label>
-                <input class="w-full px-3 py-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500" type="email" name="email" required autofocus>
-                <template x-if="errors.email"><span class="text-red-600 text-xs mt-1 block font-medium" x-text="errors.email[0]"></span></template>
-            </div>
-            <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1">Password</label>
-                <input class="w-full px-3 py-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500" type="password" name="password" required>
-                <template x-if="errors.password"><span class="text-red-600 text-xs mt-1 block font-medium" x-text="errors.password[0]"></span></template>
-            </div>
-            <button type="submit" :disabled="loading" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl hover:bg-blue-700 transition mt-2 disabled:opacity-50 shadow-md">
-                <span x-show="!loading">Masuk</span>
-                <span x-show="loading">Memproses...</span>
-            </button>
-        </form>
-        <div class="mt-4 text-center text-sm text-gray-600">
-            Belum punya akun? <a href="#" @click.prevent="showLogin = false; showRegister = true" class="text-blue-600 hover:underline font-bold">Daftar</a>
-        </div>
-    </div>
-</div>
-
-<div x-show="showRegister" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/80 p-4" x-transition.opacity>
-    <div class="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6" x-data="{ errors: {}, loading: false, step: 'register', phone: '' }">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-bold text-gray-900" x-text="step === 'register' ? 'Registrasi Klien Baru' : 'Verifikasi WhatsApp'"></h2>
-            <button @click="showRegister = false" class="text-gray-400 hover:text-gray-600">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Masuk Akun</h2>
+            <button type="button" onclick="closeLoginModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 rounded-lg">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
         
-        <form x-show="step === 'register'" class="space-y-4" @submit.prevent="
-            loading = true; errors = {};
-            fetch('{{ route('register') }}', {
-                method: 'POST', 
-                body: new FormData($event.target), 
-                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
-            }).then(async response => {
-                if (response.ok) { 
-                    let data = await response.json();
-                    if (data.requires_otp) {
-                        step = 'otp';
-                        phone = data.phone;
-                    } else {
-                        window.location.reload(); 
-                    }
-                } else if (response.status === 422) { 
-                    errors = (await response.json()).errors; 
-                }
-                loading = false;
-            }).catch(() => {
-                loading = false;
-            });
-        ">
+        <form id="ajax-login-form" class="space-y-4" onsubmit="handleAjaxLogin(event)">
             @csrf
             <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1">Nama Organisasi / Pemilik</label>
-                <input class="w-full px-3 py-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500" type="text" name="name" required autofocus>
-                <template x-if="errors.name"><span class="text-red-600 text-xs mt-1 block font-medium" x-text="errors.name[0]"></span></template>
+                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                <input class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm" type="email" name="email" required autofocus>
+                <span id="login-error-email" class="text-red-500 text-xs mt-1 block font-medium hidden"></span>
             </div>
             <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1">Email Perusahaan</label>
-                <input class="w-full px-3 py-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500" type="email" name="email" required>
-                <template x-if="errors.email"><span class="text-red-600 text-xs mt-1 block font-medium" x-text="errors.email[0]"></span></template>
+                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                <input class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm" type="password" name="password" required>
+                <span id="login-error-password" class="text-red-500 text-xs mt-1 block font-medium hidden"></span>
             </div>
-            <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1">Nomor WhatsApp / HP</label>
-                <input class="w-full px-3 py-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500" type="text" name="phone_number" required placeholder="08123456789">
-                <template x-if="errors.phone_number"><span class="text-red-600 text-xs mt-1 block font-medium" x-text="errors.phone_number[0]"></span></template>
-            </div>
-            <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1">Password Akses</label>
-                <input class="w-full px-3 py-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500" type="password" name="password" required>
-                <template x-if="errors.password"><span class="text-red-600 text-xs mt-1 block font-medium" x-text="errors.password[0]"></span></template>
-            </div>
-            <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1">Konfirmasi Password</label>
-                <input class="w-full px-3 py-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500" type="password" name="password_confirmation" required>
-            </div>
-            <button type="submit" :disabled="loading" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl hover:bg-blue-700 transition mt-2 disabled:opacity-50 shadow-md">
-                <span x-show="!loading">Daftar</span>
-                <span x-show="loading">Memproses...</span>
+            <button id="login-submit-btn" type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition mt-2 shadow-md shadow-blue-500/20 text-sm">
+                Masuk
             </button>
         </form>
-        <div class="mt-4 text-center text-sm text-gray-600">
-            Sudah punya lisensi? <a href="#" @click.prevent="showRegister = false; showLogin = true" class="text-blue-600 hover:underline font-bold">Masuk di sini</a>
+        
+        <div class="mt-5 text-center text-xs text-gray-600 dark:text-gray-400">
+            Belum punya akun? <button type="button" onclick="openRegisterModal()" class="text-blue-600 dark:text-blue-400 hover:underline font-bold">Daftar Sekarang</button>
         </div>
-
-        <form x-show="step === 'otp'" style="display: none;" class="space-y-4" @submit.prevent="
-            loading = true; errors = {};
-            let formData = new FormData($event.target);
-            formData.append('phone', phone);
-            formData.append('_token', '{{ csrf_token() }}');
-            fetch('{{ route('register.verify-otp') }}', {
-                method: 'POST', 
-                body: formData, 
-                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
-            }).then(async response => {
-                if (response.ok) { window.location.reload(); }
-                else if (response.status === 422) { errors = (await response.json()).errors; }
-                loading = false;
-            }).catch(() => {
-                loading = false;
-            });
-        ">
-            <div class="text-sm text-gray-600 mb-4">
-                Kami telah mengirimkan 6 digit kode OTP ke nomor WhatsApp <strong x-text="phone"></strong>.
-            </div>
-            <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1">Kode OTP</label>
-                <input class="w-full px-3 py-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-center tracking-widest text-lg font-bold" type="text" name="otp" required maxlength="6">
-                <template x-if="errors.otp"><span class="text-red-600 text-xs mt-1 block font-medium" x-text="errors.otp[0]"></span></template>
-            </div>
-            <button type="submit" :disabled="loading" class="w-full bg-green-600 text-white font-bold py-2.5 rounded-xl hover:bg-green-700 transition mt-2 disabled:opacity-50 shadow-md">
-                <span x-show="!loading">Verifikasi OTP</span>
-                <span x-show="loading">Memproses...</span>
-            </button>
-            <div class="text-center mt-3">
-                <button type="button" @click="step = 'register'" class="text-xs text-gray-500 hover:text-gray-800 underline">Ganti Nomor HP</button>
-            </div>
-        </form>
     </div>
 </div>
+
+<div id="modal-register-backdrop" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-gray-950/80 backdrop-blur-sm p-4 transition-all duration-200">
+    <div class="w-full max-w-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-3xl shadow-2xl p-6 relative animate-in fade-in zoom-in-95 duration-150">
+        <div class="flex justify-between items-center mb-6">
+            <h2 id="register-modal-title" class="text-xl font-bold text-gray-900 dark:text-white">Registrasi Klien Baru</h2>
+            <button type="button" onclick="closeRegisterModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 rounded-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        
+        <!-- Step 1: Form Registrasi -->
+        <form id="ajax-register-form" class="space-y-3.5" onsubmit="handleAjaxRegister(event)">
+            @csrf
+            <div>
+                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Nama Lengkap / Organisasi</label>
+                <input class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm" type="text" name="name" required autofocus>
+                <span id="reg-error-name" class="text-red-500 text-xs mt-1 block font-medium hidden"></span>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                <input class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm" type="email" name="email" required>
+                <span id="reg-error-email" class="text-red-500 text-xs mt-1 block font-medium hidden"></span>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Nomor WhatsApp Aktif</label>
+                <input class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm" type="text" name="phone" placeholder="08xxxxxxxxxx" required>
+                <span id="reg-error-phone" class="text-red-500 text-xs mt-1 block font-medium hidden"></span>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                <input class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm" type="password" name="password" required>
+                <span id="reg-error-password" class="text-red-500 text-xs mt-1 block font-medium hidden"></span>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Konfirmasi Password</label>
+                <input class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm" type="password" name="password_confirmation" required>
+            </div>
+            <button id="register-submit-btn" type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition mt-2 shadow-md shadow-blue-500/20 text-sm">
+                Daftar Akun
+            </button>
+        </form>
+
+        <!-- Step 2: Form OTP WhatsApp -->
+        <form id="ajax-otp-form" class="space-y-4 hidden" onsubmit="handleAjaxOtp(event)">
+            @csrf
+            <div class="text-center">
+                <div class="w-12 h-12 bg-green-100 dark:bg-green-950 text-green-600 dark:text-green-400 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl">
+                    <i class="fab fa-whatsapp"></i>
+                </div>
+                <p class="text-xs text-gray-600 dark:text-gray-400">Kode OTP telah dikirimkan ke WhatsApp Anda: <br><strong id="otp-phone-display" class="text-gray-900 dark:text-white"></strong></p>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1 text-center">Masukkan 6 Digit Kode OTP</label>
+                <input id="otp-input-field" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl text-center text-xl font-bold tracking-widest focus:border-green-500 focus:ring-1 focus:ring-green-500" type="text" name="otp" maxlength="6" required>
+                <span id="otp-error-msg" class="text-red-500 text-xs mt-1 block font-medium text-center hidden"></span>
+            </div>
+            <button id="otp-submit-btn" type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 rounded-xl transition shadow-md shadow-green-500/20 text-sm">
+                Verifikasi OTP
+            </button>
+            <div class="text-center mt-2">
+                <button type="button" onclick="backToRegisterForm()" class="text-xs text-gray-500 hover:underline">Ganti Nomor HP</button>
+            </div>
+        </form>
+        
+        <div id="register-footer" class="mt-5 text-center text-xs text-gray-600 dark:text-gray-400">
+            Sudah punya akun? <button type="button" onclick="openLoginModal()" class="text-blue-600 dark:text-blue-400 hover:underline font-bold">Masuk</button>
+        </div>
+    </div>
 </div>
 
 <!-- Floating WhatsApp Button -->
@@ -168,6 +109,147 @@
         Hubungi Kami
     </span>
 </a>
+
+<script>
+    function openLoginModal() {
+        document.getElementById('modal-login-backdrop').classList.remove('hidden');
+        document.getElementById('modal-register-backdrop').classList.add('hidden');
+    }
+    function closeLoginModal() {
+        document.getElementById('modal-login-backdrop').classList.add('hidden');
+    }
+    function openRegisterModal() {
+        document.getElementById('modal-register-backdrop').classList.remove('hidden');
+        document.getElementById('modal-login-backdrop').classList.add('hidden');
+        backToRegisterForm();
+    }
+    function closeRegisterModal() {
+        document.getElementById('modal-register-backdrop').classList.add('hidden');
+    }
+    function backToRegisterForm() {
+        document.getElementById('ajax-register-form').classList.remove('hidden');
+        document.getElementById('ajax-otp-form').classList.add('hidden');
+        document.getElementById('register-modal-title').innerText = 'Registrasi Klien Baru';
+        document.getElementById('register-footer').classList.remove('hidden');
+    }
+
+    let globalRegisteredPhone = '';
+
+    function handleAjaxLogin(e) {
+        e.preventDefault();
+        const btn = document.getElementById('login-submit-btn');
+        btn.disabled = true;
+        btn.innerText = 'Memproses...';
+        
+        document.getElementById('login-error-email').classList.add('hidden');
+        document.getElementById('login-error-password').classList.add('hidden');
+
+        fetch('{{ route('login') }}', {
+            method: 'POST',
+            body: new FormData(e.target),
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+        }).then(async res => {
+            if (res.ok) {
+                window.location.reload();
+            } else {
+                const data = await res.json();
+                const errSpan = document.getElementById('login-error-email');
+                errSpan.innerText = (data.errors && data.errors.email ? data.errors.email[0] : (data.message || 'Email atau password salah.'));
+                errSpan.classList.remove('hidden');
+            }
+            btn.disabled = false;
+            btn.innerText = 'Masuk';
+        }).catch(err => {
+            const errSpan = document.getElementById('login-error-email');
+            errSpan.innerText = 'Terjadi kesalahan koneksi.';
+            errSpan.classList.remove('hidden');
+            btn.disabled = false;
+            btn.innerText = 'Masuk';
+        });
+    }
+
+    function handleAjaxRegister(e) {
+        e.preventDefault();
+        const btn = document.getElementById('register-submit-btn');
+        btn.disabled = true;
+        btn.innerText = 'Memproses...';
+
+        document.querySelectorAll('[id^="reg-error-"]').forEach(el => el.classList.add('hidden'));
+
+        fetch('{{ route('register') }}', {
+            method: 'POST',
+            body: new FormData(e.target),
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+        }).then(async res => {
+            if (res.ok) {
+                const data = await res.json();
+                if (data.requires_otp) {
+                    globalRegisteredPhone = data.phone;
+                    document.getElementById('otp-phone-display').innerText = data.phone;
+                    document.getElementById('ajax-register-form').classList.add('hidden');
+                    document.getElementById('ajax-otp-form').classList.remove('hidden');
+                    document.getElementById('register-modal-title').innerText = 'Verifikasi WhatsApp';
+                    document.getElementById('register-footer').classList.add('hidden');
+                } else {
+                    window.location.reload();
+                }
+            } else {
+                const data = await res.json();
+                if (data.errors) {
+                    for (let [field, msgs] of Object.entries(data.errors)) {
+                        const el = document.getElementById('reg-error-' + field);
+                        if (el) {
+                            el.innerText = msgs[0];
+                            el.classList.remove('hidden');
+                        }
+                    }
+                }
+            }
+            btn.disabled = false;
+            btn.innerText = 'Daftar Akun';
+        }).catch(err => {
+            btn.disabled = false;
+            btn.innerText = 'Daftar Akun';
+        });
+    }
+
+    function handleAjaxOtp(e) {
+        e.preventDefault();
+        const btn = document.getElementById('otp-submit-btn');
+        btn.disabled = true;
+        btn.innerText = 'Memproses...';
+
+        const otp = document.getElementById('otp-input-field').value;
+        const errSpan = document.getElementById('otp-error-msg');
+        errSpan.classList.add('hidden');
+
+        fetch('{{ route('register.verify-otp') }}', {
+            method: 'POST',
+            body: JSON.stringify({ phone: globalRegisteredPhone, otp: otp }),
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json', 
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-Requested-With': 'XMLHttpRequest' 
+            }
+        }).then(async res => {
+            if (res.ok) {
+                window.location.reload();
+            } else {
+                const data = await res.json();
+                errSpan.innerText = data.message || 'Kode OTP salah atau kedaluwarsa.';
+                errSpan.classList.remove('hidden');
+            }
+            btn.disabled = false;
+            btn.innerText = 'Verifikasi OTP';
+        }).catch(err => {
+            errSpan.innerText = 'Gagal verifikasi OTP.';
+            errSpan.classList.remove('hidden');
+            btn.disabled = false;
+            btn.innerText = 'Verifikasi OTP';
+        });
+    }
+</script>
 
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
