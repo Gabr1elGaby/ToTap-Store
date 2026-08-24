@@ -44,10 +44,11 @@ foreach ($locations as $loc) {
         } catch(Exception $e) {}
     }
     
-    @unlink($loc . "/bootstrap/cache/config.php");
-    @unlink($loc . "/bootstrap/cache/routes-v7.php");
-    @unlink($loc . "/bootstrap/cache/packages.php");
-    @unlink($loc . "/bootstrap/cache/services.php");
+    $bDir = $loc . "/bootstrap/cache";
+    if (is_dir($bDir)) {
+        $bFiles = glob($bDir . "/*.php");
+        if ($bFiles) foreach($bFiles as $bf) @unlink($bf);
+    }
 }
 
 echo "<h3>Views Cache Dihapus: $clearedViews file</h3>";
