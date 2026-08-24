@@ -189,7 +189,14 @@
                                         <h4 class="font-bold text-gray-800 dark:text-gray-200 mb-3 mt-6 border-b border-gray-200 dark:border-gray-700 pb-2">{{ $cat }}</h4>
                                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                             @foreach($catProducts as $product)
-                                                @if($product->is_out_of_stock)
+                                                @php
+                                                    $isAvailable = true;
+                                                    if (isset($vipBalance) && (float)$vipBalance > 0) {
+                                                        $isAvailable = ((float)$product->price_modal <= (float)$vipBalance);
+                                                    }
+                                                @endphp
+
+                                                @if(!$isAvailable)
                                                     <div class="relative rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700/80 bg-gray-50/80 dark:bg-gray-800/30 p-3.5 text-center opacity-50 cursor-not-allowed select-none">
                                                         <div class="text-sm font-bold text-gray-500 dark:text-gray-400 leading-tight mb-1 line-through">{{ $product->name }}</div>
                                                         <div class="text-xs font-semibold text-gray-400">Rp{{ number_format($product->price_sell, 0, ',', '.') }}</div>

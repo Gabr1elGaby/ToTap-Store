@@ -170,7 +170,8 @@ class TopUpController extends Controller
 
         return view('topup.show', [
             'game' => $game,
-            'categories' => $finalCategories
+            'categories' => $finalCategories,
+            'vipBalance' => $vipBalance,
         ]);
     }
 
