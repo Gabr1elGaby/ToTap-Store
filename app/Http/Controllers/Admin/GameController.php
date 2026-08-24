@@ -24,6 +24,7 @@ class GameController extends Controller
         ]);
 
         Setting::set('vip_balance_threshold', $request->balance);
+        Setting::set('vip_reseller_balance', $request->balance);
 
         return back()->with('success', 'Batas saldo modal VIP Reseller berhasil diperbarui.');
     }
