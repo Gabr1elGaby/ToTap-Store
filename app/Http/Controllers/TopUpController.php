@@ -17,6 +17,9 @@ class TopUpController extends Controller
     }
 
     public function show($slug)
+    {
+        $game = Game::where('slug', $slug)->where('is_active', true)->firstOrFail();
+
         // 1. Ambil Saldo Modal VIP Reseller (Proteksi Stok)
         $vipBalance = (float) \App\Models\Setting::get('vip_balance_threshold', 0);
         
