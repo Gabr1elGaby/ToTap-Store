@@ -55,33 +55,31 @@
                 
                 <!-- Light / Dark Mode Toggle Button (Desktop) -->
                 <button type="button"
-                    @click="
+                    onclick="
                         if (document.documentElement.classList.contains('dark')) {
                             document.documentElement.classList.remove('dark');
                             document.documentElement.style.backgroundColor = '#f8fafc';
                             localStorage.setItem('totap_theme', 'light');
-                            $dispatch('theme-changed', 'light');
+                            document.querySelectorAll('.sun-icon-btn').forEach(el => el.classList.add('hidden'));
+                            document.querySelectorAll('.moon-icon-btn').forEach(el => el.classList.remove('hidden'));
                         } else {
                             document.documentElement.classList.add('dark');
                             document.documentElement.style.backgroundColor = '#111827';
                             localStorage.setItem('totap_theme', 'dark');
-                            $dispatch('theme-changed', 'dark');
+                            document.querySelectorAll('.sun-icon-btn').forEach(el => el.classList.remove('hidden'));
+                            document.querySelectorAll('.moon-icon-btn').forEach(el => el.classList.add('hidden'));
                         }
                     "
                     class="p-2 rounded-xl text-gray-600 dark:text-gray-300 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-gray-700/60 transition focus:outline-none flex items-center justify-center border border-gray-200 dark:border-gray-700 shadow-sm"
-                    :title="theme === 'dark' ? 'Ganti ke Mode Terang (Light Mode)' : 'Ganti ke Mode Gelap (Dark Mode)'">
+                    title="Ganti Mode Terang / Gelap">
                     <!-- Sun Icon (Active in Dark mode) -->
-                    <template x-if="theme === 'dark'">
-                        <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                    </template>
+                    <svg class="sun-icon-btn w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
                     <!-- Moon Icon (Active in Light mode) -->
-                    <template x-if="theme === 'light'">
-                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg>
-                    </template>
+                    <svg class="moon-icon-btn w-5 h-5 text-indigo-600 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
                 </button>
 
                 @auth
@@ -121,8 +119,8 @@
                 </x-dropdown>
                 @else
                 <div class="space-x-3">
-                    <a href="#" @click.prevent="window.dispatchEvent(new CustomEvent('open-login'))" class="font-semibold text-sm text-gray-700 hover:text-indigo-600 dark:text-gray-200 dark:hover:text-white px-3 py-2 rounded-lg transition">Login</a>
-                    <a href="#" @click.prevent="window.dispatchEvent(new CustomEvent('open-register'))" class="font-semibold text-sm text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-xl shadow-md transition">Register</a>
+                    <a href="{{ route('login') }}" class="font-semibold text-sm text-gray-700 hover:text-indigo-600 dark:text-gray-200 dark:hover:text-white px-3 py-2 rounded-lg transition">Login</a>
+                    <a href="{{ route('register') }}" class="font-semibold text-sm text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-xl shadow-md transition">Register</a>
                 </div>
                 @endauth
             </div>
@@ -131,30 +129,29 @@
             <div class="-me-2 flex items-center gap-1 sm:hidden">
                 <!-- Theme Toggle Button (Mobile) -->
                 <button type="button"
-                    @click="
+                    onclick="
                         if (document.documentElement.classList.contains('dark')) {
                             document.documentElement.classList.remove('dark');
                             document.documentElement.style.backgroundColor = '#f8fafc';
                             localStorage.setItem('totap_theme', 'light');
-                            $dispatch('theme-changed', 'light');
+                            document.querySelectorAll('.sun-icon-btn').forEach(el => el.classList.add('hidden'));
+                            document.querySelectorAll('.moon-icon-btn').forEach(el => el.classList.remove('hidden'));
                         } else {
                             document.documentElement.classList.add('dark');
                             document.documentElement.style.backgroundColor = '#111827';
                             localStorage.setItem('totap_theme', 'dark');
-                            $dispatch('theme-changed', 'dark');
+                            document.querySelectorAll('.sun-icon-btn').forEach(el => el.classList.remove('hidden'));
+                            document.querySelectorAll('.moon-icon-btn').forEach(el => el.classList.add('hidden'));
                         }
                     "
-                    class="p-2 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none transition">
-                    <template x-if="theme === 'dark'">
-                        <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                    </template>
-                    <template x-if="theme === 'light'">
-                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg>
-                    </template>
+                    class="p-2 rounded-xl text-gray-600 dark:text-gray-300 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-gray-700/60 transition focus:outline-none flex items-center justify-center border border-gray-200 dark:border-gray-700"
+                    title="Ganti Mode Terang / Gelap">
+                    <svg class="sun-icon-btn w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <svg class="moon-icon-btn w-5 h-5 text-indigo-600 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
                 </button>
 
                 <!-- Hamburger Button (Mobile 3 Lines) -->
