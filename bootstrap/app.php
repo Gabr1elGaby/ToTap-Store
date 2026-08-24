@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->validateCsrfTokens(except: [
             'api/payment/webhook',
+            'api/tripay/*',
             'cv/preview/*',
             'topup/*/check-nickname',
             'topup/*/process',
