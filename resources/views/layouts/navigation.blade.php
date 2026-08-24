@@ -119,8 +119,8 @@
                 </x-dropdown>
                 @else
                 <div class="space-x-3">
-                    <a href="{{ route('login') }}" class="font-semibold text-sm text-gray-700 hover:text-indigo-600 dark:text-gray-200 dark:hover:text-white px-3 py-2 rounded-lg transition">Login</a>
-                    <a href="{{ route('register') }}" class="font-semibold text-sm text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-xl shadow-md transition">Register</a>
+                    <a href="{{ route('login') }}" @click.prevent="window.dispatchEvent(new CustomEvent('open-login'))" class="font-semibold text-sm text-gray-700 hover:text-indigo-600 dark:text-gray-200 dark:hover:text-white px-3 py-2 rounded-lg transition cursor-pointer">Login</a>
+                    <a href="{{ route('register') }}" @click.prevent="window.dispatchEvent(new CustomEvent('open-register'))" class="font-semibold text-sm text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-xl shadow-md transition cursor-pointer">Register</a>
                 </div>
                 @endauth
             </div>

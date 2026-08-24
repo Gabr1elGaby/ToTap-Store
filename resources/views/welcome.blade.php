@@ -86,7 +86,7 @@
                                 Profil Saya
                             </a>
                         @else
-                            <a href="{{ route('register') }}" class="px-8 py-3 bg-white dark:bg-transparent text-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-gray-100 dark:hover:bg-gray-800 transition shadow-sm">
+                            <a href="{{ route('register') }}" @click.prevent="window.dispatchEvent(new CustomEvent('open-register'))" class="px-8 py-3 bg-white dark:bg-transparent text-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-gray-100 dark:hover:bg-gray-800 transition shadow-sm cursor-pointer">
                                 Daftar Sekarang
                             </a>
                         @endauth
