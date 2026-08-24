@@ -189,20 +189,12 @@
                                         <h4 class="font-bold text-gray-800 dark:text-gray-200 mb-3 mt-6 border-b border-gray-200 dark:border-gray-700 pb-2">{{ $cat }}</h4>
                                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                             @foreach($catProducts as $product)
-                                                @if($product->is_out_of_stock)
-                                                    <div class="relative rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700/80 bg-gray-50/80 dark:bg-gray-800/30 p-3 text-center opacity-50 cursor-not-allowed select-none transition-all">
-                                                        <div class="text-sm font-bold text-gray-500 dark:text-gray-400 leading-tight mb-1 line-through">{{ $product->name }}</div>
-                                                        <div class="text-xs font-semibold text-gray-400">Rp{{ number_format($product->price_sell, 0, ',', '.') }}</div>
-                                                        <span class="inline-block text-[10px] font-black text-red-600 dark:text-red-400 bg-red-100/80 dark:bg-red-950/60 px-2 py-0.5 rounded-md border border-red-200 dark:border-red-800/60 mt-1">Stok Habis</span>
-                                                    </div>
-                                                @else
-                                                    <div @click="selectedProduct = '{{ $product->id }}'" 
-                                                         :class="selectedProduct == '{{ $product->id }}' ? 'border-indigo-600 bg-indigo-50/90 dark:bg-indigo-900/50 shadow-md ring-2 ring-indigo-500/20' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 hover:bg-gray-50 dark:hover:bg-gray-700/40 shadow-sm'"
-                                                         class="relative rounded-xl border-2 p-3 cursor-pointer transition-all text-center">
-                                                        <div class="text-sm font-bold text-gray-900 dark:text-white leading-tight mb-1">{{ $product->name }}</div>
-                                                        <div class="text-xs font-bold text-indigo-600 dark:text-indigo-400">Rp{{ number_format($product->price_sell, 0, ',', '.') }}</div>
-                                                    </div>
-                                                @endif
+                                                <div @click="selectedProduct = '{{ $product->id }}'" 
+                                                     :class="selectedProduct == '{{ $product->id }}' ? 'border-indigo-600 bg-indigo-50/90 dark:bg-indigo-900/50 shadow-md ring-2 ring-indigo-500/20 scale-[1.02]' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 hover:bg-gray-50 dark:hover:bg-gray-700/40 shadow-sm'"
+                                                     class="relative rounded-xl border-2 p-3.5 cursor-pointer transition-all text-center hover:scale-[1.02]">
+                                                    <div class="text-sm font-bold text-gray-900 dark:text-white leading-tight mb-1.5">{{ $product->name }}</div>
+                                                    <div class="text-xs font-black text-indigo-600 dark:text-indigo-400">Rp{{ number_format($product->price_sell, 0, ',', '.') }}</div>
+                                                </div>
                                             @endforeach
                                         </div>
                                     @endforeach
