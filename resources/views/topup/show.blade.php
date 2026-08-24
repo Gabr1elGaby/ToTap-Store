@@ -157,14 +157,22 @@
                                         <h3 class="text-lg font-bold text-gray-900 dark:text-white">Masukkan Tujuan</h3>
                                     </div>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <input type="text" name="player_id" x-model="playerId" placeholder="{{ $game->target_field_1 }}" required
-                                                class="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+                                        <div class="{{ $game->requires_zone_id ? '' : 'md:col-span-2' }}">
+                                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
+                                                {{ $game->target_field_1 ?: 'User ID / Player ID' }}
+                                            </label>
+                                            <input type="text" name="player_id" x-model="playerId" 
+                                                placeholder="{{ $game->target_field_1 ?: ($game->slug == 'valorant' ? 'Contoh: RiotID#1234' : 'Masukkan ' . $game->name . ' ID') }}" required
+                                                class="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm p-3 font-semibold text-sm">
                                         </div>
                                         @if($game->requires_zone_id)
                                         <div>
-                                            <input type="text" name="zone_id" x-model="zoneId" placeholder="{{ $game->target_field_2 ?? 'Zone ID' }}" required
-                                                class="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+                                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
+                                                {{ $game->target_field_2 ?: 'Zone ID / Server ID' }}
+                                            </label>
+                                            <input type="text" name="zone_id" x-model="zoneId" 
+                                                placeholder="{{ $game->target_field_2 ?: 'Contoh: 1234' }}" required
+                                                class="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm p-3 font-semibold text-sm">
                                         </div>
                                         @endif
                                     </div>

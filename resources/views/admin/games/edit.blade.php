@@ -65,6 +65,29 @@
                              onerror="this.classList.add('hidden')">
                     </div>
 
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Label Input 1 (Data Akun Utama)</label>
+                            <input type="text" name="target_field_1" value="{{ $game->target_field_1 }}" placeholder="Contoh: User ID / Riot ID / Player ID" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Label Input 2 (Zone / Server ID)</label>
+                            <input type="text" name="target_field_2" value="{{ $game->target_field_2 }}" placeholder="Contoh: Zone ID / Server" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 p-4 rounded-xl bg-slate-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700">
+                        <input type="checkbox" name="requires_zone_id" id="requires_zone_id" value="1" {{ $game->requires_zone_id ? 'checked' : '' }} class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500 border-gray-300">
+                        <label for="requires_zone_id" class="text-sm font-bold text-gray-700 dark:text-gray-300 cursor-pointer">
+                            Game ini membutuhkan 2 kolom input (seperti Mobile Legends / Genshin Impact)
+                        </label>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Panduan / Cara Top Up (Opsional)</label>
+                        <textarea name="guide_text" rows="3" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white" placeholder="Tuliskan petunjuk pengisian ID untuk game ini...">{{ $game->guide_text }}</textarea>
+                    </div>
+
                     <div>
                         <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Status Game</label>
                         <select name="is_active" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white">

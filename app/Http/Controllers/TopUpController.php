@@ -43,8 +43,7 @@ class TopUpController extends Controller
         $seenKeys = [];
 
         foreach ($allProducts as $product) {
-            $status = strtolower(trim((string) $product->status));
-            $product->is_out_of_stock = ($status === 'empty' || $status === 'gangguan' || $status === '0');
+            $product->is_out_of_stock = false;
             $name = strtolower(trim($product->name));
             
             // 1. FILTERING STRICT: Hapus produk Skin, Charisma, dan NON-IDN (Global/Luar Negeri)
