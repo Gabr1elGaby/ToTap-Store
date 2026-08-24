@@ -32,7 +32,7 @@
                     @csrf
                     <div class="relative">
                         <span class="absolute left-3 top-2.5 text-xs font-bold text-gray-400">Rp</span>
-                        <input type="number" name="balance" value="{{ $vipBalance }}" min="0" step="1000" required
+                        <input type="number" name="balance" value="{{ $vipBalance ?? \App\Models\Setting::get('vip_balance_threshold', 0) }}" min="0" step="1000" required
                             class="pl-9 pr-3 py-2 bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl text-sm font-bold w-40 focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                     <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md transition whitespace-nowrap">

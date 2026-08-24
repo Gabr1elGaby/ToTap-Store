@@ -4,16 +4,28 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Game;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
 
 class GameController extends Controller
 {
     public function index()
     {
         $games = Game::withCount('products')->get();
-        return view('admin.games.index', compact('games'));
+        $vipBalance = (float) Setting::get('vip_balance_threshold', 0);
+        return view('admin.games.index', compact('games', 'vipBalance'));
+    }
+
+    public function updateBalance(Request $request)
+    {
+        $request->validate([
+            'balance' => 'required|numeric|min:0'
+        ]);
+
+        Setting::set('vip_balance_threshold', $request->balance);
+
+        return back()->with('success', 'Batas saldo modal VIP Reseller berhasil diperbarui.');
     }
 
     public function create()
@@ -38,7 +50,6 @@ class GameController extends Controller
         $validated['requires_zone_id'] = $request->has('requires_zone_id');
         $validated['slug'] = Str::slug($validated['name']);
 
-        // Pastikan folder penyimpanan langsung ada
         $uploadDir = public_path('images/games');
         if (!is_dir($uploadDir)) {
             @mkdir($uploadDir, 0777, true);
