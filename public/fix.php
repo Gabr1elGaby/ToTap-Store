@@ -44,16 +44,35 @@ try {
     // Langsung set saldo aktif awal ke Rp 100.000
     $pdo->exec("INSERT INTO settings (`key`, `value`, `created_at`, `updated_at`) VALUES ('vip_balance_threshold', '100000', NOW(), NOW()) ON DUPLICATE KEY UPDATE `value` = '100000', `updated_at` = NOW()");
 
-    echo "<h2 style='color:green;'>✅ 1. Database, Saldo & Format Input Game Berhasil Disetel 100%!</h2>";
+    $stmt = $pdo->query("SELECT * FROM settings");
+    echo "<pre>Settings: " . print_r($stmt->fetchAll(PDO::FETCH_ASSOC), true) . "</pre>";
+
 } catch(Exception $e) {
     echo "<h2 style='color:red;'>Database Error: " . $e->getMessage() . "</h2>";
 }
 
-// 3. BERSIHKAN SEMUA CACHE VIEW
+// 3. Test VIP Reseller from live server
+$apiId = "UEsJ21pX";
+$apiKey = "wTpFb8UKOona2Hm56HODEruuB7F2aAE0MQU2dXgjjRy1Q2lCUUfL7Un9mcgxtLRy";
+$sign = md5($apiId . $apiKey);
+
+$ch = curl_init("https://vip-reseller.co.id/api/profile");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, [
+    "key" => $apiKey,
+    "sign" => $sign
+]);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+$res = curl_exec($ch);
+curl_close($ch);
+
+echo "<pre>Live VIP API: " . htmlspecialchars($res) . "</pre>";
+
+// 4. BERSIHKAN SEMUA CACHE VIEW
 $views = glob(__DIR__ . "/storage/framework/views/*");
 if ($views) foreach($views as $v) if(is_file($v)) @unlink($v);
 @unlink(__DIR__ . "/bootstrap/cache/config.php");
 @unlink(__DIR__ . "/bootstrap/cache/routes-v7.php");
 
 echo "<h1 style='color:green; font-family:sans-serif;'>🎉 BERHASIL 100%! SALDO DISIMPAN & SEMUA NOMINAL SESUAI SALDO SUDAH BUKA!</h1>";
-echo "<p><a href='/topup/valorant' style='padding:14px 28px; background:#4f46e5; color:white; border-radius:12px; text-decoration:none; font-weight:bold; font-size:18px;'>👉 BUKA TOP UP VALORANT</a></p>";
