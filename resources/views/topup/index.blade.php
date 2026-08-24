@@ -36,31 +36,13 @@
                         </div>
                     @endif
                     <div class="w-full h-48 relative overflow-hidden bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                        @if($game->thumbnail && (str_starts_with($game->thumbnail, 'http') || file_exists(public_path($game->thumbnail))))
-                            <img src="{{ $game->thumbnail }}" alt="{{ $game->name }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                        @elseif($game->slug == 'free-fire')
-                            <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-orange-600 to-amber-700 flex flex-col items-center justify-center text-white p-4 shadow-inner">
-                                <i class="fas fa-fire text-4xl mb-2 text-yellow-300"></i>
-                                <span class="font-black text-base tracking-wider" style="font-family: 'Orbitron', sans-serif;">FREE FIRE</span>
-                            </div>
-                        @elseif(str_contains($game->slug, 'pubg'))
-                            <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-amber-600 to-yellow-800 flex flex-col items-center justify-center text-white p-4 shadow-inner">
-                                <i class="fas fa-crosshairs text-4xl mb-2 text-amber-200"></i>
-                                <span class="font-black text-base tracking-wider" style="font-family: 'Orbitron', sans-serif;">PUBG MOBILE</span>
-                            </div>
-                        @elseif($game->slug == 'valorant')
-                            <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-red-600 to-rose-900 flex flex-col items-center justify-center text-white p-4 shadow-inner">
-                                <i class="fas fa-shield-alt text-4xl mb-2 text-rose-200"></i>
-                                <span class="font-black text-base tracking-wider" style="font-family: 'Orbitron', sans-serif;">VALORANT</span>
-                            </div>
-                        @elseif($game->slug == 'roblox')
-                            <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-blue-600 to-indigo-800 flex flex-col items-center justify-center text-white p-4 shadow-inner">
-                                <i class="fas fa-cube text-4xl mb-2 text-cyan-200"></i>
-                                <span class="font-black text-base tracking-wider" style="font-family: 'Orbitron', sans-serif;">ROBLOX</span>
-                            </div>
-                        @else
-                            <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-4xl shadow-inner">{{ substr($game->name, 0, 1) }}</div>
+                        @if(!empty($game->thumbnail))
+                            <img src="{{ $game->thumbnail }}" alt="{{ $game->name }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" onerror="this.classList.add('hidden')">
                         @endif
+                        <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-indigo-600 to-slate-900 flex flex-col items-center justify-center text-white p-4 shadow-inner {{ !empty($game->thumbnail) ? 'hidden' : '' }}">
+                            <span class="text-3xl mb-1">🎮</span>
+                            <span class="font-black text-sm tracking-wider uppercase text-center">{{ $game->name }}</span>
+                        </div>
                     </div>
                     <div class="p-4 text-center bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700">
                         <h3 class="font-bold text-gray-900 dark:text-white truncate" style="font-family: 'Orbitron', sans-serif; font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase;">{{ $game->name }}</h3>
