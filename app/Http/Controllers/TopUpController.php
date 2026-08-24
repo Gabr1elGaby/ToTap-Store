@@ -189,10 +189,10 @@ class TopUpController extends Controller
         
         $product = GameProduct::findOrFail($request->product_id);
         
-        // Pengecekan Keamanan Saldo & Status VIP Reseller
+        $threshold = (float) \App\Models\Setting::get('vip_balance_threshold', 0);
         $vipBalance = Cache::get('vip_reseller_balance') ?? (float)\App\Models\Setting::get('vip_reseller_balance', 0);
-        if ($product->status !== 'available' || ($vipBalance !== null && $product->price_modal > $vipBalance)) {
-            return back()->with('error', 'Mohon maaf, nominal ' . $product->name . ' sedang habis atau dalam pemeliharaan. Silakan pilih nominal lainnya.');
+        if ($threshold > 0 && $vipBalance > 0 && $product->price_modal > $vipBalance) {
+            return back()->with('error', 'Mohon maaf, nominal ' . $product->name . ' sedang dalam pemeliharaan saldo provider. Silakan hubungi Admin.');
         }
         
         // Buat ID Transaksi Unik (Order ID)

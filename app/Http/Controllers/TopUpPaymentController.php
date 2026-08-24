@@ -25,12 +25,12 @@ class TopUpPaymentController extends Controller
     {
         $transaction = Transaction::with('gameProduct')->findOrFail($id);
 
-        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
-        \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+        \Midtrans\Config::$serverKey = config('services.midtrans.server_key', env('MIDTRANS_SERVER_KEY', 'Mid-server-ckZHwiXrG6K0f-NXv3ykujHi'));
+        \Midtrans\Config::$isProduction = config('services.midtrans.is_production', env('MIDTRANS_IS_PRODUCTION', false));
         \Midtrans\Config::$curlOptions = [
             CURLOPT_SSL_VERIFYHOST => 0,
             CURLOPT_SSL_VERIFYPEER => 0,
-            CURLOPT_HTTPHEADER => [], // Fix Midtrans SDK Bug
+            CURLOPT_HTTPHEADER => [],
         ];
         
         try {
