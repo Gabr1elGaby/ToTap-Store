@@ -85,8 +85,8 @@ class GameController extends Controller
             'name' => 'required|string|max:255',
             'developer' => 'nullable|string|max:255',
             'category' => 'nullable|string|max:255',
-            'thumbnail' => 'nullable|mimes:jpeg,png,jpg,gif,webp,svg,avif|max:5120',
-            'cover_image' => 'nullable|mimes:jpeg,png,jpg,gif,webp,svg,avif|max:5120',
+            'thumbnail' => 'nullable|file|max:20480',
+            'cover_image' => 'nullable|file|max:20480',
             'guide_text' => 'nullable|string',
             'target_field_1' => 'nullable|string',
             'target_field_2' => 'nullable|string',
@@ -99,24 +99,37 @@ class GameController extends Controller
             $validated['slug'] = Str::slug($validated['name']);
         }
 
-        $dest1 = base_path('images/games');
-        $dest2 = public_path('images/games');
-        @mkdir($dest1, 0777, true);
-        @mkdir($dest2, 0777, true);
+        $destDirs = [
+            base_path('images/games'),
+            public_path('images/games'),
+            base_path('public/images/games'),
+        ];
+        foreach ($destDirs as $d) {
+            @mkdir($d, 0777, true);
+        }
 
         if ($request->hasFile('thumbnail')) {
             $file = $request->file('thumbnail');
-            $fileName = time() . '_thumb_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $file->move($dest1, $fileName);
-            @copy($dest1 . '/' . $fileName, $dest2 . '/' . $fileName);
+            $ext = $file->getClientOriginalExtension() ?: 'png';
+            $fileName = time() . '_thumb_' . Str::random(6) . '.' . $ext;
+            
+            $saved = false;
+            foreach ($destDirs as $d) {
+                @copy($file->getRealPath(), $d . '/' . $fileName);
+            }
+            $file->move(base_path('images/games'), $fileName);
             $validated['thumbnail'] = '/images/games/' . $fileName;
         }
 
         if ($request->hasFile('cover_image')) {
             $file = $request->file('cover_image');
-            $fileName = time() . '_cover_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $file->move($dest1, $fileName);
-            @copy($dest1 . '/' . $fileName, $dest2 . '/' . $fileName);
+            $ext = $file->getClientOriginalExtension() ?: 'png';
+            $fileName = time() . '_cover_' . Str::random(6) . '.' . $ext;
+            
+            foreach ($destDirs as $d) {
+                @copy($file->getRealPath(), $d . '/' . $fileName);
+            }
+            $file->move(base_path('images/games'), $fileName);
             $validated['cover_image'] = '/images/games/' . $fileName;
         }
 

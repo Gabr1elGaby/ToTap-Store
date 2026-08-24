@@ -17,6 +17,19 @@
                     <i class="fas fa-check-circle text-lg"></i> {{ session('success') }}
                 </div>
             @endif
+
+            @if($errors->any())
+                <div class="bg-red-500/10 border border-red-500 text-red-600 dark:text-red-400 p-5 rounded-2xl mb-6 shadow-sm">
+                    <strong class="font-bold flex items-center gap-2 mb-2">
+                        <i class="fas fa-exclamation-triangle"></i> Gagal Menyimpan:
+                    </strong>
+                    <ul class="list-disc list-inside text-sm space-y-1">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-3xl border border-gray-200 dark:border-gray-700 p-8">
                 <form action="{{ route('admin.games.update', $game) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                     @csrf
