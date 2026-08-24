@@ -330,43 +330,31 @@ class TopUpController extends Controller
             $gameCode = match(strtolower($game->slug)) {
                 'mobile-legend', 'mobile-legends' => 'mobile-legends',
                 'free-fire', 'freefire' => 'free-fire',
-                'valorant' => 'valorant',
                 'pubg-mobile', 'pubg' => 'pubg-mobile',
-                'roblox' => 'roblox',
-                'genshin-impact' => 'genshin-impact',
-                'point-blank' => 'point-blank',
-                default => $game->slug,
+                default => null,
             };
 
-            // Format khusus untuk Valorant (Digabungkan dengan #)
-            if ($gameCode === 'valorant') {
-                $target2 = ltrim($target2, '#');
-                if (!str_contains($target1, '#') && !empty($target2)) {
-                    $target1 = $target1 . '#' . $target2;
-                }
-                $target2 = '';
+            if (!$gameCode) {
+                return response()->json(['success' => false, 'message' => 'Cek Nickname belum didukung untuk game ini.']);
             }
-            
-            $response = $api->checkNickname($gameCode, $target1, $target2);
-            
-            // 1. Jika berhasil diverifikasi oleh API VIP Reseller
-            if (isset($response['result']) && $response['result'] === true && isset($response['data'])) {
-                if (is_string($response['data'])) {
-                    $response['data'] = urldecode($response['data']);
-                }
-                return response()->json($response);
+
+            $res = $api->checkNickname($gameCode, $target1, $target2);
+
+            if (isset($res['result']) && $res['result'] === true && isset($res['data'])) {
+                return response()->json([
+                    'success' => true,
+                    'nickname' => $res['data'],
+                ]);
             }
-            
-            // 2. Jika gagal atau ID salah, tolak secara tegas (tanpa bypass)
+
             return response()->json([
-                'result' => false,
-                'message' => $response['message'] ?? 'Player ID atau Tagline tidak valid atau tidak ditemukan.'
+                'success' => false,
+                'message' => $res['message'] ?? 'ID Game / Server tidak ditemukan.',
             ]);
-            
         } catch (\Exception $e) {
             return response()->json([
-                'result' => false,
-                'message' => 'Gangguan koneksi server: ' . $e->getMessage()
+                'success' => false,
+                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage(),
             ]);
         }
     }
