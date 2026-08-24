@@ -105,9 +105,11 @@
                             </tbody>
                         </table>
                     </div>
+                    @if(method_exists($games, 'links'))
                     <div class="mt-6">
                         {{ $games->links() }}
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

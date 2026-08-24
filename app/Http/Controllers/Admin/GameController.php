@@ -12,7 +12,7 @@ class GameController extends Controller
 {
     public function index()
     {
-        $games = Game::withCount('products')->get();
+        $games = Game::withCount('products')->orderBy('name')->paginate(25);
         $vipBalance = (float) Setting::get('vip_balance_threshold', 0);
         return view('admin.games.index', compact('games', 'vipBalance'));
     }

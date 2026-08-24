@@ -43,11 +43,8 @@ class TopUpController extends Controller
         $seenKeys = [];
 
         foreach ($allProducts as $product) {
-            $threshold = (float) \App\Models\Setting::get('vip_balance_threshold', 0);
-            $product->is_out_of_stock = (
-                strtolower($product->status) !== 'available' || 
-                ($threshold > 0 && $vipBalance > 0 && $product->price_modal > $vipBalance)
-            );
+            $status = strtolower(trim((string) $product->status));
+            $product->is_out_of_stock = ($status === 'empty' || $status === 'gangguan' || $status === '0');
             $name = strtolower(trim($product->name));
             
             // 1. FILTERING STRICT: Hapus produk Skin, Charisma, dan NON-IDN (Global/Luar Negeri)
