@@ -21,22 +21,21 @@ class TopUpController extends Controller
         $game = Game::where('slug', $slug)->where('is_active', true)->firstOrFail();
 
         // 1. Ambil Saldo Modal VIP Reseller (Proteksi Stok dari Admin)
-        $t1 = \App\Models\Setting::get('vip_balance_threshold');
-        $t2 = \App\Models\Setting::get('vip_reseller_balance');
-        $vipBalance = (float) ($t1 !== null && $t1 !== '' ? $t1 : ($t2 !== null && $t2 !== '' ? $t2 : 100000));
+        $t1 = (float) \App\Models\Setting::get('vip_balance_threshold', 0);
+        $t2 = (float) \App\Models\Setting::get('vip_reseller_balance', 0);
+        $vipBalance = ($t1 > 0 ? $t1 : ($t2 > 0 ? $t2 : 100000.0));
         
         try {
             $vipApi = app(VipResellerService::class);
             $profile = $vipApi->getProfile();
             if (isset($profile['result']) && $profile['result'] === true && isset($profile['data']['balance'])) {
                 $liveBal = (float) $profile['data']['balance'];
-                // Jika sudah ada saldo riil di VIP Reseller, gunakan saldo riil tersebut
                 if ($liveBal > 0) {
                     $vipBalance = $liveBal;
                 }
             }
         } catch (\Exception $e) {
-            // Gunakan nilai $vipBalance dari database admin
+            // Fallback ke $vipBalance
         }
 
         $allProducts = $game->products()->where('price_modal', '>', 0)->orderBy('price_sell')->get();
@@ -45,9 +44,8 @@ class TopUpController extends Controller
         $seenKeys = [];
 
         foreach ($allProducts as $product) {
-            // JIKA SALDO 0 ATAU HARGA MODAL > SALDO: OTOMATIS STOK HABIS (TUTUP)
-            // JIKA MODAL <= SALDO: TERSEDIA & DIBUKA UNTUK PEMBELI
-            $product->is_out_of_stock = ($vipBalance <= 0 || (float)$product->price_modal > $vipBalance);
+            // BUKA jika harga modal <= saldo modal, TUTUP jika modal > saldo
+            $product->is_out_of_stock = ((float)$product->price_modal > $vipBalance);
             $name = strtolower(trim($product->name));
             
             // 1. FILTERING STRICT: Hapus produk Skin, Charisma, dan NON-IDN (Global/Luar Negeri)
