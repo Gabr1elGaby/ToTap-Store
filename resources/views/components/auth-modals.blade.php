@@ -1,5 +1,9 @@
 <!-- Auth Modals -->
-<div x-show="showLogin" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/80 p-4" x-transition.opacity>
+<div x-data="{ showLogin: false, showRegister: false }" 
+     @open-login.window="showLogin = true; showRegister = false" 
+     @open-register.window="showRegister = true; showLogin = false"
+     id="auth-modals-container">
+    <div x-show="showLogin" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/80 p-4" x-transition.opacity>
     <div class="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6" x-data="{ errors: {}, loading: false }" @submit.prevent="
         loading = true; errors = {};
         fetch('{{ route('login') }}', {
@@ -152,6 +156,7 @@
             </div>
         </form>
     </div>
+</div>
 </div>
 
 <!-- Floating WhatsApp Button -->
