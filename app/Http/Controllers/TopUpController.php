@@ -44,7 +44,7 @@ class TopUpController extends Controller
 
         foreach ($allProducts as $product) {
             // BUKA jika harga modal <= saldo modal, TUTUP jika modal > saldo
-            $product->is_out_of_stock = ((float)$product->price_modal > $vipBalance);
+            $product->is_out_of_stock = ($vipBalance <= 0 || (float)$product->price_modal > $vipBalance);
             $name = strtolower(trim($product->name));
             
             // 1. FILTERING STRICT: Hapus produk Skin, Charisma, dan NON-IDN (Global/Luar Negeri)
@@ -167,10 +167,17 @@ class TopUpController extends Controller
             }
         }
 
+        $stockMap = [];
+        foreach ($uniqueProducts as $p) {
+            $modal = (float) $p->price_modal;
+            $stockMap[(string)$p->id] = ($vipBalance <= 0 || $modal > $vipBalance);
+        }
+
         $response = response()->view('topup.show', [
             'game' => $game,
             'categories' => $finalCategories,
             'vipBalance' => $vipBalance,
+            'stockMap' => $stockMap,
         ]);
 
         $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0');
@@ -179,6 +186,37 @@ class TopUpController extends Controller
         $response->headers->set('X-LiteSpeed-Cache-Control', 'no-cache');
 
         return $response;
+    }
+
+    public function stockStatus($slug)
+    {
+        $game = Game::where('slug', $slug)->firstOrFail();
+        $threshold = \App\Models\Setting::get('vip_balance_threshold');
+        $vipBalance = ($threshold !== null && $threshold !== '') ? (float)$threshold : 0.0;
+
+        try {
+            $vipApi = app(VipResellerService::class);
+            $profile = $vipApi->getProfile();
+            if (isset($profile['result']) && $profile['result'] === true && isset($profile['data']['balance'])) {
+                $liveBal = (float) $profile['data']['balance'];
+                if ($liveBal > 0) {
+                    $vipBalance = $liveBal;
+                }
+            }
+        } catch (\Exception $e) {}
+
+        $products = $game->products()->select('id', 'price_modal')->get();
+        $stockMap = [];
+        foreach ($products as $p) {
+            $modal = (float) $p->price_modal;
+            $stockMap[(string)$p->id] = ($vipBalance <= 0 || $modal > $vipBalance);
+        }
+
+        return response()->json([
+            'success' => true,
+            'vip_balance' => $vipBalance,
+            'stock_map' => $stockMap,
+        ])->header('Cache-Control', 'no-store, no-cache, must-revalidate');
     }
 
     public function process(Request $request, $slug)

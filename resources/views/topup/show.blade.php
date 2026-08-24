@@ -122,12 +122,30 @@
                     selectedPayment: sessionStorage.getItem('totap_payment_{{ $game->slug }}') || 'qris',
                     playerId: sessionStorage.getItem('totap_player_id_{{ $game->slug }}') || '',
                     zoneId: sessionStorage.getItem('totap_zone_id_{{ $game->slug }}') || '',
+                    stockMap: {{ json_encode($stockMap ?? []) }},
+                    fetchStock() {
+                        fetch('{{ route('topup.stock-status', $game->slug) }}', { headers: { 'Accept': 'application/json' } })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data && data.stock_map) {
+                                    this.stockMap = data.stock_map;
+                                    if (this.selectedProduct && this.stockMap[this.selectedProduct]) {
+                                        this.selectedProduct = null;
+                                    }
+                                }
+                            })
+                            .catch(() => {});
+                    },
                     init() {
                         this.$watch('selectedProduct', v => sessionStorage.setItem('totap_product_{{ $game->slug }}', v || ''));
                         this.$watch('selectedPayment', v => sessionStorage.setItem('totap_payment_{{ $game->slug }}', v || ''));
                         this.$watch('playerId', v => sessionStorage.setItem('totap_player_id_{{ $game->slug }}', v || ''));
                         this.$watch('zoneId', v => sessionStorage.setItem('totap_zone_id_{{ $game->slug }}', v || ''));
                         
+                        // Auto-polling real-time setiap 3 detik & saat tab dibuka
+                        setInterval(() => this.fetchStock(), 3000);
+                        window.addEventListener('focus', () => this.fetchStock());
+
                         // Jika setelah login ada tanda auto-submit, jalankan submit otomatis
                         if (sessionStorage.getItem('totap_auto_submit_{{ $game->slug }}') === '1') {
                             sessionStorage.removeItem('totap_auto_submit_{{ $game->slug }}');
@@ -189,26 +207,19 @@
                                         <h4 class="font-bold text-gray-800 dark:text-gray-200 mb-3 mt-6 border-b border-gray-200 dark:border-gray-700 pb-2">{{ $cat }}</h4>
                                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                             @foreach($catProducts as $product)
-                                                @php
-                                                    $modal = (float) $product->price_modal;
-                                                    $balance = isset($vipBalance) ? (float)$vipBalance : 0.0;
-                                                    $isOut = ($balance <= 0 || $modal > $balance);
-                                                @endphp
-
-                                                @if($isOut)
-                                                    <div class="relative rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700/80 bg-gray-50/80 dark:bg-gray-800/30 p-3.5 text-center opacity-50 cursor-not-allowed select-none">
-                                                        <div class="text-sm font-bold text-gray-500 dark:text-gray-400 leading-tight mb-1 line-through">{{ $product->name }}</div>
-                                                        <div class="text-xs font-semibold text-gray-400">Rp{{ number_format($product->price_sell, 0, ',', '.') }}</div>
+                                                <div @click="if(!stockMap['{{ $product->id }}']) selectedProduct = '{{ $product->id }}'"
+                                                     :class="{
+                                                         'border-2 border-dashed border-gray-200 dark:border-gray-700/80 bg-gray-50/80 dark:bg-gray-800/30 opacity-50 cursor-not-allowed select-none': stockMap['{{ $product->id }}'],
+                                                         'border-2 border-indigo-600 bg-indigo-50/90 dark:bg-indigo-900/50 shadow-md ring-2 ring-indigo-500/20 scale-[1.02] cursor-pointer': !stockMap['{{ $product->id }}'] && selectedProduct == '{{ $product->id }}',
+                                                         'border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 hover:bg-gray-50 dark:hover:bg-gray-700/40 shadow-sm hover:scale-[1.02] cursor-pointer': !stockMap['{{ $product->id }}'] && selectedProduct != '{{ $product->id }}'
+                                                     }"
+                                                     class="relative rounded-xl p-3.5 transition-all text-center">
+                                                    <div :class="stockMap['{{ $product->id }}'] ? 'text-gray-500 dark:text-gray-400 line-through' : 'text-gray-900 dark:text-white'" class="text-sm font-bold leading-tight mb-1.5">{{ $product->name }}</div>
+                                                    <div :class="stockMap['{{ $product->id }}'] ? 'text-gray-400' : 'text-indigo-600 dark:text-indigo-400'" class="text-xs font-black">Rp{{ number_format($product->price_sell, 0, ',', '.') }}</div>
+                                                    <template x-if="stockMap['{{ $product->id }}']">
                                                         <span class="inline-block text-[10px] font-black text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-950/80 px-2 py-0.5 rounded-md border border-red-200 dark:border-red-800/60 mt-1">Stok Habis</span>
-                                                    </div>
-                                                @else
-                                                    <div @click="selectedProduct = '{{ $product->id }}'" 
-                                                         :class="selectedProduct == '{{ $product->id }}' ? 'border-indigo-600 bg-indigo-50/90 dark:bg-indigo-900/50 shadow-md ring-2 ring-indigo-500/20 scale-[1.02]' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 hover:bg-gray-50 dark:hover:bg-gray-700/40 shadow-sm'"
-                                                         class="relative rounded-xl border-2 p-3.5 cursor-pointer transition-all text-center hover:scale-[1.02]">
-                                                        <div class="text-sm font-bold text-gray-900 dark:text-white leading-tight mb-1.5">{{ $product->name }}</div>
-                                                        <div class="text-xs font-black text-indigo-600 dark:text-indigo-400">Rp{{ number_format($product->price_sell, 0, ',', '.') }}</div>
-                                                    </div>
-                                                @endif
+                                                    </template>
+                                                </div>
                                             @endforeach
                                         </div>
                                     @endforeach

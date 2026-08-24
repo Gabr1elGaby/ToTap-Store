@@ -67,6 +67,7 @@ Route::get('/cv/preview-example/{slug}', [\App\Http\Controllers\CvController::cl
 // Topup Game Routes (Publik & Guest Friendly)
 Route::get('/topup', [\App\Http\Controllers\TopUpController::class, 'index'])->name('topup.index');
 Route::get('/topup/{slug}', [\App\Http\Controllers\TopUpController::class, 'show'])->name('topup.show');
+Route::get('/topup/{slug}/stock-status', [\App\Http\Controllers\TopUpController::class, 'stockStatus'])->name('topup.stock-status');
 Route::post('/topup/{slug}/check-nickname', [\App\Http\Controllers\TopUpController::class, 'checkNickname'])->name('topup.check-nickname');
 Route::post('/topup/{slug}/process', [\App\Http\Controllers\TopUpController::class, 'process'])->name('topup.process');
 Route::get('/topup/checkout/{id}', [\App\Http\Controllers\TopUpPaymentController::class, 'show'])->name('topup.checkout.show');
