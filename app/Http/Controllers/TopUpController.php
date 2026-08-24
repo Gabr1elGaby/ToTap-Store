@@ -17,25 +17,22 @@ class TopUpController extends Controller
     }
 
     public function show($slug)
-    {
-        $game = Game::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        // 1. Ambil Saldo Modal VIP Reseller (Proteksi Stok)
+        $vipBalance = (float) \App\Models\Setting::get('vip_balance_threshold', 0);
         
-        $vipBalance = Cache::remember('vip_reseller_balance', 60, function () {
-            try {
-                $vipApi = app(VipResellerService::class);
-                $profile = $vipApi->getProfile();
-                if (isset($profile['result']) && $profile['result'] === true && isset($profile['data']['balance'])) {
-                    $liveBal = (float) $profile['data']['balance'];
-                    \App\Models\Setting::set('vip_reseller_balance', (string)$liveBal);
-                    return $liveBal;
+        try {
+            $vipApi = app(VipResellerService::class);
+            $profile = $vipApi->getProfile();
+            if (isset($profile['result']) && $profile['result'] === true && isset($profile['data']['balance'])) {
+                $liveBal = (float) $profile['data']['balance'];
+                if ($liveBal > 0) {
+                    $vipBalance = $liveBal;
+                    \App\Models\Setting::set('vip_balance_threshold', (string)$liveBal);
                 }
-            } catch (\Exception $e) {
-                Log::warning("Gagal cek saldo VIP Reseller API: " . $e->getMessage());
             }
-            
-            $dbSetting = \App\Models\Setting::get('vip_reseller_balance', 0);
-            return (float) $dbSetting;
-        });
+        } catch (\Exception $e) {
+            // Gunakan nilai $vipBalance dari database
+        }
 
         $allProducts = $game->products()->where('price_modal', '>', 0)->orderBy('price_sell')->get();
 
@@ -43,7 +40,9 @@ class TopUpController extends Controller
         $seenKeys = [];
 
         foreach ($allProducts as $product) {
-            $product->is_out_of_stock = false;
+            // JIKA SALDO 0 ATAU HARGA MODAL > SALDO: OTOMATIS STOK HABIS (TUTUP)
+            // JIKA MODAL <= SALDO: TERSEDIA & DIBUKA UNTUK PEMBELI
+            $product->is_out_of_stock = ($vipBalance <= 0 || (float)$product->price_modal > $vipBalance);
             $name = strtolower(trim($product->name));
             
             // 1. FILTERING STRICT: Hapus produk Skin, Charisma, dan NON-IDN (Global/Luar Negeri)
