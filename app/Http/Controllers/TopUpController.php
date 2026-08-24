@@ -20,21 +20,22 @@ class TopUpController extends Controller
     {
         $game = Game::where('slug', $slug)->where('is_active', true)->firstOrFail();
 
-        // 1. Ambil Saldo Modal VIP Reseller (Proteksi Stok)
-        $vipBalance = (float) \App\Models\Setting::get('vip_balance_threshold', 0);
+        // 1. Ambil Saldo Modal VIP Reseller (Proteksi Stok dari Admin)
+        $dbThreshold = (float) \App\Models\Setting::get('vip_balance_threshold', 0);
+        $vipBalance = $dbThreshold;
         
         try {
             $vipApi = app(VipResellerService::class);
             $profile = $vipApi->getProfile();
             if (isset($profile['result']) && $profile['result'] === true && isset($profile['data']['balance'])) {
                 $liveBal = (float) $profile['data']['balance'];
+                // Jika sudah ada saldo riil di VIP Reseller, gunakan saldo riil tersebut
                 if ($liveBal > 0) {
                     $vipBalance = $liveBal;
-                    \App\Models\Setting::set('vip_balance_threshold', (string)$liveBal);
                 }
             }
         } catch (\Exception $e) {
-            // Gunakan nilai $vipBalance dari database
+            // Gunakan nilai $vipBalance dari database admin
         }
 
         $allProducts = $game->products()->where('price_modal', '>', 0)->orderBy('price_sell')->get();
