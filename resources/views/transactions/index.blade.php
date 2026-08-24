@@ -1,9 +1,9 @@
 <x-app-layout>
-    <div class="py-12 bg-slate-50 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100 transition-colors duration-200" x-data="{ activeTab: 'all' }">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
+    <div class="py-12 bg-slate-50 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100 transition-colors duration-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
             
-            <!-- Header -->
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-xl">
+            <!-- Header Card -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-2xl transition-colors duration-200">
                 <div>
                     <h1 class="text-2xl font-black text-gray-900 dark:text-white flex items-center gap-3">
                         <i class="fas fa-history text-indigo-500"></i> Riwayat Transaksi Anda
@@ -11,38 +11,41 @@
                     <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Pantau seluruh riwayat pembelian lisensi software, sistem aplikasi, dan top up game Anda.</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <a href="/software" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 transition shadow-md shadow-blue-600/30">
+                    <a href="/software" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 transition shadow-md shadow-blue-600/30 cursor-pointer">
                         <i class="fas fa-desktop"></i> Beli Software
                     </a>
-                    <a href="{{ route('topup.index') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition shadow-md shadow-indigo-600/30">
+                    <a href="{{ route('topup.index') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition shadow-md shadow-indigo-600/30 cursor-pointer">
                         <i class="fas fa-gamepad"></i> Top Up Game
                     </a>
                 </div>
             </div>
 
             <!-- Tab Buttons -->
-            <div class="flex items-center gap-2 bg-white dark:bg-gray-800 p-1.5 rounded-2xl border border-gray-200 dark:border-gray-700 w-fit shadow-sm">
-                <button @click="activeTab = 'all'" 
-                        :class="activeTab === 'all' ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'"
-                        class="px-5 py-2.5 rounded-xl font-bold text-sm transition">
+            <div class="flex flex-wrap items-center gap-2 bg-white dark:bg-gray-800 p-1.5 rounded-2xl border border-gray-200 dark:border-gray-700 w-fit shadow-sm dark:shadow-lg">
+                <button id="tab-btn-all" 
+                        type="button"
+                        onclick="filterTransactionTab('all')" 
+                        class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-indigo-600 text-white shadow-md cursor-pointer">
                     Semua Transaksi
                 </button>
-                <button @click="activeTab = 'software'" 
-                        :class="activeTab === 'software' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'"
-                        class="px-5 py-2.5 rounded-xl font-bold text-sm transition flex items-center gap-2">
+                <button id="tab-btn-software" 
+                        type="button"
+                        onclick="filterTransactionTab('software')" 
+                        class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white flex items-center gap-2 cursor-pointer">
                     <i class="fas fa-desktop text-blue-500"></i> Pembelian Sistem & Software ({{ $orders->total() }})
                 </button>
-                <button @click="activeTab = 'topup'" 
-                        :class="activeTab === 'topup' ? 'bg-purple-600 text-white shadow-md' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'"
-                        class="px-5 py-2.5 rounded-xl font-bold text-sm transition flex items-center gap-2">
+                <button id="tab-btn-topup" 
+                        type="button"
+                        onclick="filterTransactionTab('topup')" 
+                        class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white flex items-center gap-2 cursor-pointer">
                     <i class="fas fa-gamepad text-purple-500"></i> Top Up Game ({{ $topups->total() }})
                 </button>
             </div>
 
             <!-- Section 1: Pembelian Sistem / Software / POS -->
-            <div x-show="activeTab === 'all' || activeTab === 'software'" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-xl overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-slate-50 dark:bg-gray-850">
-                    <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <div id="section-software" class="trx-section bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-2xl overflow-hidden transition-colors duration-200">
+                <div class="px-6 py-4.5 border-b border-gray-200 dark:border-gray-700/80 flex items-center justify-between bg-slate-50 dark:bg-gray-800/80">
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
                         <i class="fas fa-desktop text-blue-500"></i> Pembelian Sistem & Lisensi Software
                     </h2>
                     <span class="text-xs text-blue-600 dark:text-blue-400 font-bold bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
@@ -51,16 +54,16 @@
                 </div>
 
                 @if($orders->isEmpty())
-                    <div class="p-10 text-center text-gray-500 dark:text-gray-400">
-                        <i class="fas fa-laptop-code text-4xl mb-3 text-gray-400 dark:text-gray-600"></i>
-                        <p class="text-sm font-semibold">Belum ada pembelian sistem software atau lisensi POS.</p>
-                        <a href="/software" class="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1 inline-block">Lihat Katalog Software Kami &rarr;</a>
+                    <div class="p-12 text-center text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-laptop-code text-5xl mb-3 text-gray-300 dark:text-gray-600"></i>
+                        <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">Belum ada pembelian sistem software atau lisensi POS.</p>
+                        <a href="/software" class="text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline mt-2 inline-block">Lihat Katalog Software Kami &rarr;</a>
                     </div>
                 @else
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="bg-slate-50 dark:bg-gray-900/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider border-b border-gray-200 dark:border-gray-700">
+                                <tr class="bg-slate-50 dark:bg-gray-900/60 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider border-b border-gray-200 dark:border-gray-700">
                                     <th class="py-3.5 px-6">No. Order</th>
                                     <th class="py-3.5 px-6">Sistem / Software</th>
                                     <th class="py-3.5 px-6">Paket Lisensi</th>
@@ -72,7 +75,7 @@
                             </thead>
                             <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                                 @foreach($orders as $ord)
-                                    <tr class="hover:bg-slate-100 dark:hover:bg-gray-700/60 transition">
+                                    <tr class="hover:bg-slate-50 dark:hover:bg-gray-700/50 transition">
                                         <td class="py-4 px-6 font-mono text-xs text-blue-600 dark:text-blue-400 font-bold">
                                             {{ $ord->order_number }}
                                         </td>
@@ -124,9 +127,9 @@
             </div>
 
             <!-- Section 2: Top Up Game Transactions -->
-            <div x-show="activeTab === 'all' || activeTab === 'topup'" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-xl overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-slate-50 dark:bg-gray-850">
-                    <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <div id="section-topup" class="trx-section bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-2xl overflow-hidden transition-colors duration-200">
+                <div class="px-6 py-4.5 border-b border-gray-200 dark:border-gray-700/80 flex items-center justify-between bg-slate-50 dark:bg-gray-800/80">
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
                         <i class="fas fa-gamepad text-purple-500"></i> Transaksi Top Up Game
                     </h2>
                     <span class="text-xs text-purple-600 dark:text-purple-400 font-bold bg-purple-500/10 px-3 py-1 rounded-full border border-purple-500/20">
@@ -135,16 +138,16 @@
                 </div>
 
                 @if($topups->isEmpty())
-                    <div class="p-10 text-center text-gray-500 dark:text-gray-400">
-                        <i class="fas fa-receipt text-4xl mb-3 text-gray-400 dark:text-gray-600"></i>
-                        <p class="text-sm font-semibold">Belum ada riwayat top up game.</p>
-                        <a href="{{ route('topup.index') }}" class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline mt-1 inline-block">Top Up Sekarang &rarr;</a>
+                    <div class="p-12 text-center text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-receipt text-5xl mb-3 text-gray-300 dark:text-gray-600"></i>
+                        <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">Belum ada riwayat top up game.</p>
+                        <a href="{{ route('topup.index') }}" class="text-xs text-indigo-600 dark:text-indigo-400 font-bold hover:underline mt-2 inline-block">Top Up Sekarang &rarr;</a>
                     </div>
                 @else
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="bg-slate-50 dark:bg-gray-900/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider border-b border-gray-200 dark:border-gray-700">
+                                <tr class="bg-slate-50 dark:bg-gray-900/60 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider border-b border-gray-200 dark:border-gray-700">
                                     <th class="py-3.5 px-6">Order ID</th>
                                     <th class="py-3.5 px-6">Game / Item</th>
                                     <th class="py-3.5 px-6">Tujuan (ID)</th>
@@ -157,7 +160,7 @@
                             </thead>
                             <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                                 @foreach($topups as $trx)
-                                    <tr class="hover:bg-slate-100 dark:hover:bg-gray-700/60 transition">
+                                    <tr class="hover:bg-slate-50 dark:hover:bg-gray-700/50 transition">
                                         <td class="py-4 px-6 font-mono text-xs text-indigo-600 dark:text-indigo-400 font-bold">
                                             {{ $trx->id }}
                                         </td>
@@ -215,4 +218,31 @@
 
         </div>
     </div>
+
+    <script>
+        function filterTransactionTab(tabName) {
+            const sections = document.querySelectorAll('.trx-section');
+            const allBtns = document.querySelectorAll('.tab-btn');
+            
+            allBtns.forEach(btn => {
+                btn.className = 'tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white flex items-center gap-2 cursor-pointer';
+            });
+
+            if (tabName === 'all') {
+                sections.forEach(s => s.classList.remove('hidden'));
+                const b = document.getElementById('tab-btn-all');
+                b.className = 'tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-indigo-600 text-white shadow-md cursor-pointer';
+            } else if (tabName === 'software') {
+                document.getElementById('section-software').classList.remove('hidden');
+                document.getElementById('section-topup').classList.add('hidden');
+                const b = document.getElementById('tab-btn-software');
+                b.className = 'tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-blue-600 text-white shadow-md flex items-center gap-2 cursor-pointer';
+            } else if (tabName === 'topup') {
+                document.getElementById('section-software').classList.add('hidden');
+                document.getElementById('section-topup').classList.remove('hidden');
+                const b = document.getElementById('tab-btn-topup');
+                b.className = 'tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-purple-600 text-white shadow-md flex items-center gap-2 cursor-pointer';
+            }
+        }
+    </script>
 </x-app-layout>
