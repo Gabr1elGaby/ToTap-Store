@@ -48,6 +48,13 @@ return [
         'is_production' => env('MIDTRANS_IS_PRODUCTION', false),
     ],
 
+    'tripay' => [
+        'api_key' => env('TRIPAY_API_KEY', 'CalVGyLu3IFWY2IY1kNYpoCsE7pjeW2tRmFtaUiQ'),
+        'private_key' => env('TRIPAY_PRIVATE_KEY', 'NQwFB-5jb1M-3wmmR-RqZvH-L329i'),
+        'merchant_code' => env('TRIPAY_MERCHANT_CODE', 'T52431'),
+        'is_production' => env('TRIPAY_IS_PRODUCTION', true),
+    ],
+
     'fonnte' => [
         'token' => env('FONNTE_TOKEN', 'gdHv7cHH3YfhUA7E5iCM'),
     ],

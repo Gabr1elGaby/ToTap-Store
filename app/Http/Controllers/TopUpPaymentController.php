@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use App\Services\TripayService;
+use App\Services\VipResellerService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class TopUpPaymentController extends Controller
 {
@@ -11,50 +14,65 @@ class TopUpPaymentController extends Controller
     {
         $transaction = Transaction::with(['game', 'gameProduct'])->findOrFail($id);
         
-        // Prevent showing already paid transactions on checkout page
-        if ($transaction->status !== 'pending') {
-            return redirect()->route('topup.index')->with('success', 'Transaksi ini sudah selesai atau dibatalkan.');
+        // Jika sudah sukses, arahkan ke riwayat / status sukses
+        if ($transaction->status === 'success') {
+            return view('topup.checkout', compact('transaction'));
         }
 
         return view('topup.checkout', compact('transaction'));
     }
 
-    // Since we're on localhost and can't receive Midtrans webhooks directly without ngrok,
-    // we use a secure manual verification endpoint triggered by the frontend JS onSuccess.
     public function verify($id)
     {
-        $transaction = Transaction::with('gameProduct')->findOrFail($id);
+        $transaction = Transaction::with(['game', 'gameProduct'])->findOrFail($id);
+        $paymentData = json_decode($transaction->snap_token, true);
 
-        \Midtrans\Config::$serverKey = config('services.midtrans.server_key', env('MIDTRANS_SERVER_KEY', 'Mid-server-ckZHwiXrG6K0f-NXv3ykujHi'));
-        \Midtrans\Config::$isProduction = config('services.midtrans.is_production', env('MIDTRANS_IS_PRODUCTION', false));
-        \Midtrans\Config::$curlOptions = [
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0,
-            CURLOPT_HTTPHEADER => [],
-        ];
-        
-        try {
-            $midtransStatus = \Midtrans\Transaction::status($transaction->id);
+        if ($transaction->status === 'success' || $transaction->status === 'paid') {
+            return response()->json(['success' => true, 'message' => 'Pembayaran Berhasil!']);
+        }
+
+        // 1. Verifikasi via TriPay
+        if (isset($paymentData['gateway']) && $paymentData['gateway'] === 'tripay' && !empty($paymentData['reference'])) {
+            $tripay = app(TripayService::class);
+            $detail = $tripay->getTransactionDetail($paymentData['reference']);
             
-            if ($midtransStatus->transaction_status == 'settlement' || $midtransStatus->transaction_status == 'capture') {
-                if ($transaction->status === 'pending') {
-                    // Update Status to Paid
+            if (isset($detail['success']) && $detail['success'] === true && isset($detail['data']['status'])) {
+                $status = strtoupper($detail['data']['status']);
+                if ($status === 'PAID') {
                     $transaction->update([
-                        'status' => 'paid',
-                        'payment_method' => $midtransStatus->payment_type
+                        'status' => 'processing',
+                        'paid_at' => now(),
                     ]);
-                    
-                    // TODO: TEMBAK API VIP RESELLER DISINI
-                    // \App\Services\VipResellerService::order($transaction);
-                    
-                    return response()->json(['success' => true, 'message' => 'Pembayaran Berhasil!']);
+
+                    // Eksekusi otomatis ke VIP Reseller
+                    try {
+                        $product = $transaction->gameProduct;
+                        $game = $transaction->game;
+                        if ($product && $game) {
+                            $vipService = app(VipResellerService::class);
+                            $orderRes = $vipService->order(
+                                $product->product_code,
+                                $transaction->target_field_1,
+                                $transaction->target_field_2,
+                                $transaction->id
+                            );
+
+                            if (isset($orderRes['result']) && $orderRes['result'] === true) {
+                                $transaction->update([
+                                    'status' => 'success',
+                                    'provider_order_id' => $orderRes['data']['trxid'] ?? null,
+                                ]);
+                            }
+                        }
+                    } catch (\Exception $e) {
+                        Log::error('TriPay Verify Auto-Fulfillment Error: ' . $e->getMessage());
+                    }
+
+                    return response()->json(['success' => true, 'message' => 'Pembayaran Berhasil & Pesanan Sedang Diproses!']);
                 }
             }
-            
-            return response()->json(['success' => false, 'message' => 'Pembayaran belum lunas di Midtrans.']);
-            
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Gagal verifikasi: ' . $e->getMessage()]);
         }
+
+        return response()->json(['success' => false, 'message' => 'Pembayaran belum terdeteksi. Silakan selesaikan pembayaran terlebih dahulu.']);
     }
 }

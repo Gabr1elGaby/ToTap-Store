@@ -258,107 +258,47 @@ class TopUpController extends Controller
             'status' => 'pending',
         ]);
         
-        // Konfigurasi Midtrans
-        \Midtrans\Config::$serverKey = config('services.midtrans.server_key', env('MIDTRANS_SERVER_KEY', 'Mid-server-ckZHwiXrG6K0f-NXv3ykujHi'));
-        \Midtrans\Config::$clientKey = config('services.midtrans.client_key', env('MIDTRANS_CLIENT_KEY', 'Mid-client-j5_lQIPsu4FpDtlk'));
-        \Midtrans\Config::$isProduction = config('services.midtrans.is_production', env('MIDTRANS_IS_PRODUCTION', false));
-        \Midtrans\Config::$isSanitized = true;
-        \Midtrans\Config::$is3ds = true;
-        
-        // MATIKAN SSL VERIFICATION AGAR JALAN DI LOCALHOST WINDOWS
-        \Midtrans\Config::$curlOptions = [
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0,
-            CURLOPT_HTTPHEADER => [],
-        ];
-        
-        // Buat Parameter Midtrans
-        $params = [
-            'transaction_details' => [
-                'order_id' => $orderId,
-                'gross_amount' => (int) $product->price_sell,
-            ],
-            'item_details' => [
-                [
-                    'id' => $product->product_code,
-                    'price' => (int) $product->price_sell,
-                    'quantity' => 1,
-                    'name' => substr($product->name, 0, 50),
-                ]
-            ],
-            'customer_details' => [
-                'first_name' => $request->player_id,
-                'email' => 'customer@totap.com',
-            ]
-        ];
-        
         try {
-            // GUNAKAN CORE API (Native QRIS / VA)
-            if ($request->payment_method === 'qris') {
-                $coreParams = [
-                    'payment_type' => 'gopay',
-                    'transaction_details' => [
-                        'order_id' => $orderId,
-                        'gross_amount' => (int) $product->price_sell,
-                    ]
-                ];
-                $response = \Midtrans\CoreApi::charge($coreParams);
+            $tripay = app(\App\Services\TripayService::class);
+            $tripayRes = $tripay->createTransaction([
+                'merchant_ref'   => $orderId,
+                'amount'         => (int) $product->price_sell,
+                'method'         => $request->payment_method,
+                'customer_name'  => $request->player_id,
+                'customer_email' => auth()->check() ? auth()->user()->email : 'customer@totapstore.com',
+                'product_name'   => $game->name . ' - ' . $product->name,
+                'sku'            => $product->product_code,
+            ]);
+
+            if (isset($tripayRes['success']) && $tripayRes['success'] === true && isset($tripayRes['data'])) {
+                $tData = $tripayRes['data'];
+                $methodCode = strtoupper($tData['payment_method'] ?? $request->payment_method);
+                $isVA = str_contains($methodCode, 'VA');
                 
-                $qrUrl = '';
-                if (isset($response->actions)) {
-                    foreach ($response->actions as $action) {
-                        if ($action->name === 'generate-qr-code') {
-                            $qrUrl = $action->url;
-                        }
-                    }
-                }
-                $snapData = json_encode(['type' => 'qris', 'qr_url' => $qrUrl]);
-                $transaction->update(['snap_token' => $snapData]);
-                
-            } elseif (in_array($request->payment_method, ['bca_va', 'bni_va', 'bri_va', 'mandiri_va', 'permata_va'])) {
-                $bank = str_replace('_va', '', $request->payment_method);
-                
-                $coreParams = [
-                    'payment_type' => ($bank === 'mandiri') ? 'echannel' : 'bank_transfer',
-                    'transaction_details' => [
-                        'order_id' => $orderId,
-                        'gross_amount' => (int) $product->price_sell,
-                    ]
-                ];
-                
-                if ($bank === 'mandiri') {
-                    $coreParams['echannel'] = [
-                        'bill_info1' => 'Payment For',
-                        'bill_info2' => 'Top Up Game'
-                    ];
-                } else {
-                    $coreParams['bank_transfer'] = [
-                        'bank' => $bank
-                    ];
-                }
-                
-                $response = \Midtrans\CoreApi::charge($coreParams);
-                
-                $vaNumber = '';
-                if ($bank === 'mandiri' && isset($response->bill_key)) {
-                    $vaNumber = $response->biller_code . ' - ' . $response->bill_key;
-                } elseif (isset($response->va_numbers[0])) {
-                    $vaNumber = $response->va_numbers[0]->va_number;
-                }
-                
-                $snapData = json_encode(['type' => 'va', 'bank' => strtoupper($bank), 'va_number' => $vaNumber]);
-                $transaction->update(['snap_token' => $snapData]);
-            } else {
-                // Fallback to snap if needed
-                $snapToken = \Midtrans\Snap::getSnapToken($params);
-                $transaction->update(['snap_token' => $snapToken]);
+                $snapData = json_encode([
+                    'type'         => $isVA ? 'va' : 'qris',
+                    'gateway'      => 'tripay',
+                    'reference'    => $tData['reference'] ?? null,
+                    'qr_url'       => $tData['qr_url'] ?? null,
+                    'bank'         => str_replace(['VA', '_VA'], '', $methodCode),
+                    'va_number'    => $tData['pay_code'] ?? null,
+                    'instructions' => $tData['instructions'] ?? [],
+                    'checkout_url' => $tData['checkout_url'] ?? null,
+                ]);
+
+                $transaction->update([
+                    'snap_token'        => $snapData,
+                    'payment_reference' => $tData['reference'] ?? null,
+                ]);
+
+                return redirect()->route('topup.checkout.show', $transaction->id);
             }
-            
-            // Arahkan ke halaman checkout
-            return redirect()->route('topup.checkout.show', $transaction->id);
-            
+
+            $msg = $tripayRes['message'] ?? 'Gagal membuat transaksi TriPay.';
+            return back()->with('error', $msg);
+
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Midtrans TopUp Error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('TriPay TopUp Error: ' . $e->getMessage());
             return back()->with('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
         }
     }
