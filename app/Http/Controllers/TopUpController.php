@@ -43,9 +43,10 @@ class TopUpController extends Controller
         $seenKeys = [];
 
         foreach ($allProducts as $product) {
+            $threshold = (float) \App\Models\Setting::get('vip_balance_threshold', 0);
             $product->is_out_of_stock = (
                 strtolower($product->status) !== 'available' || 
-                ($vipBalance !== null && $product->price_modal > $vipBalance)
+                ($threshold > 0 && $vipBalance > 0 && $product->price_modal > $vipBalance)
             );
             $name = strtolower(trim($product->name));
             
