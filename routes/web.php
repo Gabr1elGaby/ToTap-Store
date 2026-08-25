@@ -4,6 +4,16 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
+    // REAL-TIME AUTO MAINTENANCE: Expire overdue software subscriptions
+    try {
+        if (class_exists(\App\Models\Subscription::class)) {
+            \App\Models\Subscription::where('status', 'ACTIVE')
+                ->whereNotNull('end_date')
+                ->where('end_date', '<', now()->toDateString())
+                ->update(['status' => 'EXPIRED']);
+        }
+    } catch (\Exception $e) {}
+
     $products = \App\Models\Product::where('is_active', true)->with(['plans' => function($q) {
         $q->where('is_active', true)->orderBy('price');
     }])->get();
@@ -135,6 +145,15 @@ require __DIR__.'/auth.php';
 
 
 Route::get('/software', function () {
+    try {
+        if (class_exists(\App\Models\Subscription::class)) {
+            \App\Models\Subscription::where('status', 'ACTIVE')
+                ->whereNotNull('end_date')
+                ->where('end_date', '<', now()->toDateString())
+                ->update(['status' => 'EXPIRED']);
+        }
+    } catch (\Exception $e) {}
+
     $softwareProducts = \App\Models\Product::where('is_active', true)->with(['plans' => function($q) {
         $q->where('is_active', true)->orderBy('price');
     }])->get();
