@@ -261,7 +261,10 @@
                         $deg = $edu->degree ?? '';
                         $maj = $getVal($edu, 'major', 'field');
                     @endphp
-                    <div class="item-desc">{{ $deg }}{{ $maj !== '' ? ($deg !== '' ? ', ' : '') . $maj : '' }}</div>
+                    <div class="item-subtitle">{{ $deg }}{{ $maj !== '' ? ($deg !== '' ? ', ' : '') . $maj : '' }}</div>
+                    @if(!empty($edu->description))
+                    <div class="item-desc">{!! nl2br(e($edu->description)) !!}</div>
+                    @endif
                 </div>
                 @endforeach
                 @endif

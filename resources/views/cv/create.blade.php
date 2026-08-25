@@ -121,7 +121,7 @@
                     <h3 class="text-lg font-bold text-gray-900 mb-4">Profil Singkat</h3>
                     <p class="text-xs text-gray-500 mb-4">Tuliskan 2-3 kalimat yang mendeskripsikan diri Anda, tujuan karir, dan keahlian utama.</p>
                     <div>
-                        <textarea x-model="data.profile" @input.debounce.500ms="updatePreview" rows="6" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Profesional TI dengan pengalaman 5 tahun dalam pengembangan web frontend..."></textarea>
+                        <textarea x-model="data.profile" @input.debounce.500ms="updatePreview" rows="6" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Profesional dengan pengalaman dalam bidang..."></textarea>
                     </div>
                 </div>
 
@@ -136,17 +136,17 @@
                             </button>
                             <div class="space-y-3">
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-700 mb-1">Institusi</label>
-                                    <input type="text" x-model="edu.institution" @input.debounce.500ms="updatePreview" class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm">
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">Institusi / Universitas / Sekolah</label>
+                                    <input type="text" x-model="edu.institution" @input.debounce.500ms="updatePreview" class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm" placeholder="Universitas Indonesia">
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <div>
                                         <label class="block text-xs font-bold text-gray-700 mb-1">Jurusan</label>
-                                        <input type="text" x-model="edu.major" @input.debounce.500ms="updatePreview" class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm">
+                                        <input type="text" x-model="edu.major" @input.debounce.500ms="updatePreview" class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm" placeholder="Teknik Informatika">
                                     </div>
                                     <div>
                                         <label class="block text-xs font-bold text-gray-700 mb-1">Gelar</label>
-                                        <input type="text" x-model="edu.degree" @input.debounce.500ms="updatePreview" class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm" placeholder="S1, D3, dll">
+                                        <input type="text" x-model="edu.degree" @input.debounce.500ms="updatePreview" class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm" placeholder="S1, D3, SMA, dll">
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -158,6 +158,10 @@
                                         <label class="block text-xs font-bold text-gray-700 mb-1">Tahun Selesai</label>
                                         <input type="text" x-model="edu.end_year" @input.debounce.500ms="updatePreview" class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm" placeholder="2022">
                                     </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">Deskripsi / Prestasi / Nilai IPK (Opsional)</label>
+                                    <textarea x-model="edu.description" @input.debounce.500ms="updatePreview" rows="2" class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm" placeholder="Contoh: Lulus dengan predikat Cum Laude (IPK 3.85/4.00), aktif dalam organisasi kemahasiswaan."></textarea>
                                 </div>
                             </div>
                         </div>
@@ -417,8 +421,6 @@
                     </button>
                 </div>
 
-                
-
                 <!-- STEP: Volunteer (Only for Student) -->
                 <div x-show="steps.length > 0 && steps[currentStep].id === 'volunteer'" x-transition.opacity style="display: none;">
                     <h3 class="text-lg font-bold text-gray-900 mb-4">Pengalaman Volunteer (Relawan)</h3>
@@ -454,7 +456,7 @@
                     </button>
                 </div>
 
-                            <!-- Footer Buttons -->
+                <!-- Footer Buttons -->
                 <div class="mt-8 pt-6 pb-12 border-t border-gray-200 flex justify-between">
                     <button @click="prevStep" :class="{'invisible': currentStep === 0}" class="px-4 py-2 border border-gray-300 rounded text-sm font-bold text-gray-700 hover:bg-gray-50 transition">
                         &larr; Sebelumnya
@@ -469,8 +471,9 @@
                 </div>
             </div> <!-- Closes form-container -->
         </div> <!-- Closes left panel -->
+        
         <!-- Right Panel: Realtime Preview -->
-                <div class="hidden md:flex flex-1 bg-gray-800 p-4 md:p-8 overflow-y-auto flex-col items-center justify-start relative">
+        <div class="hidden md:flex flex-1 bg-gray-800 p-4 md:p-8 overflow-y-auto flex-col items-center justify-start relative">
             <div class="text-gray-400 font-bold uppercase tracking-widest text-xs mb-6 flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                 REAL-TIME PREVIEW (Kertas A4)
@@ -498,9 +501,11 @@
                 templateSlug: templateSlug,
                 currentStep: 0,
                 loading: false,
-                previewLoading: true, showMobilePreview: false,
+                previewLoading: true, 
+                showMobilePreview: false,
                 previewHtml: '',
-                newHardSkill: '', newSoftSkill: '',
+                newHardSkill: '', 
+                newSoftSkill: '',
                 newHardSkillLevel: '80',
                 newLanguage: '',
                 newTool: '',
@@ -515,7 +520,7 @@
                     { id: 'project', title: 'Project / Portfolio' },
                     { id: 'skill', title: 'Skill & Tools' },
                     { id: 'sertifikat', title: 'Sertifikat & Prestasi' }
-                    ],
+                ],
                 steps: [],
                 data: {
                     template_id: templateId,
@@ -549,7 +554,9 @@
                         'fresh-graduate': ['pribadi', 'profil', 'pendidikan', 'magang', 'organisasi', 'project', 'skill', 'sertifikat', 'bahasa'],
                         'student': ['pribadi', 'profil', 'pendidikan', 'organisasi', 'magang', 'project', 'skill', 'sertifikat', 'volunteer', 'bahasa'],
                         'job-application': ['pribadi', 'profil', 'pengalaman', 'pendidikan', 'skill', 'sertifikat', 'project', 'organisasi', 'bahasa'],
-                        'creative': ['pribadi', 'profil', 'skill', 'pengalaman', 'project', 'pendidikan', 'sertifikat', 'bahasa']
+                        'creative': ['pribadi', 'profil', 'skill', 'pengalaman', 'project', 'pendidikan', 'sertifikat', 'bahasa'],
+                        'modern': ['pribadi', 'profil', 'pendidikan', 'pengalaman', 'magang', 'project', 'organisasi', 'skill', 'sertifikat'],
+                        'elegant': ['pribadi', 'profil', 'pendidikan', 'pengalaman', 'magang', 'project', 'organisasi', 'skill', 'sertifikat']
                     };
                     
                     const activeStepIds = templateConfig[this.templateSlug] || templateConfig['ats'];
@@ -598,24 +605,14 @@
                     this.updatePreview();
                 },
 
-                addSkill() {
-                    if (this.newSkill.trim() !== '') {
-                        this.data.skills.push({ 
-                            name: this.newSkill.trim(), 
-                            level: this.newSkillLevel === '' ? null : this.newSkillLevel 
-                        });
-                        this.newSkill = '';
-                        this.newSkillLevel = '80';
-                        this.updatePreview();
-                    }
-                },
-                                addHardSkill() {
+                addHardSkill() {
                     if (this.newHardSkill.trim() !== '') {
                         this.data.skills.push({ name: this.newHardSkill.trim(), level: this.newHardSkillLevel });
                         this.newHardSkill = '';
                         this.updatePreview();
                     }
                 },
+
                 addSoftSkill() {
                     if (this.newSoftSkill.trim() !== '') {
                         this.data.skills.push({ name: this.newSoftSkill.trim(), level: null });
@@ -623,6 +620,7 @@
                         this.updatePreview();
                     }
                 },
+
                 addTool() {
                     if (this.newTool.trim() !== '') {
                         this.data.tools.push({ name: this.newTool.trim() });
@@ -650,7 +648,6 @@
                                 internships: this.data.internships,
                                 certificates: this.data.certificates,
                                 projects: this.data.projects,
-                                
                                 volunteers: this.data.volunteers,
                                 tools: this.data.tools
                             })
@@ -727,7 +724,7 @@
         });
     </script>
 
-            <!-- Dedicated Mobile Preview Modal -->
+    <!-- Dedicated Mobile Preview Modal -->
     <div x-cloak x-show="showMobilePreview" class="md:hidden fixed inset-0 z-[100] bg-gray-800 overflow-y-auto overflow-x-hidden">
         <!-- Close Button -->
         <button @click="showMobilePreview = false" class="absolute top-4 right-4 bg-white/20 hover:bg-white/30 text-white rounded-full p-2 transition z-[110]">
@@ -738,7 +735,7 @@
             REAL-TIME PREVIEW
         </div>
 
-                        <!-- Dynamic Scaled Wrapper -->
+        <!-- Dynamic Scaled Wrapper -->
         <div class="w-full flex justify-center pb-12" x-data="{ scale: 0.45, paperHeight: 1123 }" x-init="
             scale = Math.min(0.95, (window.innerWidth - 32) / 794);
             $watch('previewHtml', value => {
@@ -757,6 +754,7 @@
             </div>
         </div>
     </div>
+    
     <!-- Mobile Preview Floating Button -->
     <button @click="showMobilePreview = true" class="md:hidden fixed bottom-6 right-6 bg-gray-900 text-white rounded-full p-4 shadow-2xl z-50 hover:bg-gray-800 transition flex items-center justify-center">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
