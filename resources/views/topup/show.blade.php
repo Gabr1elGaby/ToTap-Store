@@ -235,71 +235,20 @@
                                         <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">3</div>
                                         <h3 class="text-lg font-bold text-gray-900 dark:text-white">Metode Pembayaran</h3>
                                     </div>
-                                    
-                                    <div class="space-y-2.5">
-                                        <!-- QRIS -->
-                                        <label class="relative flex items-center justify-between px-3.5 py-2.5 border-2 rounded-xl cursor-pointer transition-all"
-                                               :class="selectedPayment === 'qris' ? 'border-blue-600 dark:border-blue-500 bg-blue-50/80 dark:bg-gray-900 shadow-sm' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 hover:bg-gray-50 dark:hover:bg-gray-700/50'">
+                                                                      <div class="space-y-2.5">
+                                        <!-- QRIS (Satu-satunya metode pembayaran instan) -->
+                                        <label class="relative flex items-center justify-between p-4 border-2 border-indigo-600 dark:border-indigo-500 bg-indigo-50/90 dark:bg-gray-900 rounded-xl cursor-pointer shadow-sm">
                                             <div class="flex items-center gap-3">
-                                                <input type="radio" x-model="selectedPayment" value="qris" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                                <input type="radio" x-model="selectedPayment" value="qris" checked class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
                                                 <div>
-                                                    <div class="font-bold text-sm text-gray-900 dark:text-white">QRIS</div>
-                                                    <div class="text-xs text-gray-500 dark:text-gray-400">GoPay, ShopeePay, DANA, OVO</div>
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="font-bold text-sm text-gray-900 dark:text-white">QRIS All Payment</span>
+                                                        <span class="bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full">Otomatis & Cepat</span>
+                                                    </div>
+                                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">GoPay, OVO, DANA, ShopeePay, LinkAja, BCA & Semua M-Banking</div>
                                                 </div>
                                             </div>
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" alt="QRIS" class="h-5 object-contain bg-white px-2 py-0.5 rounded shadow-sm border border-gray-200">
-                                        </label>
-
-                                        <!-- BCA VA -->
-                                        <label class="relative flex items-center justify-between px-3.5 py-2.5 border-2 rounded-xl cursor-pointer transition-all"
-                                               :class="selectedPayment === 'bca_va' ? 'border-blue-600 dark:border-blue-500 bg-blue-50/80 dark:bg-gray-900 shadow-sm' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 hover:bg-gray-50 dark:hover:bg-gray-700/50'">
-                                            <div class="flex items-center gap-3">
-                                                <input type="radio" x-model="selectedPayment" value="bca_va" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                                                <div>
-                                                    <div class="font-bold text-sm text-gray-900 dark:text-white">BCA Virtual Account</div>
-                                                    <div class="text-xs text-gray-500 dark:text-gray-400">Transfer Bank Otomatis</div>
-                                                </div>
-                                            </div>
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" alt="BCA" class="h-5 object-contain bg-white px-2 py-0.5 rounded shadow-sm border border-gray-200">
-                                        </label>
-
-                                        <!-- BNI VA -->
-                                        <label class="relative flex items-center justify-between px-3.5 py-2.5 border-2 rounded-xl cursor-pointer transition-all"
-                                               :class="selectedPayment === 'bni_va' ? 'border-blue-600 dark:border-blue-500 bg-blue-50/80 dark:bg-gray-900 shadow-sm' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 hover:bg-gray-50 dark:hover:bg-gray-700/50'">
-                                            <div class="flex items-center gap-3">
-                                                <input type="radio" x-model="selectedPayment" value="bni_va" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                                                <div>
-                                                    <div class="font-bold text-sm text-gray-900 dark:text-white">BNI Virtual Account</div>
-                                                    <div class="text-xs text-gray-500 dark:text-gray-400">Transfer Bank Otomatis</div>
-                                                </div>
-                                            </div>
-                                            <div class="h-5 px-2 bg-white rounded shadow-sm border border-gray-200 flex items-center justify-center italic font-black text-sm tracking-tighter" style="line-height: 1;"><span style="color: #F05A28;">B</span><span style="color: #005E6A;">NI</span></div>
-                                        </label>
-                                        
-                                        <!-- BRI VA -->
-                                        <label class="relative flex items-center justify-between px-3.5 py-2.5 border-2 rounded-xl cursor-pointer transition-all"
-                                               :class="selectedPayment === 'bri_va' ? 'border-blue-600 dark:border-blue-500 bg-blue-50/80 dark:bg-gray-900 shadow-sm' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 hover:bg-gray-50 dark:hover:bg-gray-700/50'">
-                                            <div class="flex items-center gap-3">
-                                                <input type="radio" x-model="selectedPayment" value="bri_va" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                                                <div>
-                                                    <div class="font-bold text-sm text-gray-900 dark:text-white">BRI Virtual Account</div>
-                                                    <div class="text-xs text-gray-500 dark:text-gray-400">Transfer Bank Otomatis</div>
-                                                </div>
-                                            </div>
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2e/BRI_2020.svg" alt="BRI" class="h-5 object-contain bg-white px-2 py-0.5 rounded shadow-sm border border-gray-200">
-                                        </label>
-
-                                        <!-- Mandiri VA -->
-                                        <label class="relative flex items-center justify-between px-3.5 py-2.5 border-2 rounded-xl cursor-pointer transition-all"
-                                               :class="selectedPayment === 'mandiri_va' ? 'border-blue-600 dark:border-blue-500 bg-blue-50/80 dark:bg-gray-900 shadow-sm' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 hover:bg-gray-50 dark:hover:bg-gray-700/50'">
-                                            <div class="flex items-center gap-3">
-                                                <input type="radio" x-model="selectedPayment" value="mandiri_va" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                                                <div>
-                                                    <div class="font-bold text-sm text-gray-900 dark:text-white">Mandiri Virtual Account</div>
-                                                    <div class="text-xs text-gray-500 dark:text-gray-400">Transfer Bank Otomatis</div>
-                                                </div>
-                                            </div>
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg" alt="Mandiri" class="h-5 object-contain bg-white px-2 py-0.5 rounded shadow-sm border border-gray-200">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" alt="QRIS" class="h-6 object-contain bg-white px-2 py-1 rounded shadow-sm border border-gray-200">
                                         </label>
                                     </div>
                                 </div>
