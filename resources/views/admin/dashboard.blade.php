@@ -8,28 +8,53 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             @php
-                $totalUsers = \App\Models\User::count();
-                $softwareCount = \App\Models\Product::count();
+                $totalUsers = \Illuminate\Support\Facades\DB::table('users')->count();
+                $softwareCount = \Illuminate\Support\Facades\DB::table('products')->count();
                 $gamesCount = \Illuminate\Support\Facades\DB::table('games')->count();
                 $cvTemplateCount = \Illuminate\Support\Facades\DB::table('cv_templates')->count();
                 $totalProducts = $softwareCount + $gamesCount + $cvTemplateCount;
 
-                $cvRevenue = \App\Models\Cv::whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->sum('price');
-                $topupRevenue = \App\Models\Transaction::whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->sum('amount');
-                $softwareRevenue = \App\Models\Payment::whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->sum('amount');
+                // CV Revenue: count of paid CVs * Rp15.000
+                $paidCvCount = \Illuminate\Support\Facades\DB::table('cvs')->whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->count();
+                $cvRevenue = $paidCvCount * 15000;
+
+                // Top Up Game Revenue
+                $topupRevenue = 0;
+                if (\Illuminate\Support\Facades\Schema::hasTable('transactions')) {
+                    $topupRevenue += (float) \Illuminate\Support\Facades\DB::table('transactions')->whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->sum('amount');
+                }
+                if (\Illuminate\Support\Facades\Schema::hasTable('topup_transactions')) {
+                    $topupRevenue += (float) \Illuminate\Support\Facades\DB::table('topup_transactions')->whereIn('payment_status', ['PAID', 'paid', 'SUCCESS', 'success'])->sum('amount');
+                }
+
+                // Software POS Revenue
+                $softwareRevenue = 0;
+                if (\Illuminate\Support\Facades\Schema::hasTable('payments')) {
+                    $softwareRevenue += (float) \Illuminate\Support\Facades\DB::table('payments')->whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->sum('amount');
+                }
+
                 $totalRevenue = $cvRevenue + $topupRevenue + $softwareRevenue;
 
-                $activeSubscriptions = \App\Models\Subscription::where('status', 'ACTIVE')->count();
+                $activeSubscriptions = 0;
+                if (\Illuminate\Support\Facades\Schema::hasTable('subscriptions')) {
+                    $activeSubscriptions = \Illuminate\Support\Facades\DB::table('subscriptions')->where('status', 'ACTIVE')->count();
+                }
 
                 // Real customer reviews and feedback
-                $totalReviews = \App\Models\CustomerReview::count();
-                $avgRating = $totalReviews > 0 ? round(\App\Models\CustomerReview::avg('rating'), 1) : 5.0;
-                $recentFeedbacks = \App\Models\CustomerReview::latest()->take(6)->get();
-                $star5 = \App\Models\CustomerReview::where('rating', 5)->count();
-                $star4 = \App\Models\CustomerReview::where('rating', 4)->count();
-                $star3 = \App\Models\CustomerReview::where('rating', 3)->count();
-                $star2 = \App\Models\CustomerReview::where('rating', 2)->count();
-                $star1 = \App\Models\CustomerReview::where('rating', 1)->count();
+                $totalReviews = 0;
+                $avgRating = 5.0;
+                $recentFeedbacks = collect();
+                $star5 = $star4 = $star3 = $star2 = $star1 = 0;
+                if (\Illuminate\Support\Facades\Schema::hasTable('customer_reviews')) {
+                    $totalReviews = \Illuminate\Support\Facades\DB::table('customer_reviews')->count();
+                    $avgRating = $totalReviews > 0 ? round((float)\Illuminate\Support\Facades\DB::table('customer_reviews')->avg('rating'), 1) : 5.0;
+                    $recentFeedbacks = \Illuminate\Support\Facades\DB::table('customer_reviews')->orderBy('id', 'desc')->take(6)->get();
+                    $star5 = \Illuminate\Support\Facades\DB::table('customer_reviews')->where('rating', 5)->count();
+                    $star4 = \Illuminate\Support\Facades\DB::table('customer_reviews')->where('rating', 4)->count();
+                    $star3 = \Illuminate\Support\Facades\DB::table('customer_reviews')->where('rating', 3)->count();
+                    $star2 = \Illuminate\Support\Facades\DB::table('customer_reviews')->where('rating', 2)->count();
+                    $star1 = \Illuminate\Support\Facades\DB::table('customer_reviews')->where('rating', 1)->count();
+                }
             @endphp
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -149,7 +174,7 @@
 
                                 <div class="flex items-center justify-between text-[10px] text-gray-400 mt-2">
                                     <span>Produk: <strong class="text-gray-600 dark:text-gray-300">{{ $feed->product_name ?? 'Layanan' }}</strong></span>
-                                    <span>{{ $feed->created_at->diffForHumans() }}</span>
+                                    <span>{{ \Carbon\Carbon::parse($feed->created_at)->diffForHumans() }}</span>
                                 </div>
                             </div>
                         @empty
@@ -190,14 +215,22 @@
                         $recentList = collect();
 
                         // 1. Software Orders
-                        if (class_exists(\App\Models\Order::class)) {
-                            foreach(\App\Models\Order::with(['user', 'product', 'plan'])->latest()->take(6)->get() as $ord) {
+                        if (\Illuminate\Support\Facades\Schema::hasTable('orders')) {
+                            $ords = \Illuminate\Support\Facades\DB::table('orders')
+                                ->leftJoin('users', 'orders.user_id', '=', 'users.id')
+                                ->leftJoin('products', 'orders.product_id', '=', 'products.id')
+                                ->leftJoin('plans', 'orders.plan_id', '=', 'plans.id')
+                                ->select('orders.*', 'users.name as user_name', 'products.name as product_name', 'plans.name as plan_name')
+                                ->orderBy('orders.id', 'desc')
+                                ->take(6)
+                                ->get();
+                            foreach($ords as $ord) {
                                 $recentList->push((object)[
                                     'id' => $ord->order_number,
                                     'type' => 'software',
                                     'type_label' => 'Software POS',
-                                    'customer' => $ord->user->name ?? 'Pelanggan POS',
-                                    'item' => ($ord->product->name ?? 'Software') . ' (' . ($ord->plan->name ?? '-') . ')',
+                                    'customer' => $ord->user_name ?? 'Pelanggan POS',
+                                    'item' => ($ord->product_name ?? 'Software') . ' (' . ($ord->plan_name ?? '-') . ')',
                                     'amount' => $ord->amount,
                                     'status' => $ord->payment_status,
                                     'created_at' => $ord->created_at,
@@ -206,30 +239,44 @@
                         }
 
                         // 2. CV Builder Transactions
-                        if (class_exists(\App\Models\Cv::class)) {
-                            foreach(\App\Models\Cv::latest()->take(6)->get() as $cvItem) {
+                        if (\Illuminate\Support\Facades\Schema::hasTable('cvs')) {
+                            $cvs = \Illuminate\Support\Facades\DB::table('cvs')
+                                ->leftJoin('cv_templates', 'cvs.template_id', '=', 'cv_templates.id')
+                                ->select('cvs.*', 'cv_templates.name as template_title')
+                                ->orderBy('cvs.id', 'desc')
+                                ->take(6)
+                                ->get();
+                            foreach($cvs as $cvItem) {
                                 $recentList->push((object)[
                                     'id' => $cvItem->invoice_number ?? ('CV-' . $cvItem->id),
                                     'type' => 'cv',
                                     'type_label' => 'CV Builder',
                                     'customer' => $cvItem->name,
-                                    'item' => 'Template: ' . ($cvItem->template_name ?? 'Minimalist'),
-                                    'amount' => $cvItem->price,
-                                    'status' => $cvItem->status,
+                                    'item' => 'Template: ' . ($cvItem->template_title ?? ($cvItem->template_name ?? 'Modern CV')),
+                                    'amount' => 15000,
+                                    'status' => $cvItem->status ?? 'PENDING',
                                     'created_at' => $cvItem->created_at,
                                 ]);
                             }
                         }
 
                         // 3. Top Up Game Transactions
-                        if (class_exists(\App\Models\Transaction::class)) {
-                            foreach(\App\Models\Transaction::with(['game', 'gameProduct', 'user'])->latest()->take(6)->get() as $trx) {
+                        if (\Illuminate\Support\Facades\Schema::hasTable('transactions')) {
+                            $trxs = \Illuminate\Support\Facades\DB::table('transactions')
+                                ->leftJoin('games', 'transactions.game_id', '=', 'games.id')
+                                ->leftJoin('game_products', 'transactions.game_product_id', '=', 'game_products.id')
+                                ->leftJoin('users', 'transactions.user_id', '=', 'users.id')
+                                ->select('transactions.*', 'games.name as game_name', 'game_products.name as product_title', 'users.name as user_name')
+                                ->orderBy('transactions.id', 'desc')
+                                ->take(6)
+                                ->get();
+                            foreach($trxs as $trx) {
                                 $recentList->push((object)[
                                     'id' => $trx->invoice_number ?? ('TRX-' . $trx->id),
                                     'type' => 'topup',
                                     'type_label' => 'Top Up Game',
-                                    'customer' => $trx->user->name ?? ('ID: ' . $trx->target_field_1),
-                                    'item' => ($trx->game->name ?? 'Game') . ' - ' . ($trx->gameProduct->name ?? '-'),
+                                    'customer' => $trx->user_name ?? ('ID: ' . $trx->target_field_1),
+                                    'item' => ($trx->game_name ?? 'Game') . ' - ' . ($trx->product_title ?? '-'),
                                     'amount' => $trx->amount,
                                     'status' => $trx->status,
                                     'created_at' => $trx->created_at,
