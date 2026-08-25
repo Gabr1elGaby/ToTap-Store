@@ -239,8 +239,13 @@ if (!empty($data->name)) {
             margin-top: 0;
         }
         
+        .section-block {
+            page-break-inside: avoid;
+            margin-bottom: 6pt;
+        }
+        
         .item-block {
-            margin-bottom: 11pt;
+            margin-bottom: 10pt;
             page-break-inside: avoid;
         }
         .item-header-table {
@@ -278,10 +283,6 @@ if (!empty($data->name)) {
             text-align: justify;
             margin-bottom: 14pt;
             line-height: 1.4;
-        }
-        
-        .section-bundle {
-            page-break-inside: avoid;
         }
     </style>
 </head>
@@ -373,72 +374,18 @@ if (!empty($data->name)) {
         
         <!-- PROFILE / SUMMARY -->
         @if(!empty($data->summary) || !empty($data->profile))
-        <div class="section-bundle">
+        <div class="section-block">
             <div class="summary">
                 {!! nl2br(e($data->summary ?? $data->profile)) !!}
             </div>
         </div>
         @endif
-        
-        <!-- RIWAYAT PENDIDIKAN -->
-        @if(count($educations) > 0)
-            @php $firstEdu = $educations->first(); $restEdu = $educations->slice(1); @endphp
-            <div class="section-bundle">
-                <div class="right-heading">Riwayat Pendidikan</div>
-                <div class="item-block">
-                    <table class="item-header-table" cellpadding="0" cellspacing="0">
-                        <tr>
-                            <td class="item-title" style="width: 75%;">{{ $firstEdu->institution ?? '' }}</td>
-                            <td class="item-date" style="width: 25%;">{{ $firstEdu->start_year ?? '' }} - {{ $firstEdu->end_year ?? '' }}</td>
-                        </tr>
-                    </table>
-                    @php
-                        $deg = $firstEdu->degree ?? '';
-                        $maj = $getVal($firstEdu, 'major', 'field');
-                    @endphp
-                    <div class="item-subtitle">{{ $deg }}{{ $maj !== '' ? ($deg !== '' ? ' - ' : '') . $maj : '' }}</div>
-                    @if(!empty($firstEdu->description))
-                    <div class="item-desc">{!! nl2br(e($firstEdu->description)) !!}</div>
-                    @endif
-                </div>
-            </div>
-            @foreach($restEdu as $edu)
-            <div class="item-block">
-                <table class="item-header-table" cellpadding="0" cellspacing="0">
-                    <tr>
-                        <td class="item-title" style="width: 75%;">{{ $edu->institution ?? '' }}</td>
-                        <td class="item-date" style="width: 25%;">{{ $edu->start_year ?? '' }} - {{ $edu->end_year ?? '' }}</td>
-                    </tr>
-                </table>
-                @php
-                    $deg = $edu->degree ?? '';
-                    $maj = $getVal($edu, 'major', 'field');
-                @endphp
-                <div class="item-subtitle">{{ $deg }}{{ $maj !== '' ? ($deg !== '' ? ' - ' : '') . $maj : '' }}</div>
-                @if(!empty($edu->description))
-                <div class="item-desc">{!! nl2br(e($edu->description)) !!}</div>
-                @endif
-            </div>
-            @endforeach
-        @endif
 
         <!-- PENGALAMAN KERJA -->
         @if(count($experiences) > 0)
-            @php $firstExp = $experiences->first(); $restExp = $experiences->slice(1); @endphp
-            <div class="section-bundle">
-                <div class="right-heading">Pengalaman Kerja</div>
-                <div class="item-block">
-                    <table class="item-header-table" cellpadding="0" cellspacing="0">
-                        <tr>
-                            <td class="item-title" style="width: 75%;">{{ $firstExp->position ?? '' }}</td>
-                            <td class="item-date" style="width: 25%;">{{ $firstExp->start_year ?? '' }} - {{ $firstExp->is_current ? 'Sekarang' : $firstExp->end_year }}</td>
-                        </tr>
-                    </table>
-                    <div class="item-subtitle">{{ $firstExp->company ?? '' }} @if(!empty($firstExp->location)) | {{ $firstExp->location }} @endif</div>
-                    <div class="item-desc">{!! nl2br(e($firstExp->description)) !!}</div>
-                </div>
-            </div>
-            @foreach($restExp as $exp)
+        <div class="section-block">
+            <div class="right-heading">Pengalaman Kerja</div>
+            @foreach($experiences as $exp)
             <div class="item-block">
                 <table class="item-header-table" cellpadding="0" cellspacing="0">
                     <tr>
@@ -450,25 +397,14 @@ if (!empty($data->name)) {
                 <div class="item-desc">{!! nl2br(e($exp->description)) !!}</div>
             </div>
             @endforeach
+        </div>
         @endif
         
         <!-- MAGANG -->
         @if(count($internships) > 0)
-            @php $firstInt = $internships->first(); $restInt = $internships->slice(1); @endphp
-            <div class="section-bundle">
-                <div class="right-heading">Pengalaman Magang</div>
-                <div class="item-block">
-                    <table class="item-header-table" cellpadding="0" cellspacing="0">
-                        <tr>
-                            <td class="item-title" style="width: 75%;">{{ $firstInt->position ?? '' }}</td>
-                            <td class="item-date" style="width: 25%;">{{ $firstInt->start_year ?? '' }} - {{ $firstInt->end_year ?? '' }}</td>
-                        </tr>
-                    </table>
-                    <div class="item-subtitle">{{ $firstInt->company ?? '' }} @if(!empty($firstInt->location)) | {{ $firstInt->location }} @endif</div>
-                    <div class="item-desc">{!! nl2br(e($firstInt->description)) !!}</div>
-                </div>
-            </div>
-            @foreach($restInt as $int)
+        <div class="section-block">
+            <div class="right-heading">Pengalaman Magang</div>
+            @foreach($internships as $int)
             <div class="item-block">
                 <table class="item-header-table" cellpadding="0" cellspacing="0">
                     <tr>
@@ -480,25 +416,14 @@ if (!empty($data->name)) {
                 <div class="item-desc">{!! nl2br(e($int->description)) !!}</div>
             </div>
             @endforeach
+        </div>
         @endif
 
         <!-- PENGALAMAN ORGANISASI -->
         @if(count($organizations) > 0)
-            @php $firstOrg = $organizations->first(); $restOrg = $organizations->slice(1); @endphp
-            <div class="section-bundle">
-                <div class="right-heading">Pengalaman Organisasi</div>
-                <div class="item-block">
-                    <table class="item-header-table" cellpadding="0" cellspacing="0">
-                        <tr>
-                            <td class="item-title" style="width: 75%;">{{ $firstOrg->role ?? '' }}</td>
-                            <td class="item-date" style="width: 25%;">{{ $firstOrg->start_year ?? '' }} - {{ $firstOrg->end_year ?? '' }}</td>
-                        </tr>
-                    </table>
-                    <div class="item-subtitle">{{ $firstOrg->name ?? '' }}</div>
-                    <div class="item-desc">{!! nl2br(e($firstOrg->description)) !!}</div>
-                </div>
-            </div>
-            @foreach($restOrg as $org)
+        <div class="section-block">
+            <div class="right-heading">Pengalaman Organisasi</div>
+            @foreach($organizations as $org)
             <div class="item-block">
                 <table class="item-header-table" cellpadding="0" cellspacing="0">
                     <tr>
@@ -510,32 +435,14 @@ if (!empty($data->name)) {
                 <div class="item-desc">{!! nl2br(e($org->description)) !!}</div>
             </div>
             @endforeach
+        </div>
         @endif
 
         <!-- PROYEK & PORTOFOLIO -->
         @if(count($projects) > 0)
-            @php $firstProj = $projects->first(); $restProj = $projects->slice(1); @endphp
-            <div class="section-bundle">
-                <div class="right-heading">Proyek & Portofolio</div>
-                <div class="item-block">
-                    <table class="item-header-table" cellpadding="0" cellspacing="0">
-                        <tr>
-                            <td class="item-title" style="width: 75%;">{{ $firstProj->name ?? '' }}</td>
-                            <td class="item-date" style="width: 25%;">{{ $firstProj->year ?? $firstProj->link ?? '' }}</td>
-                        </tr>
-                    </table>
-                    @php
-                        $projSub = array_filter([$firstProj->role ?? '', $firstProj->technologies ?? '', (!empty($firstProj->year) ? $firstProj->link ?? '' : '')]);
-                    @endphp
-                    @if(!empty($projSub))
-                    <div class="item-subtitle">{{ implode(' | ', $projSub) }}</div>
-                    @endif
-                    @if(!empty($firstProj->description))
-                    <div class="item-desc">{!! nl2br(e($firstProj->description)) !!}</div>
-                    @endif
-                </div>
-            </div>
-            @foreach($restProj as $proj)
+        <div class="section-block">
+            <div class="right-heading">Proyek & Portofolio</div>
+            @foreach($projects as $proj)
             <div class="item-block">
                 <table class="item-header-table" cellpadding="0" cellspacing="0">
                     <tr>
@@ -554,6 +461,32 @@ if (!empty($data->name)) {
                 @endif
             </div>
             @endforeach
+        </div>
+        @endif
+        
+        <!-- RIWAYAT PENDIDIKAN -->
+        @if(count($educations) > 0)
+        <div class="section-block">
+            <div class="right-heading">Riwayat Pendidikan</div>
+            @foreach($educations as $edu)
+            <div class="item-block">
+                <table class="item-header-table" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td class="item-title" style="width: 75%;">{{ $edu->institution ?? '' }}</td>
+                        <td class="item-date" style="width: 25%;">{{ $edu->start_year ?? '' }} - {{ $edu->end_year ?? '' }}</td>
+                    </tr>
+                </table>
+                @php
+                    $deg = $edu->degree ?? '';
+                    $maj = $getVal($edu, 'major', 'field');
+                @endphp
+                <div class="item-subtitle">{{ $deg }}{{ $maj !== '' ? ($deg !== '' ? ' - ' : '') . $maj : '' }}</div>
+                @if(!empty($edu->description))
+                <div class="item-desc">{!! nl2br(e($edu->description)) !!}</div>
+                @endif
+            </div>
+            @endforeach
+        </div>
         @endif
     </div>
 </body>
