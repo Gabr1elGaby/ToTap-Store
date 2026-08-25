@@ -243,6 +243,12 @@ $hasPage2 = (count($educations) > 0 || count($organizations) > 0 || count($inter
             line-height: 1.4;
         }
 
+        .page1-wrapper {
+            position: relative;
+            width: 100%;
+            min-height: 840pt;
+        }
+
         /* PAGE 2 FULL WIDTH WHITE CONTAINER */
         .page2-container {
             page-break-before: always;
@@ -253,8 +259,9 @@ $hasPage2 = (count($educations) > 0 || count($organizations) > 0 || count($inter
     </style>
 </head>
 <body>
-    <!-- PAGE 1 SIDEBAR (BOTTOM: 0 STRETCHES TO BOTTOM OF PAGE 1) -->
-    <div class="sidebar">
+    <div class="page1-wrapper">
+        <!-- PAGE 1 SIDEBAR (BOTTOM: 0 STRETCHES TO BOTTOM OF PAGE 1) -->
+        <div class="sidebar">
         <!-- PHOTO CENTERED -->
         <table width="160pt" cellpadding="0" cellspacing="0" style="margin-bottom: 14pt;">
             <tr>
@@ -414,6 +421,7 @@ $hasPage2 = (count($educations) > 0 || count($organizations) > 0 || count($inter
             @endforeach
             @endif
         @endif
+        </div>
     </div>
 
     <!-- PAGE 2: FULL WIDTH PURE WHITE (NO BLUE BAR, CLEAN TOP MARGIN) -->

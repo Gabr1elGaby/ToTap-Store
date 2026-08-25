@@ -170,6 +170,12 @@
             font-size: 7pt;
         }
 
+        .page1-wrapper {
+            position: relative;
+            width: 100%;
+            min-height: 840pt;
+        }
+
         /* PAGE 2 FULL WIDTH WHITE CONTAINER */
         .page2-container {
             page-break-before: always;
@@ -180,53 +186,54 @@
     </style>
 </head>
 <body>
-    @php
-        $uData = isset($userData) ? $userData : get_defined_vars();
-        $cvRaw = $uData['cv'] ?? ($cv ?? ($data ?? []));
-        $data = is_object($cvRaw) ? $cvRaw : (object)$cvRaw;
+    <div class="page1-wrapper">
+        @php
+            $uData = isset($userData) ? $userData : get_defined_vars();
+            $cvRaw = $uData['cv'] ?? ($cv ?? ($data ?? []));
+            $data = is_object($cvRaw) ? $cvRaw : (object)$cvRaw;
 
-        $getVal = function($item, ...$keys) {
-            if (is_object($item)) {
-                foreach ($keys as $k) {
-                    if (isset($item->$k) && $item->$k !== '' && $item->$k !== null) return $item->$k;
+            $getVal = function($item, ...$keys) {
+                if (is_object($item)) {
+                    foreach ($keys as $k) {
+                        if (isset($item->$k) && $item->$k !== '' && $item->$k !== null) return $item->$k;
+                    }
+                } elseif (is_array($item)) {
+                    foreach ($keys as $k) {
+                        if (isset($item[$k]) && $item[$k] !== '' && $item[$k] !== null) return $item[$k];
+                    }
                 }
-            } elseif (is_array($item)) {
-                foreach ($keys as $k) {
-                    if (isset($item[$k]) && $item[$k] !== '' && $item[$k] !== null) return $item[$k];
+                return '';
+            };
+
+            $getCol = function($key) use ($uData) {
+                if (isset($uData[$key]) && (is_array($uData[$key]) || $uData[$key] instanceof \Illuminate\Support\Collection)) {
+                    return collect($uData[$key])->map(fn($i) => (object)$i);
                 }
-            }
-            return '';
-        };
+                if (isset($uData['cv']) && is_array($uData['cv']) && isset($uData['cv'][$key]) && is_array($uData['cv'][$key])) {
+                    return collect($uData['cv'][$key])->map(fn($i) => (object)$i);
+                }
+                if (isset($uData['cv']) && is_object($uData['cv']) && isset($uData['cv']->$key)) {
+                    return collect($uData['cv']->$key)->map(fn($i) => (object)$i);
+                }
+                return collect([]);
+            };
 
-        $getCol = function($key) use ($uData) {
-            if (isset($uData[$key]) && (is_array($uData[$key]) || $uData[$key] instanceof \Illuminate\Support\Collection)) {
-                return collect($uData[$key])->map(fn($i) => (object)$i);
-            }
-            if (isset($uData['cv']) && is_array($uData['cv']) && isset($uData['cv'][$key]) && is_array($uData['cv'][$key])) {
-                return collect($uData['cv'][$key])->map(fn($i) => (object)$i);
-            }
-            if (isset($uData['cv']) && is_object($uData['cv']) && isset($uData['cv']->$key)) {
-                return collect($uData['cv']->$key)->map(fn($i) => (object)$i);
-            }
-            return collect([]);
-        };
+            $educations    = $getCol('educations');
+            $experiences   = $getCol('experiences');
+            $internships   = $getCol('internships');
+            $organizations = $getCol('organizations');
+            $projects      = $getCol('projects');
+            $certificates  = $getCol('certificates');
+            $skills        = $getCol('skills');
 
-        $educations    = $getCol('educations');
-        $experiences   = $getCol('experiences');
-        $internships   = $getCol('internships');
-        $organizations = $getCol('organizations');
-        $projects      = $getCol('projects');
-        $certificates  = $getCol('certificates');
-        $skills        = $getCol('skills');
+            $hard_skills = $skills->filter(fn($s) => isset($s->level) && $s->level !== '' && $s->level !== null)->all();
+            $soft_skills = $skills->filter(fn($s) => !isset($s->level) || $s->level === '' || $s->level === null)->all();
 
-        $hard_skills = $skills->filter(fn($s) => isset($s->level) && $s->level !== '' && $s->level !== null)->all();
-        $soft_skills = $skills->filter(fn($s) => !isset($s->level) || $s->level === '' || $s->level === null)->all();
+            $hasPage2 = (count($educations) > 0 || count($organizations) > 0 || count($internships) > 0 || count($certificates) > 0);
+        @endphp
 
-        $hasPage2 = (count($educations) > 0 || count($organizations) > 0 || count($internships) > 0 || count($certificates) > 0);
-    @endphp
-
-    <!-- PAGE 1 SIDEBAR (BOTTOM: 0 STRETCHES TO BOTTOM OF PAGE 1) -->
-    <div class="sidebar">
+        <!-- PAGE 1 SIDEBAR (BOTTOM: 0 STRETCHES TO BOTTOM OF PAGE 1) -->
+        <div class="sidebar">
         <!-- PHOTO CENTERED -->
         <table width="160pt" cellpadding="0" cellspacing="0" style="margin-bottom: 14pt;">
             <tr>
@@ -382,6 +389,7 @@
             @endforeach
             @endif
         @endif
+        </div>
     </div>
 
     <!-- PAGE 2: FULL WIDTH PURE WHITE -->

@@ -46,7 +46,7 @@
         }
         .a4-modal-sheet {
             width: 794px;
-            height: 1123px;
+            min-height: 1123px;
             background: white;
             box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.85);
             border-radius: 6px;
@@ -436,7 +436,7 @@
                     <div class="a4-modal-sheet">
                         <template x-if="previewOpen">
                             <iframe :src="'/cv/preview-example/' + previewSlug" 
-                                    style="width: 794px; height: 1123px; border: 0; display: block; background: white;"></iframe>
+                                    style="width: 794px; min-height: 1123px; height: 2300px; border: 0; display: block; background: white;"></iframe>
                         </template>
                     </div>
                 </div>
