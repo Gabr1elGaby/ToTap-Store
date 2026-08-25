@@ -152,7 +152,7 @@
             if (isset($userData[$key]) && (is_array($userData[$key]) || $userData[$key] instanceof \Illuminate\Support\Collection)) {
                 return collect($userData[$key])->map(fn($i) => (object)$i);
             }
-            if (isset($userData['cv'][$key]) && is_array($userData['cv'][$key])) {
+            if (isset($userData['cv']) && is_array($userData['cv']) && isset($userData['cv'][$key]) && is_array($userData['cv'][$key])) {
                 return collect($userData['cv'][$key])->map(fn($i) => (object)$i);
             }
             if (isset($userData['cv']) && is_object($userData['cv']) && isset($userData['cv']->$key)) {

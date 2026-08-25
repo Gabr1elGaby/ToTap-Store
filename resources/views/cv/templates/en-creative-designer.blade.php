@@ -96,12 +96,13 @@
 <body>
 
     @php
-        $cv = $userData['cv'] ?? [];
-        $educations = $userData['educations'] ?? [];
-        $experiences = $userData['experiences'] ?? [];
-        $skills = $userData['skills'] ?? [];
-        $projects = $userData['projects'] ?? [];
-        $certificates = $userData['certificates'] ?? [];
+        $cv = (array)($userData['cv'] ?? ($cv ?? []));
+        $normalizeList = fn($list) => array_map(fn($i) => (array)$i, (array)($list ?? []));
+        $educations = $normalizeList($userData['educations'] ?? ($educations ?? []));
+        $experiences = $normalizeList($userData['experiences'] ?? ($experiences ?? []));
+        $skills = $normalizeList($userData['skills'] ?? ($skills ?? []));
+        $projects = $normalizeList($userData['projects'] ?? ($projects ?? []));
+        $certificates = $normalizeList($userData['certificates'] ?? ($certificates ?? []));
     @endphp
 
     <!-- HEADER -->

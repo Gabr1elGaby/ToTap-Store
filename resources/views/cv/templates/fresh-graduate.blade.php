@@ -154,7 +154,7 @@
             if (isset($uData[$key]) && (is_array($uData[$key]) || $uData[$key] instanceof \Illuminate\Support\Collection)) {
                 return collect($uData[$key])->map(fn($i) => (object)$i);
             }
-            if (isset($uData['cv'][$key]) && is_array($uData['cv'][$key])) {
+            if (isset($uData['cv']) && is_array($uData['cv']) && isset($uData['cv'][$key]) && is_array($uData['cv'][$key])) {
                 return collect($uData['cv'][$key])->map(fn($i) => (object)$i);
             }
             if (isset($uData['cv']) && is_object($uData['cv']) && isset($uData['cv']->$key)) {
