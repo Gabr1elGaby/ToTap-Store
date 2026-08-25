@@ -92,56 +92,103 @@
             </p>
         </div>
 
-        <!-- INTERACTIVE LANGUAGE FILTER TABS -->
+        <!-- INTERACTIVE LANGUAGE FILTER TABS (CLEAN & MODERN WITH VECTOR FLAGS) -->
         <div class="flex flex-wrap items-center justify-center gap-3 mb-10">
+            <!-- All Templates Tab -->
             <button @click="activeLang = 'all'"
-                    class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 flex items-center gap-2 shadow-sm"
-                    :class="activeLang === 'all' ? 'bg-indigo-600 text-white shadow-indigo-600/30' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'">
-                <i class="fas fa-layer-group"></i> Semua Template ({{ count($templates) }})
+                    class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 flex items-center gap-2.5 shadow-sm border"
+                    :class="activeLang === 'all' ? 'bg-indigo-600 border-indigo-600 text-white shadow-indigo-600/30' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'">
+                <i class="fas fa-layer-group text-base"></i> 
+                <span>Semua Template ({{ count($templates) }})</span>
             </button>
 
+            <!-- Indonesian Tab -->
             <button @click="activeLang = 'id'"
-                    class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 flex items-center gap-2 shadow-sm"
-                    :class="activeLang === 'id' ? 'bg-red-600 text-white shadow-red-600/30' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'">
-                <span>🇮🇩</span> Bahasa Indonesia (Standar BUMN & Nasional)
+                    class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 flex items-center gap-2.5 shadow-sm border"
+                    :class="activeLang === 'id' ? 'bg-rose-600 border-rose-600 text-white shadow-rose-600/30' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'">
+                <!-- Indonesian Vector Flag -->
+                <span class="w-5 h-3.5 rounded-sm overflow-hidden shadow-sm inline-flex flex-col border border-black/10 flex-shrink-0">
+                    <span class="h-1/2 bg-red-600 w-full"></span>
+                    <span class="h-1/2 bg-white w-full"></span>
+                </span>
+                <span>Bahasa Indonesia (BUMN & Nasional)</span>
             </button>
 
+            <!-- English Tab -->
             <button @click="activeLang = 'en'"
-                    class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 flex items-center gap-2 shadow-sm"
-                    :class="activeLang === 'en' ? 'bg-blue-600 text-white shadow-blue-600/30' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'">
-                <span>🇬🇧</span> English Resume (International & Global ATS)
+                    class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 flex items-center gap-2.5 shadow-sm border"
+                    :class="activeLang === 'en' ? 'bg-blue-600 border-blue-600 text-white shadow-blue-600/30' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'">
+                <!-- Global / English Vector Icon -->
+                <i class="fas fa-globe-americas text-base"></i>
+                <span>Bahasa Inggris (International ATS)</span>
             </button>
         </div>
 
-        <!-- EDUCATIONAL GUIDANCE CARDS -->
-        <div class="mb-10 bg-gradient-to-r from-slate-100 to-indigo-50/50 dark:from-gray-800/80 dark:to-indigo-950/30 rounded-2xl p-6 border border-gray-200 dark:border-gray-700/80 shadow-sm">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-                <!-- ID Info -->
-                <div class="flex items-start gap-3.5">
-                    <div class="w-8 h-8 rounded-xl bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 flex items-center justify-center font-bold text-base flex-shrink-0 shadow-sm">
-                        🇮🇩
+        <!-- EDUCATIONAL GUIDANCE CARDS (CLEAN, SPACIOUS & MODERN) -->
+        <div class="mb-12 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Indonesian CV Standards Card -->
+            <div class="bg-white dark:bg-gray-800/90 rounded-2xl p-6 sm:p-7 border border-rose-200/80 dark:border-rose-900/40 shadow-sm relative overflow-hidden flex flex-col justify-between">
+                <div class="flex items-center gap-3.5 mb-4">
+                    <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold text-lg flex-shrink-0 border border-rose-500/20 shadow-sm">
+                        <i class="fas fa-building"></i>
                     </div>
                     <div>
-                        <h4 class="font-bold text-gray-900 dark:text-white mb-1">Standar CV Bahasa Indonesia</h4>
-                        <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                            Dirancang khusus untuk melamar di <strong>BUMN, CPNS/Instansi Pemerintah, Korporat Swasta, dan Startup Indonesia</strong>. Mengikuti tata letak baku: Data Pribadi lengkap, Ringkasan Profil, Pengalaman Kerja, Riwayat Pendidikan & IPK, Pengalaman Organisasi Kampus/Masyarakat, dan Sertifikasi Profesi (BNSP).
-                        </p>
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-extrabold text-gray-900 dark:text-white text-base">Standar CV Bahasa Indonesia</h3>
+                            <span class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">BUMN & Lokal</span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Untuk BUMN, CPNS / Instansi Pemerintah, Korporat Swasta & Startup</p>
                     </div>
                 </div>
 
-                <!-- EN Info -->
-                <div class="flex items-start gap-3.5">
-                    <div class="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-base flex-shrink-0 shadow-sm">
-                        🇬🇧
+                <ul class="space-y-2.5 text-xs text-gray-600 dark:text-gray-300">
+                    <li class="flex items-start gap-2">
+                        <i class="fas fa-check-circle text-rose-500 mt-0.5 flex-shrink-0"></i>
+                        <span><strong>Data Pribadi Lengkap:</strong> Nama lengkap, kontak WhatsApp aktif, domisili (Kota/Provinsi), dan foto formal profesional.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i class="fas fa-check-circle text-rose-500 mt-0.5 flex-shrink-0"></i>
+                        <span><strong>Riwayat Pendidikan & IPK:</strong> Jenjang studi, jurusan, nama universitas/sekolah, dan nilai IPK/predikat kelulusan.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i class="fas fa-check-circle text-rose-500 mt-0.5 flex-shrink-0"></i>
+                        <span><strong>Organisasi & Sertifikasi BNSP:</strong> Sangat diutamakan kepanitiaan kampus, kegiatan kemahasiswaan, dan pelatihan profesi nasional.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- English Resume Standards Card -->
+            <div class="bg-white dark:bg-gray-800/90 rounded-2xl p-6 sm:p-7 border border-blue-200/80 dark:border-blue-900/40 shadow-sm relative overflow-hidden flex flex-col justify-between">
+                <div class="flex items-center gap-3.5 mb-4">
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-lg flex-shrink-0 border border-blue-500/20 shadow-sm">
+                        <i class="fas fa-globe-americas"></i>
                     </div>
                     <div>
-                        <h4 class="font-bold text-gray-900 dark:text-white mb-1">International English Resume Rules</h4>
-                        <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                            Strictly complies with <strong>US/UK/EU Recruiter Standards & Global ATS Scanners</strong>. Highlights Quantifiable Achievements (XYZ Method & Action Verbs), Tech Stack/Projects Portfolio, Core Competencies, without personal sensitive data (No DOB/marital status).
-                        </p>
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-extrabold text-gray-900 dark:text-white text-base">Standar Resume Bahasa Inggris</h3>
+                            <span class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">Global & Remote</span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Untuk Perusahaan Global, Startup Multinasional, Remote Work & Rekruter Luar Negeri</p>
                     </div>
                 </div>
+
+                <ul class="space-y-2.5 text-xs text-gray-600 dark:text-gray-300">
+                    <li class="flex items-start gap-2">
+                        <i class="fas fa-check-circle text-blue-500 mt-0.5 flex-shrink-0"></i>
+                        <span><strong>Quantifiable Achievements:</strong> Penjelasan pengalaman kerja dengan Action Verbs dan rumus XYZ (hasil terukur dalam angka/persentase).</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i class="fas fa-check-circle text-blue-500 mt-0.5 flex-shrink-0"></i>
+                        <span><strong>Projects & Tech Portfolio:</strong> Menampilkan portofolio proyek teknis, stack teknologi, dan tautan live demo / GitHub.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i class="fas fa-check-circle text-blue-500 mt-0.5 flex-shrink-0"></i>
+                        <span><strong>100% Lolos ATS Global:</strong> Tanpa data sensitif (tanpa tanggal lahir/status pernikahan) agar memenuhi regulasi anti-diskriminasi internasional.</span>
+                    </li>
+                </ul>
             </div>
+
         </div>
 
         <!-- Grid of CV Templates -->
@@ -172,11 +219,6 @@
                             </span>
                         </div>
 
-                        <!-- Language Badge -->
-                        <div class="absolute top-3 right-3 text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-md flex items-center gap-1.5 {{ $tLang === 'en' ? 'bg-blue-600 text-white' : 'bg-red-600 text-white' }}">
-                            <span>{{ $tLang === 'en' ? '🇬🇧 English' : '🇮🇩 Indonesia' }}</span>
-                        </div>
-
                         <!-- Promo Badge -->
                         @if($template->price_normal && $template->price_normal > $template->price)
                             <div class="absolute top-3 left-3 bg-amber-500 text-white text-[11px] font-black px-2.5 py-1 rounded-lg shadow-md uppercase tracking-wider">
@@ -188,11 +230,19 @@
                     <!-- Template Info & Action -->
                     <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
                         <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <span class="text-[10px] font-extrabold uppercase tracking-wider {{ $tLang === 'en' ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400' }}">
-                                    {{ $tLang === 'en' ? 'Global Standard Resume' : 'Standar Nasional Indonesia' }}
-                                </span>
+                            <!-- Language Category Tag -->
+                            <div class="mb-2">
+                                @if($tLang === 'en')
+                                    <span class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                                        <i class="fas fa-globe text-[10px]"></i> Bahasa Inggris • Global ATS
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                                        <i class="fas fa-flag text-[10px]"></i> Bahasa Indonesia • BUMN
+                                    </span>
+                                @endif
                             </div>
+
                             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition">
                                 {{ $template->name }}
                             </h3>
