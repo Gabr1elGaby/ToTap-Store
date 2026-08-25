@@ -248,9 +248,20 @@ class GameProductController extends Controller
             }
         } catch (\Exception $e) {}
 
+        // AUTO-EXPIRE SOFTWARE SUBSCRIPTIONS (Otomatis Expire Langganan Software yang Lewat Batas)
+        $expiredSubs = 0;
+        try {
+            if (class_exists(\App\Models\Subscription::class)) {
+                $expiredSubs = \App\Models\Subscription::where('status', 'ACTIVE')
+                    ->whereNotNull('end_date')
+                    ->where('end_date', '<', now()->toDateString())
+                    ->update(['status' => 'EXPIRED']);
+            }
+        } catch (\Exception $e) {}
+
         return response()->json([
             'success' => true,
-            'message' => "Auto Sync Selesai! {$totalUpdated} produk & saldo modal berhasil diperbarui.",
+            'message' => "Auto Sync Selesai! {$totalUpdated} game produk, saldo modal, dan {$expiredSubs} status software berhasil diperbarui otomatis.",
         ]);
     }
 }
