@@ -135,9 +135,9 @@ Route::middleware(['auth', 'verified', 'role:superadmin'])->prefix('admin')->nam
 
     // Admin Actions (Placed before wildcard routes)
     Route::post('/transactions/clear-all', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'clearAll'])->name('transactions.clear-all');
-    Route::post('/transactions/cv/{id}/approve', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'approveCv'])->name('transactions.cv.approve');
-    Route::post('/transactions/cv/{id}/reject', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'rejectCv'])->name('transactions.cv.reject');
-    Route::delete('/transactions/cv/{id}', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'destroyCv'])->name('transactions.cv.destroy');
+    Route::match(['GET', 'POST'], '/transactions/cv/{id}/approve', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'approveCv'])->name('transactions.cv.approve');
+    Route::match(['GET', 'POST'], '/transactions/cv/{id}/reject', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'rejectCv'])->name('transactions.cv.reject');
+    Route::match(['GET', 'POST', 'DELETE'], '/transactions/cv/{id}', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'destroyCv'])->name('transactions.cv.destroy');
 
     // Admin Transactions & Invoices Management
     Route::get('/transactions', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'index'])->name('transactions.index');

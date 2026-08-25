@@ -109,7 +109,7 @@ class AdminTransactionController extends Controller
             ->first();
 
         if (!$cv) {
-            return back()->with('error', 'Data CV tidak ditemukan.');
+            return redirect()->route('admin.transactions.index')->with('error', 'Data CV tidak ditemukan.');
         }
 
         \Illuminate\Support\Facades\DB::table('cvs')->where('id', $cv->id)->update([
@@ -117,7 +117,7 @@ class AdminTransactionController extends Controller
             'updated_at' => now(),
         ]);
 
-        return back()->with('success', "Pembayaran CV untuk {$cv->name} (#{$cv->invoice_number}) BERHASIL DI-ACC! Link download PDF kini aktif untuk pengguna.");
+        return redirect()->route('admin.transactions.index')->with('success', "Pembayaran CV untuk {$cv->name} (#{$cv->invoice_number}) BERHASIL DI-ACC! Link download PDF kini aktif untuk pengguna.");
     }
 
     public function rejectCv($id)
@@ -128,7 +128,7 @@ class AdminTransactionController extends Controller
             ->first();
 
         if (!$cv) {
-            return back()->with('error', 'Data CV tidak ditemukan.');
+            return redirect()->route('admin.transactions.index')->with('error', 'Data CV tidak ditemukan.');
         }
 
         \Illuminate\Support\Facades\DB::table('cvs')->where('id', $cv->id)->update([
@@ -136,7 +136,7 @@ class AdminTransactionController extends Controller
             'updated_at' => now(),
         ]);
 
-        return back()->with('error', "Pesanan CV (#{$cv->invoice_number}) telah ditolak/dibatalkan.");
+        return redirect()->route('admin.transactions.index')->with('error', "Pesanan CV (#{$cv->invoice_number}) telah ditolak/dibatalkan.");
     }
 
     public function approve($id)

@@ -417,20 +417,14 @@
                                         <td class="py-4 px-6 text-right">
                                             <div class="flex items-center justify-end gap-2">
                                                 @if($cvItem->status === 'PENDING')
-                                                    <!-- ACC Button -->
-                                                    <form action="{{ route('admin.transactions.cv.approve', $cvItem->id) }}" method="POST" onsubmit="return confirm('ACC pembayaran CV ini? Link download PDF akan langsung aktif untuk pengguna.');">
-                                                        @csrf
-                                                        <button type="submit" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 cursor-pointer">
-                                                            <i class="fas fa-check"></i> ACC Bayar
-                                                        </button>
-                                                    </form>
+                                                    <!-- ACC Button (Direct & Form compatible) -->
+                                                    <a href="{{ route('admin.transactions.cv.approve', $cvItem->id) }}" onclick="if(typeof autoRefreshEnabled !== 'undefined') autoRefreshEnabled = false; return confirm('ACC pembayaran CV ini? Link download PDF akan langsung aktif untuk pengguna.');" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 cursor-pointer">
+                                                        <i class="fas fa-check"></i> ACC Bayar
+                                                    </a>
                                                     <!-- Reject Button -->
-                                                    <form action="{{ route('admin.transactions.cv.reject', $cvItem->id) }}" method="POST" onsubmit="return confirm('Tolak pesanan CV ini?');">
-                                                        @csrf
-                                                        <button type="submit" class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 cursor-pointer">
-                                                            <i class="fas fa-times"></i> Tolak
-                                                        </button>
-                                                    </form>
+                                                    <a href="{{ route('admin.transactions.cv.reject', $cvItem->id) }}" onclick="if(typeof autoRefreshEnabled !== 'undefined') autoRefreshEnabled = false; return confirm('Tolak pesanan CV ini?');" class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 cursor-pointer">
+                                                        <i class="fas fa-times"></i> Tolak
+                                                    </a>
                                                 @endif
 
                                                 @if($cvItem->status === 'PAID')
@@ -560,14 +554,5 @@
                 updateBadge();
             }
         }, 1000);
-
-        // Immediate reload when switching back to this browser tab
-        window.addEventListener('focus', () => {
-            const activeInput = document.activeElement;
-            if (activeInput && (activeInput.tagName === 'INPUT' || activeInput.tagName === 'TEXTAREA')) {
-                return;
-            }
-            window.location.reload();
-        });
     </script>
 </x-app-layout>
