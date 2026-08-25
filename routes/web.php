@@ -77,6 +77,7 @@ Route::get('/produk/{slug}', [\App\Http\Controllers\PublicProductController::cla
 Route::get('/cv', [\App\Http\Controllers\CvController::class, 'index'])->name('cv.index');
 Route::get('/cv/create', [\App\Http\Controllers\CvController::class, 'create'])->name('cv.create');
 Route::get('/cv/preview-example/{slug}', [\App\Http\Controllers\CvController::class, 'previewExample'])->name('cv.previewExample');
+Route::post('/cv/preview/{slug}', [\App\Http\Controllers\CvController::class, 'preview'])->name('cv.preview');
 Route::match(['get', 'post'], '/api/tripay/callback', [\App\Http\Controllers\Api\TripayCallbackController::class, 'handle'])->name('tripay.callback');
 Route::match(['get', 'post'], '/api/duitku/callback', [\App\Http\Controllers\Api\DuitkuCallbackController::class, 'handle'])->name('duitku.callback');
 Route::get('/api/cron/sync-all', [\App\Http\Controllers\Admin\GameProductController::class, 'cronSyncAll'])->name('cron.sync-all');
@@ -92,7 +93,6 @@ Route::post('/topup/checkout/{id}/verify', [\App\Http\Controllers\TopUpPaymentCo
 Route::middleware(['auth'])->group(function () {
     Route::post('/cv', [\App\Http\Controllers\CvController::class, 'store'])->name('cv.store');
     Route::get('/cv/download/{token}', [\App\Http\Controllers\CvController::class, 'download'])->name('cv.download');
-    Route::post('/cv/preview/{slug}', [\App\Http\Controllers\CvController::class, 'preview'])->name('cv.preview');
     Route::get('/api/cv/{token}/status', [\App\Http\Controllers\CvPaymentController::class, 'statusApi'])->name('cv.status.api');
     
     Route::get('/checkout/cv/{token}', [\App\Http\Controllers\CvPaymentController::class, 'show'])->name('cv.checkout.show');

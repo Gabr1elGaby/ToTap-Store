@@ -494,7 +494,7 @@
                 </div>
 
                 <!-- Injected HTML from Backend -->
-                <div x-html="previewHtml" class="w-full h-full"></div>
+                <div x-html="previewHtml" class="w-full min-h-[1123px] h-full relative bg-white"></div>
             </div>
         </div>
     </div>

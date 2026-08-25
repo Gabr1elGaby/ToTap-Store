@@ -1,242 +1,212 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Global Tech & Corporate ATS Resume</title>
+    <title>{{ $template->name ?? "Global ATS Standard Resume" }}</title>
     <style>
-        @page { margin: 0px; }
-        html, body { margin: 0; padding: 0; background-color: #fff; }
-        body {
-            padding: 36px 48px;
-            word-wrap: break-word;
-            word-break: break-word;
-            overflow-wrap: break-word;
-            font-family: 'Helvetica', 'Arial', sans-serif;
-            margin: 0;
-            font-size: 10pt;
-            color: #111827;
-            line-height: 1.45;
-            box-sizing: border-box;
+        @page {
+            size: A4;
+            margin: 20mm 18mm 20mm 18mm;
         }
-        table { border-collapse: collapse; table-layout: fixed; width: 100%; }
-        td { word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; }
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, "Helvetica Neue", sans-serif;
+            background-color: #ffffff;
+            color: #111827;
+            font-size: 8.5pt;
+            line-height: 1.4;
+        }
         .header {
             text-align: center;
-            margin-bottom: 16px;
-            border-bottom: 2px solid #111827;
-            padding-bottom: 12px;
+            border-bottom: 2pt solid #111827;
+            padding-bottom: 8pt;
+            margin-bottom: 10pt;
         }
         .name {
-            font-size: 22pt;
-            font-weight: 800;
+            font-size: 16pt;
+            font-weight: bold;
             text-transform: uppercase;
-            margin: 0 0 4px 0;
-            letter-spacing: 1.5px;
-            color: #0f172a;
+            letter-spacing: 1px;
+            color: #000000;
+            margin-bottom: 3pt;
         }
         .job-title {
-            font-size: 11pt;
+            font-size: 9.5pt;
             font-weight: bold;
-            color: #2563eb;
+            color: #374151;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 6px;
+            margin-bottom: 4pt;
         }
-        .contact-info {
-            font-size: 9pt;
+        .contact-line {
+            font-size: 8pt;
             color: #4b5563;
         }
-        .contact-info span {
-            margin: 0 5px;
+        .contact-line span {
+            margin: 0 4pt;
         }
-        .section-title {
-            font-size: 11pt;
-            font-weight: 800;
+        .section-heading {
+            font-size: 9pt;
+            font-weight: bold;
             text-transform: uppercase;
-            border-bottom: 1.5px solid #1f2937;
-            padding-bottom: 2px;
-            margin-top: 14px;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-            color: #0f172a;
+            letter-spacing: 0.8px;
+            color: #000000;
+            border-bottom: 1pt solid #9ca3af;
+            padding-bottom: 2pt;
+            margin-top: 10pt;
+            margin-bottom: 6pt;
         }
-        .item-title-row {
+        .item-block {
+            margin-bottom: 6pt;
+        }
+        .item-header-table {
             width: 100%;
-            margin-bottom: 2px;
+            border-collapse: collapse;
+            margin-bottom: 1pt;
         }
         .item-title {
+            font-size: 8.5pt;
             font-weight: bold;
-            font-size: 10.5pt;
-            color: #111827;
+            color: #000000;
+            text-align: left;
         }
         .item-date {
-            text-align: right;
-            font-size: 9.5pt;
+            font-size: 8pt;
             color: #4b5563;
+            text-align: right;
             white-space: nowrap;
         }
         .item-subtitle {
-            font-size: 9.5pt;
-            color: #2563eb;
-            font-weight: 600;
-            margin-bottom: 4px;
+            font-size: 8pt;
+            font-style: italic;
+            color: #374151;
+            margin-bottom: 2pt;
         }
         .item-desc {
-            font-size: 9.5pt;
-            color: #374151;
-            margin-bottom: 10px;
+            font-size: 8pt;
+            color: #1f2937;
             text-align: justify;
-        }
-        .skills-table td {
-            padding: 3px 0;
-            vertical-align: top;
-            font-size: 9.5pt;
-        }
-        .skills-category {
-            font-weight: bold;
-            width: 140px;
-            color: #111827;
-        }
-        ul {
-            margin: 3px 0 8px 18px;
-            padding: 0;
-        }
-        li {
-            margin-bottom: 3px;
-            color: #374151;
-            font-size: 9.5pt;
+            line-height: 1.35;
         }
     </style>
 </head>
 <body>
-
     @php
-        $cv = (array)($userData['cv'] ?? ($cv ?? []));
-        $normalizeList = fn($list) => array_map(fn($i) => (array)$i, (array)($list ?? []));
-        $educations = $normalizeList($userData['educations'] ?? ($educations ?? []));
-        $experiences = $normalizeList($userData['experiences'] ?? ($experiences ?? []));
-        $skills = $normalizeList($userData['skills'] ?? ($skills ?? []));
-        $projects = $normalizeList($userData['projects'] ?? ($projects ?? []));
-        $certificates = $normalizeList($userData['certificates'] ?? ($certificates ?? []));
+        $getVal = function($obj, ...$keys) {
+            foreach ($keys as $k) {
+                if (is_object($obj) && isset($obj->$k) && !empty($obj->$k)) return $obj->$k;
+                if (is_array($obj) && isset($obj[$k]) && !empty($obj[$k])) return $obj[$k];
+            }
+            return "";
+        };
+
+        $skills = (!empty($skills) && count($skills) > 0) ? $skills : ($data->skills ?? ($userData["skills"] ?? []));
+        $educations = (!empty($educations) && count($educations) > 0) ? $educations : ($data->educations ?? ($userData["educations"] ?? []));
+        $experiences = (!empty($experiences) && count($experiences) > 0) ? $experiences : ($data->experiences ?? ($userData["experiences"] ?? []));
+        $projects = (!empty($projects) && count($projects) > 0) ? $projects : ($data->projects ?? ($userData["projects"] ?? []));
+        $internships = (!empty($internships) && count($internships) > 0) ? $internships : ($data->internships ?? ($userData["internships"] ?? []));
+        $organizations = (!empty($organizations) && count($organizations) > 0) ? $organizations : ($data->organizations ?? ($userData["organizations"] ?? []));
+        $certificates = (!empty($certificates) && count($certificates) > 0) ? $certificates : ($data->certificates ?? ($userData["certificates"] ?? []));
     @endphp
 
-    <!-- HEADER -->
     <div class="header">
-        <div class="name">{{ $cv['name'] ?? 'ALEXANDER WRIGHT' }}</div>
-        @if(!empty($cv['job_title']))
-            <div class="job-title">{{ $cv['job_title'] }}</div>
-        @endif
-        <div class="contact-info">
-            {{ $cv['email'] ?? 'alex.wright@example.com' }}
-            @if(!empty($cv['phone'])) <span>•</span> {{ $cv['phone'] }} @endif
-            @if(!empty($cv['address'] ?? $cv['location'])) <span>•</span> {{ $cv['address'] ?? $cv['location'] }} @endif
-            @if(!empty($cv['linkedin'])) <span>•</span> {{ $cv['linkedin'] }} @endif
-            @if(!empty($cv['website'])) <span>•</span> {{ $cv['website'] }} @endif
+        <div class="name">{{ $getVal($data, "name") ?: "FULL NAME" }}</div>
+        <div class="job-title">{{ $getVal($data, "job_title") ?: "PROFESSIONAL TITLE" }}</div>
+        <div class="contact-line">
+            @if(!empty($data->phone))<span>{{ $data->phone }}</span> •@endif
+            @if(!empty($data->email))<span>{{ $data->email }}</span> •@endif
+            @if($getVal($data, "address", "location") !== "")<span>{{ $getVal($data, "address", "location") }}</span> •@endif
+            @if(!empty($data->linkedin))<span>{{ $data->linkedin }}</span>@endif
         </div>
     </div>
 
-    <!-- PROFESSIONAL SUMMARY -->
-    @if(!empty($cv['profile']))
-        <div class="section-title">Professional Summary</div>
-        <div class="item-desc">
-            {{ $cv['profile'] }}
+    @if($getVal($data, "profile", "summary") !== "")
+    <div class="section-heading">Professional Summary</div>
+    <div class="item-desc" style="margin-bottom: 8pt;">{{ $getVal($data, "profile", "summary") }}</div>
+    @endif
+
+    @if(!empty($experiences) && count($experiences) > 0)
+    <div class="section-heading">Professional Experience</div>
+    @foreach($experiences as $exp)
+        @php
+            $comp = is_array($exp) ? ($exp["company"] ?? "") : ($exp->company ?? "");
+            $pos  = is_array($exp) ? ($exp["position"] ?? "") : ($exp->position ?? "");
+            $start= is_array($exp) ? ($exp["start_year"] ?? "") : ($exp->start_year ?? "");
+            $end  = is_array($exp) ? ($exp["end_year"] ?? "") : ($exp->end_year ?? "");
+            $isCur= is_array($exp) ? ($exp["is_current"] ?? false) : ($exp->is_current ?? false);
+            $dateStr = $start ? ($start . " - " . ($isCur ? "Present" : ($end ?: "Present"))) : ($end ?: "");
+            $desc = is_array($exp) ? ($exp["description"] ?? "") : ($exp->description ?? "");
+        @endphp
+        <div class="item-block">
+            <table class="item-header-table">
+                <tr>
+                    <td class="item-title">{{ $pos }} — {{ $comp }}</td>
+                    <td class="item-date">{{ $dateStr }}</td>
+                </tr>
+            </table>
+            @if(!empty($desc))<div class="item-desc">{!! nl2br(e($desc)) !!}</div>@endif
         </div>
+    @endforeach
     @endif
 
-    <!-- WORK EXPERIENCE -->
-    @if(!empty($experiences))
-        <div class="section-title">Work Experience</div>
-        @foreach($experiences as $exp)
-            <table class="item-title-row">
+    @if(!empty($educations) && count($educations) > 0)
+    <div class="section-heading">Education</div>
+    @foreach($educations as $edu)
+        @php
+            $inst = is_array($edu) ? ($edu["institution"] ?? "") : ($edu->institution ?? "");
+            $deg  = is_array($edu) ? ($edu["degree"] ?? "") : ($edu->degree ?? "");
+            $maj  = is_array($edu) ? ($edu["major"] ?? ($edu["field"] ?? "")) : ($edu->major ?? ($edu["field"] ?? ""));
+            $start= is_array($edu) ? ($edu["start_year"] ?? "") : ($edu->start_year ?? "");
+            $end  = is_array($edu) ? ($edu["end_year"] ?? "") : ($edu->end_year ?? "");
+            $dateStr = $start ? ($start . " - " . ($end ?: "Present")) : ($end ?: "");
+            $sub  = trim($deg . ($deg && $maj ? " - " : "") . $maj);
+            $desc = is_array($edu) ? ($edu["description"] ?? "") : ($edu->description ?? "");
+        @endphp
+        <div class="item-block">
+            <table class="item-header-table">
                 <tr>
-                    <td class="item-title">{{ $exp['position'] ?? '' }}</td>
-                    <td class="item-date">
-                        {{ $exp['start_year'] ?? '' }} - {{ !empty($exp['is_current']) ? 'Present' : ($exp['end_year'] ?? '') }}
-                    </td>
+                    <td class="item-title">{{ $inst }}</td>
+                    <td class="item-date">{{ $dateStr }}</td>
                 </tr>
             </table>
-            <div class="item-subtitle">{{ $exp['company'] ?? '' }}{{ !empty($exp['location']) ? ' | ' . $exp['location'] : '' }}</div>
-            @if(!empty($exp['description']))
-                <div class="item-desc">
-                    {!! nl2br(e($exp['description'])) !!}
-                </div>
-            @endif
-        @endforeach
+            @if(!empty($sub))<div class="item-subtitle">{{ $sub }}</div>@endif
+            @if(!empty($desc))<div class="item-desc">{!! nl2br(e($desc)) !!}</div>@endif
+        </div>
+    @endforeach
     @endif
 
-    <!-- KEY PROJECTS -->
-    @if(!empty($projects))
-        <div class="section-title">Key Projects & Engineering Portfolio</div>
-        @foreach($projects as $prj)
-            <table class="item-title-row">
-                <tr>
-                    <td class="item-title">{{ $prj['name'] ?? '' }}</td>
-                    <td class="item-date">{{ $prj['year'] ?? $prj['link'] ?? '' }}</td>
-                </tr>
-            </table>
-            @php
-                $prjSub = array_filter([$prj['role'] ?? '', $prj['technologies'] ?? '', (!empty($prj['year']) ? $prj['link'] ?? '' : '')]);
-            @endphp
-            @if(!empty($prjSub))
-                <div class="item-subtitle">{{ implode(' | ', $prjSub) }}</div>
-            @endif
-            @if(!empty($prj['description']))
-                <div class="item-desc">
-                    {{ $prj['description'] }}
-                </div>
-            @endif
-        @endforeach
+    @if(!empty($skills) && count($skills) > 0)
+    <div class="section-heading">Technical & Core Skills</div>
+    <div class="item-desc">
+        @php
+            $skillNames = [];
+            foreach($skills as $s) {
+                $n = is_array($s) ? ($s["name"] ?? "") : ($s->name ?? "");
+                $l = is_array($s) ? ($s["level"] ?? "") : ($s->level ?? "");
+                if (!empty($n)) $skillNames[] = $n . ($l ? " (" . $l . "%)" : "");
+            }
+        @endphp
+        {{ implode(" • ", $skillNames) }}
+    </div>
     @endif
 
-    <!-- EDUCATION -->
-    @if(!empty($educations))
-        <div class="section-title">Education</div>
-        @foreach($educations as $edu)
-            <table class="item-title-row">
-                <tr>
-                    <td class="item-title">{{ $edu['institution'] ?? '' }}</td>
-                    <td class="item-date">{{ $edu['start_year'] ?? '' }} - {{ $edu['end_year'] ?? '' }}</td>
-                </tr>
-            </table>
-            <div class="item-subtitle">
-                {{ $edu['degree'] ?? '' }}{{ !empty($edu['major'] ?? $edu['field'] ?? null) ? ' in ' . ($edu['major'] ?? $edu['field']) : '' }}
-            </div>
-            @if(!empty($edu['description']))
-                <div class="item-desc">{{ $edu['description'] }}</div>
-            @endif
-        @endforeach
-    @endif
-
-    <!-- SKILLS & CORE COMPETENCIES -->
-    @if(!empty($skills))
-        <div class="section-title">Skills & Core Competencies</div>
-        <table class="skills-table">
-            <tr>
-                <td class="skills-category">Technical Skills:</td>
-                <td>
-                    @php
-                        $skillNames = array_map(function($s) { return is_array($s) ? ($s['name'] ?? '') : (string)$s; }, $skills);
-                    @endphp
-                    {{ implode(' • ', array_filter($skillNames)) }}
-                </td>
-            </tr>
-        </table>
-    @endif
-
-    <!-- CERTIFICATIONS -->
-    @if(!empty($certificates))
-        <div class="section-title">Certifications & Honors</div>
-        @foreach($certificates as $cert)
-            <table class="item-title-row">
-                <tr>
-                    <td class="item-title">{{ $cert['name'] ?? '' }}</td>
-                    <td class="item-date">{{ $cert['year'] ?? '' }}</td>
-                </tr>
-            </table>
-            @if(!empty($cert['issuer']))
-                <div class="item-subtitle">{{ $cert['issuer'] }}</div>
-            @endif
-        @endforeach
+    @if(!empty($certificates) && count($certificates) > 0)
+    <div class="section-heading">Certifications & Licenses</div>
+    @foreach($certificates as $cert)
+        @php
+            $cName = is_array($cert) ? ($cert["name"] ?? "") : ($cert->name ?? "");
+            $cIssuer = is_array($cert) ? ($cert["issuer"] ?? ($cert["publisher"] ?? "")) : ($cert->issuer ?? ($cert->publisher ?? ""));
+            $cYear = is_array($cert) ? ($cert["year"] ?? "") : ($cert->year ?? "");
+        @endphp
+        <div class="item-block">
+            <div class="item-title">{{ $cName }} @if($cIssuer)— {{ $cIssuer }}@endif @if($cYear)({{ $cYear }})@endif</div>
+        </div>
+    @endforeach
     @endif
 
 </body>

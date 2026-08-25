@@ -341,14 +341,19 @@ class CvController extends Controller
                     ]
                 ],
                 'skills' => [
-                    ['name' => 'PHP / Laravel Framework'],
-                    ['name' => 'TypeScript / Node.js'],
-                    ['name' => 'PostgreSQL & MySQL Database'],
-                    ['name' => 'RESTful & GraphQL APIs'],
-                    ['name' => 'Docker & Cloud Deployment'],
-                    ['name' => 'AWS Cloud Architecture'],
-                    ['name' => 'CI/CD & DevOps Automation'],
-                    ['name' => 'System Architecture & Scaling'],
+                    ['name' => 'PHP / Laravel Framework', 'level' => 90],
+                    ['name' => 'TypeScript / Node.js', 'level' => 85],
+                    ['name' => 'PostgreSQL & MySQL Database', 'level' => 80],
+                    ['name' => 'RESTful & GraphQL APIs', 'level' => 85],
+                    ['name' => 'Docker & Cloud Deployment', 'level' => 80],
+                    ['name' => 'AWS Cloud Architecture', 'level' => 85],
+                    ['name' => 'CI/CD & DevOps Automation', 'level' => 80],
+                ],
+                'tools' => [
+                    ['name' => 'Docker & Kubernetes'],
+                    ['name' => 'Git & GitHub Actions'],
+                    ['name' => 'AWS & Cloudflare'],
+                    ['name' => 'Postman & Jira'],
                 ]
             ];
         } else {
