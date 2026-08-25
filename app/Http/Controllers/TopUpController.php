@@ -259,46 +259,41 @@ class TopUpController extends Controller
         ]);
         
         try {
-            $tripay = app(\App\Services\TripayService::class);
-            $tripayRes = $tripay->createTransaction([
-                'merchant_ref'   => $orderId,
-                'amount'         => (int) $product->price_sell,
-                'method'         => $request->payment_method,
-                'customer_name'  => $request->player_id,
-                'customer_email' => auth()->check() ? auth()->user()->email : 'customer@totapstore.com',
-                'product_name'   => $game->name . ' - ' . $product->name,
-                'sku'            => $product->product_code,
+            $duitku = app(\App\Services\DuitkuService::class);
+            $duitkuRes = $duitku->createTransaction([
+                'merchant_order_id' => $orderId,
+                'amount'            => (int) $product->price_sell,
+                'method'            => $request->payment_method,
+                'customer_name'     => $request->player_id,
+                'customer_email'    => auth()->check() ? auth()->user()->email : 'customer@totapstore.com',
+                'product_name'      => $game->name . ' - ' . $product->name,
             ]);
 
-            if (isset($tripayRes['success']) && $tripayRes['success'] === true && isset($tripayRes['data'])) {
-                $tData = $tripayRes['data'];
-                $methodCode = strtoupper($tData['payment_method'] ?? $request->payment_method);
-                $isVA = str_contains($methodCode, 'VA');
-                
+            if (isset($duitkuRes['success']) && $duitkuRes['success'] === true) {
                 $snapData = json_encode([
-                    'type'         => $isVA ? 'va' : 'qris',
-                    'gateway'      => 'tripay',
-                    'reference'    => $tData['reference'] ?? null,
-                    'qr_url'       => $tData['qr_url'] ?? null,
-                    'bank'         => str_replace(['VA', '_VA'], '', $methodCode),
-                    'va_number'    => $tData['pay_code'] ?? null,
-                    'instructions' => $tData['instructions'] ?? [],
-                    'checkout_url' => $tData['checkout_url'] ?? null,
+                    'type'         => $duitkuRes['type'],
+                    'gateway'      => 'duitku',
+                    'reference'    => $duitkuRes['reference'] ?? null,
+                    'payment_url'  => $duitkuRes['payment_url'] ?? null,
+                    'qr_url'       => $duitkuRes['qr_url'] ?? null,
+                    'qr_string'    => $duitkuRes['qr_string'] ?? null,
+                    'bank'         => strtoupper(str_replace(['_va', 'va'], '', $request->payment_method)),
+                    'va_number'    => $duitkuRes['va_number'] ?? null,
                 ]);
 
                 $transaction->update([
                     'snap_token'        => $snapData,
-                    'payment_reference' => $tData['reference'] ?? null,
+                    'payment_reference' => $duitkuRes['reference'] ?? null,
                 ]);
 
                 return redirect()->route('topup.checkout.show', $transaction->id);
             }
 
-            $msg = $tripayRes['message'] ?? 'Gagal membuat transaksi TriPay.';
+            $msg = $duitkuRes['message'] ?? 'Gagal membuat transaksi Duitku.';
             return back()->with('error', $msg);
 
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('TriPay TopUp Error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Duitku TopUp Error: ' . $e->getMessage());
             return back()->with('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
         }
     }

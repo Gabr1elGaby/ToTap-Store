@@ -55,6 +55,12 @@ return [
         'is_production' => env('TRIPAY_IS_PRODUCTION', true),
     ],
 
+    'duitku' => [
+        'merchant_code' => env('DUITKU_MERCHANT_CODE', 'DS34557'),
+        'api_key' => env('DUITKU_API_KEY', '4c127f4a1e4edb4a411d5d753c22762a'),
+        'is_production' => env('DUITKU_IS_PRODUCTION', false),
+    ],
+
     'fonnte' => [
         'token' => env('FONNTE_TOKEN', 'gdHv7cHH3YfhUA7E5iCM'),
     ],
