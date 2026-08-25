@@ -17,21 +17,29 @@
             line-height: 1.4;
         }
         
+        /* Continuous Sidebar Background across all pages */
+        .sidebar-bg {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 33%;
+            background-color: #831843;
+            z-index: -1000;
+        }
         .sidebar {
             position: absolute;
             left: 0;
             top: 0;
             width: 33%;
-            min-height: 100%;
-            background-color: #831843; /* Magenta 900 */
-            color: #fdf2f8; /* Magenta 50 */
             padding: 40px 25px;
             box-sizing: border-box;
+            color: #fdf2f8;
         }
         .content {
             margin-left: 33%;
             width: 67%;
-            background-color: #ffffff;
+            background-color: transparent;
             padding: 40px 35px;
             box-sizing: border-box;
         }
@@ -174,6 +182,9 @@
         $hard_skills = $skills->filter(fn($s) => isset($s->level) && $s->level !== '' && $s->level !== null)->all();
         $soft_skills = $skills->filter(fn($s) => !isset($s->level) || $s->level === '' || $s->level === null)->all();
     @endphp
+
+    <!-- CONTINUOUS SIDEBAR BACKGROUND -->
+    <div class="sidebar-bg"></div>
 
     <!-- LEFT SIDEBAR -->
     <div class="sidebar">
