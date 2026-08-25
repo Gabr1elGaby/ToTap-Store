@@ -21,9 +21,48 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Righteous&display=swap" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <style>
+        .a4-card-preview {
+            width: 794px;
+            height: 1123px;
+            transform: scale(0.42);
+            transform-origin: top center;
+            pointer-events: none;
+            background: white;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            flex-shrink: 0;
+            margin-top: 10px;
+        }
+        .a4-modal-sheet {
+            width: 794px;
+            height: 1123px;
+            background: white;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            border-radius: 6px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        @media (max-width: 850px) {
+            .a4-modal-sheet {
+                transform: scale(0.75);
+                transform-origin: top center;
+                margin-bottom: -280px;
+            }
+        }
+        @media (max-width: 640px) {
+            .a4-modal-sheet {
+                transform: scale(0.5);
+                transform-origin: top center;
+                margin-bottom: -560px;
+            }
+        }
+    </style>
 </head>
 <body class="bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white font-sans antialiased min-h-screen transition-colors duration-200" 
-      x-data="{ showLogin: false, showRegister: false, previewOpen: false, previewSlug: '', activeLang: 'all', scale: 1 }" 
+      x-data="{ showLogin: false, showRegister: false, previewOpen: false, previewSlug: '', previewName: '', activeLang: 'all', previewScale: 0.95 }" 
       @open-login.window="showLogin = true" 
       @open-register.window="showRegister = true" 
       :class="{ 'overflow-hidden': showLogin || showRegister || previewOpen }">
@@ -119,11 +158,11 @@
                     
                     <!-- Preview Container -->
                     <div class="relative bg-slate-100 dark:bg-gray-950 overflow-hidden cursor-pointer h-72 flex items-start justify-center border-b border-gray-200 dark:border-gray-700 group"
-                         @click="previewOpen = true; previewSlug = '{{ $template->slug }}'">
+                         @click="previewOpen = true; previewSlug = '{{ $template->slug }}'; previewName = '{{ addslashes($template->name) }}'">
                         
                         <!-- Mini Interactive Iframe / Thumbnail Centered -->
-                        <div class="w-[794px] h-[1123px] transform scale-[0.44] origin-top pointer-events-none opacity-90 group-hover:opacity-100 group-hover:scale-[0.46] transition duration-300 shadow-2xl bg-white flex-shrink-0 mt-3 rounded-t-lg overflow-hidden">
-                            <iframe src="{{ route('cv.previewExample', $template->slug) }}" class="w-full h-full border-0 pointer-events-none"></iframe>
+                        <div class="a4-card-preview opacity-90 group-hover:opacity-100 transition duration-300 shadow-2xl">
+                            <iframe src="{{ route('cv.previewExample', $template->slug) }}" style="width: 794px; height: 1123px; border: 0;" class="pointer-events-none"></iframe>
                         </div>
 
                         <!-- Hover Overlay -->
@@ -194,7 +233,7 @@
         </div>
     </div>
 
-    <!-- FULLSCREEN MODAL PREVIEW -->
+    <!-- FULLSCREEN MODAL PREVIEW (PERFECT RESIZING & CRISP A4 RENDERING) -->
     <div x-show="previewOpen" 
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0"
@@ -202,41 +241,44 @@
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
-         class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4" 
-         style="display: none;">
+         style="position: fixed; inset: 0; z-index: 99999; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 12px;" 
+         x-cloak>
         
-        <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 w-full max-w-5xl h-[92vh] flex flex-col overflow-hidden relative"
+        <div style="background: #0f172a; border-radius: 20px; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.8); border: 1px solid #334155; width: 96%; max-width: 960px; height: 92vh; display: flex; flex-direction: column; overflow: hidden; position: relative;"
              @click.away="previewOpen = false">
             
             <!-- Modal Header -->
-            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between bg-slate-50 dark:bg-gray-950 flex-shrink-0">
+            <div style="padding: 16px 24px; border-bottom: 1px solid #1e293b; display: flex; align-items: center; justify-content: space-between; background: #1e293b; flex-shrink: 0;">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-sm">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-indigo-600/30">
                         <i class="fas fa-file-alt"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-gray-900 dark:text-white text-base">Pratinjau Template CV</h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Format standar resolusi tinggi A4 (Siap Cetak / PDF)</p>
+                        <h3 class="font-bold text-white text-base" x-text="previewName || 'Pratinjau Template CV'"></h3>
+                        <p class="text-xs text-slate-400">Pratinjau Dokumen Resolusi Tinggi Standar A4</p>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <a :href="'/cv/create?template=' + previewSlug" class="inline-flex items-center gap-2 px-5 py-2 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-md transition">
+                    <a :href="'/cv/create?template=' + previewSlug" 
+                       class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/40 transition transform active:scale-95">
                         <span>Pilih Template Ini</span>
                         <i class="fas fa-arrow-right"></i>
                     </a>
 
-                    <button @click="previewOpen = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-white w-9 h-9 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-                        <i class="fas fa-times text-lg"></i>
+                    <button @click="previewOpen = false" 
+                            class="text-slate-400 hover:text-white w-9 h-9 flex items-center justify-center rounded-xl bg-slate-800 hover:bg-slate-700 transition">
+                        <i class="fas fa-times text-base"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- Modal Body (Iframe) -->
-            <div class="flex-1 bg-slate-200 dark:bg-gray-950 p-4 sm:p-8 overflow-y-auto flex items-start justify-center">
-                <div class="w-[794px] min-h-[1123px] bg-white shadow-2xl rounded-sm overflow-hidden flex-shrink-0">
+            <!-- Modal Body (Centered High-Res A4 Sheet with Smooth Scroll) -->
+            <div style="flex: 1; overflow-y: auto; background: #0b0f19; padding: 30px 15px; display: flex; justify-content: center; align-items: flex-start;">
+                <div class="a4-modal-sheet">
                     <template x-if="previewOpen">
-                        <iframe :src="'/cv/preview-example/' + previewSlug" class="w-[794px] min-h-[1123px] border-0"></iframe>
+                        <iframe :src="'/cv/preview-example/' + previewSlug" 
+                                style="width: 794px; height: 1123px; border: 0; display: block; background: white;"></iframe>
                     </template>
                 </div>
             </div>
