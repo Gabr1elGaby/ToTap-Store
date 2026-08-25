@@ -47,43 +47,55 @@
             z-index: 1;
         }
         
-        /* Table Layout */
+        /* Table Layout - LOCKED FIXED WIDTHS FOR PERFECT CENTERING */
         table.page1-table {
             position: relative;
             z-index: 2;
             width: 100%;
+            table-layout: fixed;
             border-collapse: collapse;
             min-height: 100%;
         }
 
         /* SIDEBAR (32%) */
         .sidebar-td {
-            width: 32%;
+            width: 32% !important;
+            max-width: 32% !important;
+            min-width: 32% !important;
             background-color: #1c1917;
             color: #f5f5f4;
             padding: 22pt 14pt;
             vertical-align: top;
+            box-sizing: border-box;
+            text-align: left;
         }
         
         /* MAIN CONTENT (68%) */
         .content-td {
-            width: 68%;
+            width: 68% !important;
+            max-width: 68% !important;
+            min-width: 68% !important;
             background-color: #ffffff;
             padding: 22pt 20pt 20pt 18pt;
             vertical-align: top;
+            box-sizing: border-box;
         }
 
-        /* SIDEBAR ELEMENTS */
+        /* SIDEBAR ELEMENTS - PERFECTLY CENTERED AVATAR */
         .photo-container {
-            text-align: center;
-            margin-bottom: 10pt;
+            text-align: center !important;
+            margin-bottom: 12pt;
+            width: 100%;
+            display: block;
         }
         .photo {
-            width: 68pt;
-            height: 68pt;
+            width: 72pt;
+            height: 72pt;
             border-radius: 50%;
             object-fit: cover;
-            border: 2pt solid #f59e0b;
+            border: 2.5pt solid #f59e0b;
+            display: inline-block;
+            margin: 0 auto;
         }
         .sidebar-heading {
             font-size: 8pt;
@@ -277,8 +289,12 @@
         <!-- Absolute Full-Height Sidebar Strip for HTML Live Preview -->
         <div class="sidebar-bg-strip"></div>
 
-        <!-- 2-COLUMN CV TABLE -->
+        <!-- 2-COLUMN CV TABLE WITH FIXED COLUMN WIDTHS -->
         <table class="page1-table" cellpadding="0" cellspacing="0">
+            <colgroup>
+                <col style="width: 32%;">
+                <col style="width: 68%;">
+            </colgroup>
             <tr>
                 <!-- SIDEBAR -->
                 <td class="sidebar-td">
