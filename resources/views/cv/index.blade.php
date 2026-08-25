@@ -77,12 +77,36 @@
             }
         }
 
+        /* Filter Tab Styles */
+        .tab-btn-active {
+            background-color: #4f46e5 !important;
+            border-color: #4f46e5 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35) !important;
+        }
+        .tab-btn-inactive {
+            background-color: #ffffff;
+            border-color: #e2e8f0;
+            color: #334155;
+        }
+        .tab-btn-inactive:hover {
+            background-color: #f1f5f9;
+        }
+        .dark .tab-btn-inactive {
+            background-color: #1e293b;
+            border-color: #334155;
+            color: #cbd5e1;
+        }
+        .dark .tab-btn-inactive:hover {
+            background-color: #334155;
+        }
+
         /* Explicit Guidance Cards Contrast (Light & Dark Mode) */
         .guide-card-indo {
             background-color: #ffffff;
             border: 1px solid #fecdd3;
             border-radius: 20px;
-            padding: 24px 28px;
+            padding: 26px 30px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.03);
             display: flex;
             flex-direction: column;
@@ -98,7 +122,7 @@
             background-color: #ffffff;
             border: 1px solid #bfdbfe;
             border-radius: 20px;
-            padding: 24px 28px;
+            padding: 26px 30px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.03);
             display: flex;
             flex-direction: column;
@@ -113,7 +137,7 @@
         .guide-title {
             color: #0f172a;
             font-weight: 800;
-            font-size: 16px;
+            font-size: 18px;
         }
         .dark .guide-title {
             color: #ffffff;
@@ -121,8 +145,8 @@
 
         .guide-sub {
             color: #64748b;
-            font-size: 12px;
-            margin-top: 2px;
+            font-size: 13.5px;
+            margin-top: 3px;
         }
         .dark .guide-sub {
             color: #94a3b8;
@@ -130,11 +154,14 @@
 
         .guide-list-item {
             color: #334155;
-            font-size: 12px;
+            font-size: 14px;
             line-height: 1.6;
         }
         .dark .guide-list-item {
             color: #cbd5e1;
+        }
+        .dark .guide-list-item strong {
+            color: #0f172a;
         }
         .dark .guide-list-item strong {
             color: #f8fafc;
@@ -172,12 +199,12 @@
             </p>
         </div>
 
-        <!-- INTERACTIVE LANGUAGE FILTER TABS (CLEAN & MODERN WITH VECTOR FLAGS) -->
+        <!-- INTERACTIVE LANGUAGE FILTER TABS (UNIFIED VIBRANT BLUE ON ACTIVE) -->
         <div class="flex flex-wrap items-center justify-center gap-3 mb-10">
             <!-- All Templates Tab -->
             <button @click="activeLang = 'all'"
                     class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 flex items-center gap-2.5 shadow-sm border"
-                    :class="activeLang === 'all' ? 'bg-indigo-600 border-indigo-600 text-white shadow-indigo-600/30' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'">
+                    :class="activeLang === 'all' ? 'tab-btn-active' : 'tab-btn-inactive'">
                 <i class="fas fa-layer-group text-base"></i> 
                 <span>Semua Template ({{ count($templates) }})</span>
             </button>
@@ -185,7 +212,7 @@
             <!-- Indonesian Tab -->
             <button @click="activeLang = 'id'"
                     class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 flex items-center gap-2.5 shadow-sm border"
-                    :class="activeLang === 'id' ? 'bg-rose-600 border-rose-600 text-white shadow-rose-600/30' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'">
+                    :class="activeLang === 'id' ? 'tab-btn-active' : 'tab-btn-inactive'">
                 <!-- Indonesian Vector Flag -->
                 <span class="w-5 h-3.5 rounded-sm overflow-hidden shadow-sm inline-flex flex-col border border-black/10 flex-shrink-0">
                     <span class="h-1/2 bg-red-600 w-full"></span>
@@ -197,42 +224,42 @@
             <!-- English Tab -->
             <button @click="activeLang = 'en'"
                     class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 flex items-center gap-2.5 shadow-sm border"
-                    :class="activeLang === 'en' ? 'bg-blue-600 border-blue-600 text-white shadow-blue-600/30' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'">
+                    :class="activeLang === 'en' ? 'tab-btn-active' : 'tab-btn-inactive'">
                 <!-- Global / English Vector Icon -->
                 <i class="fas fa-globe-americas text-base"></i>
                 <span>Bahasa Inggris (International ATS)</span>
             </button>
         </div>
 
-        <!-- EDUCATIONAL GUIDANCE CARDS (PERFECT CONTRAST IN BOTH LIGHT & DARK MODES) -->
+        <!-- EDUCATIONAL GUIDANCE CARDS (LARGER & HIGHLY LEGIBLE FONTS) -->
         <div class="mb-12 grid grid-cols-1 lg:grid-cols-2 gap-6">
             
             <!-- Indonesian CV Standards Card -->
             <div class="guide-card-indo">
-                <div style="display: flex; align-items: center; margin-bottom: 18px;">
-                    <div style="width: 48px; height: 48px; min-width: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-right: 18px; flex-shrink: 0;" class="bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shadow-sm">
-                        <i class="fas fa-building text-xl"></i>
+                <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                    <div style="width: 52px; height: 52px; min-width: 52px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-right: 18px; flex-shrink: 0;" class="bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shadow-sm">
+                        <i class="fas fa-building text-2xl"></i>
                     </div>
                     <div style="flex: 1;">
-                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 2px;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 3px;">
                             <h3 class="guide-title">Standar CV Bahasa Indonesia</h3>
-                            <span class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">BUMN & Lokal</span>
+                            <span class="text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">BUMN & Lokal</span>
                         </div>
                         <p class="guide-sub">Untuk BUMN, CPNS / Instansi Pemerintah, Korporat Swasta & Startup</p>
                     </div>
                 </div>
 
-                <div class="space-y-3">
+                <div class="space-y-3.5">
                     <div style="display: flex; align-items: flex-start;">
-                        <i class="fas fa-check-circle text-rose-500" style="margin-right: 12px; margin-top: 3px; font-size: 14px; flex-shrink: 0;"></i>
+                        <i class="fas fa-check-circle text-rose-500" style="margin-right: 12px; margin-top: 4px; font-size: 15px; flex-shrink: 0;"></i>
                         <span class="guide-list-item"><strong>Data Pribadi Lengkap:</strong> Nama lengkap, kontak WhatsApp aktif, domisili (Kota/Provinsi), dan foto formal profesional.</span>
                     </div>
                     <div style="display: flex; align-items: flex-start;">
-                        <i class="fas fa-check-circle text-rose-500" style="margin-right: 12px; margin-top: 3px; font-size: 14px; flex-shrink: 0;"></i>
+                        <i class="fas fa-check-circle text-rose-500" style="margin-right: 12px; margin-top: 4px; font-size: 15px; flex-shrink: 0;"></i>
                         <span class="guide-list-item"><strong>Riwayat Pendidikan & IPK:</strong> Jenjang studi, jurusan, nama universitas/sekolah, dan nilai IPK/predikat kelulusan.</span>
                     </div>
                     <div style="display: flex; align-items: flex-start;">
-                        <i class="fas fa-check-circle text-rose-500" style="margin-right: 12px; margin-top: 3px; font-size: 14px; flex-shrink: 0;"></i>
+                        <i class="fas fa-check-circle text-rose-500" style="margin-right: 12px; margin-top: 4px; font-size: 15px; flex-shrink: 0;"></i>
                         <span class="guide-list-item"><strong>Organisasi & Sertifikasi BNSP:</strong> Sangat diutamakan kepanitiaan kampus, kegiatan kemahasiswaan, dan pelatihan profesi nasional.</span>
                     </div>
                 </div>
@@ -240,30 +267,30 @@
 
             <!-- English Resume Standards Card -->
             <div class="guide-card-en">
-                <div style="display: flex; align-items: center; margin-bottom: 18px;">
-                    <div style="width: 48px; height: 48px; min-width: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-right: 18px; flex-shrink: 0;" class="bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shadow-sm">
-                        <i class="fas fa-globe-americas text-xl"></i>
+                <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                    <div style="width: 52px; height: 52px; min-width: 52px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-right: 18px; flex-shrink: 0;" class="bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shadow-sm">
+                        <i class="fas fa-globe-americas text-2xl"></i>
                     </div>
                     <div style="flex: 1;">
-                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 2px;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 3px;">
                             <h3 class="guide-title">Standar Resume Bahasa Inggris</h3>
-                            <span class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">Global & Remote</span>
+                            <span class="text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">Global & Remote</span>
                         </div>
                         <p class="guide-sub">Untuk Perusahaan Global, Startup Multinasional, Remote Work & Rekruter Luar Negeri</p>
                     </div>
                 </div>
 
-                <div class="space-y-3">
+                <div class="space-y-3.5">
                     <div style="display: flex; align-items: flex-start;">
-                        <i class="fas fa-check-circle text-blue-500" style="margin-right: 12px; margin-top: 3px; font-size: 14px; flex-shrink: 0;"></i>
+                        <i class="fas fa-check-circle text-blue-500" style="margin-right: 12px; margin-top: 4px; font-size: 15px; flex-shrink: 0;"></i>
                         <span class="guide-list-item"><strong>Quantifiable Achievements:</strong> Penjelasan pengalaman kerja dengan Action Verbs dan rumus XYZ (hasil terukur dalam angka/persentase).</span>
                     </div>
                     <div style="display: flex; align-items: flex-start;">
-                        <i class="fas fa-check-circle text-blue-500" style="margin-right: 12px; margin-top: 3px; font-size: 14px; flex-shrink: 0;"></i>
+                        <i class="fas fa-check-circle text-blue-500" style="margin-right: 12px; margin-top: 4px; font-size: 15px; flex-shrink: 0;"></i>
                         <span class="guide-list-item"><strong>Projects & Tech Portfolio:</strong> Menampilkan portofolio proyek teknis, stack teknologi, dan tautan live demo / GitHub.</span>
                     </div>
                     <div style="display: flex; align-items: flex-start;">
-                        <i class="fas fa-check-circle text-blue-500" style="margin-right: 12px; margin-top: 3px; font-size: 14px; flex-shrink: 0;"></i>
+                        <i class="fas fa-check-circle text-blue-500" style="margin-right: 12px; margin-top: 4px; font-size: 15px; flex-shrink: 0;"></i>
                         <span class="guide-list-item"><strong>100% Lolos ATS Global:</strong> Tanpa data sensitif (tanpa tanggal lahir/status pernikahan) agar memenuhi regulasi anti-diskriminasi internasional.</span>
                     </div>
                 </div>
