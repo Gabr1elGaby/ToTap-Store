@@ -173,8 +173,8 @@
                     @if(!empty($data->email))
                     <li><span class="contact-icon">✉</span> {{ $data->email ?? '' }}</li>
                     @endif
-                    @if(!empty($data->address))
-                    <li><span class="contact-icon">📍</span> {{ $data->address ?? '' }}</li>
+                    @if(!empty($data->address ?? $data->location))
+                    <li><span class="contact-icon">📍</span> {{ $data->address ?? $data->location }}</li>
                     @endif
                     @if(!empty($data->linkedin))
                     <li><span class="contact-icon">in</span> {{ $data->linkedin ?? '' }}</li>

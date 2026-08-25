@@ -164,8 +164,8 @@
                     @if(!empty($data->email))
                     <li><span class="contact-icon">M</span> {{ $data->email ?? '' }}</li>
                     @endif
-                    @if(!empty($data->address))
-                    <li><span class="contact-icon">A</span> {{ $data->address ?? '' }}</li>
+                    @if(!empty($data->address ?? $data->location))
+                    <li><span class="contact-icon">A</span> {{ $data->address ?? $data->location }}</li>
                     @endif
                     @if(!empty($data->linkedin))
                     <li><span class="contact-icon">L</span> {{ $data->linkedin ?? '' }}</li>

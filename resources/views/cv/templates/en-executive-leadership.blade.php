@@ -94,7 +94,7 @@
         <div class="contact-info">
             {{ $cv['email'] ?? 'david.sterling@executive.com' }}
             @if(!empty($cv['phone'])) <span>|</span> {{ $cv['phone'] }} @endif
-            @if(!empty($cv['address'])) <span>|</span> {{ $cv['address'] }} @endif
+            @if(!empty($cv['address'] ?? $cv['location'])) <span>|</span> {{ $cv['address'] ?? $cv['location'] }} @endif
             @if(!empty($cv['linkedin'])) <span>|</span> {{ $cv['linkedin'] }} @endif
         </div>
     </div>

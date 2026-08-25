@@ -173,10 +173,10 @@
                         <span class="contact-value">{{ $data->email ?? '' }}</span>
                     </div>
                     @endif
-                    @if(!empty($data->address))
+                    @if(!empty($data->address ?? $data->location))
                     <div class="contact-item">
                         <span class="contact-label">Domisili</span>
-                        <span class="contact-value">{{ $data->address ?? '' }}</span>
+                        <span class="contact-value">{{ $data->address ?? $data->location }}</span>
                     </div>
                     @endif
                 </div>

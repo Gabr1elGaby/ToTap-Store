@@ -230,23 +230,29 @@ if (!empty($data->name)) {
                     <div class="left-heading-container">
                         <span class="left-heading">Kontak</span>
                     </div>
+                    @if(!empty($data->phone))
                     <div class="contact-item">
-                        {{ $data->phone ?? '' }}<br><strong>Telepon / WA</strong>
+                        {{ $data->phone }}<br><strong>Telepon / WA</strong>
                     </div>
+                    @endif
+                    @if(!empty($data->email))
                     <div class="contact-item">
-                        {{ $data->email ?? '' }}<br><strong>Email</strong>
+                        {{ $data->email }}<br><strong>Email</strong>
                     </div>
+                    @endif
+                    @if(!empty($data->address ?? $data->location))
                     <div class="contact-item">
-                        {{ $data->location ?? '' }}<br><strong>Domisili</strong>
+                        {{ $data->address ?? $data->location }}<br><strong>Domisili</strong>
                     </div>
+                    @endif
                     @if(!empty($data->linkedin))
                     <div class="contact-item">
-                        {{ $data->linkedin ?? '' }}<br><strong>LinkedIn</strong>
+                        {{ $data->linkedin }}<br><strong>LinkedIn</strong>
                     </div>
                     @endif
                     @if(!empty($data->website))
                     <div class="contact-item">
-                        {{ $data->website ?? '' }}<br><strong>Website / Portofolio</strong>
+                        {{ $data->website }}<br><strong>Website / Portofolio</strong>
                     </div>
                     @endif
                 </div>

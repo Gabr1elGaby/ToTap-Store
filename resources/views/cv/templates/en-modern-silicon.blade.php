@@ -161,7 +161,7 @@
         <div class="contact-grid">
             <span>✉ {{ $cv['email'] ?? 'alex.wright@example.com' }}</span>
             @if(!empty($cv['phone'])) <span>📱 {{ $cv['phone'] }}</span> @endif
-            @if(!empty($cv['address'])) <span>📍 {{ $cv['address'] }}</span> @endif
+            @if(!empty($cv['address'] ?? $cv['location'])) <span>📍 {{ $cv['address'] ?? $cv['location'] }}</span> @endif
             @if(!empty($cv['linkedin'])) <span>🔗 {{ $cv['linkedin'] }}</span> @endif
             @if(!empty($cv['website'])) <span>🌐 {{ $cv['website'] }}</span> @endif
         </div>

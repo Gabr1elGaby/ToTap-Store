@@ -89,7 +89,7 @@
         <div class="contact">
             {{ $cv['email'] ?? 'liam.connor@graduate.edu' }}
             @if(!empty($cv['phone'])) <span>•</span> {{ $cv['phone'] }} @endif
-            @if(!empty($cv['address'])) <span>•</span> {{ $cv['address'] }} @endif
+            @if(!empty($cv['address'] ?? $cv['location'])) <span>•</span> {{ $cv['address'] ?? $cv['location'] }} @endif
             @if(!empty($cv['linkedin'])) <span>•</span> {{ $cv['linkedin'] }} @endif
             @if(!empty($cv['website'])) <span>•</span> {{ $cv['website'] }} @endif
         </div>

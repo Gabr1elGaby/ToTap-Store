@@ -214,28 +214,34 @@ if (!empty($data->name)) {
         <tr>
             <!-- LEFT COLUMN -->
             <td class="left-col">
+                @if(!empty($data->phone))
                 <div class="contact-item">
                     <strong>TELEPON</strong><br>
-                    {{ $data->phone ?? '' }}
+                    {{ $data->phone }}
                 </div>
+                @endif
+                @if(!empty($data->email))
                 <div class="contact-item">
                     <strong>EMAIL</strong><br>
-                    {{ $data->email ?? '' }}
+                    {{ $data->email }}
                 </div>
+                @endif
+                @if(!empty($data->address ?? $data->location))
                 <div class="contact-item">
                     <strong>DOMISILI</strong><br>
-                    {{ $data->location ?? '' }}
+                    {{ $data->address ?? $data->location }}
                 </div>
+                @endif
                 @if(!empty($data->linkedin))
                 <div class="contact-item">
                     <strong>LINKEDIN</strong><br>
-                    {{ $data->linkedin ?? '' }}
+                    {{ $data->linkedin }}
                 </div>
                 @endif
                 @if(!empty($data->website))
                 <div class="contact-item">
                     <strong>WEBSITE / PORTOFOLIO</strong><br>
-                    {{ $data->website ?? '' }}
+                    {{ $data->website }}
                 </div>
                 @endif
                 
