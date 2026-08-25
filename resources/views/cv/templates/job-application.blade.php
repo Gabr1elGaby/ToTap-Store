@@ -35,6 +35,8 @@ if (!empty($data->name)) {
     $words = explode(" ", trim($data->name));
     $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ""));
 }
+
+$hasPage2 = (count($projects) > 0 || count($internships) > 0 || count($organizations) > 0);
 ?>
 <!DOCTYPE html>
 <html>
@@ -58,12 +60,12 @@ if (!empty($data->name)) {
             color: #1e293b;
             line-height: 1.45;
         }
-        table.main-layout {
+        table.page1-layout {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
         }
-        table.main-layout, table.main-layout tr, table.main-layout td {
+        table.page1-layout, table.page1-layout tr, table.page1-layout td {
             page-break-inside: auto !important;
         }
         .sidebar-td {
@@ -197,10 +199,32 @@ if (!empty($data->name)) {
             text-align: justify;
             line-height: 1.4;
         }
+        
+        /* PAGE 2+: FULL-WIDTH CONTINUATION CONTAINER */
+        .page2-fullwidth {
+            page-break-before: always;
+            width: 100%;
+            padding: 35pt 35pt 30pt 35pt;
+            background-color: #ffffff;
+        }
+        .full-heading {
+            font-size: 11.5pt;
+            font-weight: bold;
+            color: #0f172a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #f59e0b;
+            padding-bottom: 3pt;
+            margin-top: 16pt;
+            margin-bottom: 10pt;
+        }
+        .full-heading:first-of-type {
+            margin-top: 0;
+        }
     </style>
 </head>
 <body>
-    <table class="main-layout" cellpadding="0" cellspacing="0">
+    <table class="page1-layout" cellpadding="0" cellspacing="0">
         <tr>
             <td class="sidebar-td">
                 <div style="text-align: center; margin-bottom: 16pt;">
@@ -324,61 +348,66 @@ if (!empty($data->name)) {
                 </div>
                 <?php endforeach; ?>
                 <?php endif; ?>
-
-                <?php if(count($projects) > 0): ?>
-                <div class="right-header">Proyek & Portofolio</div>
-                <?php foreach($projects as $proj): ?>
-                <div class="item">
-                    <table class="item-title-row" cellpadding="0" cellspacing="0">
-                        <tr>
-                            <td class="item-title" style="width: 70%;"><?php echo $proj->name ?? ""; ?></td>
-                            <td class="item-date" style="width: 30%;"><?php echo $proj->year ?? $proj->link ?? ""; ?></td>
-                        </tr>
-                    </table>
-                    <?php
-                        $projSub = array_filter([$proj->role ?? "", $proj->technologies ?? "", (!empty($proj->year) ? $proj->link ?? "" : "")]);
-                    ?>
-                    <?php if(!empty($projSub)): ?>
-                    <div class="item-subtitle"><?php echo implode(" | ", $projSub); ?></div>
-                    <?php endif; ?>
-                    <div class="item-desc"><?php echo nl2br(htmlspecialchars($proj->description ?? "")); ?></div>
-                </div>
-                <?php endforeach; ?>
-                <?php endif; ?>
-
-                <?php if(count($internships) > 0): ?>
-                <div class="right-header">Pengalaman Magang</div>
-                <?php foreach($internships as $int): ?>
-                <div class="item">
-                    <table class="item-title-row" cellpadding="0" cellspacing="0">
-                        <tr>
-                            <td class="item-title" style="width: 70%;"><?php echo $int->position ?? ""; ?></td>
-                            <td class="item-date" style="width: 30%;"><?php echo $int->start_year ?? ""; ?> - <?php echo $int->end_year ?? ""; ?></td>
-                        </tr>
-                    </table>
-                    <div class="item-subtitle"><?php echo $int->company ?? ""; ?> <?php if(!empty($int->location)): ?> | <?php echo $int->location; ?> <?php endif; ?></div>
-                    <div class="item-desc"><?php echo nl2br(htmlspecialchars($int->description ?? "")); ?></div>
-                </div>
-                <?php endforeach; ?>
-                <?php endif; ?>
-
-                <?php if(count($organizations) > 0): ?>
-                <div class="right-header">Pengalaman Organisasi</div>
-                <?php foreach($organizations as $org): ?>
-                <div class="item">
-                    <table class="item-title-row" cellpadding="0" cellspacing="0">
-                        <tr>
-                            <td class="item-title" style="width: 70%;"><?php echo $org->role ?? ""; ?></td>
-                            <td class="item-date" style="width: 30%;"><?php echo $org->start_year ?? ""; ?> - <?php echo $org->end_year ?? ""; ?></td>
-                        </tr>
-                    </table>
-                    <div class="item-subtitle"><?php echo $org->name ?? ""; ?></div>
-                    <div class="item-desc"><?php echo nl2br(htmlspecialchars($org->description ?? "")); ?></div>
-                </div>
-                <?php endforeach; ?>
-                <?php endif; ?>
             </td>
         </tr>
     </table>
+
+    <?php if($hasPage2): ?>
+    <!-- PAGE 2+: FULL-WIDTH CONTINUATION -->
+    <div class="page2-fullwidth">
+        <?php if(count($projects) > 0): ?>
+        <div class="full-heading">Proyek & Portofolio</div>
+        <?php foreach($projects as $proj): ?>
+        <div class="item">
+            <table class="item-title-row" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td class="item-title" style="width: 75%; font-size: 10pt;"><?php echo $proj->name ?? ""; ?></td>
+                    <td class="item-date" style="width: 25%;"><?php echo $proj->year ?? $proj->link ?? ""; ?></td>
+                </tr>
+            </table>
+            <?php
+                $projSub = array_filter([$proj->role ?? "", $proj->technologies ?? "", (!empty($proj->year) ? $proj->link ?? "" : "")]);
+            ?>
+            <?php if(!empty($projSub)): ?>
+            <div class="item-subtitle"><?php echo implode(" | ", $projSub); ?></div>
+            <?php endif; ?>
+            <div class="item-desc"><?php echo nl2br(htmlspecialchars($proj->description ?? "")); ?></div>
+        </div>
+        <?php endforeach; ?>
+        <?php endif; ?>
+
+        <?php if(count($internships) > 0): ?>
+        <div class="full-heading">Pengalaman Magang</div>
+        <?php foreach($internships as $int): ?>
+        <div class="item">
+            <table class="item-title-row" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td class="item-title" style="width: 75%; font-size: 10pt;"><?php echo $int->position ?? ""; ?></td>
+                    <td class="item-date" style="width: 25%;"><?php echo $int->start_year ?? ""; ?> - <?php echo $int->end_year ?? ""; ?></td>
+                </tr>
+            </table>
+            <div class="item-subtitle"><?php echo $int->company ?? ""; ?> <?php if(!empty($int->location)): ?> | <?php echo $int->location; ?> <?php endif; ?></div>
+            <div class="item-desc"><?php echo nl2br(htmlspecialchars($int->description ?? "")); ?></div>
+        </div>
+        <?php endforeach; ?>
+        <?php endif; ?>
+
+        <?php if(count($organizations) > 0): ?>
+        <div class="full-heading">Pengalaman Organisasi</div>
+        <?php foreach($organizations as $org): ?>
+        <div class="item">
+            <table class="item-title-row" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td class="item-title" style="width: 75%; font-size: 10pt;"><?php echo $org->role ?? ""; ?></td>
+                    <td class="item-date" style="width: 25%;"><?php echo $org->start_year ?? ""; ?> - <?php echo $org->end_year ?? ""; ?></td>
+                </tr>
+            </table>
+            <div class="item-subtitle"><?php echo $org->name ?? ""; ?></div>
+            <div class="item-desc"><?php echo nl2br(htmlspecialchars($org->description ?? "")); ?></div>
+        </div>
+        <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
 </body>
 </html>
