@@ -198,7 +198,7 @@
                 <div class="name">{{ $data->name ?? 'NAMA LENGKAP' }}</div>
                 <div class="job-title">{{ $data->job_title ?? 'PROFESI / ROLE' }}</div>
 
-                <div class="left-header">Contact</div>
+                <div class="left-header">Kontak Pribadi</div>
                 <ul class="contact-list">
                     @if(!empty($data->phone))
                     <li><span class="contact-icon">📞</span> {{ $data->phone ?? '' }}</li>
@@ -221,7 +221,7 @@
                 </ul>
 
                 @if(count($hard_skills) > 0)
-                <div class="left-header">Hard Skills</div>
+                <div class="left-header">Keahlian Teknis</div>
                 <div style="margin-bottom: 20px;">
                     @foreach($hard_skills as $skill)
                     <div style="margin-bottom: 8px;">
@@ -240,7 +240,7 @@
                 @endif
                 
                 @if(count($soft_skills) > 0)
-                <div class="left-header">Soft Skills</div>
+                <div class="left-header">Keahlian Interpersonal</div>
                 <ul class="skill-list" style="margin-bottom: 20px;">
                     @foreach($soft_skills as $skill)
                     <li>{{ $skill->name ?? '' }}</li>
@@ -249,7 +249,7 @@
                 @endif
 
                 @if(count($tools) > 0)
-                <div class="left-header">Software / Tools</div>
+                <div class="left-header">Perangkat Lunak & Tools</div>
                 <ul class="skill-list">
                     @foreach($tools as $tool)
                     <li>{{ $tool->name ?? '' }}</li>
@@ -264,14 +264,14 @@
             <td class="right-col">
                 
                 @if(!empty($data->profile))
-                <div class="right-header">Profile</div>
+                <div class="right-header">Tentang Saya</div>
                 <div class="profile-text">
                     {!! nl2br(e($data->profile)) !!}
                 </div>
                 @endif
 
                 @if(count($experiences) > 0)
-                <div class="right-header">Work Experience</div>
+                <div class="right-header">Pengalaman Kerja</div>
                 @foreach($experiences as $exp)
                 <div class="item">
                     <table class="item-title-row">
@@ -287,7 +287,7 @@
                 @endif
 
                 @if(count($projects) > 0)
-                <div class="right-header">Projects / Portfolio</div>
+                <div class="right-header">Proyek & Portofolio</div>
                 @foreach($projects as $proj)
                 <div class="item">
                     <table class="item-title-row">
@@ -303,7 +303,7 @@
                 @endif
 
                 @if(count($educations) > 0)
-                <div class="right-header">Education</div>
+                <div class="right-header">Riwayat Pendidikan</div>
                 @foreach($educations as $edu)
                 <div class="item">
                     <table class="item-title-row">
@@ -318,7 +318,7 @@
                 @endif
 
                 @if(count($certificates) > 0)
-                <div class="right-header">Certificates</div>
+                <div class="right-header">Sertifikasi & Pelatihan</div>
                 @foreach($certificates as $cert)
                 <div class="item">
                     <table class="item-title-row">

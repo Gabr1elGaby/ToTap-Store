@@ -190,13 +190,13 @@
                     @endif
                     @if(!empty($data->website))
                     <div class="contact-item">
-                        <span class="contact-label">Website / Portfolio</span>
+                        <span class="contact-label">Website / Portofolio</span>
                         <span class="contact-value">{{ $data->website ?? '' }}</span>
                     </div>
                     @endif
                     @if(!empty($data->social_media))
                     <div class="contact-item">
-                        <span class="contact-label">Social Media</span>
+                        <span class="contact-label">Media Sosial</span>
                         <span class="contact-value">{{ $data->social_media ?? '' }}</span>
                     </div>
                     @endif
@@ -218,7 +218,7 @@
                 @endif
 
                 @if(count($educations) > 0)
-                <div class="right-header">Pendidikan</div>
+                <div class="right-header">Riwayat Pendidikan</div>
                 @foreach($educations as $edu)
                 <div class="item">
                     <table class="item-title-row">
@@ -265,7 +265,7 @@
                 @endif
 
                 @if(count($projects) > 0)
-                <div class="right-header">Project</div>
+                <div class="right-header">Proyek & Portofolio</div>
                 @foreach($projects as $proj)
                 <div class="item">
                     <table class="item-title-row">
@@ -280,36 +280,36 @@
                 @endforeach
                 @endif
 
-                                  @if(count($hard_skills) > 0)
-                  <div class="right-header">Hard Skills</div>
-                  <div style="padding-left: 0; margin-bottom: 20px;">
-                      @foreach($hard_skills as $skill)
-                      <div style="margin-bottom: 10px;">
-                          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 3px;">
-                              <tr>
-                                  <td style="font-size: 10pt; font-weight: bold; color: #111827;">{{ $skill->name ?? '' }}</td>
-                                  <td align="right" style="font-size: 9pt; color: #D4AF37; font-weight: bold;">{{ $skill->level ?? '' }}%</td>
-                              </tr>
-                          </table>
-                          <div style="width: 100%; background-color: #f3f4f6; height: 5px; border-radius: 3px;">
-                              <div style="width: {{ $skill->level ?? '' }}%; background-color: #D4AF37; height: 100%; border-radius: 3px;"></div>
-                          </div>
-                      </div>
-                      @endforeach
-                  </div>
-                  @endif
+                @if(count($hard_skills) > 0)
+                <div class="right-header">Keahlian Teknis</div>
+                <div style="padding-left: 0; margin-bottom: 20px;">
+                    @foreach($hard_skills as $skill)
+                    <div style="margin-bottom: 10px;">
+                        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 3px;">
+                            <tr>
+                                <td style="font-size: 10pt; font-weight: bold; color: #111827;">{{ $skill->name ?? '' }}</td>
+                                <td align="right" style="font-size: 9pt; color: #D4AF37; font-weight: bold;">{{ $skill->level ?? '' }}%</td>
+                            </tr>
+                        </table>
+                        <div style="width: 100%; background-color: #f3f4f6; height: 5px; border-radius: 3px;">
+                            <div style="width: {{ $skill->level ?? '' }}%; background-color: #D4AF37; height: 100%; border-radius: 3px;"></div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
 
-                  @if(count($soft_skills) > 0)
-                  <div class="right-header">Soft Skills</div>
-                  <ul class="skill-list" style="padding-left: 20px; margin-bottom: 20px;">
-                      @foreach($soft_skills as $skill)
-                      <li>{{ $skill->name ?? '' }}</li>
-                      @endforeach
-                  </ul>
-                  @endif
+                @if(count($soft_skills) > 0)
+                <div class="right-header">Keahlian Interpersonal</div>
+                <ul class="skill-list" style="padding-left: 20px; margin-bottom: 20px;">
+                    @foreach($soft_skills as $skill)
+                    <li>{{ $skill->name ?? '' }}</li>
+                    @endforeach
+                </ul>
+                @endif
 
                 @if(count($certificates) > 0)
-                <div class="right-header">Sertifikat</div>
+                <div class="right-header">Sertifikasi & Prestasi</div>
                 @foreach($certificates as $cert)
                 <div class="item">
                     <table class="item-title-row">

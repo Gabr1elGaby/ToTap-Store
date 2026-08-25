@@ -228,16 +228,16 @@ if (!empty($data->name)) {
                 <!-- CONTACT BLOCK -->
                 <div class="left-block">
                     <div class="left-heading-container">
-                        <span class="left-heading">Contact</span>
+                        <span class="left-heading">Kontak</span>
                     </div>
                     <div class="contact-item">
-                        {{ $data->phone ?? '' }}<br><strong>Phone</strong>
+                        {{ $data->phone ?? '' }}<br><strong>Telepon / WA</strong>
                     </div>
                     <div class="contact-item">
                         {{ $data->email ?? '' }}<br><strong>Email</strong>
                     </div>
                     <div class="contact-item">
-                        {{ $data->location ?? '' }}<br><strong>Location</strong>
+                        {{ $data->location ?? '' }}<br><strong>Domisili</strong>
                     </div>
                     @if(!empty($data->linkedin))
                     <div class="contact-item">
@@ -246,7 +246,7 @@ if (!empty($data->name)) {
                     @endif
                     @if(!empty($data->website))
                     <div class="contact-item">
-                        {{ $data->website ?? '' }}<br><strong>Website</strong>
+                        {{ $data->website ?? '' }}<br><strong>Website / Portofolio</strong>
                     </div>
                     @endif
                 </div>
@@ -255,7 +255,7 @@ if (!empty($data->name)) {
                 @if(count($skills) > 0)
                 <div class="left-block">
                     <div class="left-heading-container">
-                        <span class="left-heading">Skills</span>
+                        <span class="left-heading">Keahlian</span>
                     </div>
                     @foreach($skills as $skill)
                     <div class="skill-item">
@@ -269,7 +269,7 @@ if (!empty($data->name)) {
                 @if(count($certificates) > 0)
                 <div class="left-block">
                     <div class="left-heading-container">
-                        <span class="left-heading">Awards</span>
+                        <span class="left-heading">Sertifikasi</span>
                     </div>
                     @foreach($certificates as $cert)
                     <div class="skill-item">
@@ -288,13 +288,13 @@ if (!empty($data->name)) {
                 <hr class="header-line">
                 
                 @if(!empty($data->profile))
-                <div class="right-heading">About Me</div>
+                <div class="right-heading">Tentang Saya</div>
                 <hr class="right-heading-line">
                 <div class="summary">{!! nl2br(e($data->profile ?? '')) !!}</div>
                 @endif
                 
                 @if(count($educations) > 0)
-                <div class="right-heading">Education</div>
+                <div class="right-heading">Riwayat Pendidikan</div>
                 <hr class="right-heading-line">
                 @foreach($educations as $edu)
                 <div class="item-block">
@@ -308,11 +308,11 @@ if (!empty($data->name)) {
                 @endif
                 
                 @if(count($experiences) > 0)
-                <div class="right-heading">Experience</div>
+                <div class="right-heading">Pengalaman Kerja</div>
                 <hr class="right-heading-line">
                 @foreach($experiences as $exp)
                 <div class="item-block">
-                    <div class="item-meta">{{ $exp->start_year ?? '' }} - {{ isset($exp->is_current) && $exp->is_current ? 'Present' : ($exp->end_year ?? '') }}</div>
+                    <div class="item-meta">{{ $exp->start_year ?? '' }} - {{ isset($exp->is_current) && $exp->is_current ? 'Sekarang' : ($exp->end_year ?? '') }}</div>
                     <div class="item-title">{{ $exp->position ?? '' }}</div>
                     <div class="item-subtitle">{{ $exp->company ?? '' }}</div>
                     <div class="item-desc">{!! nl2br(e($exp->description ?? '')) !!}</div>
@@ -322,7 +322,7 @@ if (!empty($data->name)) {
                 @endif
                 
                 @if(count($internships) > 0)
-                <div class="right-heading">Internships</div>
+                <div class="right-heading">Pengalaman Magang</div>
                 <hr class="right-heading-line">
                 @foreach($internships as $int)
                 <div class="item-block">
@@ -336,7 +336,7 @@ if (!empty($data->name)) {
                 @endif
                 
                 @if(count($projects) > 0)
-                <div class="right-heading">Projects</div>
+                <div class="right-heading">Proyek & Portofolio</div>
                 <hr class="right-heading-line">
                 @foreach($projects as $proj)
                 <div class="item-block">
@@ -349,7 +349,7 @@ if (!empty($data->name)) {
                 @endif
                 
                 @if(count($organizations) > 0)
-                <div class="right-heading">Organizations</div>
+                <div class="right-heading">Pengalaman Organisasi</div>
                 <hr class="right-heading-line">
                 @foreach($organizations as $org)
                 <div class="item-block">

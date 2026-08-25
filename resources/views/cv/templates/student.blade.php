@@ -208,7 +208,7 @@
                 @endif
 
                 @if(count($org_and_vol) > 0)
-                <div><span class="right-header">Organisasi & Volunteer</span></div>
+                <div><span class="right-header">Pengalaman Organisasi & Relawan</span></div>
                 @foreach($org_and_vol as $org)
                 <div class="item">
                     <table class="item-title-row">
@@ -240,7 +240,7 @@
                 @endif
 
                 @if(count($projects) > 0)
-                <div><span class="right-header">Project</span></div>
+                <div><span class="right-header">Proyek & Portofolio</span></div>
                 @foreach($projects as $proj)
                 <div class="item">
                     <table class="item-title-row">
@@ -256,7 +256,7 @@
                 @endif
 
                 @if(count($hard_skills) > 0)
-                <div><span class="right-header">Hard Skills</span></div>
+                <div><span class="right-header">Keahlian Teknis</span></div>
                 <div style="padding-left: 15px; margin-bottom: 20px;">
                     @foreach($hard_skills as $skill)
                     <div style="margin-bottom: 12px;">
@@ -275,7 +275,7 @@
                 @endif
                 
                 @if(count($soft_skills) > 0)
-                <div><span class="right-header">Soft Skills</span></div>
+                <div><span class="right-header">Keahlian Interpersonal</span></div>
                 <ul class="skill-list" style="padding-left: 30px; margin-bottom: 20px;">
                     @foreach($soft_skills as $skill)
                     <li>{{ $skill->name ?? '' }}</li>
@@ -284,7 +284,7 @@
                 @endif
 
                 @if(count($certificates) > 0)
-                <div style="margin-top: 20px;"><span class="right-header">Sertifikat & Prestasi</span></div>
+                <div style="margin-top: 20px;"><span class="right-header">Sertifikasi & Prestasi</span></div>
                 @foreach($certificates as $cert)
                 <div class="item">
                     <table class="item-title-row">

@@ -222,7 +222,7 @@ if (!empty($data->name)) {
                     {{ $data->email ?? '' }}
                 </div>
                 <div class="contact-item">
-                    <strong>LOKASI</strong><br>
+                    <strong>DOMISILI</strong><br>
                     {{ $data->location ?? '' }}
                 </div>
                 @if(!empty($data->linkedin))
@@ -233,7 +233,7 @@ if (!empty($data->name)) {
                 @endif
                 @if(!empty($data->website))
                 <div class="contact-item">
-                    <strong>WEBSITE / PORTFOLIO</strong><br>
+                    <strong>WEBSITE / PORTOFOLIO</strong><br>
                     {{ $data->website ?? '' }}
                 </div>
                 @endif
@@ -271,7 +271,7 @@ if (!empty($data->name)) {
                 @endif
                 
                 @if(count($educations) > 0)
-                <div class="right-heading">Pendidikan</div>
+                <div class="right-heading">Riwayat Pendidikan</div>
                 @foreach($educations as $edu)
                 <div class="item-block">
                     <div class="item-title">{{ $edu->degree ?? '' }} {{ $edu->field ?? '' }}</div>
@@ -282,7 +282,7 @@ if (!empty($data->name)) {
                 @endif
                 
                 @if(count($organizations) > 0)
-                <div class="right-heading">Organisasi & Volunteer</div>
+                <div class="right-heading">Pengalaman Organisasi & Relawan</div>
                 @foreach($organizations as $org)
                 <div class="item-block">
                     <div class="item-title">{{ $org->role ?? '' }}</div>
@@ -293,7 +293,7 @@ if (!empty($data->name)) {
                 @endif
                 
                 @if(count($projects) > 0)
-                <div class="right-heading">Proyek & Portfolio</div>
+                <div class="right-heading">Proyek & Portofolio</div>
                 @foreach($projects as $proj)
                 <div class="item-block">
                     <div class="item-title">{{ $proj->name ?? '' }}</div>
@@ -304,7 +304,7 @@ if (!empty($data->name)) {
                 @endif
                 
                 @if(count($certificates) > 0)
-                <div class="right-heading">Sertifikat</div>
+                <div class="right-heading">Sertifikasi & Pelatihan</div>
                 @foreach($certificates as $cert)
                 <div class="item-block">
                     <div class="item-title">{{ $cert->name ?? '' }}</div>

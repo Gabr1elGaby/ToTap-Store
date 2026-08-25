@@ -155,7 +155,7 @@
                     @endif
                 </div>
 
-                <div class="left-header">Contact</div>
+                <div class="left-header">Kontak Pribadi</div>
                 <ul class="contact-list">
                     @if(!empty($data->phone))
                     <li><span class="contact-icon">P</span> {{ $data->phone ?? '' }}</li>
@@ -178,7 +178,7 @@
                 </ul>
                 
                 @if(count($skills) > 0)
-                <div class="left-header">Skills</div>
+                <div class="left-header">Keahlian</div>
                 <div style="padding-left: 0; margin-bottom: 25px;">
                     @foreach($skills as $skill)
                     <div style="margin-bottom: 10px;">
@@ -207,18 +207,18 @@
             <td class="right-col">
                 <div class="name-wrapper">
                     <div class="name">{{ $data->name ?? 'NAMA LENGKAP' }}</div>
-                    <div class="job-title">{{ $data->job_title ?? 'PROFESSION HERE' }}</div>
+                    <div class="job-title">{{ $data->job_title ?? '' }}</div>
                 </div>
                 
                 @if(!empty($data->profile))
-                <div class="right-header">Profile</div>
+                <div class="right-header">Tentang Saya</div>
                 <div class="profile-text">
                     {!! nl2br(e($data->profile)) !!}
                 </div>
                 @endif
 
                 @if(count($experiences) > 0)
-                <div class="right-header">Work Experience</div>
+                <div class="right-header">Pengalaman Kerja</div>
                 @foreach($experiences as $exp)
                 <div class="item">
                     <table class="item-title-row">
@@ -234,7 +234,7 @@
                 @endif
                 
                 @if(count($educations) > 0)
-                <div class="right-header">Education</div>
+                <div class="right-header">Riwayat Pendidikan</div>
                 @foreach($educations as $edu)
                 <div class="item">
                     <table class="item-title-row">
@@ -249,7 +249,7 @@
                 @endif
                 
                 @if(count($organizations) > 0)
-                <div class="right-header">Organizations</div>
+                <div class="right-header">Pengalaman Organisasi</div>
                 @foreach($organizations as $org)
                 <div class="item">
                     <table class="item-title-row">
@@ -265,7 +265,7 @@
                 @endif
 
                 @if(count($projects) > 0)
-                <div class="right-header">Projects</div>
+                <div class="right-header">Proyek & Portofolio</div>
                 @foreach($projects as $proj)
                 <div class="item">
                     <table class="item-title-row">
@@ -281,7 +281,7 @@
                 @endif
 
                 @if(count($certificates) > 0)
-                <div class="right-header">Certificates</div>
+                <div class="right-header">Sertifikasi & Pelatihan</div>
                 @foreach($certificates as $cert)
                 <div class="item">
                     <table class="item-title-row">
