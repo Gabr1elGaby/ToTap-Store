@@ -141,17 +141,17 @@
             </button>
         </div>
 
-        <!-- EDUCATIONAL GUIDANCE CARDS (CLEAN, SPACIOUS & MODERN) -->
+        <!-- EDUCATIONAL GUIDANCE CARDS (SPACIOUS & ELEGANT LAYOUT) -->
         <div class="mb-12 grid grid-cols-1 lg:grid-cols-2 gap-6">
             
             <!-- Indonesian CV Standards Card -->
             <div class="bg-white dark:bg-gray-800/90 rounded-2xl p-6 sm:p-7 border border-rose-200/80 dark:border-rose-900/40 shadow-sm relative overflow-hidden flex flex-col justify-between">
-                <div class="flex items-center gap-3.5 mb-4">
-                    <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold text-lg flex-shrink-0 border border-rose-500/20 shadow-sm">
-                        <i class="fas fa-building"></i>
+                <div style="display: flex; align-items: center; margin-bottom: 18px;">
+                    <div style="width: 48px; height: 48px; min-width: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-right: 18px; flex-shrink: 0;" class="bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shadow-sm">
+                        <i class="fas fa-building text-xl"></i>
                     </div>
-                    <div>
-                        <div class="flex items-center gap-2">
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 2px;">
                             <h3 class="font-extrabold text-gray-900 dark:text-white text-base">Standar CV Bahasa Indonesia</h3>
                             <span class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">BUMN & Lokal</span>
                         </div>
@@ -159,30 +159,30 @@
                     </div>
                 </div>
 
-                <ul class="space-y-2.5 text-xs text-gray-600 dark:text-gray-300">
-                    <li class="flex items-start gap-2">
-                        <i class="fas fa-check-circle text-rose-500 mt-0.5 flex-shrink-0"></i>
-                        <span><strong>Data Pribadi Lengkap:</strong> Nama lengkap, kontak WhatsApp aktif, domisili (Kota/Provinsi), dan foto formal profesional.</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <i class="fas fa-check-circle text-rose-500 mt-0.5 flex-shrink-0"></i>
-                        <span><strong>Riwayat Pendidikan & IPK:</strong> Jenjang studi, jurusan, nama universitas/sekolah, dan nilai IPK/predikat kelulusan.</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <i class="fas fa-check-circle text-rose-500 mt-0.5 flex-shrink-0"></i>
-                        <span><strong>Organisasi & Sertifikasi BNSP:</strong> Sangat diutamakan kepanitiaan kampus, kegiatan kemahasiswaan, dan pelatihan profesi nasional.</span>
-                    </li>
-                </ul>
+                <div class="space-y-3 text-xs text-gray-600 dark:text-gray-300">
+                    <div style="display: flex; align-items: flex-start;">
+                        <i class="fas fa-check-circle text-rose-500" style="margin-right: 12px; margin-top: 3px; font-size: 14px; flex-shrink: 0;"></i>
+                        <span style="line-height: 1.5;"><strong>Data Pribadi Lengkap:</strong> Nama lengkap, kontak WhatsApp aktif, domisili (Kota/Provinsi), dan foto formal profesional.</span>
+                    </div>
+                    <div style="display: flex; align-items: flex-start;">
+                        <i class="fas fa-check-circle text-rose-500" style="margin-right: 12px; margin-top: 3px; font-size: 14px; flex-shrink: 0;"></i>
+                        <span style="line-height: 1.5;"><strong>Riwayat Pendidikan & IPK:</strong> Jenjang studi, jurusan, nama universitas/sekolah, dan nilai IPK/predikat kelulusan.</span>
+                    </div>
+                    <div style="display: flex; align-items: flex-start;">
+                        <i class="fas fa-check-circle text-rose-500" style="margin-right: 12px; margin-top: 3px; font-size: 14px; flex-shrink: 0;"></i>
+                        <span style="line-height: 1.5;"><strong>Organisasi & Sertifikasi BNSP:</strong> Sangat diutamakan kepanitiaan kampus, kegiatan kemahasiswaan, dan pelatihan profesi nasional.</span>
+                    </div>
+                </div>
             </div>
 
             <!-- English Resume Standards Card -->
             <div class="bg-white dark:bg-gray-800/90 rounded-2xl p-6 sm:p-7 border border-blue-200/80 dark:border-blue-900/40 shadow-sm relative overflow-hidden flex flex-col justify-between">
-                <div class="flex items-center gap-3.5 mb-4">
-                    <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-lg flex-shrink-0 border border-blue-500/20 shadow-sm">
-                        <i class="fas fa-globe-americas"></i>
+                <div style="display: flex; align-items: center; margin-bottom: 18px;">
+                    <div style="width: 48px; height: 48px; min-width: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-right: 18px; flex-shrink: 0;" class="bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shadow-sm">
+                        <i class="fas fa-globe-americas text-xl"></i>
                     </div>
-                    <div>
-                        <div class="flex items-center gap-2">
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 2px;">
                             <h3 class="font-extrabold text-gray-900 dark:text-white text-base">Standar Resume Bahasa Inggris</h3>
                             <span class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">Global & Remote</span>
                         </div>
@@ -190,20 +190,20 @@
                     </div>
                 </div>
 
-                <ul class="space-y-2.5 text-xs text-gray-600 dark:text-gray-300">
-                    <li class="flex items-start gap-2">
-                        <i class="fas fa-check-circle text-blue-500 mt-0.5 flex-shrink-0"></i>
-                        <span><strong>Quantifiable Achievements:</strong> Penjelasan pengalaman kerja dengan Action Verbs dan rumus XYZ (hasil terukur dalam angka/persentase).</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <i class="fas fa-check-circle text-blue-500 mt-0.5 flex-shrink-0"></i>
-                        <span><strong>Projects & Tech Portfolio:</strong> Menampilkan portofolio proyek teknis, stack teknologi, dan tautan live demo / GitHub.</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <i class="fas fa-check-circle text-blue-500 mt-0.5 flex-shrink-0"></i>
-                        <span><strong>100% Lolos ATS Global:</strong> Tanpa data sensitif (tanpa tanggal lahir/status pernikahan) agar memenuhi regulasi anti-diskriminasi internasional.</span>
-                    </li>
-                </ul>
+                <div class="space-y-3 text-xs text-gray-600 dark:text-gray-300">
+                    <div style="display: flex; align-items: flex-start;">
+                        <i class="fas fa-check-circle text-blue-500" style="margin-right: 12px; margin-top: 3px; font-size: 14px; flex-shrink: 0;"></i>
+                        <span style="line-height: 1.5;"><strong>Quantifiable Achievements:</strong> Penjelasan pengalaman kerja dengan Action Verbs dan rumus XYZ (hasil terukur dalam angka/persentase).</span>
+                    </div>
+                    <div style="display: flex; align-items: flex-start;">
+                        <i class="fas fa-check-circle text-blue-500" style="margin-right: 12px; margin-top: 3px; font-size: 14px; flex-shrink: 0;"></i>
+                        <span style="line-height: 1.5;"><strong>Projects & Tech Portfolio:</strong> Menampilkan portofolio proyek teknis, stack teknologi, dan tautan live demo / GitHub.</span>
+                    </div>
+                    <div style="display: flex; align-items: flex-start;">
+                        <i class="fas fa-check-circle text-blue-500" style="margin-right: 12px; margin-top: 3px; font-size: 14px; flex-shrink: 0;"></i>
+                        <span style="line-height: 1.5;"><strong>100% Lolos ATS Global:</strong> Tanpa data sensitif (tanpa tanggal lahir/status pernikahan) agar memenuhi regulasi anti-diskriminasi internasional.</span>
+                    </div>
+                </div>
             </div>
 
         </div>
