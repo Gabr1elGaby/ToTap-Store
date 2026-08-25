@@ -350,26 +350,16 @@ class TopUpController extends Controller
                 ]);
             }
 
-            // Jika API mengembalikan error bahwa ID tidak ditemukan
-            $errMsg = $res['message'] ?? 'ID Game / Server tidak ditemukan di sistem.';
-            if (str_contains(strtolower($errMsg), 'tidak ditemukan') || str_contains(strtolower($errMsg), 'invalid') || str_contains(strtolower($errMsg), 'salah')) {
-                return response()->json([
-                    'result' => false,
-                    'message' => $errMsg,
-                ]);
-            }
-
-            // Jika format valid tetapi provider sedang overload/unsupported, tetap loloskan
+            // BLOKIR JIKA ID TIDAK DITEMUKAN / GAGAL
+            $errMsg = $res['message'] ?? 'Kami tidak menemukan User ID: ' . $target1 . ($target2 ? '#' . $target2 : '');
             return response()->json([
-                'result' => true,
-                'is_checked' => false,
-                'message' => 'ID Valid',
+                'result' => false,
+                'message' => $errMsg,
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'result' => true,
-                'is_checked' => false,
-                'message' => 'Lanjut ke pembayaran',
+                'result' => false,
+                'message' => 'Kami tidak menemukan User ID tersebut. Harap periksa kembali.',
             ]);
         }
     }
