@@ -88,11 +88,11 @@ Route::post('/topup/checkout/{id}/verify', [\App\Http\Controllers\TopUpPaymentCo
 // Rute Transaksi / Aksi CV & Software (Backend Auth Lock)
 Route::middleware(['auth'])->group(function () {
     Route::post('/cv', [\App\Http\Controllers\CvController::class, 'store'])->name('cv.store');
-    Route::get('/cv/download/{id}', [\App\Http\Controllers\CvController::class, 'download'])->name('cv.download');
+    Route::get('/cv/download/{token}', [\App\Http\Controllers\CvController::class, 'download'])->name('cv.download');
     Route::post('/cv/preview/{slug}', [\App\Http\Controllers\CvController::class, 'preview'])->name('cv.preview');
     
-    Route::get('/checkout/cv/{cv_id}', [\App\Http\Controllers\CvPaymentController::class, 'show'])->name('cv.checkout.show');
-    Route::post('/payment/cv/simulate/{cv_id}', [\App\Http\Controllers\CvPaymentController::class, 'simulate'])->name('cv.payment.simulate');
+    Route::get('/checkout/cv/{token}', [\App\Http\Controllers\CvPaymentController::class, 'show'])->name('cv.checkout.show');
+    Route::post('/payment/cv/simulate/{token}', [\App\Http\Controllers\CvPaymentController::class, 'simulate'])->name('cv.payment.simulate');
 });
 
 Route::middleware(['auth'])->group(function () {

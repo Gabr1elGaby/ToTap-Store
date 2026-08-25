@@ -18,7 +18,7 @@
         <h2 class="text-2xl font-extrabold text-gray-900 mb-2">Menunggu Pembayaran</h2>
         <p class="text-gray-600 mb-8">CV Anda sudah tersimpan dengan aman, namun Anda perlu menyelesaikan pembayaran untuk mengunduh PDF.</p>
         
-        <a href="{{ route('cv.checkout.show', $cv->id) }}" class="block w-full bg-blue-600 text-white font-bold py-3 px-4 rounded shadow hover:bg-blue-700 transition mb-4">
+        <a href="{{ route('cv.checkout.show', $cv->access_token ?? $cv->id) }}" class="block w-full bg-blue-600 text-white font-bold py-3 px-4 rounded shadow hover:bg-blue-700 transition mb-4">
             Lanjutkan Pembayaran
         </a>
         <a href="{{ route('cv.index') }}" class="block w-full bg-gray-100 text-gray-700 font-bold py-3 px-4 rounded hover:bg-gray-200 transition">

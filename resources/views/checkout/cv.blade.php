@@ -142,7 +142,7 @@
 
                     <!-- QR Box -->
                     <div class="inline-block p-4 bg-white rounded-2xl shadow-inner border border-slate-200 dark:border-slate-700 mb-4">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={{ urlencode('https://totapstore.com/checkout/cv/' . $cv->id) }}" alt="QRIS QR Code" class="w-48 h-48 mx-auto rounded-lg">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={{ urlencode('https://totapstore.com/checkout/cv/' . ($cv->access_token ?? $cv->id)) }}" alt="QRIS QR Code" class="w-48 h-48 mx-auto rounded-lg">
                         <div class="mt-2 flex items-center justify-center gap-1.5 text-[11px] font-bold text-slate-600">
                             <span>NMID: ID102003892719</span>
                         </div>
@@ -160,7 +160,7 @@
                     </div>
 
                     <!-- Confirm Payment Form -->
-                    <form action="{{ route('cv.payment.simulate', $cv->id) }}" method="POST">
+                    <form action="{{ route('cv.payment.simulate', $cv->access_token ?? $cv->id) }}" method="POST">
                         @csrf
                         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-600/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 text-sm sm:text-base">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>

@@ -70,7 +70,11 @@ class CvController extends Controller
                 }
             }
 
+            $accessToken = 'cv_' . \Illuminate\Support\Str::random(24);
+
             $cvId = DB::table('cvs')->insertGetId([
+                'access_token' => $accessToken,
+                'user_id' => auth()->id(),
                 'template_id' => $data['template_id'],
                 'name' => $data['name'],
                 'email' => $data['email'],
@@ -186,18 +190,24 @@ class CvController extends Controller
 
             DB::commit();
 
-            return response()->json(['redirect' => route('cv.checkout.show', $cvId)]);
+            return response()->json(['redirect' => route('cv.checkout.show', $accessToken)]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['message' => 'Failed to save CV', 'error' => $e->getMessage()], 500);
         }
     }
 
-    public function download($cvId)
+    public function download($token)
     {
-        $cv = DB::table('cvs')->where('id', $cvId)->first();
+        $cv = DB::table('cvs')->where('access_token', $token)->orWhere('id', $token)->first();
         if (!$cv) abort(404, 'CV not found');
 
+        // Owner check: if cv has user_id and user is logged in, ensure ownership unless admin
+        if ($cv->user_id && auth()->check() && auth()->id() !== $cv->user_id && !auth()->user()->is_admin) {
+            abort(403, 'Akses tidak diizinkan untuk CV ini.');
+        }
+
+        $cvId = $cv->id;
         $template = DB::table('cv_templates')->where('id', $cv->template_id)->first();
         
         $educations = DB::table('cv_educations')->where('cv_id', $cvId)->get();
