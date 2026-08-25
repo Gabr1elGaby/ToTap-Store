@@ -308,11 +308,30 @@ class TopUpController extends Controller
                 'mobile-legend', 'mobile-legends' => 'mobile-legends',
                 'free-fire', 'freefire' => 'free-fire',
                 'pubg-mobile', 'pubg' => 'pubg-mobile',
+                'valorant' => 'valorant',
                 default => null,
             };
 
-            // JIKA GAME TIDAK MENDUKUNG AUTO-NICKNAME (Seperti Valorant, Roblox, dll):
-            // Langsung izinkan pembeli melanjutkan ke pembayaran tanpa error!
+            // VALIDASI KHUSUS VALORANT: Wajib ada format Username#TAG
+            if (strtolower($game->slug) === 'valorant') {
+                if (!str_contains($target1, '#')) {
+                    return response()->json([
+                        'result' => false,
+                        'message' => 'Format Riot ID salah! Wajib menyertakan tanda pagar (#), contoh: Jett#1234 atau Username#TAG',
+                    ]);
+                }
+                $parts = explode('#', $target1, 2);
+                $target1 = trim($parts[0]);
+                $target2 = trim($parts[1]);
+                if (strlen($target1) < 2 || strlen($target2) < 2) {
+                    return response()->json([
+                        'result' => false,
+                        'message' => 'Riot ID dan Tagline tidak boleh kosong! Contoh: Jett#1234',
+                    ]);
+                }
+            }
+
+            // JIKA GAME LAIN TIDAK MENDUKUNG CEK NICKNAME (Seperti Roblox, Steam):
             if (!$gameCode) {
                 return response()->json([
                     'result' => true,
@@ -331,9 +350,20 @@ class TopUpController extends Controller
                 ]);
             }
 
+            // Jika API mengembalikan error bahwa ID tidak ditemukan
+            $errMsg = $res['message'] ?? 'ID Game / Server tidak ditemukan di sistem.';
+            if (str_contains(strtolower($errMsg), 'tidak ditemukan') || str_contains(strtolower($errMsg), 'invalid') || str_contains(strtolower($errMsg), 'salah')) {
+                return response()->json([
+                    'result' => false,
+                    'message' => $errMsg,
+                ]);
+            }
+
+            // Jika format valid tetapi provider sedang overload/unsupported, tetap loloskan
             return response()->json([
-                'result' => false,
-                'message' => $res['message'] ?? 'ID Game / Server tidak ditemukan.',
+                'result' => true,
+                'is_checked' => false,
+                'message' => 'ID Valid',
             ]);
         } catch (\Exception $e) {
             return response()->json([
