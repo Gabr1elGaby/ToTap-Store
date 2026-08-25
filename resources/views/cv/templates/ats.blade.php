@@ -199,8 +199,15 @@
                 <td class="item-date" style="width: 30%;">{{ $proj->year ?? $proj->link ?? '' }}</td>
             </tr>
         </table>
-        <div class="item-subtitle">{{ $proj->role ?? $proj->technologies ?? '' }}</div>
+        @php
+            $projSub = array_filter([$proj->role ?? '', $proj->technologies ?? '', (!empty($proj->year) ? $proj->link ?? '' : '')]);
+        @endphp
+        @if(!empty($projSub))
+        <div class="item-subtitle">{{ implode(' | ', $projSub) }}</div>
+        @endif
+        @if(!empty($proj->description))
         <div class="item-desc">{!! nl2br(e($proj->description)) !!}</div>
+        @endif
     </div>
     @endforeach
     @endif

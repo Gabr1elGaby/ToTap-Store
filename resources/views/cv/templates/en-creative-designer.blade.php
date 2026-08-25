@@ -155,8 +155,11 @@
                     @foreach($projects as $prj)
                         <div class="prj-box">
                             <div class="prj-name">{{ $prj['name'] ?? '' }}</div>
-                            @if(!empty($prj['technologies']))
-                                <div class="prj-sub">{{ $prj['technologies'] }}</div>
+                            @php
+                                $prjSub = array_filter([$prj['role'] ?? '', $prj['technologies'] ?? '', $prj['year'] ?? '', $prj['link'] ?? '']);
+                            @endphp
+                            @if(!empty($prjSub))
+                                <div class="prj-sub">{{ implode(' | ', $prjSub) }}</div>
                             @endif
                             @if(!empty($prj['description']))
                                 <div class="prj-desc">{{ $prj['description'] }}</div>

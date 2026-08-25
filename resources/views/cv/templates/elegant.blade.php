@@ -304,8 +304,15 @@ if (!empty($data->name)) {
                 @foreach($projects as $proj)
                 <div class="item-block">
                     <div class="item-title">{{ $proj->name ?? '' }}</div>
-                    <div class="item-meta">{{ $proj->technologies ?? '' }}  |  {{ $proj->link ?? '' }}</div>
+                    @php
+                        $projSub = array_filter([$proj->role ?? '', $proj->technologies ?? '', $proj->link ?? '', $proj->year ?? '']);
+                    @endphp
+                    @if(!empty($projSub))
+                    <div class="item-meta">{{ implode('  |  ', $projSub) }}</div>
+                    @endif
+                    @if(!empty($proj->description))
                     <div class="item-desc">{!! nl2br(e($proj->description ?? '')) !!}</div>
+                    @endif
                 </div>
                 @endforeach
                 @endif

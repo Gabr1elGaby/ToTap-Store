@@ -346,9 +346,19 @@ if (!empty($data->name)) {
                 <hr class="right-heading-line">
                 @foreach($projects as $proj)
                 <div class="item-block">
+                    @if(!empty($proj->year))
+                    <div class="item-meta">{{ $proj->year }}</div>
+                    @endif
                     <div class="item-title">{{ $proj->name ?? '' }}</div>
-                    <div class="item-subtitle">{{ $proj->technologies ?? '' }} | {{ $proj->link ?? '' }}</div>
-                    <div class="item-desc">{!! nl2br(e($proj->description ?? '')) !!}</div>
+                    @php
+                        $projSub = array_filter([$proj->role ?? '', $proj->technologies ?? '', $proj->link ?? '']);
+                    @endphp
+                    @if(!empty($projSub))
+                    <div class="item-subtitle">{{ implode(' | ', $projSub) }}</div>
+                    @endif
+                    @if(!empty($proj->description))
+                    <div class="item-desc">{!! nl2br(e($proj->description)) !!}</div>
+                    @endif
                 </div>
                 @endforeach
                 <div style="height: 15px;"></div>

@@ -255,11 +255,14 @@
                         <table style="width: 100%; margin-bottom: 2px;">
                             <tr>
                                 <td class="item-title">{{ $prj['name'] ?? '' }}</td>
-                                <td class="item-date">{{ $prj['link'] ?? '' }}</td>
+                                <td class="item-date">{{ $prj['year'] ?? $prj['link'] ?? '' }}</td>
                             </tr>
                         </table>
-                        @if(!empty($prj['technologies']))
-                            <div class="item-subtitle" style="color: #64748b; font-size: 8.5pt;">Stack: {{ $prj['technologies'] }}</div>
+                        @php
+                            $prjSub = array_filter([$prj['role'] ?? '', $prj['technologies'] ?? '', (!empty($prj['year']) ? $prj['link'] ?? '' : '')]);
+                        @endphp
+                        @if(!empty($prjSub))
+                            <div class="item-subtitle" style="color: #64748b; font-size: 8.5pt;">{{ implode(' | ', $prjSub) }}</div>
                         @endif
                         @if(!empty($prj['description']))
                             <div class="item-desc">

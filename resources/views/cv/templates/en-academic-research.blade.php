@@ -127,11 +127,14 @@
             <table class="row-table">
                 <tr>
                     <td class="item-main">{{ $prj['name'] ?? '' }}</td>
-                    <td class="item-year">{{ $prj['link'] ?? '' }}</td>
+                    <td class="item-year">{{ $prj['year'] ?? $prj['link'] ?? '' }}</td>
                 </tr>
             </table>
-            @if(!empty($prj['technologies']))
-                <div class="item-sub">Methodology / Grant: {{ $prj['technologies'] }}</div>
+            @php
+                $prjSub = array_filter([$prj['role'] ?? '', $prj['technologies'] ?? '', (!empty($prj['year']) ? $prj['link'] ?? '' : '')]);
+            @endphp
+            @if(!empty($prjSub))
+                <div class="item-sub">{{ implode(' | ', $prjSub) }}</div>
             @endif
             @if(!empty($prj['description']))
                 <div class="item-body">{{ $prj['description'] }}</div>
