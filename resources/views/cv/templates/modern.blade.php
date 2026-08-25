@@ -222,22 +222,13 @@
         $organizations = (!empty($organizations) && count($organizations) > 0) ? $organizations : ($data->organizations ?? ($userData["organizations"] ?? []));
         $certificates = (!empty($certificates) && count($certificates) > 0) ? $certificates : ($data->certificates ?? ($userData["certificates"] ?? []));
         $tools = (!empty($tools) && count($tools) > 0) ? $tools : ($data->tools ?? ($userData["tools"] ?? []));
-
-        // Page 1 contains: Name, Title, Summary, Education, and FIRST Experience
-        $page1Exp = count($experiences) > 0 ? [ $experiences[0] ] : [];
-        $page2Exp = count($experiences) > 1 ? array_slice($experiences, 1) : [];
-
-        $hasPage2 = (count($page2Exp) > 0) || (count($projects) > 0) || (count($internships) > 0) || (count($organizations) > 0);
     @endphp
 
-    <!-- Background strip for full-height sidebar -->
-    <div class="sidebar-bg" style="position: absolute; top: 0; left: 0; width: 32%; height: 842pt; background-color: #0f172a; z-index: -10;"></div>
-
-    <!-- PAGE 1: 2-COLUMN TABLE -->
-    <table class="page1-table" cellpadding="0" cellspacing="0">
+    <!-- 2-COLUMN CV TABLE -->
+    <table class="page1-table" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse;">
         <tr>
             <!-- SIDEBAR -->
-            <td class="sidebar-td">
+            <td class="sidebar-td" style="width: 32%; background-color: #0f172a; vertical-align: top; padding: 22pt 16pt;">
                 @if(!empty($data->photo))
                 <div class="photo-container">
                     <img src="{{ $data->photo }}" class="photo" alt="Photo">
@@ -357,7 +348,7 @@
             </td>
 
             <!-- MAIN CONTENT -->
-            <td class="content-td">
+            <td class="content-td" style="width: 68%; background-color: #ffffff; vertical-align: top; padding: 22pt 24pt 22pt 20pt;">
                 <div class="name">{{ !empty($data->name) ? $data->name : "NAMA LENGKAP" }}</div>
                 <div class="job-title">{{ !empty($data->job_title) ? $data->job_title : "POSISI / PEKERJAAN" }}</div>
                 <hr class="header-line">
@@ -366,6 +357,33 @@
                 <div class="summary">
                     {!! nl2br(e($data->summary ?: $data->profile)) !!}
                 </div>
+                @endif
+
+                @if(count($experiences) > 0)
+                <div class="right-heading">Pengalaman Kerja</div>
+                @foreach($experiences as $exp)
+                @php
+                    $pos = is_object($exp) ? ($exp->position ?? "") : ($exp["position"] ?? "");
+                    $sYr = is_object($exp) ? ($exp->start_year ?? "") : ($exp["start_year"] ?? "");
+                    $isCur = is_object($exp) ? (!empty($exp->is_current)) : (!empty($exp["is_current"]));
+                    $eYr = is_object($exp) ? ($exp->end_year ?? "") : ($exp["end_year"] ?? "");
+                    $comp = is_object($exp) ? ($exp->company ?? "") : ($exp["company"] ?? "");
+                    $loc = is_object($exp) ? ($exp->location ?? "") : ($exp["location"] ?? "");
+                    $desc = is_object($exp) ? ($exp->description ?? "") : ($exp["description"] ?? "");
+                @endphp
+                <div class="item-block">
+                    <table class="item-header-table" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="item-title" style="width: 70%;">{{ $pos }}</td>
+                            <td class="item-date" style="width: 30%;">{{ $sYr }} - {{ $isCur ? "Sekarang" : $eYr }}</td>
+                        </tr>
+                    </table>
+                    <div class="item-subtitle">{{ $comp }} @if(!empty($loc)) | {{ $loc }} @endif</div>
+                    @if(!empty($desc))
+                    <div class="item-desc">{!! nl2br(e($desc)) !!}</div>
+                    @endif
+                </div>
+                @endforeach
                 @endif
 
                 @if(count($educations) > 0)
@@ -391,134 +409,85 @@
                 @endforeach
                 @endif
 
-                @if(count($page1Exp) > 0)
-                <div class="right-heading">Pengalaman Kerja</div>
-                @foreach($page1Exp as $exp)
+                @if(count($projects) > 0)
+                <div class="right-heading">Proyek & Portofolio</div>
+                @foreach($projects as $proj)
                 @php
-                    $pos = is_object($exp) ? ($exp->position ?? "") : ($exp["position"] ?? "");
-                    $sYr = is_object($exp) ? ($exp->start_year ?? "") : ($exp["start_year"] ?? "");
-                    $isCur = is_object($exp) ? (!empty($exp->is_current)) : (!empty($exp["is_current"]));
-                    $eYr = is_object($exp) ? ($exp->end_year ?? "") : ($exp["end_year"] ?? "");
-                    $comp = is_object($exp) ? ($exp->company ?? "") : ($exp["company"] ?? "");
-                    $loc = is_object($exp) ? ($exp->location ?? "") : ($exp["location"] ?? "");
-                    $desc = is_object($exp) ? ($exp->description ?? "") : ($exp["description"] ?? "");
+                    $pName = is_object($proj) ? ($proj->name ?? "") : ($proj["name"] ?? "");
+                    $pYr = is_object($proj) ? ($proj->year ?? ($proj->link ?? "")) : ($proj["year"] ?? ($proj["link"] ?? ""));
+                    $pRole = is_object($proj) ? ($proj->role ?? "") : ($proj["role"] ?? "");
+                    $pTech = is_object($proj) ? ($proj->technologies ?? "") : ($proj["technologies"] ?? "");
+                    $pLink = is_object($proj) ? ($proj->link ?? "") : ($proj["link"] ?? "");
+                    $pDesc = is_object($proj) ? ($proj->description ?? "") : ($proj["description"] ?? "");
+                    $projSub = array_filter([$pRole, $pTech, (!empty($pYr) ? $pLink : "")]);
                 @endphp
                 <div class="item-block">
                     <table class="item-header-table" cellpadding="0" cellspacing="0">
                         <tr>
-                            <td class="item-title" style="width: 70%;">{{ $pos }}</td>
-                            <td class="item-date" style="width: 30%;">{{ $sYr }} - {{ $isCur ? "Sekarang" : $eYr }}</td>
+                            <td class="item-title" style="width: 70%;">{{ $pName }}</td>
+                            <td class="item-date" style="width: 30%;">{{ $pYr }}</td>
                         </tr>
                     </table>
-                    <div class="item-subtitle">{{ $comp }} @if(!empty($loc)) | {{ $loc }} @endif</div>
-                    <div class="item-desc">{!! nl2br(e($desc)) !!}</div>
+                    @if(!empty($projSub))
+                    <div class="item-subtitle">{{ implode(" | ", $projSub) }}</div>
+                    @endif
+                    @if(!empty($pDesc))
+                    <div class="item-desc">{!! nl2br(e($pDesc)) !!}</div>
+                    @endif
+                </div>
+                @endforeach
+                @endif
+
+                @if(count($internships) > 0)
+                <div class="right-heading">Pengalaman Magang</div>
+                @foreach($internships as $int)
+                @php
+                    $iPos = is_object($int) ? ($int->position ?? "") : ($int["position"] ?? "");
+                    $iPeriod = is_object($int) ? ($int->period ?? (($int->start_year ?? "") . " - " . ($int->end_year ?? ""))) : ($int["period"] ?? (($int["start_year"] ?? "") . " - " . ($int["end_year"] ?? "")));
+                    $iComp = is_object($int) ? ($int->company ?? "") : ($int["company"] ?? "");
+                    $iLoc = is_object($int) ? ($int->location ?? "") : ($int["location"] ?? "");
+                    $iDesc = is_object($int) ? ($int->description ?? "") : ($int["description"] ?? "");
+                @endphp
+                <div class="item-block">
+                    <table class="item-header-table" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="item-title" style="width: 70%;">{{ $iPos }}</td>
+                            <td class="item-date" style="width: 30%;">{{ $iPeriod }}</td>
+                        </tr>
+                    </table>
+                    <div class="item-subtitle">{{ $iComp }} @if(!empty($iLoc)) | {{ $iLoc }} @endif</div>
+                    @if(!empty($iDesc))
+                    <div class="item-desc">{!! nl2br(e($iDesc)) !!}</div>
+                    @endif
+                </div>
+                @endforeach
+                @endif
+
+                @if(count($organizations) > 0)
+                <div class="right-heading">Pengalaman Organisasi</div>
+                @foreach($organizations as $org)
+                @php
+                    $oRole = is_object($org) ? ($org->role ?? "") : ($org["role"] ?? "");
+                    $oPeriod = is_object($org) ? ($org->period ?? ($org->start_year ?? ($org->year ?? ""))) : ($org["period"] ?? ($org["start_year"] ?? ($org["year"] ?? "")));
+                    $oName = is_object($org) ? ($org->organization_name ?? ($org->name ?? "")) : ($org["organization_name"] ?? ($org["name"] ?? ""));
+                    $oDesc = is_object($org) ? ($org->description ?? "") : ($org["description"] ?? "");
+                @endphp
+                <div class="item-block">
+                    <table class="item-header-table" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="item-title" style="width: 70%;">{{ $oRole }}</td>
+                            <td class="item-date" style="width: 30%;">{{ $oPeriod }}</td>
+                        </tr>
+                    </table>
+                    <div class="item-subtitle">{{ $oName }}</div>
+                    @if(!empty($oDesc))
+                    <div class="item-desc">{!! nl2br(e($oDesc)) !!}</div>
+                    @endif
                 </div>
                 @endforeach
                 @endif
             </td>
         </tr>
     </table>
-
-    <!-- PAGE 2: FULL WIDTH CONTINUATION -->
-    @if($hasPage2)
-    <div class="page2-container">
-        @if(count($page2Exp) > 0)
-        <div class="right-heading" style="margin-top: 0;">Pengalaman Kerja (Lanjutan)</div>
-        @foreach($page2Exp as $exp)
-        @php
-            $pos = is_object($exp) ? ($exp->position ?? "") : ($exp["position"] ?? "");
-            $sYr = is_object($exp) ? ($exp->start_year ?? "") : ($exp["start_year"] ?? "");
-            $isCur = is_object($exp) ? (!empty($exp->is_current)) : (!empty($exp["is_current"]));
-            $eYr = is_object($exp) ? ($exp->end_year ?? "") : ($exp["end_year"] ?? "");
-            $comp = is_object($exp) ? ($exp->company ?? "") : ($exp["company"] ?? "");
-            $loc = is_object($exp) ? ($exp->location ?? "") : ($exp["location"] ?? "");
-            $desc = is_object($exp) ? ($exp->description ?? "") : ($exp["description"] ?? "");
-        @endphp
-        <div class="item-block">
-            <table class="item-header-table" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td class="item-title" style="width: 70%;">{{ $pos }}</td>
-                    <td class="item-date" style="width: 30%;">{{ $sYr }} - {{ $isCur ? "Sekarang" : $eYr }}</td>
-                </tr>
-            </table>
-            <div class="item-subtitle">{{ $comp }} @if(!empty($loc)) | {{ $loc }} @endif</div>
-            <div class="item-desc">{!! nl2br(e($desc)) !!}</div>
-        </div>
-        @endforeach
-        @endif
-
-        @if(count($projects) > 0)
-        <div class="right-heading">Proyek & Portofolio</div>
-        @foreach($projects as $proj)
-        @php
-            $pName = is_object($proj) ? ($proj->name ?? "") : ($proj["name"] ?? "");
-            $pYr = is_object($proj) ? ($proj->year ?? ($proj->link ?? "")) : ($proj["year"] ?? ($proj["link"] ?? ""));
-            $pRole = is_object($proj) ? ($proj->role ?? "") : ($proj["role"] ?? "");
-            $pTech = is_object($proj) ? ($proj->technologies ?? "") : ($proj["technologies"] ?? "");
-            $pLink = is_object($proj) ? ($proj->link ?? "") : ($proj["link"] ?? "");
-            $pDesc = is_object($proj) ? ($proj->description ?? "") : ($proj["description"] ?? "");
-            $projSub = array_filter([$pRole, $pTech, (!empty($pYr) ? $pLink : "")]);
-        @endphp
-        <div class="item-block">
-            <table class="item-header-table" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td class="item-title" style="width: 70%;">{{ $pName }}</td>
-                    <td class="item-date" style="width: 30%;">{{ $pYr }}</td>
-                </tr>
-            </table>
-            @if(!empty($projSub))
-            <div class="item-subtitle">{{ implode(" | ", $projSub) }}</div>
-            @endif
-            <div class="item-desc">{!! nl2br(e($pDesc)) !!}</div>
-        </div>
-        @endforeach
-        @endif
-
-        @if(count($internships) > 0)
-        <div class="right-heading">Pengalaman Magang</div>
-        @foreach($internships as $int)
-        @php
-            $iPos = is_object($int) ? ($int->position ?? "") : ($int["position"] ?? "");
-            $iPeriod = is_object($int) ? ($int->period ?? (($int->start_year ?? "") . " - " . ($int->end_year ?? ""))) : ($int["period"] ?? (($int["start_year"] ?? "") . " - " . ($int["end_year"] ?? "")));
-            $iComp = is_object($int) ? ($int->company ?? "") : ($int["company"] ?? "");
-            $iLoc = is_object($int) ? ($int->location ?? "") : ($int["location"] ?? "");
-            $iDesc = is_object($int) ? ($int->description ?? "") : ($int["description"] ?? "");
-        @endphp
-        <div class="item-block">
-            <table class="item-header-table" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td class="item-title" style="width: 70%;">{{ $iPos }}</td>
-                    <td class="item-date" style="width: 30%;">{{ $iPeriod }}</td>
-                </tr>
-            </table>
-            <div class="item-subtitle">{{ $iComp }} @if(!empty($iLoc)) | {{ $iLoc }} @endif</div>
-            <div class="item-desc">{!! nl2br(e($iDesc)) !!}</div>
-        </div>
-        @endforeach
-        @endif
-
-        @if(count($organizations) > 0)
-        <div class="right-heading">Pengalaman Organisasi</div>
-        @foreach($organizations as $org)
-        @php
-            $oRole = is_object($org) ? ($org->role ?? "") : ($org["role"] ?? "");
-            $oPeriod = is_object($org) ? ($org->period ?? ($org->start_year ?? ($org->year ?? ""))) : ($org["period"] ?? ($org["start_year"] ?? ($org["year"] ?? "")));
-            $oName = is_object($org) ? ($org->organization_name ?? ($org->name ?? "")) : ($org["organization_name"] ?? ($org["name"] ?? ""));
-            $oDesc = is_object($org) ? ($org->description ?? "") : ($org["description"] ?? "");
-        @endphp
-        <div class="item-block">
-            <table class="item-header-table" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td class="item-title" style="width: 70%;">{{ $oRole }}</td>
-                    <td class="item-date" style="width: 30%;">{{ $oPeriod }}</td>
-                </tr>
-            </table>
-            <div class="item-subtitle">{{ $oName }}</div>
-            <div class="item-desc">{!! nl2br(e($oDesc)) !!}</div>
-        </div>
-        @endforeach
-        @endif
-    </div>
-    @endif
 </body>
 </html>
