@@ -92,7 +92,7 @@
                     <td class="item-year">{{ $edu['start_year'] ?? '' }} – {{ $edu['end_year'] ?? '' }}</td>
                 </tr>
             </table>
-            <div class="item-sub">{{ $edu['degree'] ?? '' }}{{ !empty($edu['major']) ? ', ' . $edu['major'] : '' }}</div>
+            <div class="item-sub">{{ $edu['degree'] ?? '' }}{{ !empty($edu['major'] ?? $edu['field'] ?? null) ? ', ' . ($edu['major'] ?? $edu['field']) : '' }}</div>
             @if(!empty($edu['description']))
                 <div class="item-body">{{ $edu['description'] }}</div>
             @endif

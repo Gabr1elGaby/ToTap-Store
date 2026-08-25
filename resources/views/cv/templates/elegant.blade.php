@@ -281,7 +281,7 @@ if (!empty($data->name)) {
                 <div class="right-heading">Riwayat Pendidikan</div>
                 @foreach($educations as $edu)
                 <div class="item-block">
-                    <div class="item-title">{{ $edu->degree ?? '' }} {{ $edu->field ?? '' }}</div>
+                    <div class="item-title">{{ $edu->degree ?? '' }}{{ !empty($edu->major ?? $edu->field) ? (!empty($edu->degree) ? ' - ' : '') . ($edu->major ?? $edu->field) : '' }}</div>
                     <div class="item-meta">{{ $edu->institution ?? '' }}  |  {{ $edu->start_year ?? '' }} - {{ $edu->end_year ?? '' }}</div>
                     <div class="item-desc">{!! nl2br(e($edu->description ?? '')) !!}</div>
                 </div>

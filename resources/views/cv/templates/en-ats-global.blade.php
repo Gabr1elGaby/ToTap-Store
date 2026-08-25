@@ -195,7 +195,7 @@
                 </tr>
             </table>
             <div class="item-subtitle">
-                {{ $edu['degree'] ?? '' }}{{ !empty($edu['major']) ? ' in ' . $edu['major'] : '' }}
+                {{ $edu['degree'] ?? '' }}{{ !empty($edu['major'] ?? $edu['field'] ?? null) ? ' in ' . ($edu['major'] ?? $edu['field']) : '' }}
             </div>
             @if(!empty($edu['description']))
                 <div class="item-desc">{{ $edu['description'] }}</div>

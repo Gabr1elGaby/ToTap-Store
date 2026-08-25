@@ -179,7 +179,7 @@
                     @foreach($educations as $edu)
                         <div class="side-item">
                             <div class="side-bold">{{ $edu['institution'] ?? '' }}</div>
-                            <div class="side-sub">{{ $edu['degree'] ?? '' }}{{ !empty($edu['major']) ? ' - ' . $edu['major'] : '' }}</div>
+                            <div class="side-sub">{{ $edu['degree'] ?? '' }}{{ !empty($edu['major'] ?? $edu['field'] ?? null) ? ' - ' . ($edu['major'] ?? $edu['field']) : '' }}</div>
                             <div class="side-sub" style="font-size: 8pt; color: #94a3b8;">{{ $edu['start_year'] ?? '' }} - {{ $edu['end_year'] ?? '' }}</div>
                             @if(!empty($edu['description']))
                                 <div style="font-size: 8pt; color: #64748b; margin-top: 2px;">{{ $edu['description'] }}</div>

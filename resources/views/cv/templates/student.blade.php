@@ -203,7 +203,7 @@
                             <td class="item-date" style="width: 25%;">{{ $edu->start_year ?? '' }} - {{ $edu->end_year ?? '' }}</td>
                         </tr>
                     </table>
-                    <div class="item-subtitle">{{ $edu->degree ?? '' }} - {{ $edu->major ?? '' }}</div>
+                    <div class="item-subtitle">{{ $edu->degree ?? '' }}{{ !empty($edu->major ?? $edu->field) ? (!empty($edu->degree) ? ' - ' : '') . ($edu->major ?? $edu->field) : '' }}</div>
                 </div>
                 @endforeach
                 @endif
