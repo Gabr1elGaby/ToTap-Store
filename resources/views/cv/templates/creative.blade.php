@@ -172,16 +172,46 @@
 </head>
 <body>
     @php
-        $hard_skills = collect(isset($userData['cv']['skills']) && is_array($userData['cv']['skills']) ? $userData['cv']['skills'] : [])->filter(fn($s) => isset($s['level']) && $s['level'] !== '')->map(fn($s) => (object)$s)->all();
-        $soft_skills = collect(isset($userData['cv']['skills']) && is_array($userData['cv']['skills']) ? $userData['cv']['skills'] : [])->filter(fn($s) => !isset($s['level']) || $s['level'] === '')->map(fn($s) => (object)$s)->all();
-        $data = isset($userData['cv']) && is_array($userData['cv']) ? (object)$userData['cv'] : (isset($userData['cv']) ? $userData['cv'] : (object)[]);
-        $educations = isset($userData['cv']['educations']) && is_array($userData['cv']['educations']) ? collect($userData['cv']['educations'])->map(fn($i) => (object)$i) : [];
-        $experiences = isset($userData['cv']['experiences']) && is_array($userData['cv']['experiences']) ? collect($userData['cv']['experiences'])->map(fn($i) => (object)$i) : [];
-        $projects = isset($userData['cv']['projects']) && is_array($userData['cv']['projects']) ? collect($userData['cv']['projects'])->map(fn($i) => (object)$i) : [];
-        $certificates = isset($userData['cv']['certificates']) && is_array($userData['cv']['certificates']) ? collect($userData['cv']['certificates'])->map(fn($i) => (object)$i) : [];
-        $skills = isset($userData['cv']['skills']) && is_array($userData['cv']['skills']) ? collect($userData['cv']['skills'])->map(fn($i) => (object)$i) : [];
-        $tools = isset($userData['cv']['tools']) && is_array($userData['cv']['tools']) ? collect($userData['cv']['tools'])->map(fn($i) => (object)$i) : [];
-        
+        $cvRaw = $userData['cv'] ?? ($cv ?? []);
+        $data = is_object($cvRaw) ? $cvRaw : (object)$cvRaw;
+
+        $getVal = function($item, ...$keys) {
+            if (is_object($item)) {
+                foreach ($keys as $k) {
+                    if (isset($item->$k) && $item->$k !== '' && $item->$k !== null) return $item->$k;
+                }
+            } elseif (is_array($item)) {
+                foreach ($keys as $k) {
+                    if (isset($item[$k]) && $item[$k] !== '' && $item[$k] !== null) return $item[$k];
+                }
+            }
+            return '';
+        };
+
+        $getCol = function($key) use ($userData) {
+            if (isset($userData[$key]) && (is_array($userData[$key]) || $userData[$key] instanceof \Illuminate\Support\Collection)) {
+                return collect($userData[$key])->map(fn($i) => (object)$i);
+            }
+            if (isset($userData['cv'][$key]) && is_array($userData['cv'][$key])) {
+                return collect($userData['cv'][$key])->map(fn($i) => (object)$i);
+            }
+            if (isset($userData['cv']) && is_object($userData['cv']) && isset($userData['cv']->$key)) {
+                return collect($userData['cv']->$key)->map(fn($i) => (object)$i);
+            }
+            return collect([]);
+        };
+
+        $educations    = $getCol('educations');
+        $experiences   = $getCol('experiences');
+        $internships   = $getCol('internships');
+        $organizations = $getCol('organizations');
+        $projects      = $getCol('projects');
+        $certificates  = $getCol('certificates');
+        $skills        = $getCol('skills');
+        $tools         = $getCol('tools');
+
+        $hard_skills = $skills->filter(fn($s) => isset($s->level) && $s->level !== '' && $s->level !== null)->all();
+        $soft_skills = $skills->filter(fn($s) => !isset($s->level) || $s->level === '' || $s->level === null)->all();
     @endphp
 
     <table class="main-table">
@@ -191,7 +221,7 @@
                 
                 @if(!empty($data->photo))
                 <div class="photo-wrapper">
-                    <img src="{{ $data->photo ?? '' }}" class="photo">
+                    <img src="{{ $data->photo }}" class="photo">
                 </div>
                 @endif
 
@@ -201,13 +231,13 @@
                 <div class="left-header">Kontak Pribadi</div>
                 <ul class="contact-list">
                     @if(!empty($data->phone))
-                    <li><span class="contact-icon">📞</span> {{ $data->phone ?? '' }}</li>
+                    <li><span class="contact-icon">📞</span> {{ $data->phone }}</li>
                     @endif
                     @if(!empty($data->email))
-                    <li><span class="contact-icon">✉</span> {{ $data->email ?? '' }}</li>
+                    <li><span class="contact-icon">✉</span> {{ $data->email }}</li>
                     @endif
-                    @if(!empty($data->address ?? $data->location))
-                    <li><span class="contact-icon">📍</span> {{ $data->address ?? $data->location }}</li>
+                    @if($getVal($data, 'address', 'location') !== '')
+                    <li><span class="contact-icon">📍</span> {{ $getVal($data, 'address', 'location') }}</li>
                     @endif
                     @if(!empty($data->linkedin))
                     <li><span class="contact-icon">in</span> {{ $data->linkedin ?? '' }}</li>
@@ -319,7 +349,11 @@
                             <td class="item-date" style="width: 25%;">{{ $edu->start_year ?? '' }} - {{ $edu->end_year ?? '' }}</td>
                         </tr>
                     </table>
-                    <div class="item-subtitle">{{ $edu->degree ?? '' }}{{ !empty($edu->major ?? $edu->field) ? (!empty($edu->degree) ? ' - ' : '') . ($edu->major ?? $edu->field) : '' }}</div>
+                    @php
+                        $deg = $edu->degree ?? '';
+                        $maj = $getVal($edu, 'major', 'field');
+                    @endphp
+                    <div class="item-subtitle">{{ $deg }}{{ $maj !== '' ? ($deg !== '' ? ' - ' : '') . $maj : '' }}</div>
                 </div>
                 @endforeach
                 @endif

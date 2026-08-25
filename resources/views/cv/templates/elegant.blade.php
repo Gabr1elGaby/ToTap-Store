@@ -1,14 +1,40 @@
 <?php
-// We extract the variables just like in creative.blade.php
-$data = isset($userData['cv']) ? (object)$userData['cv'] : (object)[];
+$cvRaw = $userData['cv'] ?? ($cv ?? []);
+$data = is_object($cvRaw) ? $cvRaw : (object)$cvRaw;
 
-$educations = isset($userData['cv']['educations']) && is_array($userData['cv']['educations']) ? collect($userData['cv']['educations'])->map(fn($i) => (object)$i) : collect([]);
-$experiences = isset($userData['cv']['experiences']) && is_array($userData['cv']['experiences']) ? collect($userData['cv']['experiences'])->map(fn($i) => (object)$i) : collect([]);
-$internships = isset($userData['cv']['internships']) && is_array($userData['cv']['internships']) ? collect($userData['cv']['internships'])->map(fn($i) => (object)$i) : collect([]);
-$organizations = isset($userData['cv']['organizations']) && is_array($userData['cv']['organizations']) ? collect($userData['cv']['organizations'])->map(fn($i) => (object)$i) : collect([]);
-$projects = isset($userData['cv']['projects']) && is_array($userData['cv']['projects']) ? collect($userData['cv']['projects'])->map(fn($i) => (object)$i) : collect([]);
-$certificates = isset($userData['cv']['certificates']) && is_array($userData['cv']['certificates']) ? collect($userData['cv']['certificates'])->map(fn($i) => (object)$i) : collect([]);
-$skills = isset($userData['cv']['skills']) && is_array($userData['cv']['skills']) ? collect($userData['cv']['skills'])->map(fn($i) => (object)$i) : collect([]);
+$getVal = function($item, ...$keys) {
+    if (is_object($item)) {
+        foreach ($keys as $k) {
+            if (isset($item->$k) && $item->$k !== '' && $item->$k !== null) return $item->$k;
+        }
+    } elseif (is_array($item)) {
+        foreach ($keys as $k) {
+            if (isset($item[$k]) && $item[$k] !== '' && $item[$k] !== null) return $item[$k];
+        }
+    }
+    return '';
+};
+
+$getCol = function($key) use ($userData) {
+    if (isset($userData[$key]) && (is_array($userData[$key]) || $userData[$key] instanceof \Illuminate\Support\Collection)) {
+        return collect($userData[$key])->map(fn($i) => (object)$i);
+    }
+    if (isset($userData['cv'][$key]) && is_array($userData['cv'][$key])) {
+        return collect($userData['cv'][$key])->map(fn($i) => (object)$i);
+    }
+    if (isset($userData['cv']) && is_object($userData['cv']) && isset($userData['cv']->$key)) {
+        return collect($userData['cv']->$key)->map(fn($i) => (object)$i);
+    }
+    return collect([]);
+};
+
+$educations    = $getCol('educations');
+$experiences   = $getCol('experiences');
+$internships   = $getCol('internships');
+$organizations = $getCol('organizations');
+$projects      = $getCol('projects');
+$certificates  = $getCol('certificates');
+$skills        = $getCol('skills');
 
 $initials = '';
 if (!empty($data->name)) {
@@ -226,10 +252,10 @@ if (!empty($data->name)) {
                     {{ $data->email }}
                 </div>
                 @endif
-                @if(!empty($data->address ?? $data->location))
+                @if($getVal($data, 'address', 'location') !== '')
                 <div class="contact-item">
                     <strong>DOMISILI</strong><br>
-                    {{ $data->address ?? $data->location }}
+                    {{ $getVal($data, 'address', 'location') }}
                 </div>
                 @endif
                 @if(!empty($data->linkedin))
@@ -281,9 +307,15 @@ if (!empty($data->name)) {
                 <div class="right-heading">Riwayat Pendidikan</div>
                 @foreach($educations as $edu)
                 <div class="item-block">
-                    <div class="item-title">{{ $edu->degree ?? '' }}{{ !empty($edu->major ?? $edu->field) ? (!empty($edu->degree) ? ' - ' : '') . ($edu->major ?? $edu->field) : '' }}</div>
+                    @php
+                        $deg = $edu->degree ?? '';
+                        $maj = $getVal($edu, 'major', 'field');
+                    @endphp
+                    <div class="item-title">{{ $deg }}{{ $maj !== '' ? ($deg !== '' ? ' - ' : '') . $maj : '' }}</div>
                     <div class="item-meta">{{ $edu->institution ?? '' }}  |  {{ $edu->start_year ?? '' }} - {{ $edu->end_year ?? '' }}</div>
-                    <div class="item-desc">{!! nl2br(e($edu->description ?? '')) !!}</div>
+                    @if(!empty($edu->description))
+                    <div class="item-desc">{!! nl2br(e($edu->description)) !!}</div>
+                    @endif
                 </div>
                 @endforeach
                 @endif

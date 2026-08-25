@@ -1,13 +1,40 @@
 <?php
-$data = isset($userData['cv']) ? (object)$userData['cv'] : (object)[];
+$cvRaw = $userData['cv'] ?? ($cv ?? []);
+$data = is_object($cvRaw) ? $cvRaw : (object)$cvRaw;
 
-$educations = isset($userData['cv']['educations']) && is_array($userData['cv']['educations']) ? collect($userData['cv']['educations'])->map(fn($i) => (object)$i) : collect([]);
-$experiences = isset($userData['cv']['experiences']) && is_array($userData['cv']['experiences']) ? collect($userData['cv']['experiences'])->map(fn($i) => (object)$i) : collect([]);
-$internships = isset($userData['cv']['internships']) && is_array($userData['cv']['internships']) ? collect($userData['cv']['internships'])->map(fn($i) => (object)$i) : collect([]);
-$organizations = isset($userData['cv']['organizations']) && is_array($userData['cv']['organizations']) ? collect($userData['cv']['organizations'])->map(fn($i) => (object)$i) : collect([]);
-$projects = isset($userData['cv']['projects']) && is_array($userData['cv']['projects']) ? collect($userData['cv']['projects'])->map(fn($i) => (object)$i) : collect([]);
-$certificates = isset($userData['cv']['certificates']) && is_array($userData['cv']['certificates']) ? collect($userData['cv']['certificates'])->map(fn($i) => (object)$i) : collect([]);
-$skills = isset($userData['cv']['skills']) && is_array($userData['cv']['skills']) ? collect($userData['cv']['skills'])->map(fn($i) => (object)$i) : collect([]);
+$getVal = function($item, ...$keys) {
+    if (is_object($item)) {
+        foreach ($keys as $k) {
+            if (isset($item->$k) && $item->$k !== '' && $item->$k !== null) return $item->$k;
+        }
+    } elseif (is_array($item)) {
+        foreach ($keys as $k) {
+            if (isset($item[$k]) && $item[$k] !== '' && $item[$k] !== null) return $item[$k];
+        }
+    }
+    return '';
+};
+
+$getCol = function($key) use ($userData) {
+    if (isset($userData[$key]) && (is_array($userData[$key]) || $userData[$key] instanceof \Illuminate\Support\Collection)) {
+        return collect($userData[$key])->map(fn($i) => (object)$i);
+    }
+    if (isset($userData['cv'][$key]) && is_array($userData['cv'][$key])) {
+        return collect($userData['cv'][$key])->map(fn($i) => (object)$i);
+    }
+    if (isset($userData['cv']) && is_object($userData['cv']) && isset($userData['cv']->$key)) {
+        return collect($userData['cv']->$key)->map(fn($i) => (object)$i);
+    }
+    return collect([]);
+};
+
+$educations    = $getCol('educations');
+$experiences   = $getCol('experiences');
+$internships   = $getCol('internships');
+$organizations = $getCol('organizations');
+$projects      = $getCol('projects');
+$certificates  = $getCol('certificates');
+$skills        = $getCol('skills');
 
 $initials = '';
 if (!empty($data->name)) {
@@ -50,32 +77,24 @@ if (!empty($data->name)) {
             padding-bottom: 40px;
         }
         
-        .right-col {
-            width: 65%;
-            background-color: #ffffff;
-            color: #333333;
-            padding: 50px 40px;
-            vertical-align: top;
-        }
-        
         .photo-container {
-            padding: 50px 0 30px 0;
             text-align: center;
+            padding-top: 40px;
+            padding-bottom: 25px;
         }
-        
         .photo-wrapper {
-            width: 150px;
-            height: 150px;
+            width: 110px;
+            height: 110px;
             border-radius: 50%;
-            border: 5px solid #d1d5db; /* Light gray border */
             background-color: #ffffff;
-            overflow: hidden;
-            display: inline-block;
+            margin: 0 auto;
             text-align: center;
-            line-height: 150px;
-            font-size: 36pt;
+            line-height: 110px;
+            font-size: 32pt;
             font-weight: bold;
             color: #1d2b38;
+            overflow: hidden;
+            border: 3px solid #ffffff;
         }
         .photo-wrapper img {
             width: 100%;
@@ -83,110 +102,113 @@ if (!empty($data->name)) {
             object-fit: cover;
         }
         
-        /* Left Column White Blocks */
         .left-block {
             background-color: #ffffff;
-            color: #1d2b38;
-            border-radius: 0 30px 30px 0;
-            margin-right: 25px; /* So it doesn't touch the right column */
-            margin-bottom: 25px;
-            padding: 20px 25px;
+            color: #111827;
+            margin-left: 20px;
+            margin-right: 0px;
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+            padding: 20px 15px 20px 20px;
+            margin-bottom: 20px;
         }
         
         .left-heading-container {
-            text-align: right; /* Aligned right inside the white block */
-            margin-bottom: 15px;
+            text-align: center;
+            margin-bottom: 12px;
         }
-        
         .left-heading {
             background-color: #1d2b38;
             color: #ffffff;
+            padding: 5px 25px;
+            border-radius: 12px;
             font-weight: bold;
-            font-size: 11pt;
-            padding: 6px 18px;
-            border-radius: 20px;
+            font-size: 10pt;
             display: inline-block;
-            letter-spacing: 1px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .contact-item {
+            font-size: 9pt;
             margin-bottom: 10px;
-            font-size: 9.5pt;
-            color: #1d2b38;
+            line-height: 1.3;
+            color: #111827;
+            text-align: center;
+            word-wrap: break-word;
             word-break: break-all;
-            text-align: right;
-            border-bottom: 1px solid #e5e7eb;
-            padding-bottom: 8px;
         }
-        .contact-item:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-            margin-bottom: 0;
+        .contact-item strong {
+            font-size: 7.5pt;
+            text-transform: uppercase;
+            color: #6b7280;
+            display: block;
+            margin-top: 2px;
         }
         
         .skill-item {
+            font-size: 9pt;
             margin-bottom: 8px;
-            font-size: 9.5pt;
-            color: #1d2b38;
-            text-align: right;
-            border-bottom: 1px solid #e5e7eb;
-            padding-bottom: 5px;
-        }
-        .skill-item:last-child {
-            border-bottom: none;
+            color: #111827;
+            text-align: center;
+            line-height: 1.3;
         }
         
-        /* Right Column Styles */
+        .right-col {
+            width: 65%;
+            background-color: #ffffff;
+            vertical-align: top;
+            padding: 40px 35px;
+        }
+        
         .name {
             font-size: 24pt;
             font-weight: bold;
             color: #111827;
-            margin: 0 0 5px 0;
-            letter-spacing: 0.5px;
             text-transform: uppercase;
+            letter-spacing: 1px;
             line-height: 1.2;
         }
         .job-title {
-            font-size: 10.5pt;
+            font-size: 11pt;
             color: #4b5563;
-            margin: 0 0 12px 0;
-            letter-spacing: 1.5px;
             text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 5px;
         }
-        
         .header-line {
             border: 0;
-            border-bottom: 3px solid #1d2b38;
-            margin: 15px 0 35px 0;
+            border-top: 2px solid #111827;
+            margin-top: 15px;
+            margin-bottom: 25px;
         }
         
         .right-heading {
-            font-size: 14pt;
+            font-size: 11pt;
             font-weight: bold;
             color: #111827;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 8px;
+            margin-bottom: 3px;
         }
         .right-heading-line {
             border: 0;
-            border-bottom: 2px solid #1d2b38;
-            margin: 0 0 15px 0;
-            width: 100%;
+            border-top: 1px solid #111827;
+            margin-top: 0px;
+            margin-bottom: 15px;
         }
         
         .item-block {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .item-meta {
-            font-size: 10pt;
-            color: #1d2b38;
+            font-size: 8.5pt;
             font-weight: bold;
-            margin-bottom: 3px;
+            color: #111827;
+            margin-bottom: 2px;
         }
         .item-title {
-            font-size: 11.5pt;
+            font-size: 10.5pt;
             font-weight: bold;
             color: #111827;
             margin-bottom: 4px;
@@ -218,7 +240,7 @@ if (!empty($data->name)) {
                 <div class="photo-container">
                     <div class="photo-wrapper">
                         @if(!empty($data->photo))
-                        <img src="{{ $data->photo ?? '' }}">
+                        <img src="{{ $data->photo }}">
                         @else
                         {{ $initials }}
                         @endif
@@ -240,9 +262,9 @@ if (!empty($data->name)) {
                         {{ $data->email }}<br><strong>Email</strong>
                     </div>
                     @endif
-                    @if(!empty($data->address ?? $data->location))
+                    @if($getVal($data, 'address', 'location') !== '')
                     <div class="contact-item">
-                        {{ $data->address ?? $data->location }}<br><strong>Domisili</strong>
+                        {{ $getVal($data, 'address', 'location') }}<br><strong>Domisili</strong>
                     </div>
                     @endif
                     @if(!empty($data->linkedin))
@@ -265,7 +287,7 @@ if (!empty($data->name)) {
                     </div>
                     @foreach($skills as $skill)
                     <div class="skill-item">
-                        <strong>{{ $skill->name ?? '' }}</strong>
+                        {{ $skill->name ?? '' }}
                     </div>
                     @endforeach
                 </div>
@@ -296,7 +318,7 @@ if (!empty($data->name)) {
                 @if(!empty($data->profile))
                 <div class="right-heading">Tentang Saya</div>
                 <hr class="right-heading-line">
-                <div class="summary">{!! nl2br(e($data->profile ?? '')) !!}</div>
+                <div class="summary">{!! nl2br(e($data->profile)) !!}</div>
                 @endif
                 
                 @if(count($educations) > 0)
@@ -305,9 +327,15 @@ if (!empty($data->name)) {
                 @foreach($educations as $edu)
                 <div class="item-block">
                     <div class="item-meta">{{ $edu->start_year ?? '' }} - {{ $edu->end_year ?? '' }}</div>
-                    <div class="item-title">{{ $edu->degree ?? '' }}{{ !empty($edu->major ?? $edu->field) ? (!empty($edu->degree) ? ' - ' : '') . ($edu->major ?? $edu->field) : '' }}</div>
+                    @php
+                        $deg = $edu->degree ?? '';
+                        $maj = $getVal($edu, 'major', 'field');
+                    @endphp
+                    <div class="item-title">{{ $deg }}{{ $maj !== '' ? ($deg !== '' ? ' - ' : '') . $maj : '' }}</div>
                     <div class="item-subtitle">{{ $edu->institution ?? '' }}</div>
-                    <div class="item-desc">{!! nl2br(e($edu->description ?? '')) !!}</div>
+                    @if(!empty($edu->description))
+                    <div class="item-desc">{!! nl2br(e($edu->description)) !!}</div>
+                    @endif
                 </div>
                 @endforeach
                 <div style="height: 15px;"></div>
@@ -318,10 +346,12 @@ if (!empty($data->name)) {
                 <hr class="right-heading-line">
                 @foreach($experiences as $exp)
                 <div class="item-block">
-                    <div class="item-meta">{{ $exp->start_year ?? '' }} - {{ isset($exp->is_current) && $exp->is_current ? 'Sekarang' : ($exp->end_year ?? '') }}</div>
+                    <div class="item-meta">{{ $exp->start_year ?? '' }} - {{ !empty($exp->is_current) ? 'Sekarang' : ($exp->end_year ?? '') }}</div>
                     <div class="item-title">{{ $exp->position ?? '' }}</div>
                     <div class="item-subtitle">{{ $exp->company ?? '' }}{{ !empty($exp->location) ? ' | ' . $exp->location : '' }}</div>
-                    <div class="item-desc">{!! nl2br(e($exp->description ?? '')) !!}</div>
+                    @if(!empty($exp->description))
+                    <div class="item-desc">{!! nl2br(e($exp->description)) !!}</div>
+                    @endif
                 </div>
                 @endforeach
                 <div style="height: 15px;"></div>
@@ -335,7 +365,9 @@ if (!empty($data->name)) {
                     <div class="item-meta">{{ $int->start_year ?? '' }} - {{ $int->end_year ?? '' }}</div>
                     <div class="item-title">{{ $int->position ?? '' }}</div>
                     <div class="item-subtitle">{{ $int->company ?? '' }}{{ !empty($int->location) ? ' | ' . $int->location : '' }}</div>
-                    <div class="item-desc">{!! nl2br(e($int->description ?? '')) !!}</div>
+                    @if(!empty($int->description))
+                    <div class="item-desc">{!! nl2br(e($int->description)) !!}</div>
+                    @endif
                 </div>
                 @endforeach
                 <div style="height: 15px;"></div>
@@ -346,12 +378,12 @@ if (!empty($data->name)) {
                 <hr class="right-heading-line">
                 @foreach($projects as $proj)
                 <div class="item-block">
-                    @if(!empty($proj->year))
-                    <div class="item-meta">{{ $proj->year }}</div>
+                    @if($getVal($proj, 'year') !== '')
+                    <div class="item-meta">{{ $getVal($proj, 'year') }}</div>
                     @endif
                     <div class="item-title">{{ $proj->name ?? '' }}</div>
                     @php
-                        $projSub = array_filter([$proj->role ?? '', $proj->technologies ?? '', $proj->link ?? '']);
+                        $projSub = array_filter([$getVal($proj, 'role'), $getVal($proj, 'technologies'), $getVal($proj, 'link')]);
                     @endphp
                     @if(!empty($projSub))
                     <div class="item-subtitle">{{ implode(' | ', $projSub) }}</div>
@@ -372,11 +404,12 @@ if (!empty($data->name)) {
                     <div class="item-meta">{{ $org->period ?? '' }}</div>
                     <div class="item-title">{{ $org->role ?? '' }}</div>
                     <div class="item-subtitle">{{ $org->organization_name ?? '' }}</div>
-                    <div class="item-desc">{!! nl2br(e($org->description ?? '')) !!}</div>
+                    @if(!empty($org->description))
+                    <div class="item-desc">{!! nl2br(e($org->description)) !!}</div>
+                    @endif
                 </div>
                 @endforeach
                 @endif
-                
             </td>
         </tr>
     </table>
