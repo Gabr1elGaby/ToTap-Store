@@ -88,7 +88,8 @@
 </head>
 <body>
     @php
-        $cvRaw = $userData['cv'] ?? ($cv ?? []);
+        $uData = isset($userData) ? $userData : get_defined_vars();
+        $cvRaw = $uData['cv'] ?? ($cv ?? ($data ?? []));
         $data = is_object($cvRaw) ? $cvRaw : (object)$cvRaw;
 
         $getVal = function($item, ...$keys) {
@@ -104,15 +105,15 @@
             return '';
         };
 
-        $getCol = function($key) use ($userData) {
-            if (isset($userData[$key]) && (is_array($userData[$key]) || $userData[$key] instanceof \Illuminate\Support\Collection)) {
-                return collect($userData[$key])->map(fn($i) => (object)$i);
+        $getCol = function($key) use ($uData) {
+            if (isset($uData[$key]) && (is_array($uData[$key]) || $uData[$key] instanceof \Illuminate\Support\Collection)) {
+                return collect($uData[$key])->map(fn($i) => (object)$i);
             }
-            if (isset($userData['cv'][$key]) && is_array($userData['cv'][$key])) {
-                return collect($userData['cv'][$key])->map(fn($i) => (object)$i);
+            if (isset($uData['cv'][$key]) && is_array($uData['cv'][$key])) {
+                return collect($uData['cv'][$key])->map(fn($i) => (object)$i);
             }
-            if (isset($userData['cv']) && is_object($userData['cv']) && isset($userData['cv']->$key)) {
-                return collect($userData['cv']->$key)->map(fn($i) => (object)$i);
+            if (isset($uData['cv']) && is_object($uData['cv']) && isset($uData['cv']->$key)) {
+                return collect($uData['cv']->$key)->map(fn($i) => (object)$i);
             }
             return collect([]);
         };

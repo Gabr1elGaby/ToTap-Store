@@ -229,7 +229,11 @@ class CvController extends Controller
             return view('cv.pending', compact('cv', 'userData', 'template'));
         }
 
-        $pdf = Pdf::loadView('cv.templates.' . $template->slug, $userData);
+        $pdf = Pdf::loadView('cv.templates.' . $template->slug, array_merge($userData, [
+            'userData' => $userData,
+            'template' => $template,
+            'data' => $cv,
+        ]));
         $pdf->setPaper('a4', 'portrait');
         
         return $pdf->download('CV-' . $cv->name . '.pdf');
