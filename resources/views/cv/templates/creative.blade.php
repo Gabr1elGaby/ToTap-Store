@@ -6,18 +6,21 @@
     <style>
         @page {
             margin: 0px;
+            size: a4 portrait;
+        }
+        * {
+            box-sizing: border-box;
         }
         body {
-            word-wrap: break-word;
-            word-break: break-word;
-            overflow-wrap: break-word;
-            font-family: 'Helvetica', 'Arial', sans-serif;
             margin: 0;
             padding: 0;
+            font-family: 'Helvetica', 'Arial', sans-serif;
             font-size: 9.5pt;
             background-color: #ffffff;
             color: #334155;
             line-height: 1.45;
+            word-wrap: break-word;
+            word-break: break-word;
         }
         
         /* Continuous Sidebar Background across all pages */
@@ -26,7 +29,7 @@
             left: 0;
             top: 0;
             bottom: 0;
-            width: 34%;
+            width: 195pt;
             background-color: #0f172a;
             z-index: -1000;
         }
@@ -35,29 +38,28 @@
             position: absolute;
             left: 0;
             top: 0;
-            width: 34%;
-            padding: 35px 22px;
-            box-sizing: border-box;
+            width: 195pt;
+            padding: 32pt 18pt 20pt 20pt;
             color: #cbd5e1;
         }
         
         .content {
-            margin-left: 34%;
-            width: 66%;
-            padding: 35px 30px;
-            box-sizing: border-box;
+            margin-left: 212pt;
+            padding: 32pt 28pt 24pt 10pt;
+            width: 350pt;
             background-color: transparent;
         }
         
         /* Photo */
         .photo-wrapper {
             text-align: center;
-            margin-bottom: 18px;
+            margin-bottom: 15pt;
         }
         .photo {
-            width: 110px; height: 110px;
+            width: 85pt;
+            height: 85pt;
             border-radius: 50%;
-            border: 3px solid #38bdf8;
+            border: 3pt solid #38bdf8;
             object-fit: cover;
             display: block;
             margin: 0 auto;
@@ -65,49 +67,53 @@
 
         /* Identity */
         .name {
-            font-size: 15pt;
-            font-weight: 800;
+            font-size: 14pt;
+            font-weight: bold;
             color: #ffffff;
             text-align: center;
             text-transform: uppercase;
-            margin: 0 0 4px 0;
+            margin: 0 0 3pt 0;
             line-height: 1.2;
+            width: 155pt;
         }
         .job-title {
-            font-size: 9pt;
+            font-size: 8.5pt;
             color: #38bdf8;
             text-align: center;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin: 0 0 20px 0;
+            margin: 0 0 16pt 0;
             font-weight: bold;
+            width: 155pt;
         }
 
         /* Left Section */
         .left-header {
-            font-size: 10pt;
-            font-weight: 800;
+            font-size: 9.5pt;
+            font-weight: bold;
             color: #ffffff;
             text-transform: uppercase;
             letter-spacing: 1px;
             border-bottom: 2px solid #38bdf8;
-            padding-bottom: 3px;
-            margin-bottom: 12px;
-            margin-top: 20px;
+            padding-bottom: 3pt;
+            margin-bottom: 10pt;
+            margin-top: 16pt;
+            display: block;
+            width: 155pt;
         }
         .left-header:first-of-type {
             margin-top: 0;
         }
+        
         .contact-list {
             list-style: none;
             padding: 0;
             margin: 0;
+            width: 155pt;
         }
         .contact-list li {
-            margin-bottom: 9px;
+            margin-bottom: 8pt;
             font-size: 8.5pt;
-            word-wrap: break-word;
-            word-break: break-all;
             line-height: 1.35;
         }
         .contact-label {
@@ -116,62 +122,65 @@
             font-size: 7pt;
             text-transform: uppercase;
             display: block;
-            margin-bottom: 1px;
+            margin-bottom: 1pt;
         }
         .contact-value {
             color: #f8fafc;
+            word-wrap: break-word;
+            word-break: break-all;
         }
         
         .skill-list {
             list-style: none;
             padding: 0;
             margin: 0;
+            width: 155pt;
         }
         .skill-list li {
-            margin-bottom: 5px;
+            margin-bottom: 5pt;
             font-size: 8.5pt;
             color: #f1f5f9;
         }
         .skill-list li::before {
-            content: "•";
+            content: "• ";
             color: #38bdf8;
-            margin-right: 6px;
             font-weight: bold;
         }
 
         /* Right Section */
         .right-header {
             font-size: 11pt;
-            font-weight: 800;
+            font-weight: bold;
             color: #0f172a;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-bottom: 2px solid #0284c7;
-            padding-bottom: 3px;
-            margin-bottom: 12px;
-            margin-top: 20px;
+            padding-bottom: 3pt;
+            margin-bottom: 10pt;
+            margin-top: 16pt;
         }
         .right-header:first-of-type {
             margin-top: 0;
         }
         .profile-text {
-            font-size: 9.5pt;
+            font-size: 9pt;
             text-align: justify;
-            margin-bottom: 16px;
-            line-height: 1.45;
+            margin-bottom: 14pt;
+            line-height: 1.4;
         }
 
         /* Timeline Items */
         .item {
-            margin-bottom: 12px;
+            margin-bottom: 11pt;
             page-break-inside: avoid;
         }
         .item-title-row {
             width: 100%;
-            margin-bottom: 2px;
+            margin-bottom: 2pt;
+            border-collapse: collapse;
         }
         .item-title {
-            font-size: 10.5pt;
+            font-size: 10pt;
             font-weight: bold;
             color: #0f172a;
         }
@@ -183,13 +192,13 @@
             white-space: nowrap;
         }
         .item-subtitle {
-            font-size: 9.5pt;
+            font-size: 9pt;
             color: #475569;
-            font-weight: 600;
-            margin-bottom: 3px;
+            font-weight: bold;
+            margin-bottom: 2pt;
         }
         .item-desc {
-            font-size: 9pt;
+            font-size: 8.5pt;
             color: #334155;
             text-align: justify;
             line-height: 1.4;
@@ -279,12 +288,17 @@
 
         @if(count($hard_skills) > 0)
         <div class="left-header">Keahlian Teknis</div>
-        <div style="margin-bottom: 16px;">
+        <div style="margin-bottom: 14pt; width: 155pt;">
             @foreach($hard_skills as $skill)
-            <div style="margin-bottom: 6px;">
-                <div style="font-size: 8.5pt; margin-bottom: 2px; color: #fff;">{{ $skill->name ?? '' }} <span style="float: right; color: #38bdf8; font-weight: bold;">{{ $skill->level ?? '' }}%</span></div>
-                <div style="width: 100%; background-color: #334155; height: 4px; border-radius: 2px;">
-                    <div style="width: {{ $skill->level ?? '' }}%; background-color: #38bdf8; height: 4px; border-radius: 2px;"></div>
+            <div style="margin-bottom: 6pt;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 2pt;">
+                    <tr>
+                        <td style="font-size: 8.5pt; color: #ffffff;">{{ $skill->name ?? '' }}</td>
+                        <td align="right" style="font-size: 8pt; color: #38bdf8; font-weight: bold;">{{ $skill->level ?? '' }}%</td>
+                    </tr>
+                </table>
+                <div style="width: 155pt; background-color: #334155; height: 3.5pt; border-radius: 2pt;">
+                    <div style="width: {{ $skill->level ?? '' }}%; background-color: #38bdf8; height: 3.5pt; border-radius: 2pt;"></div>
                 </div>
             </div>
             @endforeach
@@ -293,7 +307,7 @@
         
         @if(count($soft_skills) > 0)
         <div class="left-header">Keahlian Interpersonal</div>
-        <ul class="skill-list" style="margin-bottom: 16px;">
+        <ul class="skill-list" style="margin-bottom: 14pt;">
             @foreach($soft_skills as $skill)
             <li>{{ $skill->name ?? '' }}</li>
             @endforeach

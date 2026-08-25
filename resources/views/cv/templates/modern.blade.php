@@ -49,17 +49,23 @@ if (!empty($data->name)) {
     <meta charset="utf-8">
     <title>CV Modern</title>
     <style>
-        @page { margin: 0px; }
+        @page {
+            margin: 0px;
+            size: a4 portrait;
+        }
+        * {
+            box-sizing: border-box;
+        }
         body {
-            word-wrap: break-word;
-            word-break: break-word;
-            overflow-wrap: break-word;
+            margin: 0;
+            padding: 0;
             font-family: 'Helvetica', 'Arial', sans-serif;
-            margin: 0; padding: 0;
             font-size: 9.5pt;
             background-color: #ffffff;
             color: #334155;
             line-height: 1.45;
+            word-wrap: break-word;
+            word-break: break-word;
         }
         
         /* Continuous Sidebar Background across all pages */
@@ -68,198 +74,204 @@ if (!empty($data->name)) {
             left: 0;
             top: 0;
             bottom: 0;
-            width: 34%;
+            width: 195pt;
             background-color: #0f172a;
             z-index: -1000;
         }
         
+        /* Left Sidebar positioned on Page 1 */
         .sidebar {
             position: absolute;
             left: 0;
             top: 0;
-            width: 34%;
-            padding: 35px 22px;
-            box-sizing: border-box;
+            width: 195pt;
+            padding: 32pt 18pt 20pt 20pt;
             color: #cbd5e1;
         }
         
         .photo-container {
             text-align: center;
-            margin-bottom: 22px;
+            margin-bottom: 18pt;
         }
         .photo-wrapper {
-            width: 110px;
-            height: 110px;
+            width: 85pt;
+            height: 85pt;
             border-radius: 50%;
             background-color: #1e293b;
             margin: 0 auto;
             text-align: center;
-            line-height: 110px;
-            font-size: 32pt;
+            line-height: 85pt;
+            font-size: 26pt;
             font-weight: bold;
             color: #38bdf8;
             overflow: hidden;
-            border: 3px solid #38bdf8;
+            border: 3pt solid #38bdf8;
         }
         .photo-wrapper img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            display: block;
         }
         
         .sidebar-heading {
-            font-size: 10.5pt;
-            font-weight: 800;
+            font-size: 10pt;
+            font-weight: bold;
             color: #ffffff;
             text-transform: uppercase;
             letter-spacing: 1px;
             border-bottom: 2px solid #38bdf8;
-            padding-bottom: 4px;
-            margin-bottom: 12px;
-            margin-top: 22px;
+            padding-bottom: 3pt;
+            margin-bottom: 10pt;
+            margin-top: 18pt;
+            display: block;
+            width: 155pt;
         }
         .sidebar-heading:first-of-type {
             margin-top: 0;
         }
         
         .contact-item {
-            margin-bottom: 10px;
+            margin-bottom: 9pt;
             font-size: 8.5pt;
             line-height: 1.35;
-            word-wrap: break-word;
-            word-break: break-all;
+            width: 155pt;
         }
         .contact-label {
             font-size: 7pt;
             text-transform: uppercase;
             color: #38bdf8;
             display: block;
-            margin-bottom: 1px;
+            margin-bottom: 1pt;
             letter-spacing: 0.5px;
-            font-weight: 700;
+            font-weight: bold;
         }
         .contact-val {
             color: #f8fafc;
-            font-weight: 500;
+            font-weight: normal;
             display: block;
+            word-wrap: break-word;
+            word-break: break-all;
         }
         
         .skill-list {
             list-style: none;
             padding: 0;
             margin: 0;
+            width: 155pt;
         }
         .skill-list li {
             font-size: 8.5pt;
-            margin-bottom: 6px;
+            margin-bottom: 5pt;
             color: #f1f5f9;
             line-height: 1.35;
         }
         .skill-list li::before {
-            content: "•";
+            content: "• ";
             color: #38bdf8;
             font-weight: bold;
-            margin-right: 6px;
         }
         
         .cert-item {
-            margin-bottom: 8px;
+            margin-bottom: 8pt;
             font-size: 8.5pt;
             color: #f1f5f9;
+            width: 155pt;
         }
         .cert-title {
-            font-weight: 700;
+            font-weight: bold;
             color: #ffffff;
+            line-height: 1.3;
         }
         .cert-year {
             font-size: 7.5pt;
             color: #94a3b8;
         }
         
+        /* Main Right Content */
         .content {
-            margin-left: 34%;
-            width: 66%;
-            padding: 35px 30px;
-            box-sizing: border-box;
-            background-color: transparent;
+            margin-left: 212pt;
+            padding: 32pt 28pt 24pt 10pt;
+            width: 350pt;
         }
         
         .name {
-            font-size: 22pt;
-            font-weight: 900;
+            font-size: 20pt;
+            font-weight: bold;
             color: #0f172a;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             line-height: 1.15;
-            margin-bottom: 3px;
+            margin-bottom: 2pt;
         }
         .job-title {
-            font-size: 10.5pt;
-            font-weight: 700;
+            font-size: 10pt;
+            font-weight: bold;
             color: #0284c7;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            margin-bottom: 12px;
+            margin-bottom: 10pt;
         }
         .header-line {
             border: 0;
-            border-top: 2px solid #e2e8f0;
-            margin-bottom: 18px;
+            border-top: 1.5pt solid #cbd5e1;
+            margin-top: 0;
+            margin-bottom: 14pt;
         }
         
         .right-heading {
             font-size: 11pt;
-            font-weight: 800;
+            font-weight: bold;
             color: #0f172a;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-bottom: 2px solid #0284c7;
-            padding-bottom: 3px;
-            margin-bottom: 12px;
-            margin-top: 20px;
+            padding-bottom: 3pt;
+            margin-bottom: 10pt;
+            margin-top: 16pt;
         }
         .right-heading:first-of-type {
             margin-top: 0;
         }
         
         .item-block {
-            margin-bottom: 12px;
+            margin-bottom: 11pt;
             page-break-inside: avoid;
         }
         .item-header-table {
             width: 100%;
-            margin-bottom: 2px;
+            margin-bottom: 2pt;
+            border-collapse: collapse;
         }
         .item-title {
-            font-size: 10.5pt;
-            font-weight: 700;
+            font-size: 10pt;
+            font-weight: bold;
             color: #0f172a;
         }
         .item-date {
             font-size: 8.5pt;
-            font-weight: 700;
+            font-weight: bold;
             color: #0284c7;
             text-align: right;
             white-space: nowrap;
         }
         .item-subtitle {
-            font-size: 9.5pt;
+            font-size: 9pt;
             color: #475569;
-            font-weight: 600;
-            margin-bottom: 3px;
+            font-weight: bold;
+            margin-bottom: 2pt;
         }
         .item-desc {
-            font-size: 9pt;
+            font-size: 8.5pt;
             color: #334155;
             text-align: justify;
             line-height: 1.4;
         }
         .summary {
-            font-size: 9.5pt;
+            font-size: 9pt;
             color: #334155;
             text-align: justify;
-            margin-bottom: 16px;
-            line-height: 1.45;
+            margin-bottom: 14pt;
+            line-height: 1.4;
         }
     </style>
 </head>

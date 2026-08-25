@@ -4,17 +4,23 @@
     <meta charset="utf-8">
     <title>CV Lamaran Kerja</title>
     <style>
-        @page { margin: 0px; }
+        @page {
+            margin: 0px;
+            size: a4 portrait;
+        }
+        * {
+            box-sizing: border-box;
+        }
         body {
-            word-wrap: break-word;
-            word-break: break-word;
-            overflow-wrap: break-word;
+            margin: 0;
+            padding: 0;
             font-family: 'Helvetica', 'Arial', sans-serif;
-            margin: 0; padding: 0;
-            font-size: 10pt;
+            font-size: 9.5pt;
             background-color: #ffffff;
             color: #1e293b;
-            line-height: 1.5;
+            line-height: 1.45;
+            word-wrap: break-word;
+            word-break: break-word;
         }
         
         /* Continuous Sidebar Background across all pages */
@@ -23,7 +29,7 @@
             left: 0;
             top: 0;
             bottom: 0;
-            width: 34%;
+            width: 195pt;
             background-color: #1e293b;
             z-index: -1000;
         }
@@ -31,27 +37,26 @@
             position: absolute;
             left: 0;
             top: 0;
-            width: 34%;
-            padding: 40px 25px;
-            box-sizing: border-box;
+            width: 195pt;
+            padding: 32pt 18pt 20pt 20pt;
             color: #e2e8f0;
         }
         .content {
-            margin-left: 34%;
-            width: 66%;
+            margin-left: 212pt;
+            padding: 32pt 28pt 24pt 10pt;
+            width: 350pt;
             background-color: transparent;
-            padding: 40px 35px;
-            box-sizing: border-box;
         }
 
         /* Photo Area */
         .photo-wrapper {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 18pt;
         }
         .photo {
-            width: 130px; height: 130px;
-            border: 6px solid #f59e0b; /* Amber/Orange */
+            width: 85pt;
+            height: 85pt;
+            border: 3pt solid #f59e0b;
             object-fit: cover;
             background-color: #fff;
             display: block;
@@ -62,80 +67,129 @@
         .left-header {
             background-color: #f59e0b;
             color: #1e293b;
-            font-size: 11pt;
+            font-size: 9.5pt;
             font-weight: bold;
-            padding: 5px 15px;
-            margin-bottom: 15px;
-            margin-top: 25px;
+            padding: 4pt 10pt;
+            margin-bottom: 10pt;
+            margin-top: 16pt;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             display: inline-block;
+        }
+        .left-header:first-of-type {
+            margin-top: 0;
         }
         
         .contact-item {
-            margin-bottom: 12px;
-            font-size: 9pt;
-            word-wrap: break-word;
-            word-break: break-all;
+            margin-bottom: 8pt;
+            font-size: 8.5pt;
+            width: 155pt;
+            line-height: 1.35;
         }
         .contact-label {
             font-weight: bold;
             color: #f59e0b;
             text-transform: uppercase;
-            font-size: 7.5pt;
+            font-size: 7pt;
             display: block;
-            margin-bottom: 2px;
+            margin-bottom: 1pt;
         }
-        .contact-value { color: #f8fafc; }
+        .contact-value {
+            color: #f8fafc;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
 
         /* Right Col Elements */
         .name {
-            font-size: 22pt;
+            font-size: 20pt;
             font-weight: bold;
             color: #1e293b;
             text-transform: uppercase;
-            margin: 0 0 4px 0;
+            margin: 0 0 2pt 0;
             letter-spacing: 0.5px;
-            line-height: 1.2;
+            line-height: 1.15;
         }
         .job-title {
-            font-size: 11pt;
+            font-size: 10pt;
             color: #f59e0b;
             font-weight: bold;
             text-transform: uppercase;
-            margin-bottom: 25px;
+            margin-bottom: 14pt;
             letter-spacing: 1px;
         }
         .right-header {
-            font-size: 12.5pt;
+            font-size: 11pt;
             font-weight: bold;
             color: #1e293b;
             text-transform: uppercase;
-            border-left: 5px solid #f59e0b;
-            padding-left: 10px;
-            margin-bottom: 15px;
-            margin-top: 25px;
+            border-left: 4pt solid #f59e0b;
+            padding-left: 8pt;
+            margin-bottom: 10pt;
+            margin-top: 16pt;
             letter-spacing: 0.5px;
         }
+        .right-header:first-of-type {
+            margin-top: 0;
+        }
         
-        .profile-text { text-align: justify; margin-bottom: 25px; }
-
-        .item { margin-bottom: 18px; page-break-inside: avoid; }
-        .item-title-row { width: 100%; margin-bottom: 2px; }
-        .item-title { font-weight: bold; font-size: 11pt; color: #1e293b; }
-        .item-date { text-align: right; font-size: 9.5pt; color: #64748b; font-weight: bold; white-space: nowrap; }
-        .item-subtitle { font-size: 10pt; color: #475569; font-weight: bold; margin-bottom: 4px; }
-        .item-desc { font-size: 9.5pt; color: #334155; text-align: justify; }
-
-        .skill-list { list-style: none; padding: 0; margin: 0; }
-        .skill-list li { margin-bottom: 6px; font-size: 9.5pt; color: #f8fafc; }
-        .skill-list li::before {
-            content: "■";
-            color: #f59e0b;
-            margin-right: 8px;
-            font-size: 8pt;
+        .profile-text {
+            font-size: 9pt;
+            text-align: justify;
+            margin-bottom: 14pt;
+            line-height: 1.4;
         }
 
+        .item {
+            margin-bottom: 11pt;
+            page-break-inside: avoid;
+        }
+        .item-title-row {
+            width: 100%;
+            margin-bottom: 2pt;
+            border-collapse: collapse;
+        }
+        .item-title {
+            font-weight: bold;
+            font-size: 10pt;
+            color: #1e293b;
+        }
+        .item-date {
+            text-align: right;
+            font-size: 8.5pt;
+            color: #64748b;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .item-subtitle {
+            font-size: 9pt;
+            color: #475569;
+            font-weight: bold;
+            margin-bottom: 2pt;
+        }
+        .item-desc {
+            font-size: 8.5pt;
+            color: #334155;
+            text-align: justify;
+            line-height: 1.4;
+        }
+
+        .skill-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 155pt;
+        }
+        .skill-list li {
+            margin-bottom: 4pt;
+            font-size: 8.5pt;
+            color: #f8fafc;
+        }
+        .skill-list li::before {
+            content: "■ ";
+            color: #f59e0b;
+            font-size: 7pt;
+        }
     </style>
 </head>
 <body>
@@ -233,12 +287,12 @@
 
         @if(count($hard_skills) > 0)
         <div class="left-header">Keahlian</div>
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom: 14pt; width: 155pt;">
             @foreach($hard_skills as $skill)
-            <div style="margin-bottom: 10px;">
-                <div style="font-size: 9.5pt; margin-bottom: 3px; color: #f8fafc;">{{ $skill->name ?? '' }}</div>
-                <div style="width: 100%; background-color: #334155; height: 5px; border-radius: 3px;">
-                    <div style="width: {{ $skill->level }}%; background-color: #f59e0b; height: 5px; border-radius: 3px;"></div>
+            <div style="margin-bottom: 6pt;">
+                <div style="font-size: 8.5pt; margin-bottom: 2pt; color: #f8fafc;">{{ $skill->name ?? '' }}</div>
+                <div style="width: 155pt; background-color: #334155; height: 3.5pt; border-radius: 2pt;">
+                    <div style="width: {{ $skill->level }}%; background-color: #f59e0b; height: 3.5pt; border-radius: 2pt;"></div>
                 </div>
             </div>
             @endforeach

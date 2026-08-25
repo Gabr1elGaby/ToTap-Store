@@ -4,17 +4,23 @@
     <meta charset="utf-8">
     <title>CV Mahasiswa / Student</title>
     <style>
-        @page { margin: 0px; }
+        @page {
+            margin: 0px;
+            size: a4 portrait;
+        }
+        * {
+            box-sizing: border-box;
+        }
         body {
-            word-wrap: break-word;
-            word-break: break-word;
-            overflow-wrap: break-word;
+            margin: 0;
+            padding: 0;
             font-family: 'Helvetica', 'Arial', sans-serif;
-            margin: 0; padding: 0;
-            font-size: 10pt;
+            font-size: 9.5pt;
             background-color: #ffffff;
             color: #334155;
-            line-height: 1.4;
+            line-height: 1.45;
+            word-wrap: break-word;
+            word-break: break-word;
         }
         
         /* Continuous Sidebar Background across all pages */
@@ -23,7 +29,7 @@
             left: 0;
             top: 0;
             bottom: 0;
-            width: 33%;
+            width: 195pt;
             background-color: #831843;
             z-index: -1000;
         }
@@ -31,109 +37,160 @@
             position: absolute;
             left: 0;
             top: 0;
-            width: 33%;
-            padding: 40px 25px;
-            box-sizing: border-box;
+            width: 195pt;
+            padding: 32pt 18pt 20pt 20pt;
             color: #fdf2f8;
         }
         .content {
-            margin-left: 33%;
-            width: 67%;
+            margin-left: 212pt;
+            padding: 32pt 28pt 24pt 10pt;
+            width: 350pt;
             background-color: transparent;
-            padding: 40px 35px;
-            box-sizing: border-box;
         }
 
         /* Photo Area */
         .photo-wrapper {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15pt;
         }
         .photo {
-            width: 120px; height: 120px;
+            width: 85pt;
+            height: 85pt;
             border-radius: 50%;
-            border: 4px solid #fbcfe8;
+            border: 3pt solid #fbcfe8;
             object-fit: cover;
             display: block;
             margin: 0 auto;
         }
         
         .name {
-            font-size: 16pt;
+            font-size: 14pt;
             font-weight: bold;
             text-transform: uppercase;
             text-align: center;
-            margin-bottom: 5px;
+            margin-bottom: 3pt;
             color: #ffffff;
             line-height: 1.2;
+            width: 155pt;
         }
         .job-title {
-            font-size: 9.5pt;
+            font-size: 8.5pt;
             color: #fbcfe8;
             text-align: center;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 25px;
+            margin-bottom: 16pt;
+            width: 155pt;
         }
 
         /* Left Col Headers */
         .left-header {
-            font-size: 11pt;
+            font-size: 9.5pt;
             font-weight: bold;
             text-transform: uppercase;
             border-bottom: 2px solid #fbcfe8;
-            padding-bottom: 4px;
-            margin-bottom: 12px;
-            margin-top: 20px;
+            padding-bottom: 3pt;
+            margin-bottom: 10pt;
+            margin-top: 16pt;
             letter-spacing: 1px;
             color: #ffffff;
+            display: block;
+            width: 155pt;
+        }
+        .left-header:first-of-type {
+            margin-top: 0;
         }
         
         .contact-item {
-            margin-bottom: 10px;
-            font-size: 9pt;
-            word-wrap: break-word;
-            word-break: break-all;
+            margin-bottom: 8pt;
+            font-size: 8.5pt;
+            width: 155pt;
+            line-height: 1.35;
         }
         .contact-label {
             font-weight: bold;
             color: #fbcfe8;
             text-transform: uppercase;
-            font-size: 7.5pt;
+            font-size: 7pt;
             display: block;
-            margin-bottom: 2px;
+            margin-bottom: 1pt;
         }
-        .contact-value { color: #fdf2f8; }
+        .contact-value {
+            color: #fdf2f8;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
 
         /* Right Col Elements */
         .right-header {
-            font-size: 12pt;
+            font-size: 11pt;
             font-weight: bold;
             color: #831843;
             text-transform: uppercase;
             border-bottom: 2px solid #fce7f3;
-            padding-bottom: 4px;
-            margin-bottom: 15px;
-            margin-top: 25px;
+            padding-bottom: 3pt;
+            margin-bottom: 10pt;
+            margin-top: 16pt;
             letter-spacing: 0.5px;
         }
-        .right-header:first-child { margin-top: 0; }
+        .right-header:first-of-type {
+            margin-top: 0;
+        }
         
-        .profile-text { text-align: justify; margin-bottom: 20px; }
+        .profile-text {
+            font-size: 9pt;
+            text-align: justify;
+            margin-bottom: 14pt;
+            line-height: 1.4;
+        }
 
-        .item { margin-bottom: 15px; page-break-inside: avoid; }
-        .item-title-row { width: 100%; margin-bottom: 2px; }
-        .item-title { font-weight: bold; font-size: 10.5pt; color: #1e293b; }
-        .item-date { text-align: right; font-size: 9pt; color: #831843; font-weight: bold; white-space: nowrap; }
-        .item-subtitle { font-size: 9.5pt; color: #64748b; margin-bottom: 3px; }
-        .item-desc { font-size: 9.5pt; color: #334155; text-align: justify; }
+        .item {
+            margin-bottom: 11pt;
+            page-break-inside: avoid;
+        }
+        .item-title-row {
+            width: 100%;
+            margin-bottom: 2pt;
+            border-collapse: collapse;
+        }
+        .item-title {
+            font-weight: bold;
+            font-size: 10pt;
+            color: #1e293b;
+        }
+        .item-date {
+            text-align: right;
+            font-size: 8.5pt;
+            color: #831843;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .item-subtitle {
+            font-size: 9pt;
+            color: #64748b;
+            margin-bottom: 2pt;
+        }
+        .item-desc {
+            font-size: 8.5pt;
+            color: #334155;
+            text-align: justify;
+            line-height: 1.4;
+        }
 
-        .skill-list { list-style: none; padding: 0; margin: 0; }
-        .skill-list li { margin-bottom: 6px; font-size: 9.5pt; color: #fdf2f8; }
+        .skill-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 155pt;
+        }
+        .skill-list li {
+            margin-bottom: 4pt;
+            font-size: 8.5pt;
+            color: #fdf2f8;
+        }
         .skill-list li::before {
-            content: "•";
+            content: "• ";
             color: #fbcfe8;
-            margin-right: 8px;
             font-weight: bold;
         }
 
@@ -237,13 +294,13 @@
 
         @if(count($hard_skills) > 0)
         <div class="left-header">Keahlian Teknis</div>
-        <div style="margin-bottom: 15px;">
+        <div style="margin-bottom: 14pt; width: 155pt;">
             @foreach($hard_skills as $skill)
             @php $lvl = $skill->level ?? 75; @endphp
-            <div style="margin-bottom: 8px;">
-                <div style="font-size: 9pt; margin-bottom: 2px; color: #fdf2f8;">{{ $skill->name ?? '' }}</div>
-                <div style="width: 100%; background-color: #9d174d; height: 4px; border-radius: 2px;">
-                    <div style="width: {{ $lvl }}%; background-color: #fbcfe8; height: 4px; border-radius: 2px;"></div>
+            <div style="margin-bottom: 6pt;">
+                <div style="font-size: 8.5pt; margin-bottom: 2pt; color: #fdf2f8;">{{ $skill->name ?? '' }}</div>
+                <div style="width: 155pt; background-color: #9d174d; height: 3.5pt; border-radius: 2pt;">
+                    <div style="width: {{ $lvl }}%; background-color: #fbcfe8; height: 3.5pt; border-radius: 2pt;"></div>
                 </div>
             </div>
             @endforeach
