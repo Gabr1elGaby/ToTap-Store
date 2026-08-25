@@ -204,8 +204,8 @@ class CvController extends Controller
         $cv = DB::table('cvs')->where('access_token', $token)->orWhere('id', $token)->first();
         if (!$cv) abort(404, 'CV not found');
 
-        // Owner check: if cv has user_id and user is logged in, ensure ownership unless admin
-        if ($cv->user_id && auth()->check() && auth()->id() !== $cv->user_id && !auth()->user()->is_admin) {
+        $isAdmin = auth()->check() && (auth()->user()->role === 'admin' || !empty(auth()->user()->is_admin));
+        if ($cv->user_id && auth()->check() && auth()->id() !== $cv->user_id && !$isAdmin && $token == $cv->id) {
             abort(403, 'Akses tidak diizinkan untuk CV ini.');
         }
 

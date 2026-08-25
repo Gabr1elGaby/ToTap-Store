@@ -36,7 +36,7 @@ if (!empty($data->name)) {
     $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ""));
 }
 
-$hasPage2 = (count($projects) > 0 || count($internships) > 0 || count($organizations) > 0 || (count($educations) > 0 && count($experiences) > 1) || (count($educations) == 0 && count($experiences) > 1));
+$hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internships) > 0 || count($organizations) > 0);
 ?>
 <!DOCTYPE html>
 <html>
@@ -244,7 +244,7 @@ $hasPage2 = (count($projects) > 0 || count($internships) > 0 || count($organizat
     </style>
 </head>
 <body>
-    <!-- PAGE 1: 2-COLUMN TABLE -->
+    <!-- PAGE 1: 2-COLUMN TABLE (Header + Profil + Pendidikan) -->
     <table class="page1-layout" cellpadding="0" cellspacing="0">
         <tr>
             <td class="sidebar-td">
@@ -361,21 +361,6 @@ $hasPage2 = (count($projects) > 0 || count($internships) > 0 || count($organizat
                 </div>
                 <?php endforeach; ?>
                 <?php endif; ?>
-
-                <?php if(count($experiences) > 0): ?>
-                <?php $p1Exp = $experiences[0]; ?>
-                <div class="right-heading">Pengalaman Kerja Terakhir</div>
-                <div class="item-block">
-                    <table class="item-header-table" cellpadding="0" cellspacing="0">
-                        <tr>
-                            <td class="item-title" style="width: 70%;"><?php echo $p1Exp->position ?? ""; ?></td>
-                            <td class="item-date" style="width: 30%;"><?php echo $p1Exp->start_year ?? ""; ?> - <?php echo $p1Exp->is_current ? "Sekarang" : ($p1Exp->end_year ?? ""); ?></td>
-                        </tr>
-                    </table>
-                    <div class="item-subtitle"><?php echo $p1Exp->company ?? ""; ?> <?php if(!empty($p1Exp->location)): ?> | <?php echo $p1Exp->location; ?> <?php endif; ?></div>
-                    <div class="item-desc"><?php echo nl2br(htmlspecialchars($p1Exp->description ?? "")); ?></div>
-                </div>
-                <?php endif; ?>
             </td>
         </tr>
     </table>
@@ -383,9 +368,9 @@ $hasPage2 = (count($projects) > 0 || count($internships) > 0 || count($organizat
     <?php if($hasPage2): ?>
     <!-- PAGE 2+: FULL-WIDTH CONTINUATION -->
     <div class="page2-fullwidth">
-        <?php if(count($experiences) > 1): ?>
-        <div class="full-heading">Pengalaman Kerja Lainnya</div>
-        <?php foreach(array_slice($experiences, 1) as $exp): ?>
+        <?php if(count($experiences) > 0): ?>
+        <div class="full-heading">Pengalaman Kerja</div>
+        <?php foreach($experiences as $exp): ?>
         <div class="item-block">
             <table class="item-header-table" cellpadding="0" cellspacing="0">
                 <tr>
