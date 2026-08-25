@@ -39,8 +39,11 @@ $skills        = $getCol('skills');
 
 $initials = '';
 if (!empty($data->name)) {
-    $words = explode(' ', $data->name);
+    $words = explode(' ', trim($data->name));
     $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+}
+if (empty($initials)) {
+    $initials = 'CV';
 }
 
 $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
@@ -49,7 +52,7 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
 <html>
 <head>
     <meta charset="utf-8">
-    <title>CV Modern</title>
+    <title>CV Modern Minimalis</title>
     <style>
         @page {
             margin: 0px;
@@ -69,21 +72,26 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
             word-wrap: break-word;
             word-break: break-word;
         }
+        table {
+            border-collapse: collapse;
+            table-layout: fixed;
+            width: 100%;
+        }
+        td {
+            vertical-align: top;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
         
-        /* PAGE 1 SIDEBAR (TOTAL WIDTH: 160pt + 32pt = 192pt) */
-        .sidebar {
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 160pt;
+        .sidebar-td {
+            width: 32%;
             background-color: #0f172a;
-            padding: 32pt 16pt 20pt 16pt;
             color: #cbd5e1;
+            padding: 30pt 16pt 25pt 16pt;
         }
         
         .sidebar-heading {
-            font-size: 10pt;
+            font-size: 9.5pt;
             font-weight: bold;
             color: #ffffff;
             text-transform: uppercase;
@@ -93,7 +101,7 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
             margin-bottom: 10pt;
             margin-top: 16pt;
             display: block;
-            width: 160pt;
+            width: 100%;
         }
         .sidebar-heading:first-of-type {
             margin-top: 0;
@@ -103,7 +111,7 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
             margin-bottom: 8pt;
             font-size: 8.5pt;
             line-height: 1.35;
-            width: 160pt;
+            width: 100%;
         }
         .contact-label {
             font-size: 7pt;
@@ -126,7 +134,7 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
             list-style: none;
             padding: 0;
             margin: 0;
-            width: 160pt;
+            width: 100%;
         }
         .skill-list li {
             font-size: 8.5pt;
@@ -144,7 +152,7 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
             margin-bottom: 8pt;
             font-size: 8.5pt;
             color: #f1f5f9;
-            width: 160pt;
+            width: 100%;
         }
         .cert-title {
             font-weight: bold;
@@ -156,11 +164,10 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
             color: #94a3b8;
         }
         
-        /* PAGE 1 MAIN CONTENT (SAFE 225pt MARGIN TO PREVENT ANY OVERLAP) */
-        .content-p1 {
-            margin-left: 225pt;
-            padding: 32pt 30pt 24pt 5pt;
-            width: 340pt;
+        .content-td {
+            width: 68%;
+            background-color: #ffffff;
+            padding: 30pt 25pt 25pt 22pt;
         }
         
         .name {
@@ -203,13 +210,12 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
         }
         
         .item-block {
-            margin-bottom: 10pt;
+            margin-bottom: 11pt;
             page-break-inside: avoid;
         }
         .item-header-table {
             width: 100%;
             margin-bottom: 2pt;
-            border-collapse: collapse;
         }
         .item-title {
             font-size: 10pt;
@@ -218,8 +224,8 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
         }
         .item-date {
             font-size: 8.5pt;
-            font-weight: bold;
             color: #0284c7;
+            font-weight: bold;
             text-align: right;
             white-space: nowrap;
         }
@@ -243,13 +249,6 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
             line-height: 1.4;
         }
 
-        .page1-wrapper {
-            position: relative;
-            width: 100%;
-            min-height: 840pt;
-        }
-
-        /* PAGE 2 FULL WIDTH WHITE CONTAINER */
         .page2-container {
             page-break-before: always;
             width: 100%;
@@ -259,182 +258,162 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
     </style>
 </head>
 <body>
-    <div class="page1-wrapper">
-        <!-- PAGE 1 SIDEBAR (BOTTOM: 0 STRETCHES TO BOTTOM OF PAGE 1) -->
-        <div class="sidebar">
-        <!-- PHOTO CENTERED -->
-        <table width="160pt" cellpadding="0" cellspacing="0" style="margin-bottom: 14pt;">
-            <tr>
-                <td align="center" style="text-align: center;">
-                    <table align="center" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
+    <table class="main-table" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse; table-layout: fixed; min-height: 840pt;">
+        <tr>
+            <td class="sidebar-td">
+                <div style="text-align: center; margin-bottom: 16pt;">
+                    @if(!empty($data->photo))
+                        <img src="{{ $data->photo }}" style="width: 75pt; height: 75pt; border-radius: 50%; border: 3pt solid #38bdf8; display: block; margin: 0 auto; object-fit: cover;">
+                    @else
+                        <div style="width: 75pt; height: 75pt; border-radius: 50%; border: 3pt solid #38bdf8; background-color: #1e293b; margin: 0 auto; text-align: center; line-height: 75pt; font-size: 22pt; font-weight: bold; color: #38bdf8;">
+                            {{ $initials }}
+                        </div>
+                    @endif
+                </div>
+
+                <div class="sidebar-heading">Kontak</div>
+                @if(!empty($data->phone))
+                <div class="contact-item">
+                    <span class="contact-label">Telepon / WA</span>
+                    <span class="contact-val">{{ $data->phone }}</span>
+                </div>
+                @endif
+                @if(!empty($data->email))
+                <div class="contact-item">
+                    <span class="contact-label">Email</span>
+                    <span class="contact-val">{{ $data->email }}</span>
+                </div>
+                @endif
+                @if($getVal($data, 'address', 'location') !== '')
+                <div class="contact-item">
+                    <span class="contact-label">Domisili</span>
+                    <span class="contact-val">{{ $getVal($data, 'address', 'location') }}</span>
+                </div>
+                @endif
+                @if(!empty($data->linkedin))
+                <div class="contact-item">
+                    <span class="contact-label">LinkedIn</span>
+                    <span class="contact-val">{{ $data->linkedin }}</span>
+                </div>
+                @endif
+                @if(!empty($data->website))
+                <div class="contact-item">
+                    <span class="contact-label">Website / Portofolio</span>
+                    <span class="contact-val">{{ $data->website }}</span>
+                </div>
+                @endif
+                @if(!empty($data->social_media))
+                <div class="contact-item">
+                    <span class="contact-label">Media Sosial</span>
+                    <span class="contact-val">{{ $data->social_media }}</span>
+                </div>
+                @endif
+                
+                @if(count($skills) > 0)
+                <div class="sidebar-heading">Keahlian</div>
+                <ul class="skill-list">
+                    @foreach($skills as $skill)
+                    <li>{{ $skill->name ?? '' }}</li>
+                    @endforeach
+                </ul>
+                @endif
+                
+                @if(count($certificates) > 0)
+                <div class="sidebar-heading">Sertifikasi</div>
+                @foreach($certificates as $cert)
+                <div class="cert-item">
+                    <div class="cert-title">{{ $cert->name ?? '' }}</div>
+                    @if(!empty($cert->year))
+                    <div class="cert-year">{{ $cert->year }}</div>
+                    @endif
+                </div>
+                @endforeach
+                @endif
+            </td>
+
+            <td class="content-td">
+                <div class="name">{{ !empty($data->name) ? $data->name : 'NAMA LENGKAP' }}</div>
+                <div class="job-title">{{ !empty($data->job_title) ? $data->job_title : 'POSISI / PEKERJAAN' }}</div>
+                <hr class="header-line">
+                
+                @if(!empty($data->summary) || !empty($data->profile))
+                <div class="summary">
+                    {!! nl2br(e($data->summary ?: $data->profile)) !!}
+                </div>
+                @endif
+
+                @if(count($experiences) > 0)
+                <div class="right-heading">Pengalaman Kerja</div>
+                @foreach($experiences as $exp)
+                <div class="item-block">
+                    <table class="item-header-table" cellpadding="0" cellspacing="0">
                         <tr>
-                            <td align="center" style="width: 85pt; height: 85pt; border-radius: 50%; border: 3pt solid #38bdf8; overflow: hidden; background-color: #1e293b; text-align: center; vertical-align: middle; line-height: 85pt; font-size: 26pt; font-weight: bold; color: #38bdf8;">
-                                @if(!empty($data->photo))
-                                <img src="{{ $data->photo }}" style="width: 85pt; height: 85pt; display: block; margin: 0 auto;">
-                                @else
-                                {{ $initials }}
-                                @endif
-                            </td>
+                            <td class="item-title" style="width: 70%;">{{ $exp->position ?? '' }}</td>
+                            <td class="item-date" style="width: 30%;">{{ $exp->start_year ?? '' }} - {{ $exp->is_current ? 'Sekarang' : ($exp->end_year ?? '') }}</td>
                         </tr>
                     </table>
-                </td>
-            </tr>
-        </table>
-        
-        <!-- CONTACT BLOCK -->
-        <div class="sidebar-heading">Kontak</div>
-        @if(!empty($data->phone))
-        <div class="contact-item">
-            <span class="contact-label">Telepon / WA</span>
-            <span class="contact-val">{{ $data->phone }}</span>
-        </div>
-        @endif
-        @if(!empty($data->email))
-        <div class="contact-item">
-            <span class="contact-label">Email</span>
-            <span class="contact-val">{{ $data->email }}</span>
-        </div>
-        @endif
-        @if($getVal($data, 'address', 'location') !== '')
-        <div class="contact-item">
-            <span class="contact-label">Domisili</span>
-            <span class="contact-val">{{ $getVal($data, 'address', 'location') }}</span>
-        </div>
-        @endif
-        @if(!empty($data->linkedin))
-        <div class="contact-item">
-            <span class="contact-label">LinkedIn</span>
-            <span class="contact-val">{{ $data->linkedin }}</span>
-        </div>
-        @endif
-        @if(!empty($data->website))
-        <div class="contact-item">
-            <span class="contact-label">Website / Portofolio</span>
-            <span class="contact-val">{{ $data->website }}</span>
-        </div>
-        @endif
-        @if(!empty($data->social_media))
-        <div class="contact-item">
-            <span class="contact-label">Media Sosial</span>
-            <span class="contact-val">{{ $data->social_media }}</span>
-        </div>
-        @endif
-        
-        <!-- SKILLS BLOCK -->
-        @if(count($skills) > 0)
-        <div class="sidebar-heading">Keahlian</div>
-        <ul class="skill-list">
-            @foreach($skills as $skill)
-            <li>{{ $skill->name ?? '' }}</li>
-            @endforeach
-        </ul>
-        @endif
-        
-        @if(!$hasPage2)
-            @if(count($certificates) > 0)
-            <div class="sidebar-heading">Sertifikasi</div>
-            @foreach($certificates as $cert)
-            <div class="cert-item">
-                <div class="cert-title">{{ $cert->name ?? '' }}</div>
-                @if(!empty($cert->year))
-                <div class="cert-year">{{ $cert->year }}</div>
+                    <div class="item-subtitle">{{ $exp->company ?? '' }} @if(!empty($exp->location)) | {{ $exp->location }} @endif</div>
+                    <div class="item-desc">{!! nl2br(e($exp->description)) !!}</div>
+                </div>
+                @endforeach
                 @endif
-            </div>
-            @endforeach
-            @endif
-        @endif
-    </div>
 
-    <!-- PAGE 1: RIGHT COLUMN CONTENT -->
-    <div class="content-p1">
-        <!-- HEADER NAME & TITLE -->
-        <div class="name">{{ $data->name ?? 'NAMA LENGKAP' }}</div>
-        <div class="job-title">{{ $data->job_title ?? 'POSISI / PEKERJAAN' }}</div>
-        <hr class="header-line">
-        
-        <!-- PROFILE / SUMMARY -->
-        @if(!empty($data->summary) || !empty($data->profile))
-        <div class="summary">
-            {!! nl2br(e($data->summary ?? $data->profile)) !!}
-        </div>
-        @endif
+                @if(count($educations) > 0)
+                <div class="right-heading">Riwayat Pendidikan</div>
+                @foreach($educations as $edu)
+                <div class="item-block">
+                    <table class="item-header-table" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="item-title" style="width: 70%;">{{ $edu->institution ?? '' }}</td>
+                            <td class="item-date" style="width: 30%;">{{ $edu->start_year ?? '' }} - {{ $edu->end_year ?? '' }}</td>
+                        </tr>
+                    </table>
+                    @php
+                        $deg = $edu->degree ?? '';
+                        $maj = $getVal($edu, 'major', 'field');
+                    @endphp
+                    <div class="item-subtitle">{{ $deg }}{{ $maj !== '' ? ($deg !== '' ? ' - ' : '') . $maj : '' }}</div>
+                    @if(!empty($edu->description))
+                    <div class="item-desc">{!! nl2br(e($edu->description)) !!}</div>
+                    @endif
+                </div>
+                @endforeach
+                @endif
 
-        <!-- PENGALAMAN KERJA -->
-        @if(count($experiences) > 0)
-        <div class="right-heading">Pengalaman Kerja</div>
-        @foreach($experiences as $exp)
-        <div class="item-block">
-            <table class="item-header-table" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td class="item-title" style="width: 75%;">{{ $exp->position ?? '' }}</td>
-                    <td class="item-date" style="width: 25%;">{{ $exp->start_year ?? '' }} - {{ $exp->is_current ? 'Sekarang' : $exp->end_year }}</td>
-                </tr>
-            </table>
-            <div class="item-subtitle">{{ $exp->company ?? '' }} @if(!empty($exp->location)) | {{ $exp->location }} @endif</div>
-            <div class="item-desc">{!! nl2br(e($exp->description)) !!}</div>
-        </div>
-        @endforeach
-        @endif
+                @if(count($projects) > 0)
+                <div class="right-heading">Proyek & Portofolio</div>
+                @foreach($projects as $proj)
+                <div class="item-block">
+                    <table class="item-header-table" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="item-title" style="width: 70%;">{{ $proj->name ?? '' }}</td>
+                            <td class="item-date" style="width: 30%;">{{ $proj->year ?? $proj->link ?? '' }}</td>
+                        </tr>
+                    </table>
+                    @php
+                        $projSub = array_filter([$proj->role ?? '', $proj->technologies ?? '', (!empty($proj->year) ? $proj->link ?? '' : '')]);
+                    @endphp
+                    @if(!empty($projSub))
+                    <div class="item-subtitle">{{ implode(' | ', $projSub) }}</div>
+                    @endif
+                    <div class="item-desc">{!! nl2br(e($proj->description)) !!}</div>
+                </div>
+                @endforeach
+                @endif
+            </td>
+        </tr>
+    </table>
 
-        <!-- RIWAYAT PENDIDIKAN -->
-        @if(count($educations) > 0)
-        <div class="right-heading">Riwayat Pendidikan</div>
-        @foreach($educations as $edu)
-        <div class="item-block">
-            <table class="item-header-table" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td class="item-title" style="width: 75%;">{{ $edu->institution ?? '' }}</td>
-                    <td class="item-date" style="width: 25%;">{{ $edu->start_year ?? '' }} - {{ $edu->end_year ?? '' }}</td>
-                </tr>
-            </table>
-            @php
-                $deg = $edu->degree ?? '';
-                $maj = $getVal($edu, 'major', 'field');
-            @endphp
-            <div class="item-subtitle">{{ $deg }}{{ $maj !== '' ? ($deg !== '' ? ' - ' : '') . $maj : '' }}</div>
-            @if(!empty($edu->description))
-            <div class="item-desc">{!! nl2br(e($edu->description)) !!}</div>
-            @endif
-        </div>
-        @endforeach
-        @endif
-
-        <!-- PROYEK & PORTOFOLIO -->
-        @if(count($projects) > 0)
-        <div class="right-heading">Proyek & Portofolio</div>
-        @foreach($projects as $proj)
-        <div class="item-block">
-            <table class="item-header-table" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td class="item-title" style="width: 75%;">{{ $proj->name ?? '' }}</td>
-                    <td class="item-date" style="width: 25%;">{{ $proj->year ?? $proj->link ?? '' }}</td>
-                </tr>
-            </table>
-            @php
-                $projSub = array_filter([$proj->role ?? '', $proj->technologies ?? '', (!empty($proj->year) ? $proj->link ?? '' : '')]);
-            @endphp
-            @if(!empty($projSub))
-            <div class="item-subtitle">{{ implode(' | ', $projSub) }}</div>
-            @endif
-            <div class="item-desc">{!! nl2br(e($proj->description)) !!}</div>
-        </div>
-        @endforeach
-        @endif
-        </div>
-    </div>
-
-    <!-- PAGE 2: FULL WIDTH PURE WHITE (NO BLUE BAR, CLEAN TOP MARGIN) -->
     @if($hasPage2)
     <div class="page2-container">
-        <!-- MAGANG -->
         @if(count($internships) > 0)
         <div class="right-heading">Pengalaman Magang</div>
         @foreach($internships as $int)
         <div class="item-block">
             <table class="item-header-table" cellpadding="0" cellspacing="0">
                 <tr>
-                    <td class="item-title" style="width: 75%;">{{ $int->position ?? '' }}</td>
-                    <td class="item-date" style="width: 25%;">{{ $int->start_year ?? '' }} - {{ $int->end_year ?? '' }}</td>
+                    <td class="item-title" style="width: 70%;">{{ $int->position ?? '' }}</td>
+                    <td class="item-date" style="width: 30%;">{{ $int->start_year ?? '' }} - {{ $int->end_year ?? '' }}</td>
                 </tr>
             </table>
             <div class="item-subtitle">{{ $int->company ?? '' }} @if(!empty($int->location)) | {{ $int->location }} @endif</div>
@@ -443,35 +422,18 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
         @endforeach
         @endif
 
-        <!-- PENGALAMAN ORGANISASI -->
         @if(count($organizations) > 0)
         <div class="right-heading">Pengalaman Organisasi</div>
         @foreach($organizations as $org)
         <div class="item-block">
             <table class="item-header-table" cellpadding="0" cellspacing="0">
                 <tr>
-                    <td class="item-title" style="width: 75%;">{{ $org->role ?? '' }}</td>
-                    <td class="item-date" style="width: 25%;">{{ $org->start_year ?? '' }} - {{ $org->end_year ?? '' }}</td>
+                    <td class="item-title" style="width: 70%;">{{ $org->role ?? '' }}</td>
+                    <td class="item-date" style="width: 30%;">{{ $org->start_year ?? '' }} - {{ $org->end_year ?? '' }}</td>
                 </tr>
             </table>
             <div class="item-subtitle">{{ $org->name ?? '' }}</div>
             <div class="item-desc">{!! nl2br(e($org->description)) !!}</div>
-        </div>
-        @endforeach
-        @endif
-
-        <!-- SERTIFIKASI & PELATIHAN -->
-        @if(count($certificates) > 0)
-        <div class="right-heading">Sertifikasi & Pelatihan</div>
-        @foreach($certificates as $cert)
-        <div class="item-block">
-            <table class="item-header-table" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td class="item-title" style="width: 75%;">{{ $cert->name ?? '' }}</td>
-                    <td class="item-date" style="width: 25%;">{{ $cert->year ?? '' }}</td>
-                </tr>
-            </table>
-            <div class="item-subtitle">{{ $cert->issuer ?? $cert->publisher ?? '' }}</div>
         </div>
         @endforeach
         @endif

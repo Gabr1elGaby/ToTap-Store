@@ -39,8 +39,11 @@ $skills        = $getCol('skills');
 
 $initials = '';
 if (!empty($data->name)) {
-    $words = explode(' ', $data->name);
+    $words = explode(' ', trim($data->name));
     $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+}
+if (empty($initials)) {
+    $initials = 'CV';
 }
 ?>
 <!DOCTYPE html>
@@ -49,37 +52,47 @@ if (!empty($data->name)) {
     <meta charset="utf-8">
     <title>CV Elegant</title>
     <style>
-        @page { margin: 0px; }
+        @page { margin: 0px; size: a4 portrait; }
+        * { box-sizing: border-box; }
         body {
             word-wrap: break-word;
             word-break: break-word;
-            overflow-wrap: break-word;
             font-family: 'Helvetica', 'Arial', sans-serif;
             margin: 0; padding: 0;
-            font-size: 10pt;
+            font-size: 9.5pt;
             background-color: #ffffff;
             color: #333333;
-            line-height: 1.5;
+            line-height: 1.45;
+        }
+        table {
+            border-collapse: collapse;
+            table-layout: fixed;
+            width: 100%;
+        }
+        td {
+            vertical-align: top;
+            word-wrap: break-word;
+            word-break: break-word;
         }
         
         .header {
             background-color: #264653;
             color: #ffffff;
-            padding: 35px 35px 20px 35px;
-            border-bottom: 10px solid #d4af37;
+            padding: 28pt 28pt 18pt 28pt;
+            border-bottom: 5pt solid #d4af37;
         }
         
         .photo-wrapper {
-            width: 120px;
-            height: 120px;
+            width: 80pt;
+            height: 80pt;
             border-radius: 50%;
-            border: 4px solid #d4af37;
+            border: 3pt solid #d4af37;
             background-color: #ffffff;
             overflow: hidden;
             display: inline-block;
             text-align: center;
-            line-height: 120px;
-            font-size: 32pt;
+            line-height: 80pt;
+            font-size: 24pt;
             font-weight: bold;
             color: #264653;
         }
@@ -90,122 +103,116 @@ if (!empty($data->name)) {
         }
         
         .name {
-            font-size: 22pt;
+            font-size: 20pt;
             font-weight: bold;
             color: #d4af37;
-            margin: 0 0 4px 0;
-            letter-spacing: 1px;
+            margin: 0 0 3pt 0;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
-            line-height: 1.2;
+            line-height: 1.15;
         }
         .job-title {
-            font-size: 11pt;
+            font-size: 10pt;
             color: #e2e8f0;
-            margin-bottom: 12px;
+            margin-bottom: 8pt;
             text-transform: uppercase;
             letter-spacing: 1.5px;
         }
         .summary {
-            font-size: 9.5pt;
+            font-size: 9pt;
             color: #e2e8f0;
             text-align: justify;
             line-height: 1.4;
         }
         
-        .sidebar {
-            position: absolute;
-            left: 0;
+        .sidebar-td {
             width: 32%;
             background-color: #2a9d8f;
             color: #ffffff;
-            padding: 30px 20px;
-            box-sizing: border-box;
+            padding: 24pt 16pt 20pt 16pt;
         }
-        .content {
-            margin-left: 32%;
+        .content-td {
             width: 68%;
             background-color: #ffffff;
-            padding: 30px 30px;
-            box-sizing: border-box;
+            padding: 24pt 24pt 20pt 20pt;
         }
         
         .left-heading {
-            font-size: 12pt;
+            font-size: 10pt;
             font-weight: bold;
             color: #ffffff;
             border-bottom: 2px solid #d4af37;
-            padding-bottom: 4px;
-            margin-bottom: 15px;
-            margin-top: 25px;
+            padding-bottom: 3pt;
+            margin-bottom: 10pt;
+            margin-top: 16pt;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            display: block;
+            width: 100%;
         }
-        .left-heading:first-child {
-            margin-top: 0px;
+        .left-heading:first-of-type {
+            margin-top: 0;
         }
         
         .contact-item {
-            margin-bottom: 12px;
-            font-size: 9pt;
-            color: #e2e8f0;
-            word-wrap: break-word;
-            word-break: break-all;
+            margin-bottom: 8pt;
+            font-size: 8.5pt;
+            line-height: 1.35;
+            width: 100%;
         }
         .contact-item strong {
-            color: #ffffff;
-            font-size: 7.5pt;
+            font-size: 7pt;
             text-transform: uppercase;
+            color: #d4af37;
             display: block;
-            margin-bottom: 2px;
+            margin-bottom: 1pt;
         }
         
         .skill-item {
-            margin-bottom: 8px;
-            font-size: 9.5pt;
-            color: #e2e8f0;
+            font-size: 8.5pt;
+            margin-bottom: 5pt;
+            color: #f8fafc;
         }
         .skill-item::before {
-            content: "■";
+            content: "• ";
             color: #d4af37;
-            font-size: 8pt;
-            margin-right: 8px;
+            font-weight: bold;
         }
         
         .right-heading {
-            font-size: 12.5pt;
-            font-weight: bold;
-            color: #264653;
-            border-bottom: 2px solid #264653;
-            padding-bottom: 4px;
-            margin-bottom: 15px;
-            margin-top: 25px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .right-heading:first-child {
-            margin-top: 0px;
-        }
-        
-        .item-block {
-            margin-bottom: 15px;
-            page-break-inside: avoid;
-        }
-        .item-title {
             font-size: 11pt;
             font-weight: bold;
             color: #264653;
+            border-bottom: 2px solid #2a9d8f;
+            padding-bottom: 3pt;
+            margin-bottom: 10pt;
+            margin-top: 16pt;
+            text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 2px;
+        }
+        .right-heading:first-of-type {
+            margin-top: 0;
+        }
+        
+        .item-block {
+            margin-bottom: 11pt;
+            page-break-inside: avoid;
+        }
+        .item-title {
+            font-size: 10pt;
+            font-weight: bold;
+            color: #264653;
         }
         .item-meta {
-            font-size: 9.5pt;
-            color: #333333;
-            margin-bottom: 6px;
+            font-size: 8.5pt;
+            color: #2a9d8f;
+            font-weight: bold;
+            margin-bottom: 2pt;
         }
         .item-desc {
-            font-size: 9.5pt;
+            font-size: 8.5pt;
             color: #4b5563;
             text-align: justify;
+            line-height: 1.4;
         }
     </style>
 </head>
@@ -214,7 +221,7 @@ if (!empty($data->name)) {
     <div class="header">
         <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
-                <td width="140" align="center" valign="top">
+                <td width="95pt" align="center" valign="top">
                     <div class="photo-wrapper">
                         @if(!empty($data->photo))
                         <img src="{{ $data->photo ?? '' }}">
@@ -223,147 +230,154 @@ if (!empty($data->name)) {
                         @endif
                     </div>
                 </td>
-                <td valign="top" style="padding-left: 25px;">
-                    <div class="name">{{ $data->name ?? '' }}</div>
-                    <div class="job-title">{{ $data->job_title ?? '' }}</div>
-                    <div class="summary">{{ $data->summary ?? '' }}</div>
+                <td valign="top" style="padding-left: 18pt;">
+                    <div class="name">{{ !empty($data->name) ? $data->name : 'NAMA LENGKAP' }}</div>
+                    <div class="job-title">{{ !empty($data->job_title) ? $data->job_title : 'POSISI / PEKERJAAN' }}</div>
+                    @if(!empty($data->summary) || !empty($data->profile))
+                    <div class="summary">{{ $data->summary ?: $data->profile }}</div>
+                    @endif
                 </td>
             </tr>
         </table>
     </div>
 
-    <!-- LEFT SIDEBAR -->
-    <div class="sidebar">
-        <div class="left-heading">Kontak</div>
-        @if(!empty($data->phone))
-        <div class="contact-item">
-            <strong>Telepon / WA</strong>
-            {{ $data->phone }}
-        </div>
-        @endif
-        @if(!empty($data->email))
-        <div class="contact-item">
-            <strong>Email</strong>
-            {{ $data->email }}
-        </div>
-        @endif
-        @if($getVal($data, 'address', 'location') !== '')
-        <div class="contact-item">
-            <strong>Domisili</strong>
-            {{ $getVal($data, 'address', 'location') }}
-        </div>
-        @endif
-        @if(!empty($data->linkedin))
-        <div class="contact-item">
-            <strong>LinkedIn</strong>
-            {{ $data->linkedin }}
-        </div>
-        @endif
-        @if(!empty($data->website))
-        <div class="contact-item">
-            <strong>Website / Portofolio</strong>
-            {{ $data->website }}
-        </div>
-        @endif
-        @if(!empty($data->social_media))
-        <div class="contact-item">
-            <strong>Media Sosial</strong>
-            {{ $data->social_media }}
-        </div>
-        @endif
+    <!-- 2-COLUMN TABLE BODY -->
+    <table class="main-table" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse; table-layout: fixed;">
+        <tr>
+            <!-- LEFT SIDEBAR -->
+            <td class="sidebar-td">
+                <div class="left-heading">Kontak</div>
+                @if(!empty($data->phone))
+                <div class="contact-item">
+                    <strong>Telepon / WA</strong>
+                    {{ $data->phone }}
+                </div>
+                @endif
+                @if(!empty($data->email))
+                <div class="contact-item">
+                    <strong>Email</strong>
+                    {{ $data->email }}
+                </div>
+                @endif
+                @if($getVal($data, 'address', 'location') !== '')
+                <div class="contact-item">
+                    <strong>Domisili</strong>
+                    {{ $getVal($data, 'address', 'location') }}
+                </div>
+                @endif
+                @if(!empty($data->linkedin))
+                <div class="contact-item">
+                    <strong>LinkedIn</strong>
+                    {{ $data->linkedin }}
+                </div>
+                @endif
+                @if(!empty($data->website))
+                <div class="contact-item">
+                    <strong>Website / Portofolio</strong>
+                    {{ $data->website }}
+                </div>
+                @endif
+                @if(!empty($data->social_media))
+                <div class="contact-item">
+                    <strong>Media Sosial</strong>
+                    {{ $data->social_media }}
+                </div>
+                @endif
 
-        @if(count($skills) > 0)
-        <div class="left-heading">Keahlian</div>
-        @foreach($skills as $skill)
-        <div class="skill-item">
-            {{ $skill->name ?? '' }}
-        </div>
-        @endforeach
-        @endif
+                @if(count($skills) > 0)
+                <div class="left-heading">Keahlian</div>
+                @foreach($skills as $skill)
+                <div class="skill-item">
+                    {{ $skill->name ?? '' }}
+                </div>
+                @endforeach
+                @endif
 
-        @if(count($certificates) > 0)
-        <div class="left-heading">Sertifikasi</div>
-        @foreach($certificates as $cert)
-        <div class="contact-item">
-            <strong>{{ $cert->name ?? '' }}</strong>
-            {{ $cert->year ?? '' }}
-        </div>
-        @endforeach
-        @endif
-    </div>
+                @if(count($certificates) > 0)
+                <div class="left-heading">Sertifikasi</div>
+                @foreach($certificates as $cert)
+                <div class="contact-item">
+                    <strong>{{ $cert->name ?? '' }}</strong>
+                    <span style="color: #e2e8f0; font-size: 7.5pt;">{{ $cert->year ?? '' }}</span>
+                </div>
+                @endforeach
+                @endif
+            </td>
 
-    <!-- MAIN RIGHT CONTENT -->
-    <div class="content">
-        <!-- PENGALAMAN KERJA -->
-        @if(count($experiences) > 0)
-        <div class="right-heading">Pengalaman Kerja</div>
-        @foreach($experiences as $exp)
-        <div class="item-block">
-            <div class="item-title">{{ $exp->position ?? '' }}</div>
-            <div class="item-meta">{{ $exp->company ?? '' }} | {{ $exp->start_year ?? '' }} - {{ $exp->is_current ? 'Sekarang' : $exp->end_year }}</div>
-            <div class="item-desc">{!! nl2br(e($exp->description)) !!}</div>
-        </div>
-        @endforeach
-        @endif
-        
-        <!-- RIWAYAT PENDIDIKAN -->
-        @if(count($educations) > 0)
-        <div class="right-heading">Riwayat Pendidikan</div>
-        @foreach($educations as $edu)
-        <div class="item-block">
-            <div class="item-title">{{ $edu->institution ?? '' }}</div>
-            @php
-                $deg = $edu->degree ?? '';
-                $maj = $getVal($edu, 'major', 'field');
-            @endphp
-            <div class="item-meta">{{ $deg }}{{ $maj !== '' ? ($deg !== '' ? ' - ' : '') . $maj : '' }} | {{ $edu->start_year ?? '' }} - {{ $edu->end_year ?? '' }}</div>
-            @if(!empty($edu->description))
-            <div class="item-desc">{!! nl2br(e($edu->description)) !!}</div>
-            @endif
-        </div>
-        @endforeach
-        @endif
+            <!-- MAIN RIGHT CONTENT -->
+            <td class="content-td">
+                <!-- PENGALAMAN KERJA -->
+                @if(count($experiences) > 0)
+                <div class="right-heading">Pengalaman Kerja</div>
+                @foreach($experiences as $exp)
+                <div class="item-block">
+                    <div class="item-title">{{ $exp->position ?? '' }}</div>
+                    <div class="item-meta">{{ $exp->company ?? '' }} | {{ $exp->start_year ?? '' }} - {{ $exp->is_current ? 'Sekarang' : ($exp->end_year ?? '') }}</div>
+                    <div class="item-desc">{!! nl2br(e($exp->description)) !!}</div>
+                </div>
+                @endforeach
+                @endif
+                
+                <!-- RIWAYAT PENDIDIKAN -->
+                @if(count($educations) > 0)
+                <div class="right-heading">Riwayat Pendidikan</div>
+                @foreach($educations as $edu)
+                <div class="item-block">
+                    <div class="item-title">{{ $edu->institution ?? '' }}</div>
+                    @php
+                        $deg = $edu->degree ?? '';
+                        $maj = $getVal($edu, 'major', 'field');
+                    @endphp
+                    <div class="item-meta">{{ $deg }}{{ $maj !== '' ? ($deg !== '' ? ' - ' : '') . $maj : '' }} | {{ $edu->start_year ?? '' }} - {{ $edu->end_year ?? '' }}</div>
+                    @if(!empty($edu->description))
+                    <div class="item-desc">{!! nl2br(e($edu->description)) !!}</div>
+                    @endif
+                </div>
+                @endforeach
+                @endif
 
-        <!-- PENGALAMAN MAGANG -->
-        @if(count($internships) > 0)
-        <div class="right-heading">Pengalaman Magang</div>
-        @foreach($internships as $int)
-        <div class="item-block">
-            <div class="item-title">{{ $int->position ?? '' }}</div>
-            <div class="item-meta">{{ $int->company ?? '' }} | {{ $int->start_year ?? '' }} - {{ $int->end_year ?? '' }}</div>
-            <div class="item-desc">{!! nl2br(e($int->description)) !!}</div>
-        </div>
-        @endforeach
-        @endif
+                <!-- PENGALAMAN MAGANG -->
+                @if(count($internships) > 0)
+                <div class="right-heading">Pengalaman Magang</div>
+                @foreach($internships as $int)
+                <div class="item-block">
+                    <div class="item-title">{{ $int->position ?? '' }}</div>
+                    <div class="item-meta">{{ $int->company ?? '' }} | {{ $int->start_year ?? '' }} - {{ $int->end_year ?? '' }}</div>
+                    <div class="item-desc">{!! nl2br(e($int->description)) !!}</div>
+                </div>
+                @endforeach
+                @endif
 
-        <!-- PENGALAMAN ORGANISASI -->
-        @if(count($organizations) > 0)
-        <div class="right-heading">Pengalaman Organisasi</div>
-        @foreach($organizations as $org)
-        <div class="item-block">
-            <div class="item-title">{{ $org->role ?? '' }}</div>
-            <div class="item-meta">{{ $org->name ?? '' }} | {{ $org->start_year ?? '' }} - {{ $org->end_year ?? '' }}</div>
-            <div class="item-desc">{!! nl2br(e($org->description)) !!}</div>
-        </div>
-        @endforeach
-        @endif
+                <!-- PENGALAMAN ORGANISASI -->
+                @if(count($organizations) > 0)
+                <div class="right-heading">Pengalaman Organisasi</div>
+                @foreach($organizations as $org)
+                <div class="item-block">
+                    <div class="item-title">{{ $org->role ?? '' }}</div>
+                    <div class="item-meta">{{ $org->name ?? '' }} | {{ $org->start_year ?? '' }} - {{ $org->end_year ?? '' }}</div>
+                    <div class="item-desc">{!! nl2br(e($org->description)) !!}</div>
+                </div>
+                @endforeach
+                @endif
 
-        <!-- PROYEK & PORTOFOLIO -->
-        @if(count($projects) > 0)
-        <div class="right-heading">Proyek & Portofolio</div>
-        @foreach($projects as $proj)
-        <div class="item-block">
-            <div class="item-title">{{ $proj->name ?? '' }}</div>
-            @php
-                $projSub = array_filter([$proj->role ?? '', $proj->technologies ?? '', (!empty($proj->year) ? $proj->link ?? '' : '')]);
-            @endphp
-            <div class="item-meta">{{ implode(' | ', $projSub) }}</div>
-            @if(!empty($proj->description))
-            <div class="item-desc">{!! nl2br(e($proj->description)) !!}</div>
-            @endif
-        </div>
-        @endforeach
-        @endif
-    </div>
+                <!-- PROYEK & PORTOFOLIO -->
+                @if(count($projects) > 0)
+                <div class="right-heading">Proyek & Portofolio</div>
+                @foreach($projects as $proj)
+                <div class="item-block">
+                    <div class="item-title">{{ $proj->name ?? '' }}</div>
+                    @php
+                        $projSub = array_filter([$proj->role ?? '', $proj->technologies ?? '', (!empty($proj->year) ? $proj->link ?? '' : '')]);
+                    @endphp
+                    <div class="item-meta">{{ implode(' | ', $projSub) }}</div>
+                    @if(!empty($proj->description))
+                    <div class="item-desc">{!! nl2br(e($proj->description)) !!}</div>
+                    @endif
+                </div>
+                @endforeach
+                @endif
+            </td>
+        </tr>
+    </table>
 </body>
 </html>
