@@ -74,6 +74,9 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
             word-wrap: break-word;
             word-break: break-word;
         }
+        table, tr, td, tbody {
+            page-break-inside: auto !important;
+        }
         table {
             border-collapse: collapse;
             table-layout: fixed;
@@ -177,7 +180,7 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
 
         .item {
             margin-bottom: 11pt;
-            page-break-inside: avoid;
+            page-break-inside: auto;
         }
         .item-title-row {
             width: 100%;
@@ -387,47 +390,41 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
                 </div>
                 @endforeach
                 @endif
+                <!-- PENGALAMAN MAGANG -->
+                @if(count($internships) > 0)
+                <div class="right-header">Pengalaman Magang</div>
+                @foreach($internships as $int)
+                <div class="item">
+                    <table class="item-title-row" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="item-title" style="width: 70%;">{{ $int->position ?? '' }}</td>
+                            <td class="item-date" style="width: 30%;">{{ $int->start_year ?? '' }} - {{ $int->end_year ?? '' }}</td>
+                        </tr>
+                    </table>
+                    <div class="item-subtitle">{{ $int->company ?? '' }} @if(!empty($int->location)) | {{ $int->location }} @endif</div>
+                    <div class="item-desc">{!! nl2br(e($int->description)) !!}</div>
+                </div>
+                @endforeach
+                @endif
+
+                <!-- PENGALAMAN ORGANISASI -->
+                @if(count($organizations) > 0)
+                <div class="right-header">Pengalaman Organisasi & Kepanitiaan</div>
+                @foreach($organizations as $org)
+                <div class="item">
+                    <table class="item-title-row" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="item-title" style="width: 70%;">{{ $org->role ?? '' }}</td>
+                            <td class="item-date" style="width: 30%;">{{ $org->start_year ?? '' }} - {{ $org->end_year ?? '' }}</td>
+                        </tr>
+                    </table>
+                    <div class="item-subtitle">{{ $org->name ?? '' }}</div>
+                    <div class="item-desc">{!! nl2br(e($org->description)) !!}</div>
+                </div>
+                @endforeach
+                @endif
             </td>
         </tr>
     </table>
-
-    <!-- PAGE 2: FULL WIDTH PURE WHITE -->
-    @if($hasPage2)
-    <div class="page2-container">
-        <!-- PENGALAMAN MAGANG -->
-        @if(count($internships) > 0)
-        <div class="right-header">Pengalaman Magang</div>
-        @foreach($internships as $int)
-        <div class="item">
-            <table class="item-title-row" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td class="item-title" style="width: 70%;">{{ $int->position ?? '' }}</td>
-                    <td class="item-date" style="width: 30%;">{{ $int->start_year ?? '' }} - {{ $int->end_year ?? '' }}</td>
-                </tr>
-            </table>
-            <div class="item-subtitle">{{ $int->company ?? '' }} @if(!empty($int->location)) | {{ $int->location }} @endif</div>
-            <div class="item-desc">{!! nl2br(e($int->description)) !!}</div>
-        </div>
-        @endforeach
-        @endif
-
-        <!-- PENGALAMAN ORGANISASI -->
-        @if(count($organizations) > 0)
-        <div class="right-header">Pengalaman Organisasi & Kepanitiaan</div>
-        @foreach($organizations as $org)
-        <div class="item">
-            <table class="item-title-row" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td class="item-title" style="width: 70%;">{{ $org->role ?? '' }}</td>
-                    <td class="item-date" style="width: 30%;">{{ $org->start_year ?? '' }} - {{ $org->end_year ?? '' }}</td>
-                </tr>
-            </table>
-            <div class="item-subtitle">{{ $org->name ?? '' }}</div>
-            <div class="item-desc">{!! nl2br(e($org->description)) !!}</div>
-        </div>
-        @endforeach
-        @endif
-    </div>
-    @endif
 </body>
 </html>

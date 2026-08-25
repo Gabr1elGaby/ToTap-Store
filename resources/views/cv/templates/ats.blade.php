@@ -18,6 +18,7 @@
             line-height: 1.45;
             box-sizing: border-box;
         }
+        table, tr, td, tbody { page-break-inside: auto !important; }
         table { border-collapse: collapse; table-layout: fixed; width: 100%; }
         td { word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; }
         .header {

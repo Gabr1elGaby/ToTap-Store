@@ -66,6 +66,9 @@ if (empty($initials)) {
             color: #333333;
             line-height: 1.45;
         }
+        table, tr, td, tbody {
+            page-break-inside: auto !important;
+        }
         table {
             border-collapse: collapse;
             table-layout: fixed;
@@ -197,7 +200,7 @@ if (empty($initials)) {
         
         .item-block {
             margin-bottom: 11pt;
-            page-break-inside: avoid;
+            page-break-inside: auto;
         }
         .item-title {
             font-size: 10pt;
