@@ -110,7 +110,7 @@ if (!empty($data->name)) {
             margin-right: 0px;
             border-top-left-radius: 20px;
             border-bottom-left-radius: 20px;
-            padding: 20px 15px 20px 20px;
+            padding: 20px 20px 20px 24px;
             margin-bottom: 20px;
         }
         
@@ -131,28 +131,41 @@ if (!empty($data->name)) {
         }
         
         .contact-item {
-            font-size: 9pt;
-            margin-bottom: 10px;
-            line-height: 1.3;
+            font-size: 8.5pt;
+            margin-bottom: 11px;
+            line-height: 1.35;
             color: #111827;
-            text-align: center;
+            text-align: left;
             word-wrap: break-word;
             word-break: break-all;
         }
         .contact-item strong {
-            font-size: 7.5pt;
+            font-size: 7pt;
             text-transform: uppercase;
             color: #6b7280;
             display: block;
-            margin-top: 2px;
+            margin-bottom: 1px;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+        .contact-val {
+            color: #111827;
+            font-weight: 500;
+            display: block;
         }
         
         .skill-item {
-            font-size: 9pt;
-            margin-bottom: 8px;
+            font-size: 8.5pt;
+            margin-bottom: 7px;
             color: #111827;
-            text-align: center;
-            line-height: 1.3;
+            text-align: left;
+            line-height: 1.35;
+        }
+        .skill-item::before {
+            content: "•";
+            color: #1d2b38;
+            font-weight: bold;
+            margin-right: 6px;
         }
         
         .right-col {
@@ -255,27 +268,32 @@ if (!empty($data->name)) {
                     </div>
                     @if(!empty($data->phone))
                     <div class="contact-item">
-                        {{ $data->phone }}<br><strong>Telepon / WA</strong>
+                        <strong>Telepon / WA</strong>
+                        <span class="contact-val">{{ $data->phone }}</span>
                     </div>
                     @endif
                     @if(!empty($data->email))
                     <div class="contact-item">
-                        {{ $data->email }}<br><strong>Email</strong>
+                        <strong>Email</strong>
+                        <span class="contact-val">{{ $data->email }}</span>
                     </div>
                     @endif
                     @if($getVal($data, 'address', 'location') !== '')
                     <div class="contact-item">
-                        {{ $getVal($data, 'address', 'location') }}<br><strong>Domisili</strong>
+                        <strong>Domisili</strong>
+                        <span class="contact-val">{{ $getVal($data, 'address', 'location') }}</span>
                     </div>
                     @endif
                     @if(!empty($data->linkedin))
                     <div class="contact-item">
-                        {{ $data->linkedin }}<br><strong>LinkedIn</strong>
+                        <strong>LinkedIn</strong>
+                        <span class="contact-val">{{ $data->linkedin }}</span>
                     </div>
                     @endif
                     @if(!empty($data->website))
                     <div class="contact-item">
-                        {{ $data->website }}<br><strong>Website / Portofolio</strong>
+                        <strong>Website / Portofolio</strong>
+                        <span class="contact-val">{{ $data->website }}</span>
                     </div>
                     @endif
                 </div>
