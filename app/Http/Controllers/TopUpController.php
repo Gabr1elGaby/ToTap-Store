@@ -314,27 +314,35 @@ class TopUpController extends Controller
                 default => null,
             };
 
+            // JIKA GAME TIDAK MENDUKUNG AUTO-NICKNAME (Seperti Valorant, Roblox, dll):
+            // Langsung izinkan pembeli melanjutkan ke pembayaran tanpa error!
             if (!$gameCode) {
-                return response()->json(['success' => false, 'message' => 'Cek Nickname belum didukung untuk game ini.']);
+                return response()->json([
+                    'result' => true,
+                    'is_checked' => false,
+                    'message' => 'ID berhasil dimasukkan.',
+                ]);
             }
 
             $res = $api->checkNickname($gameCode, $target1, $target2);
 
             if (isset($res['result']) && $res['result'] === true && isset($res['data'])) {
                 return response()->json([
-                    'success' => true,
+                    'result' => true,
+                    'is_checked' => true,
                     'nickname' => $res['data'],
                 ]);
             }
 
             return response()->json([
-                'success' => false,
+                'result' => false,
                 'message' => $res['message'] ?? 'ID Game / Server tidak ditemukan.',
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage(),
+                'result' => true,
+                'is_checked' => false,
+                'message' => 'Lanjut ke pembayaran',
             ]);
         }
     }
