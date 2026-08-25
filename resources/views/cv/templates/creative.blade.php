@@ -35,8 +35,6 @@ if (!empty($data->name)) {
     $words = explode(" ", trim($data->name));
     $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ""));
 }
-
-$hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internships) > 0 || count($organizations) > 0);
 ?>
 <!DOCTYPE html>
 <html>
@@ -45,7 +43,7 @@ $hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internshi
     <title>CV Kreatif Desain</title>
     <style>
         @page {
-            margin: 0;
+            margin: 0px;
             size: a4 portrait;
         }
         * {
@@ -61,48 +59,48 @@ $hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internshi
             line-height: 1.45;
         }
         
-        /* PAGE 1: 2-COLUMN PREMIUM TABLE */
-        .page1-table {
+        table.main-layout {
             width: 100%;
-            height: 842pt;
             border-collapse: collapse;
             table-layout: fixed;
         }
+        table.main-layout, table.main-layout tr, table.main-layout td {
+            page-break-inside: auto;
+        }
+        
         .sidebar-td {
             width: 32%;
-            height: 842pt;
             background-color: #0f172a;
             color: #cbd5e1;
-            padding: 35pt 16pt 30pt 18pt;
+            padding: 30pt 16pt 25pt 18pt;
             vertical-align: top;
         }
         .content-td {
             width: 68%;
-            height: 842pt;
             background-color: #ffffff;
-            padding: 35pt 28pt 30pt 24pt;
+            padding: 30pt 25pt 25pt 22pt;
             vertical-align: top;
         }
         
         .sidebar-heading {
-            font-size: 10pt;
+            font-size: 9.5pt;
             font-weight: bold;
             color: #38bdf8;
             text-transform: uppercase;
             letter-spacing: 1px;
             border-bottom: 1pt solid #334155;
-            padding-bottom: 4pt;
-            margin-top: 18pt;
-            margin-bottom: 10pt;
+            padding-bottom: 3pt;
+            margin-top: 16pt;
+            margin-bottom: 8pt;
         }
         .sidebar-heading:first-of-type {
             margin-top: 0;
         }
         
         .contact-item {
-            margin-bottom: 8pt;
+            margin-bottom: 7pt;
             font-size: 8.5pt;
-            line-height: 1.35;
+            line-height: 1.3;
         }
         .contact-label {
             display: block;
@@ -124,18 +122,18 @@ $hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internshi
         }
         .skill-list li {
             font-size: 8.5pt;
-            margin-bottom: 5pt;
+            margin-bottom: 4pt;
             color: #f1f5f9;
         }
         
         .cert-item {
-            margin-bottom: 8pt;
+            margin-bottom: 7pt;
         }
         .cert-title {
             font-size: 8.5pt;
             font-weight: bold;
             color: #f8fafc;
-            line-height: 1.25;
+            line-height: 1.2;
         }
         .cert-year {
             font-size: 7.5pt;
@@ -143,7 +141,7 @@ $hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internshi
         }
 
         .name {
-            font-size: 22pt;
+            font-size: 20pt;
             font-weight: bold;
             color: #0f172a;
             text-transform: uppercase;
@@ -152,37 +150,37 @@ $hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internshi
             margin-bottom: 2pt;
         }
         .job-title {
-            font-size: 10.5pt;
+            font-size: 10pt;
             font-weight: bold;
             color: #0284c7;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            margin-bottom: 10pt;
+            margin-bottom: 8pt;
         }
         .header-line {
             border: none;
             height: 1.5pt;
             background-color: #e2e8f0;
-            margin-bottom: 12pt;
+            margin-bottom: 10pt;
         }
         
         .summary {
             font-size: 9pt;
             color: #475569;
             text-align: justify;
-            margin-bottom: 14pt;
-            line-height: 1.45;
+            margin-bottom: 12pt;
+            line-height: 1.4;
         }
         
         .right-heading {
-            font-size: 11pt;
+            font-size: 10.5pt;
             font-weight: bold;
             color: #0f172a;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-bottom: 1.5pt solid #0284c7;
             padding-bottom: 3pt;
-            margin-top: 14pt;
+            margin-top: 12pt;
             margin-bottom: 8pt;
         }
         .right-heading:first-of-type {
@@ -191,6 +189,7 @@ $hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internshi
         
         .item-block {
             margin-bottom: 10pt;
+            page-break-inside: auto;
         }
         .item-header-table {
             width: 100%;
@@ -198,7 +197,7 @@ $hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internshi
             border-collapse: collapse;
         }
         .item-title {
-            font-size: 10pt;
+            font-size: 9.5pt;
             font-weight: bold;
             color: #0f172a;
         }
@@ -209,51 +208,28 @@ $hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internshi
             white-space: nowrap;
         }
         .item-subtitle {
-            font-size: 9pt;
+            font-size: 8.5pt;
             font-weight: bold;
             color: #0284c7;
-            margin-bottom: 3pt;
+            margin-bottom: 2pt;
         }
         .item-desc {
             font-size: 8.5pt;
             color: #475569;
             text-align: justify;
-            line-height: 1.4;
-        }
-        
-        /* PAGE 2+: FULL-WIDTH CONTINUATION CONTAINER */
-        .page2-fullwidth {
-            page-break-before: always;
-            width: 100%;
-            padding: 38pt 35pt 32pt 35pt;
-            background-color: #ffffff;
-        }
-        .full-heading {
-            font-size: 11.5pt;
-            font-weight: bold;
-            color: #0f172a;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 1.5pt solid #0284c7;
-            padding-bottom: 3pt;
-            margin-top: 16pt;
-            margin-bottom: 10pt;
-        }
-        .full-heading:first-of-type {
-            margin-top: 0;
+            line-height: 1.35;
         }
     </style>
 </head>
 <body>
-    <!-- PAGE 1: 2-COLUMN HEADER + CORE PROFILE + EDUCATION -->
-    <table class="page1-table" cellpadding="0" cellspacing="0">
+    <table class="main-layout" cellpadding="0" cellspacing="0">
         <tr>
             <td class="sidebar-td">
-                <div style="text-align: center; margin-bottom: 16pt;">
+                <div style="text-align: center; margin-bottom: 14pt;">
                     <?php if(!empty($data->photo)): ?>
-                        <img src="<?php echo $data->photo; ?>" style="width: 75pt; height: 75pt; border-radius: 50%; border: 3pt solid #38bdf8; display: block; margin: 0 auto; object-fit: cover;">
+                        <img src="<?php echo $data->photo; ?>" style="width: 65pt; height: 65pt; border-radius: 50%; border: 3pt solid #38bdf8; display: block; margin: 0 auto; object-fit: cover;">
                     <?php else: ?>
-                        <div style="width: 75pt; height: 75pt; border-radius: 50%; border: 3pt solid #38bdf8; background-color: #1e293b; margin: 0 auto; text-align: center; line-height: 75pt; font-size: 22pt; font-weight: bold; color: #38bdf8;">
+                        <div style="width: 65pt; height: 65pt; border-radius: 50%; border: 3pt solid #38bdf8; background-color: #1e293b; margin: 0 auto; text-align: center; line-height: 65pt; font-size: 20pt; font-weight: bold; color: #38bdf8;">
                             <?php echo $initials; ?>
                         </div>
                     <?php endif; ?>
@@ -341,6 +317,22 @@ $hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internshi
                 </div>
                 <?php endif; ?>
 
+                <?php if(count($experiences) > 0): ?>
+                <div class="right-heading">Pengalaman Kerja</div>
+                <?php foreach($experiences as $exp): ?>
+                <div class="item-block">
+                    <table class="item-header-table" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="item-title" style="width: 70%;"><?php echo $exp->position ?? ""; ?></td>
+                            <td class="item-date" style="width: 30%;"><?php echo $exp->start_year ?? ""; ?> - <?php echo $exp->is_current ? "Sekarang" : ($exp->end_year ?? ""); ?></td>
+                        </tr>
+                    </table>
+                    <div class="item-subtitle"><?php echo $exp->company ?? ""; ?> <?php if(!empty($exp->location)): ?> | <?php echo $exp->location; ?> <?php endif; ?></div>
+                    <div class="item-desc"><?php echo nl2br(htmlspecialchars($exp->description ?? "")); ?></div>
+                </div>
+                <?php endforeach; ?>
+                <?php endif; ?>
+
                 <?php if(count($educations) > 0): ?>
                 <div class="right-heading">Riwayat Pendidikan</div>
                 <?php foreach($educations as $edu): ?>
@@ -361,112 +353,62 @@ $hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internshi
                     <?php endif; ?>
                 </div>
                 <?php endforeach; ?>
-                <?php elseif(count($experiences) > 0): ?>
-                <?php 
-                    $firstExp = $experiences[0];
-                ?>
-                <div class="right-heading">Pengalaman Kerja Terakhir</div>
+                <?php endif; ?>
+
+                <?php if(count($projects) > 0): ?>
+                <div class="right-heading">Proyek & Portofolio</div>
+                <?php foreach($projects as $proj): ?>
                 <div class="item-block">
                     <table class="item-header-table" cellpadding="0" cellspacing="0">
                         <tr>
-                            <td class="item-title" style="width: 70%;"><?php echo $firstExp->position ?? ""; ?></td>
-                            <td class="item-date" style="width: 30%;"><?php echo $firstExp->start_year ?? ""; ?> - <?php echo $firstExp->is_current ? "Sekarang" : ($firstExp->end_year ?? ""); ?></td>
+                            <td class="item-title" style="width: 70%;"><?php echo $proj->name ?? ""; ?></td>
+                            <td class="item-date" style="width: 30%;"><?php echo $proj->year ?? $proj->link ?? ""; ?></td>
                         </tr>
                     </table>
-                    <div class="item-subtitle"><?php echo $firstExp->company ?? ""; ?> <?php if(!empty($firstExp->location)): ?> | <?php echo $firstExp->location; ?> <?php endif; ?></div>
-                    <div class="item-desc"><?php echo nl2br(htmlspecialchars($firstExp->description ?? "")); ?></div>
+                    <?php
+                        $projSub = array_filter([$proj->role ?? "", $proj->technologies ?? "", (!empty($proj->year) ? $proj->link ?? "" : "")]);
+                    ?>
+                    <?php if(!empty($projSub)): ?>
+                    <div class="item-subtitle"><?php echo implode(" | ", $projSub); ?></div>
+                    <?php endif; ?>
+                    <div class="item-desc"><?php echo nl2br(htmlspecialchars($proj->description ?? "")); ?></div>
                 </div>
+                <?php endforeach; ?>
+                <?php endif; ?>
+
+                <?php if(count($internships) > 0): ?>
+                <div class="right-heading">Pengalaman Magang</div>
+                <?php foreach($internships as $int): ?>
+                <div class="item-block">
+                    <table class="item-header-table" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="item-title" style="width: 70%;"><?php echo $int->position ?? ""; ?></td>
+                            <td class="item-date" style="width: 30%;"><?php echo $int->start_year ?? ""; ?> - <?php echo $int->end_year ?? ""; ?></td>
+                        </tr>
+                    </table>
+                    <div class="item-subtitle"><?php echo $int->company ?? ""; ?> <?php if(!empty($int->location)): ?> | <?php echo $int->location; ?> <?php endif; ?></div>
+                    <div class="item-desc"><?php echo nl2br(htmlspecialchars($int->description ?? "")); ?></div>
+                </div>
+                <?php endforeach; ?>
+                <?php endif; ?>
+
+                <?php if(count($organizations) > 0): ?>
+                <div class="right-heading">Pengalaman Organisasi & Kepanitiaan</div>
+                <?php foreach($organizations as $org): ?>
+                <div class="item-block">
+                    <table class="item-header-table" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="item-title" style="width: 70%;"><?php echo $org->role ?? ""; ?></td>
+                            <td class="item-date" style="width: 30%;"><?php echo $org->start_year ?? ""; ?> - <?php echo $org->end_year ?? ""; ?></td>
+                        </tr>
+                    </table>
+                    <div class="item-subtitle"><?php echo $org->name ?? ""; ?></div>
+                    <div class="item-desc"><?php echo nl2br(htmlspecialchars($org->description ?? "")); ?></div>
+                </div>
+                <?php endforeach; ?>
                 <?php endif; ?>
             </td>
         </tr>
     </table>
-
-    <?php if($hasPage2): ?>
-    <!-- PAGE 2+: FULL-WIDTH CONTINUATION -->
-    <div class="page2-fullwidth">
-        <?php if(count($experiences) > 0 && count($educations) > 0): ?>
-        <div class="full-heading">Pengalaman Kerja</div>
-        <?php foreach($experiences as $exp): ?>
-        <div class="item-block">
-            <table class="item-header-table" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td class="item-title" style="width: 75%; font-size: 10pt;"><?php echo $exp->position ?? ""; ?></td>
-                    <td class="item-date" style="width: 25%;"><?php echo $exp->start_year ?? ""; ?> - <?php echo $exp->is_current ? "Sekarang" : ($exp->end_year ?? ""); ?></td>
-                </tr>
-            </table>
-            <div class="item-subtitle"><?php echo $exp->company ?? ""; ?> <?php if(!empty($exp->location)): ?> | <?php echo $exp->location; ?> <?php endif; ?></div>
-            <div class="item-desc"><?php echo nl2br(htmlspecialchars($exp->description ?? "")); ?></div>
-        </div>
-        <?php endforeach; ?>
-        <?php elseif(count($experiences) > 1 && count($educations) == 0): ?>
-        <div class="full-heading">Pengalaman Kerja Lainnya</div>
-        <?php foreach(array_slice($experiences, 1) as $exp): ?>
-        <div class="item-block">
-            <table class="item-header-table" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td class="item-title" style="width: 75%; font-size: 10pt;"><?php echo $exp->position ?? ""; ?></td>
-                    <td class="item-date" style="width: 25%;"><?php echo $exp->start_year ?? ""; ?> - <?php echo $exp->is_current ? "Sekarang" : ($exp->end_year ?? ""); ?></td>
-                </tr>
-            </table>
-            <div class="item-subtitle"><?php echo $exp->company ?? ""; ?> <?php if(!empty($exp->location)): ?> | <?php echo $exp->location; ?> <?php endif; ?></div>
-            <div class="item-desc"><?php echo nl2br(htmlspecialchars($exp->description ?? "")); ?></div>
-        </div>
-        <?php endforeach; ?>
-        <?php endif; ?>
-
-        <?php if(count($projects) > 0): ?>
-        <div class="full-heading">Proyek & Portofolio</div>
-        <?php foreach($projects as $proj): ?>
-        <div class="item-block">
-            <table class="item-header-table" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td class="item-title" style="width: 75%; font-size: 10pt;"><?php echo $proj->name ?? ""; ?></td>
-                    <td class="item-date" style="width: 25%;"><?php echo $proj->year ?? $proj->link ?? ""; ?></td>
-                </tr>
-            </table>
-            <?php
-                $projSub = array_filter([$proj->role ?? "", $proj->technologies ?? "", (!empty($proj->year) ? $proj->link ?? "" : "")]);
-            ?>
-            <?php if(!empty($projSub)): ?>
-            <div class="item-subtitle"><?php echo implode(" | ", $projSub); ?></div>
-            <?php endif; ?>
-            <div class="item-desc"><?php echo nl2br(htmlspecialchars($proj->description ?? "")); ?></div>
-        </div>
-        <?php endforeach; ?>
-        <?php endif; ?>
-
-        <?php if(count($internships) > 0): ?>
-        <div class="full-heading">Pengalaman Magang</div>
-        <?php foreach($internships as $int): ?>
-        <div class="item-block">
-            <table class="item-header-table" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td class="item-title" style="width: 75%; font-size: 10pt;"><?php echo $int->position ?? ""; ?></td>
-                    <td class="item-date" style="width: 25%;"><?php echo $int->start_year ?? ""; ?> - <?php echo $int->end_year ?? ""; ?></td>
-                </tr>
-            </table>
-            <div class="item-subtitle"><?php echo $int->company ?? ""; ?> <?php if(!empty($int->location)): ?> | <?php echo $int->location; ?> <?php endif; ?></div>
-            <div class="item-desc"><?php echo nl2br(htmlspecialchars($int->description ?? "")); ?></div>
-        </div>
-        <?php endforeach; ?>
-        <?php endif; ?>
-
-        <?php if(count($organizations) > 0): ?>
-        <div class="full-heading">Pengalaman Organisasi & Kepanitiaan</div>
-        <?php foreach($organizations as $org): ?>
-        <div class="item-block">
-            <table class="item-header-table" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td class="item-title" style="width: 75%; font-size: 10pt;"><?php echo $org->role ?? ""; ?></td>
-                    <td class="item-date" style="width: 25%;"><?php echo $org->start_year ?? ""; ?> - <?php echo $org->end_year ?? ""; ?></td>
-                </tr>
-            </table>
-            <div class="item-subtitle"><?php echo $org->name ?? ""; ?></div>
-            <div class="item-desc"><?php echo nl2br(htmlspecialchars($org->description ?? "")); ?></div>
-        </div>
-        <?php endforeach; ?>
-        <?php endif; ?>
-    </div>
-    <?php endif; ?>
 </body>
 </html>
