@@ -105,15 +105,17 @@
                     <!-- Action Buttons -->
                     <div class="space-y-3 max-w-md mx-auto">
                         <!-- WhatsApp Direct Button -->
-                        <a href="{{ $waUrl }}" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-5 rounded-2xl shadow-lg shadow-emerald-600/30 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2.5 text-sm sm:text-base">
-                            <i class="fab fa-whatsapp text-xl"></i>
-                            <span>Konfirmasi / Kirim Bukti ke WhatsApp</span>
+                        <a href="{{ $waUrl }}" target="_blank" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff !important;" class="w-full font-bold py-4 px-5 rounded-2xl shadow-xl shadow-emerald-600/30 hover:opacity-95 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-3 text-sm sm:text-base cursor-pointer">
+                            <svg class="w-6 h-6 fill-current text-white flex-shrink-0" viewBox="0 0 24 24">
+                                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.53 1.771.815 2.791.815 3.181 0 5.767-2.586 5.768-5.766 0-3.18-2.586-5.768-5.768-5.768zm3.393 8.307c-.149.421-.849.771-1.189.815-.34.043-.77.065-2.221-.525-1.745-.71-2.87-2.478-2.958-2.593-.088-.115-.711-.944-.711-1.802 0-.858.451-1.282.611-1.455.16-.173.349-.216.465-.216.116 0 .233.001.334.007.108.005.249-.041.389.296.149.36.508 1.238.552 1.328.044.09.073.195.015.311-.058.116-.088.188-.175.289-.088.101-.184.225-.264.303-.088.086-.179.179-.077.354.102.175.451.744.969 1.205.666.594 1.228.777 1.403.864.175.086.277.073.379-.044.102-.116.437-.508.553-.682.116-.175.233-.146.393-.088.16.058 1.018.48 1.193.567.175.088.291.131.334.204.044.073.044.423-.105.844z"/>
+                            </svg>
+                            <span class="font-black text-white tracking-wide">Konfirmasi / Kirim Bukti ke WhatsApp</span>
                         </a>
 
                         <!-- Verify / I Have Paid Button -->
-                        <button id="verify-button" onclick="checkStatusManual()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-5 rounded-2xl shadow-lg shadow-indigo-600/30 transition-all transform hover:-translate-y-0.5 flex justify-center items-center gap-2 text-sm sm:text-base cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            <span>Saya Sudah Bayar (Cek Status)</span>
+                        <button id="verify-button" onclick="checkStatusManual()" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: #ffffff !important;" class="w-full font-bold py-3.5 px-5 rounded-2xl shadow-xl shadow-indigo-600/30 hover:opacity-95 transition-all transform hover:-translate-y-0.5 flex justify-center items-center gap-2.5 text-sm sm:text-base cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <span class="font-extrabold text-white">Saya Sudah Bayar (Cek Status)</span>
                         </button>
                     </div>
 
