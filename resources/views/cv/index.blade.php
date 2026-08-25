@@ -36,33 +36,50 @@
             flex-shrink: 0;
             margin-top: 10px;
         }
+        .a4-modal-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 10px 0 30px 0;
+            box-sizing: border-box;
+        }
         .a4-modal-sheet {
             width: 794px;
             height: 1123px;
             background: white;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.85);
             border-radius: 6px;
             overflow: hidden;
             flex-shrink: 0;
+            margin: 0 auto;
+            display: block;
         }
-        @media (max-width: 850px) {
+        @media (max-width: 920px) {
             .a4-modal-sheet {
-                transform: scale(0.75);
+                transform: scale(0.85);
                 transform-origin: top center;
-                margin-bottom: -280px;
+                margin-bottom: -170px;
             }
         }
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
             .a4-modal-sheet {
-                transform: scale(0.5);
+                transform: scale(0.68);
                 transform-origin: top center;
-                margin-bottom: -560px;
+                margin-bottom: -360px;
+            }
+        }
+        @media (max-width: 520px) {
+            .a4-modal-sheet {
+                transform: scale(0.46);
+                transform-origin: top center;
+                margin-bottom: -600px;
             }
         }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white font-sans antialiased min-h-screen transition-colors duration-200" 
-      x-data="{ showLogin: false, showRegister: false, previewOpen: false, previewSlug: '', previewName: '', activeLang: 'all', previewScale: 0.95 }" 
+      x-data="{ showLogin: false, showRegister: false, previewOpen: false, previewSlug: '', previewName: '', activeLang: 'all' }" 
       @open-login.window="showLogin = true" 
       @open-register.window="showRegister = true" 
       :class="{ 'overflow-hidden': showLogin || showRegister || previewOpen }">
@@ -283,7 +300,7 @@
         </div>
     </div>
 
-    <!-- FULLSCREEN MODAL PREVIEW (PERFECT RESIZING & CRISP A4 RENDERING) -->
+    <!-- FULLSCREEN MODAL PREVIEW (100% PERFECTLY CENTERED ON ALL SCREENS) -->
     <div x-show="previewOpen" 
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0"
@@ -291,10 +308,10 @@
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
-         style="position: fixed; inset: 0; z-index: 99999; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 12px;" 
+         style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; height: 100vh; z-index: 999999; background: rgba(10, 15, 30, 0.85); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box;" 
          x-cloak>
         
-        <div style="background: #0f172a; border-radius: 20px; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.8); border: 1px solid #334155; width: 96%; max-width: 960px; height: 92vh; display: flex; flex-direction: column; overflow: hidden; position: relative;"
+        <div style="background: #0f172a; border-radius: 20px; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.9); border: 1px solid #334155; width: 100%; max-width: 900px; height: 94vh; max-height: 950px; display: flex; flex-direction: column; overflow: hidden; margin: auto; position: relative;"
              @click.away="previewOpen = false">
             
             <!-- Modal Header -->
@@ -323,13 +340,15 @@
                 </div>
             </div>
 
-            <!-- Modal Body (Centered High-Res A4 Sheet with Smooth Scroll) -->
-            <div style="flex: 1; overflow-y: auto; background: #0b0f19; padding: 30px 15px; display: flex; justify-content: center; align-items: flex-start;">
-                <div class="a4-modal-sheet">
-                    <template x-if="previewOpen">
-                        <iframe :src="'/cv/preview-example/' + previewSlug" 
-                                style="width: 794px; height: 1123px; border: 0; display: block; background: white;"></iframe>
-                    </template>
+            <!-- Modal Body (Centered A4 Sheet with Zero Data Loss) -->
+            <div style="flex: 1; overflow-y: auto; overflow-x: auto; background: #060913; width: 100%; box-sizing: border-box;">
+                <div class="a4-modal-wrapper">
+                    <div class="a4-modal-sheet">
+                        <template x-if="previewOpen">
+                            <iframe :src="'/cv/preview-example/' + previewSlug" 
+                                    style="width: 794px; height: 1123px; border: 0; display: block; background: white;"></iframe>
+                        </template>
+                    </div>
                 </div>
             </div>
 
