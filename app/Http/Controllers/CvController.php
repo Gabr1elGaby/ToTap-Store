@@ -465,13 +465,37 @@ class CvController extends Controller
         $userData['cv']['volunteers'] = $userData['volunteers'] ?? [];
 
         $data = (object)$userData['cv'];
-        return view('cv.templates.' . $template->slug, compact('userData', 'template', 'data'));
+        $skills = $userData['skills'];
+        $tools = $userData['tools'] ?? [];
+        $certificates = $userData['certificates'];
+        $educations = $userData['educations'];
+        $experiences = $userData['experiences'];
+        $projects = $userData['projects'];
+        $internships = $userData['internships'];
+        $organizations = $userData['organizations'];
+
+        return view('cv.templates.' . $template->slug, compact(
+            'userData', 'template', 'data',
+            'skills', 'tools', 'certificates', 'educations', 'experiences', 'projects', 'internships', 'organizations'
+        ));
     }
 
     public function preview(Request $request, $slug)
     {
         $userData = $request->all();
-        // Return only the inner body of the template, no full html head for the preview panel
-        return view('cv.templates.' . $slug, compact('userData'))->render();
+        $data = (object)($userData['cv'] ?? $userData);
+        $skills = $userData['skills'] ?? [];
+        $tools = $userData['tools'] ?? [];
+        $certificates = $userData['certificates'] ?? [];
+        $educations = $userData['educations'] ?? [];
+        $experiences = $userData['experiences'] ?? [];
+        $projects = $userData['projects'] ?? [];
+        $internships = $userData['internships'] ?? [];
+        $organizations = $userData['organizations'] ?? [];
+
+        return view('cv.templates.' . $slug, compact(
+            'userData', 'data',
+            'skills', 'tools', 'certificates', 'educations', 'experiences', 'projects', 'internships', 'organizations'
+        ))->render();
     }
 }

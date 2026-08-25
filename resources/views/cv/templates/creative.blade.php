@@ -214,14 +214,14 @@
             return "";
         };
 
-        $skills = $skills ?? [];
-        $educations = $educations ?? [];
-        $experiences = $experiences ?? [];
-        $projects = $projects ?? [];
-        $internships = $internships ?? [];
-        $organizations = $organizations ?? [];
-        $certificates = $certificates ?? [];
-        $tools = $tools ?? [];
+        $skills = (!empty($skills) && count($skills) > 0) ? $skills : ($data->skills ?? ($userData["skills"] ?? []));
+        $educations = (!empty($educations) && count($educations) > 0) ? $educations : ($data->educations ?? ($userData["educations"] ?? []));
+        $experiences = (!empty($experiences) && count($experiences) > 0) ? $experiences : ($data->experiences ?? ($userData["experiences"] ?? []));
+        $projects = (!empty($projects) && count($projects) > 0) ? $projects : ($data->projects ?? ($userData["projects"] ?? []));
+        $internships = (!empty($internships) && count($internships) > 0) ? $internships : ($data->internships ?? ($userData["internships"] ?? []));
+        $organizations = (!empty($organizations) && count($organizations) > 0) ? $organizations : ($data->organizations ?? ($userData["organizations"] ?? []));
+        $certificates = (!empty($certificates) && count($certificates) > 0) ? $certificates : ($data->certificates ?? ($userData["certificates"] ?? []));
+        $tools = (!empty($tools) && count($tools) > 0) ? $tools : ($data->tools ?? ($userData["tools"] ?? []));
 
         // Page 1 contains: Name, Title, Summary, Education, and FIRST Experience
         $page1Exp = count($experiences) > 0 ? [ $experiences[0] ] : [];
