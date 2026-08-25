@@ -139,6 +139,8 @@ Route::middleware(['auth', 'verified', 'role:superadmin'])->prefix('admin')->nam
     Route::post('/transactions/{id}/approve', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'approve'])->name('transactions.approve');
     Route::post('/transactions/{id}/manual-success', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'manualSuccess'])->name('transactions.manual-success');
     Route::post('/transactions/{id}/reject', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'reject'])->name('transactions.reject');
+    Route::delete('/transactions/{id}', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'destroy'])->name('transactions.destroy');
+    Route::post('/transactions/clear-all', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'clearAll'])->name('transactions.clear-all');
 
     // Customer Reviews & Feedback Management
     Route::resource('reviews', \App\Http\Controllers\Admin\ReviewController::class)->only(['index', 'destroy']);

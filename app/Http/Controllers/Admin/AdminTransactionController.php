@@ -130,4 +130,34 @@ class AdminTransactionController extends Controller
 
         return back()->with('error', "Pesanan #{$transaction->id} telah dibatalkan / ditolak.");
     }
+
+    public function destroy($id)
+    {
+        $transaction = Transaction::find($id);
+        if ($transaction) {
+            $transaction->delete();
+            return back()->with('success', "Data transaksi #{$id} berhasil dihapus.");
+        }
+
+        $order = Order::where('order_number', $id)->first();
+        if ($order) {
+            $order->delete();
+            return back()->with('success', "Data order software #{$id} berhasil dihapus.");
+        }
+
+        return back()->with('error', "Data transaksi tidak ditemukan.");
+    }
+
+    public function clearAll(Request $request)
+    {
+        $type = $request->input('type', 'all');
+        if ($type === 'topup' || $type === 'all') {
+            Transaction::truncate();
+        }
+        if ($type === 'software' || $type === 'all') {
+            Order::truncate();
+        }
+
+        return back()->with('success', "Seluruh data transaksi lama berhasil dibersihkan dan direset!");
+    }
 }

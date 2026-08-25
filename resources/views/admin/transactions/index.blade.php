@@ -10,13 +10,21 @@
                     </h1>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Pantau seluruh riwayat transaksi pembelian sistem software, aplikasi POS, dan top up game dari semua pengguna.</p>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex flex-wrap items-center gap-3">
                     <span class="px-4 py-2.5 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 text-sm font-bold text-blue-600 dark:text-blue-300 shadow-sm">
                         <i class="fas fa-desktop mr-1.5"></i> Software: {{ $orders->total() }}
                     </span>
                     <span class="px-4 py-2.5 rounded-2xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/80 text-sm font-bold text-purple-600 dark:text-purple-300 shadow-sm">
                         <i class="fas fa-gamepad mr-1.5"></i> Top Up: {{ $transactions->total() }}
                     </span>
+                    
+                    <!-- Clear All Data Button -->
+                    <form action="{{ route('admin.transactions.clear-all') }}" method="POST" onsubmit="return confirm('PERINGATAN: Apakah Anda yakin ingin MENGHAPUS SELURUH riwayat transaksi lama? Data yang dihapus tidak dapat dikembalikan.');" class="inline">
+                        @csrf
+                        <button type="submit" class="px-4 py-2.5 rounded-2xl bg-red-50 hover:bg-red-100 dark:bg-red-950/50 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-800 text-sm font-bold text-red-600 dark:text-red-300 shadow-sm transition flex items-center gap-1.5 cursor-pointer" title="Bersihkan Seluruh Transaksi Lama">
+                            <i class="fas fa-trash-alt"></i> Bersihkan Riwayat
+                        </button>
+                    </form>
                 </div>
             </div>
 
@@ -297,6 +305,15 @@
                                                     <a href="{{ route('admin.transactions.invoice', $trx->id) }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition shadow-sm" title="Lihat Invoice">
                                                         <i class="fas fa-file-invoice"></i>
                                                     </a>
+
+                                                    <!-- Delete Row -->
+                                                    <form action="{{ route('admin.transactions.destroy', $trx->id) }}" method="POST" onsubmit="return confirm('Hapus permanen riwayat transaksi ini?');" class="inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" title="Hapus Transaksi" class="inline-flex items-center p-1.5 rounded-xl text-xs text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 transition cursor-pointer">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </td>
                                         </tr>
