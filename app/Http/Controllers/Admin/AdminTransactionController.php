@@ -139,20 +139,6 @@ class AdminTransactionController extends Controller
         return back()->with('error', "Pesanan CV (#{$cv->invoice_number}) telah ditolak/dibatalkan.");
     }
 
-    public function destroyCv($id)
-    {
-        $deleted = \Illuminate\Support\Facades\DB::table('cvs')
-            ->where('id', $id)
-            ->orWhere('access_token', $id)
-            ->delete();
-
-        if ($deleted) {
-            return back()->with('success', "Data pesanan CV #{$id} berhasil dihapus.");
-        }
-
-        return back()->with('error', 'Data CV tidak ditemukan.');
-    }
-
     public function approve($id)
     {
         $transaction = Transaction::with(['game', 'gameProduct', 'user'])->findOrFail($id);
