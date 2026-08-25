@@ -139,19 +139,19 @@ if (!empty($data->name)) {
         
         /* Right Column Styles */
         .name {
-            font-size: 36pt;
+            font-size: 24pt;
             font-weight: bold;
             color: #111827;
             margin: 0 0 5px 0;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
-            line-height: 1.1;
+            line-height: 1.2;
         }
         .job-title {
-            font-size: 12pt;
+            font-size: 10.5pt;
             color: #4b5563;
-            margin: 0 0 15px 0;
-            letter-spacing: 2px;
+            margin: 0 0 12px 0;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
         }
         

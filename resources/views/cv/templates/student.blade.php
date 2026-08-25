@@ -53,20 +53,23 @@
         }
         
         .name {
-            font-size: 26pt;
+            font-size: 16pt;
             font-weight: bold;
             text-transform: uppercase;
             text-align: center;
-            margin-bottom: 3px;
-            letter-spacing: 1px;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+            line-height: 1.25;
+            color: #ffffff;
         }
         .job-title {
-            font-size: 13pt;
+            font-size: 9.5pt;
             text-align: center;
             text-transform: uppercase;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             color: #fbcfe8;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
+            line-height: 1.3;
         }
 
         /* Left Content */
@@ -126,8 +129,9 @@
 </head>
 <body>
     @php
-        $hard_skills = collect(isset($userData['cv']['skills']) && is_array($userData['cv']['skills']) ? $userData['cv']['skills'] : [])->filter(fn($s) => isset($s['level']) && $s['level'] !== '')->map(fn($s) => (object)$s)->all();
-        $soft_skills = collect(isset($userData['cv']['skills']) && is_array($userData['cv']['skills']) ? $userData['cv']['skills'] : [])->filter(fn($s) => !isset($s['level']) || $s['level'] === '')->map(fn($s) => (object)$s)->all();
+        $allSkills = collect(isset($userData['cv']['skills']) && is_array($userData['cv']['skills']) ? $userData['cv']['skills'] : []);
+        $hard_skills = $allSkills->slice(0, 5)->map(fn($s) => (object)$s)->all();
+        $soft_skills = $allSkills->slice(5)->map(fn($s) => (object)$s)->all();
         $data = isset($userData['cv']) && is_array($userData['cv']) ? (object)$userData['cv'] : (isset($userData['cv']) ? $userData['cv'] : (object)[]);
         $educations = isset($userData['cv']['educations']) && is_array($userData['cv']['educations']) ? collect($userData['cv']['educations'])->map(fn($i) => (object)$i) : [];
         $organizations = isset($userData['cv']['organizations']) && is_array($userData['cv']['organizations']) ? collect($userData['cv']['organizations'])->map(fn($i) => (object)$i) : collect([]);
@@ -137,9 +141,6 @@
         $projects = isset($userData['cv']['projects']) && is_array($userData['cv']['projects']) ? collect($userData['cv']['projects'])->map(fn($i) => (object)$i) : [];
         $certificates = isset($userData['cv']['certificates']) && is_array($userData['cv']['certificates']) ? collect($userData['cv']['certificates'])->map(fn($i) => (object)$i) : [];
         $skills = isset($userData['cv']['skills']) && is_array($userData['cv']['skills']) ? collect($userData['cv']['skills'])->map(fn($i) => (object)$i) : [];
-        
-        
-        // volunteers mapped to organizations conceptually in blade if we want, but let's assume they are sent in organizations array for student
     @endphp
 
     <table class="main-table">
@@ -259,15 +260,18 @@
                 <div><span class="right-header">Keahlian Teknis</span></div>
                 <div style="padding-left: 15px; margin-bottom: 20px;">
                     @foreach($hard_skills as $skill)
+                    @php
+                        $lvl = is_numeric($skill->level ?? null) ? (int)$skill->level : 90;
+                    @endphp
                     <div style="margin-bottom: 12px;">
                         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 4px;">
                             <tr>
                                 <td style="font-size: 10pt; color: #334155; font-weight: bold;">{{ $skill->name ?? '' }}</td>
-                                <td align="right" style="color: #831843; font-size: 9pt;">{{ $skill->level ?? '' }}%</td>
+                                <td align="right" style="color: #831843; font-size: 9pt; font-weight: bold;">{{ $lvl }}%</td>
                             </tr>
                         </table>
                         <div style="width: 100%; background-color: #f1f5f9; height: 6px; border-radius: 3px;">
-                            <div style="width: {{ $skill->level ?? '' }}%; background-color: #831843; height: 100%; border-radius: 3px;"></div>
+                            <div style="width: {{ $lvl }}%; background-color: #831843; height: 100%; border-radius: 3px;"></div>
                         </div>
                     </div>
                     @endforeach

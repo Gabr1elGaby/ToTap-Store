@@ -55,21 +55,21 @@
 
         /* Identity */
         .name {
-            font-size: 22pt;
+            font-size: 16pt;
             font-weight: bold;
             color: #ffffff;
             text-align: center;
             text-transform: uppercase;
             margin: 0 0 5px 0;
-            line-height: 1.1;
+            line-height: 1.25;
         }
         .job-title {
-            font-size: 12pt;
+            font-size: 9.5pt;
             color: #38bdf8;
             text-align: center;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin: 0 0 30px 0;
+            margin: 0 0 20px 0;
         }
 
         /* Left Section */

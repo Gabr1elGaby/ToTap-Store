@@ -90,17 +90,18 @@
             border-left: 10px solid #f59e0b;
         }
         .name {
-            font-size: 24pt;
+            font-size: 19pt;
             font-weight: bold;
             text-transform: uppercase;
-            margin: 0 0 5px 0;
-            letter-spacing: 1.5px;
+            margin: 0 0 4px 0;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
         }
         .job-title {
-            font-size: 12pt;
+            font-size: 10pt;
             color: #e2e8f0;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
         }
 
         .right-header {
@@ -182,18 +183,18 @@
                 <div style="padding-left: 0; margin-bottom: 25px;">
                     @foreach($skills as $skill)
                     <div style="margin-bottom: 10px;">
+                        @if(isset($skill->level) && is_numeric($skill->level))
                         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 3px;">
                             <tr>
                                 <td style="font-size: 9.5pt; color: #f8fafc;">{{ $skill->name ?? '' }}</td>
-                                @if(isset($skill->level))
-                                <td align="right" style="font-size: 8.5pt; color: #f59e0b;">{{ $skill->level ?? '' }}%</td>
-                                @endif
+                                <td align="right" style="font-size: 8.5pt; color: #f59e0b;">{{ $skill->level }}%</td>
                             </tr>
                         </table>
-                        @if(isset($skill->level))
                         <div style="width: 100%; background-color: #334155; height: 5px; border-radius: 3px;">
-                            <div style="width: {{ $skill->level ?? '' }}%; background-color: #f59e0b; height: 100%; border-radius: 3px;"></div>
+                            <div style="width: {{ $skill->level }}%; background-color: #f59e0b; height: 100%; border-radius: 3px;"></div>
                         </div>
+                        @else
+                        <div style="font-size: 9.5pt; color: #f8fafc; padding: 2px 0;">• {{ $skill->name ?? '' }}</div>
                         @endif
                     </div>
                     @endforeach

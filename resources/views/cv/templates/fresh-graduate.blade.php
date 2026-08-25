@@ -91,18 +91,19 @@
 
         /* Right Col Elements */
         .name {
-            font-size: 26pt;
+            font-size: 20pt;
             font-weight: bold;
             color: #111827;
             text-transform: uppercase;
-            margin: 0 0 5px 0;
-            letter-spacing: 1px;
+            margin: 0 0 4px 0;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
         }
         .job-title {
-            font-size: 13pt;
+            font-size: 10.5pt;
             color: #4b5563;
             font-style: italic;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         .right-header {
             font-size: 13pt;

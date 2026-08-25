@@ -71,18 +71,19 @@ if (!empty($data->name)) {
         }
         
         .name {
-            font-size: 32pt;
+            font-size: 22pt;
             font-weight: bold;
             color: #d4af37;
-            margin: 0 0 5px 0;
-            letter-spacing: 2px;
+            margin: 0 0 4px 0;
+            letter-spacing: 1px;
             text-transform: uppercase;
+            line-height: 1.2;
         }
         .job-title {
-            font-size: 14pt;
+            font-size: 11pt;
             font-weight: bold;
             color: #ffffff;
-            margin: 0 0 15px 0;
+            margin: 0 0 10px 0;
             letter-spacing: 1px;
             text-transform: uppercase;
         }
