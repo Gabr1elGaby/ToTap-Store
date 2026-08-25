@@ -18,27 +18,30 @@
                 $paidCvCount = \Illuminate\Support\Facades\DB::table('cvs')->whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->count();
                 $cvRevenue = $paidCvCount * 15000;
 
-                // Top Up Game Revenue
+                // Top Up Game Revenue & Count
+                $topupTrxCount = 0;
                 $topupRevenue = 0;
                 if (\Illuminate\Support\Facades\Schema::hasTable('transactions')) {
+                    $topupTrxCount += \Illuminate\Support\Facades\DB::table('transactions')->whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->count();
                     $topupRevenue += (float) \Illuminate\Support\Facades\DB::table('transactions')->whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->sum('amount');
                 }
                 if (\Illuminate\Support\Facades\Schema::hasTable('topup_transactions')) {
+                    $topupTrxCount += \Illuminate\Support\Facades\DB::table('topup_transactions')->whereIn('payment_status', ['PAID', 'paid', 'SUCCESS', 'success'])->count();
                     $topupRevenue += (float) \Illuminate\Support\Facades\DB::table('topup_transactions')->whereIn('payment_status', ['PAID', 'paid', 'SUCCESS', 'success'])->sum('amount');
                 }
 
-                // Software POS Revenue
+                // Software POS Revenue & Count
+                $softwareOrdersCount = 0;
                 $softwareRevenue = 0;
+                if (\Illuminate\Support\Facades\Schema::hasTable('orders')) {
+                    $softwareOrdersCount += \Illuminate\Support\Facades\DB::table('orders')->whereIn('payment_status', ['PAID', 'paid', 'SUCCESS', 'success'])->count();
+                }
                 if (\Illuminate\Support\Facades\Schema::hasTable('payments')) {
                     $softwareRevenue += (float) \Illuminate\Support\Facades\DB::table('payments')->whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->sum('amount');
                 }
 
+                $totalPurchases = $paidCvCount + $topupTrxCount + $softwareOrdersCount;
                 $totalRevenue = $cvRevenue + $topupRevenue + $softwareRevenue;
-
-                $activeSubscriptions = 0;
-                if (\Illuminate\Support\Facades\Schema::hasTable('subscriptions')) {
-                    $activeSubscriptions = \Illuminate\Support\Facades\DB::table('subscriptions')->where('status', 'ACTIVE')->count();
-                }
 
                 // Real customer reviews and feedback
                 $totalReviews = 0;
@@ -67,8 +70,8 @@
                     <p class="text-2xl font-black text-gray-900 dark:text-gray-100">{{ $totalProducts }}</p>
                 </div>
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-2xl p-5 border border-gray-100 dark:border-gray-700">
-                    <h3 class="text-gray-500 dark:text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">Langganan Aktif</h3>
-                    <p class="text-2xl font-black text-emerald-600 dark:text-emerald-400">{{ $activeSubscriptions }}</p>
+                    <h3 class="text-gray-500 dark:text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">Total Pembelian</h3>
+                    <p class="text-2xl font-black text-emerald-600 dark:text-emerald-400">{{ number_format($totalPurchases) }}</p>
                 </div>
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-2xl p-5 border border-gray-100 dark:border-gray-700">
                     <h3 class="text-gray-500 dark:text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">Total Pendapatan</h3>

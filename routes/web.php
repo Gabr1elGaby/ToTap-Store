@@ -19,27 +19,27 @@ Route::get('/', function () {
     }])->get();
 
     // REAL-TIME STATS
-    $totalUsers = \App\Models\User::count();
+    $totalUsers = \Illuminate\Support\Facades\DB::table('users')->count();
     
     // Sum of all paid transactions across all modules
     $totalTransactions = 0;
     
-    // 1. Enterprise POS Orders
-    if (class_exists(\App\Models\Order::class)) {
-        $totalTransactions += \App\Models\Order::whereIn('payment_status', ['paid', 'success', 'PAID', 'SUCCESS'])->count();
+    // 1. CV Builder Transactions
+    if (\Illuminate\Support\Facades\Schema::hasTable('cvs')) {
+        $totalTransactions += \Illuminate\Support\Facades\DB::table('cvs')->whereIn('status', ['paid', 'success', 'PAID', 'SUCCESS'])->count();
     }
-    
+
     // 2. Top Up Game Transactions
-    if (class_exists(\App\Models\Transaction::class)) {
-        $totalTransactions += \App\Models\Transaction::whereIn('status', ['paid', 'success', 'PAID', 'SUCCESS'])->count();
+    if (\Illuminate\Support\Facades\Schema::hasTable('transactions')) {
+        $totalTransactions += \Illuminate\Support\Facades\DB::table('transactions')->whereIn('status', ['paid', 'success', 'PAID', 'SUCCESS'])->count();
     }
-    if (class_exists(\App\Models\TopupTransaction::class)) {
-        $totalTransactions += \App\Models\TopupTransaction::whereIn('payment_status', ['paid', 'success', 'PAID', 'SUCCESS'])->count();
+    if (\Illuminate\Support\Facades\Schema::hasTable('topup_transactions')) {
+        $totalTransactions += \Illuminate\Support\Facades\DB::table('topup_transactions')->whereIn('payment_status', ['paid', 'success', 'PAID', 'SUCCESS'])->count();
     }
     
-    // 3. CV Builder Transactions
-    if (class_exists(\App\Models\Cv::class)) {
-        $totalTransactions += \App\Models\Cv::whereIn('status', ['paid', 'success', 'PAID', 'SUCCESS'])->count();
+    // 3. Enterprise POS Orders
+    if (\Illuminate\Support\Facades\Schema::hasTable('orders')) {
+        $totalTransactions += \Illuminate\Support\Facades\DB::table('orders')->whereIn('payment_status', ['paid', 'success', 'PAID', 'SUCCESS'])->count();
     }
 
         // GET MAX DISCOUNT FOR TOP UP GAMES
