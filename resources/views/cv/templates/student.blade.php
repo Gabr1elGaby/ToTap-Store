@@ -30,54 +30,17 @@
             table-layout: fixed;
         }
         .p1-left {
-            width: 33%;
+            width: 34%;
             background-color: #831843;
             color: #fdf2f8;
-            padding: 32pt 18pt 30pt 18pt;
+            padding: 32pt 16pt 30pt 16pt;
             vertical-align: top;
         }
         .p1-right {
-            width: 67%;
+            width: 66%;
             background-color: #ffffff;
             padding: 32pt 30pt 30pt 25pt;
             vertical-align: top;
-        }
-
-        /* Photo Area */
-        .photo-wrapper {
-            width: 85pt;
-            height: 85pt;
-            border-radius: 50%;
-            border: 3pt solid #fbcfe8;
-            overflow: hidden;
-            display: block;
-            margin: 0 auto 14pt auto;
-            text-align: center;
-            background-color: #831843;
-        }
-        .photo {
-            width: 85pt;
-            height: 85pt;
-            display: block;
-            margin: 0 auto;
-        }
-        
-        .name {
-            font-size: 14pt;
-            font-weight: bold;
-            text-transform: uppercase;
-            text-align: center;
-            margin: 0 auto 3pt auto;
-            color: #ffffff;
-            line-height: 1.2;
-        }
-        .job-title {
-            font-size: 8.5pt;
-            color: #fbcfe8;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 0 auto 16pt auto;
         }
 
         /* Left Col Headers */
@@ -250,14 +213,28 @@
         <tr>
             <!-- LEFT COLUMN (MAGENTA SIDEBAR) -->
             <td class="p1-left">
-                @if(!empty($data->photo))
-                <div class="photo-wrapper">
-                    <img src="{{ $data->photo }}" class="photo">
-                </div>
-                @endif
-
-                <div class="name">{{ $data->name ?? 'NAMA MAHASISWA' }}</div>
-                <div class="job-title">{{ $data->job_title ?? 'MAHASISWA / PELAJAR' }}</div>
+                <!-- PHOTO & NAME CENTERED WITH TABLE -->
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 14pt;">
+                    <tr>
+                        <td align="center" style="text-align: center;">
+                            @if(!empty($data->photo))
+                            <table align="center" cellpadding="0" cellspacing="0" style="margin: 0 auto 10pt auto;">
+                                <tr>
+                                    <td align="center" style="width: 85pt; height: 85pt; border-radius: 50%; border: 3pt solid #fbcfe8; overflow: hidden; background-color: #831843; text-align: center; vertical-align: middle;">
+                                        <img src="{{ $data->photo }}" style="width: 85pt; height: 85pt; display: block; margin: 0 auto;">
+                                    </td>
+                                </tr>
+                            </table>
+                            @endif
+                            <div style="font-size: 14pt; font-weight: bold; text-transform: uppercase; text-align: center; margin: 0 auto 3pt auto; color: #ffffff; line-height: 1.2;">
+                                {{ $data->name ?? 'NAMA MAHASISWA' }}
+                            </div>
+                            <div style="font-size: 8.5pt; color: #fbcfe8; text-align: center; text-transform: uppercase; letter-spacing: 1px; margin: 0 auto 6pt auto;">
+                                {{ $data->job_title ?? 'MAHASISWA / PELAJAR' }}
+                            </div>
+                        </td>
+                    </tr>
+                </table>
 
                 <div class="left-header">Kontak</div>
                 @if(!empty($data->phone))

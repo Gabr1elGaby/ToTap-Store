@@ -33,7 +33,7 @@
             width: 34%;
             background-color: #1e293b;
             color: #e2e8f0;
-            padding: 32pt 18pt 30pt 18pt;
+            padding: 32pt 16pt 30pt 16pt;
             vertical-align: top;
         }
         .p1-right {
@@ -41,25 +41,6 @@
             background-color: #ffffff;
             padding: 32pt 30pt 30pt 25pt;
             vertical-align: top;
-        }
-
-        /* Photo Area */
-        .photo-wrapper {
-            width: 85pt;
-            height: 85pt;
-            border-radius: 50%;
-            border: 3pt solid #f59e0b;
-            overflow: hidden;
-            display: block;
-            margin: 0 auto 14pt auto;
-            text-align: center;
-            background-color: #fff;
-        }
-        .photo {
-            width: 85pt;
-            height: 85pt;
-            display: block;
-            margin: 0 auto;
         }
 
         /* Left Col Headers */
@@ -250,11 +231,22 @@
         <tr>
             <!-- LEFT COLUMN (NAVY SIDEBAR) -->
             <td class="p1-left">
-                @if(!empty($data->photo))
-                <div class="photo-wrapper">
-                    <img src="{{ $data->photo }}" class="photo">
-                </div>
-                @endif
+                <!-- PHOTO CENTERED WITH TABLE -->
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 14pt;">
+                    <tr>
+                        <td align="center" style="text-align: center;">
+                            @if(!empty($data->photo))
+                            <table align="center" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
+                                <tr>
+                                    <td align="center" style="width: 85pt; height: 85pt; border-radius: 50%; border: 3pt solid #f59e0b; overflow: hidden; background-color: #ffffff; text-align: center; vertical-align: middle;">
+                                        <img src="{{ $data->photo }}" style="width: 85pt; height: 85pt; display: block; margin: 0 auto;">
+                                    </td>
+                                </tr>
+                            </table>
+                            @endif
+                        </td>
+                    </tr>
+                </table>
 
                 <div class="left-header">Kontak</div>
                 @if(!empty($data->phone))

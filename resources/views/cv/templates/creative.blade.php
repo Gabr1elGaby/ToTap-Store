@@ -33,7 +33,7 @@
             width: 34%;
             background-color: #0f172a;
             color: #cbd5e1;
-            padding: 32pt 18pt 30pt 18pt;
+            padding: 32pt 16pt 30pt 16pt;
             vertical-align: top;
         }
         .p1-right {
@@ -41,49 +41,6 @@
             background-color: #ffffff;
             padding: 32pt 30pt 30pt 25pt;
             vertical-align: top;
-        }
-        
-        /* Photo centered */
-        .photo-container {
-            text-align: center;
-            margin-bottom: 14pt;
-        }
-        .photo-wrapper {
-            width: 85pt;
-            height: 85pt;
-            border-radius: 50%;
-            border: 3pt solid #38bdf8;
-            overflow: hidden;
-            display: block;
-            margin: 0 auto;
-            text-align: center;
-            background-color: #1e293b;
-        }
-        .photo {
-            width: 85pt;
-            height: 85pt;
-            display: block;
-            margin: 0 auto;
-        }
-
-        /* Identity */
-        .name {
-            font-size: 14pt;
-            font-weight: bold;
-            color: #ffffff;
-            text-align: center;
-            text-transform: uppercase;
-            margin: 0 auto 3pt auto;
-            line-height: 1.2;
-        }
-        .job-title {
-            font-size: 8.5pt;
-            color: #38bdf8;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 0 auto 16pt auto;
-            font-weight: bold;
         }
 
         /* Left Section */
@@ -265,16 +222,28 @@
         <tr>
             <!-- LEFT COLUMN (DARK NAVY SIDEBAR) -->
             <td class="p1-left">
-                @if(!empty($data->photo))
-                <div class="photo-container">
-                    <div class="photo-wrapper">
-                        <img src="{{ $data->photo }}" class="photo">
-                    </div>
-                </div>
-                @endif
-
-                <div class="name">{{ $data->name ?? 'NAMA LENGKAP' }}</div>
-                <div class="job-title">{{ $data->job_title ?? 'PROFESI / ROLE' }}</div>
+                <!-- PHOTO & NAME CENTERED WITH TABLE TO GUARANTEE 100% DEAD CENTER -->
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 14pt;">
+                    <tr>
+                        <td align="center" style="text-align: center;">
+                            @if(!empty($data->photo))
+                            <table align="center" cellpadding="0" cellspacing="0" style="margin: 0 auto 10pt auto;">
+                                <tr>
+                                    <td align="center" style="width: 85pt; height: 85pt; border-radius: 50%; border: 3pt solid #38bdf8; overflow: hidden; background-color: #1e293b; text-align: center; vertical-align: middle;">
+                                        <img src="{{ $data->photo }}" style="width: 85pt; height: 85pt; display: block; margin: 0 auto;">
+                                    </td>
+                                </tr>
+                            </table>
+                            @endif
+                            <div style="font-size: 14pt; font-weight: bold; color: #ffffff; text-align: center; text-transform: uppercase; margin: 0 auto 3pt auto; line-height: 1.2;">
+                                {{ $data->name ?? 'NAMA LENGKAP' }}
+                            </div>
+                            <div style="font-size: 8.5pt; color: #38bdf8; text-align: center; text-transform: uppercase; letter-spacing: 1px; margin: 0 auto 6pt auto; font-weight: bold;">
+                                {{ $data->job_title ?? 'PROFESI / ROLE' }}
+                            </div>
+                        </td>
+                    </tr>
+                </table>
 
                 <div class="left-header">Kontak Pribadi</div>
                 <ul class="contact-list">

@@ -30,32 +30,17 @@
             table-layout: fixed;
         }
         .p1-left {
-            width: 32%;
+            width: 34%;
             background-color: #111827;
             color: #e5e7eb;
-            padding: 32pt 18pt 30pt 18pt;
+            padding: 32pt 16pt 30pt 16pt;
             vertical-align: top;
         }
         .p1-right {
-            width: 68%;
+            width: 66%;
             background-color: #ffffff;
             padding: 32pt 30pt 30pt 25pt;
             vertical-align: top;
-        }
-
-        /* Photo Area */
-        .photo-dark-bg {
-            text-align: center;
-            margin-bottom: 14pt;
-        }
-        .photo {
-            width: 85pt;
-            height: 85pt;
-            border-radius: 50%;
-            border: 3pt solid #D4AF37;
-            object-fit: cover;
-            display: block;
-            margin: 0 auto;
         }
 
         /* Left Col Headers (Gold ribbon style) */
@@ -246,13 +231,24 @@
         <tr>
             <!-- LEFT COLUMN (DARK SIDEBAR) -->
             <td class="p1-left">
-                <div class="photo-dark-bg">
-                    @if(!empty($data->photo))
-                        <img src="{{ $data->photo }}" class="photo">
-                    @else
-                        <div style="height: 40pt;"></div>
-                    @endif
-                </div>
+                <!-- PHOTO CENTERED WITH TABLE -->
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 14pt;">
+                    <tr>
+                        <td align="center" style="text-align: center;">
+                            @if(!empty($data->photo))
+                            <table align="center" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
+                                <tr>
+                                    <td align="center" style="width: 85pt; height: 85pt; border-radius: 50%; border: 3pt solid #D4AF37; overflow: hidden; background-color: #111827; text-align: center; vertical-align: middle;">
+                                        <img src="{{ $data->photo }}" style="width: 85pt; height: 85pt; display: block; margin: 0 auto;">
+                                    </td>
+                                </tr>
+                            </table>
+                            @else
+                            <div style="height: 20pt;"></div>
+                            @endif
+                        </td>
+                    </tr>
+                </table>
 
                 <div class="left-header">Data Diri</div>
                 <div style="margin-bottom: 12pt;">

@@ -80,7 +80,7 @@ $hasPage2 = (count($educations) > 0 || count($organizations) > 0 || count($inter
             width: 34%;
             background-color: #0f172a;
             color: #cbd5e1;
-            padding: 32pt 18pt 30pt 18pt;
+            padding: 32pt 16pt 30pt 16pt;
             vertical-align: top;
         }
         .p1-right {
@@ -88,32 +88,6 @@ $hasPage2 = (count($educations) > 0 || count($organizations) > 0 || count($inter
             background-color: #ffffff;
             padding: 32pt 30pt 30pt 25pt;
             vertical-align: top;
-        }
-        
-        .photo-container {
-            text-align: center;
-            margin-bottom: 14pt;
-        }
-        .photo-wrapper {
-            width: 85pt;
-            height: 85pt;
-            border-radius: 50%;
-            background-color: #1e293b;
-            margin: 0 auto;
-            text-align: center;
-            line-height: 85pt;
-            font-size: 26pt;
-            font-weight: bold;
-            color: #38bdf8;
-            overflow: hidden;
-            border: 3pt solid #38bdf8;
-            display: block;
-        }
-        .photo-wrapper img {
-            width: 85pt;
-            height: 85pt;
-            display: block;
-            margin: 0 auto;
         }
         
         .sidebar-heading {
@@ -283,15 +257,24 @@ $hasPage2 = (count($educations) > 0 || count($organizations) > 0 || count($inter
         <tr>
             <!-- LEFT COLUMN (DARK NAVY SIDEBAR) -->
             <td class="p1-left">
-                <div class="photo-container">
-                    <div class="photo-wrapper">
-                        @if(!empty($data->photo))
-                        <img src="{{ $data->photo }}">
-                        @else
-                        {{ $initials }}
-                        @endif
-                    </div>
-                </div>
+                <!-- PHOTO CENTERED WITH TABLE -->
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 14pt;">
+                    <tr>
+                        <td align="center" style="text-align: center;">
+                            <table align="center" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
+                                <tr>
+                                    <td align="center" style="width: 85pt; height: 85pt; border-radius: 50%; border: 3pt solid #38bdf8; overflow: hidden; background-color: #1e293b; text-align: center; vertical-align: middle; line-height: 85pt; font-size: 26pt; font-weight: bold; color: #38bdf8;">
+                                        @if(!empty($data->photo))
+                                        <img src="{{ $data->photo }}" style="width: 85pt; height: 85pt; display: block; margin: 0 auto;">
+                                        @else
+                                        {{ $initials }}
+                                        @endif
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
                 
                 <!-- CONTACT BLOCK -->
                 <div class="sidebar-heading">Kontak</div>
