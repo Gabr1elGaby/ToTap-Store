@@ -238,7 +238,7 @@
 
                         <!-- Promo Badge -->
                         @if($template->price_normal && $template->price_normal > $template->price)
-                            <div class="absolute top-3 left-3 bg-amber-500 text-white text-[11px] font-black px-2.5 py-1 rounded-lg shadow-md uppercase tracking-wider">
+                            <div style="position: absolute; top: 12px; left: 12px; background-color: #e11d48; color: #ffffff; font-size: 11px; font-weight: 900; padding: 4px 10px; border-radius: 8px; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.4); text-transform: uppercase; letter-spacing: 0.5px; z-index: 10;">
                                 Diskon {{ round((($template->price_normal - $template->price) / $template->price_normal) * 100) }}%
                             </div>
                         @endif
@@ -250,12 +250,12 @@
                             <!-- Language Category Tag -->
                             <div class="mb-2">
                                 @if($tLang === 'en')
-                                    <span class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
-                                        <i class="fas fa-globe text-[10px]"></i> Bahasa Inggris • Global ATS
+                                    <span class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                                        <i class="fas fa-globe text-xs text-blue-500"></i> Bahasa Inggris • Global ATS
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
-                                        <i class="fas fa-flag text-[10px]"></i> Bahasa Indonesia • BUMN
+                                    <span class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                                        <i class="fas fa-flag text-xs text-rose-500"></i> Bahasa Indonesia • BUMN
                                     </span>
                                 @endif
                             </div>
