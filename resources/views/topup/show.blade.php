@@ -62,15 +62,17 @@
                             @endphp
                             
                             @if(str_contains($gameName, 'mobile legend'))
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">Contoh: 12345678 untuk Player ID dan 1234 untuk Zone ID.</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">Contoh: 12345678 untuk User ID dan 1234 untuk Zone ID.</div>
                             @elseif(str_contains($gameName, 'valorant'))
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">Contoh: Jett (Riot ID) dan 1234 (Tagline tanpa #).</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">Contoh: <strong>Jett#1234</strong> atau <strong>Username#TAG</strong> (Lengkap dengan tanda pagar #).</div>
                             @elseif(str_contains($gameName, 'free fire'))
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">Contoh: 1234567890 (Temukan di profil game).</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">Contoh: 1234567890 (Player ID di profil game).</div>
+                            @elseif(str_contains($gameName, 'roblox'))
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">Contoh: Username Akun Roblox Anda.</div>
                             @elseif(str_contains($gameName, 'genshin'))
                                 <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">Contoh: 800123456 (Server Asia).</div>
                             @elseif(str_contains($gameName, 'pubg'))
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">Contoh: 5123456789.</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">Contoh: 5123456789 (User ID di profil game).</div>
                             @else
                                 <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">Pastikan data yang Anda masukkan valid agar pesanan tidak gagal.</div>
                             @endif
