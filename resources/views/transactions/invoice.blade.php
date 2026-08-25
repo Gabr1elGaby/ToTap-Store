@@ -194,6 +194,108 @@
                 </div>
             </div>
 
+            @if($status === 'paid' || $status === 'success')
+            <!-- Customer Rating & Super Admin Feedback Box (No Print) -->
+            <div id="invoice-review-card" class="no-print bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 rounded-2xl p-6 shadow-sm">
+                <div class="text-center mb-4">
+                    <span class="text-xs uppercase tracking-wider font-bold text-indigo-600 dark:text-indigo-400">Kepuasan Pelanggan</span>
+                    <h4 class="text-base font-bold text-slate-900 dark:text-white mt-0.5">Beri Rating & Kritik / Saran</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Kritik & saran Anda hanya akan dibaca secara privat oleh Super Admin untuk terus meningkatkan performa website & layanan.</p>
+                </div>
+
+                <form id="invoiceReviewForm" onsubmit="submitInvoiceReview(event)" class="max-w-md mx-auto space-y-4">
+                    <input type="hidden" name="order_id" value="{{ $data->invoice_number ?? ($type === 'topup' ? $data->id : $data->order_number) }}">
+                    <input type="hidden" name="order_type" value="{{ $type === 'topup' ? 'topup' : 'software' }}">
+                    <input type="hidden" name="customer_name" value="{{ $data->user->name ?? 'Pelanggan ToTap' }}">
+                    <input type="hidden" name="customer_contact" value="{{ $data->user->email ?? ($data->user->phone_number ?? '') }}">
+                    <input type="hidden" name="product_name" value="{{ $type === 'topup' ? ($data->game->name ?? 'Top Up Game') : ($data->product->name ?? 'Software') }}">
+                    <input type="hidden" id="invoice-selected-rating" name="rating" value="5">
+
+                    <!-- Star Rating -->
+                    <div class="flex flex-col items-center justify-center gap-1">
+                        <div class="flex items-center gap-2 text-3xl cursor-pointer" id="invoice-star-container">
+                            <span class="star text-amber-400 transition transform hover:scale-125 select-none" onclick="setInvoiceRating(1)">★</span>
+                            <span class="star text-amber-400 transition transform hover:scale-125 select-none" onclick="setInvoiceRating(2)">★</span>
+                            <span class="star text-amber-400 transition transform hover:scale-125 select-none" onclick="setInvoiceRating(3)">★</span>
+                            <span class="star text-amber-400 transition transform hover:scale-125 select-none" onclick="setInvoiceRating(4)">★</span>
+                            <span class="star text-amber-400 transition transform hover:scale-125 select-none" onclick="setInvoiceRating(5)">★</span>
+                        </div>
+                        <span id="invoice-rating-label" class="text-xs font-bold text-amber-500 mt-1">5/5 - Sangat Puas! ⭐</span>
+                    </div>
+
+                    <!-- Review Textarea -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Kritik & Saran Khusus Super Admin:</label>
+                        <textarea name="review_text" rows="3" placeholder="Tuliskan pengalaman bertransaksi, kritik membangun, atau saran fitur baru untuk Super Admin..." class="w-full text-xs p-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:ring-indigo-500 focus:border-indigo-500 resize-none"></textarea>
+                    </div>
+
+                    <button type="submit" id="invoice-submit-review-btn" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold rounded-xl text-xs shadow-md transition">
+                        Kirim Rating & Masukan ⭐
+                    </button>
+                </form>
+
+                <div id="invoice-review-success" class="hidden text-center py-4 space-y-2">
+                    <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-xl font-bold">
+                        ✓
+                    </div>
+                    <h5 class="text-sm font-bold text-slate-900 dark:text-white">Terima Kasih Atas Ulasan & Masukan Anda!</h5>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Rating & saran Anda telah berhasil dikirim langsung ke Super Admin.</p>
+                </div>
+            </div>
+
+            <script>
+                const invoiceRatingLabels = {
+                    1: '1/5 - Sangat Buruk',
+                    2: '2/5 - Kurang Memuaskan',
+                    3: '3/5 - Cukup',
+                    4: '4/5 - Bagus & Cepat',
+                    5: '5/5 - Sangat Puas! ⭐'
+                };
+
+                function setInvoiceRating(num) {
+                    document.getElementById('invoice-selected-rating').value = num;
+                    document.getElementById('invoice-rating-label').innerText = invoiceRatingLabels[num] || `${num}/5`;
+                    
+                    const stars = document.querySelectorAll('#invoice-star-container .star');
+                    stars.forEach((star, idx) => {
+                        if (idx < num) {
+                            star.classList.remove('text-gray-300', 'dark:text-gray-600');
+                            star.classList.add('text-amber-400');
+                        } else {
+                            star.classList.remove('text-amber-400');
+                            star.classList.add('text-gray-300', 'dark:text-gray-600');
+                        }
+                    });
+                }
+
+                function submitInvoiceReview(e) {
+                    e.preventDefault();
+                    const form = document.getElementById('invoiceReviewForm');
+                    const formData = new FormData(form);
+                    const btn = document.getElementById('invoice-submit-review-btn');
+                    btn.disabled = true;
+                    btn.innerText = 'Mengirim...';
+
+                    fetch('/api/reviews', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json'
+                        },
+                        body: formData
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        form.classList.add('hidden');
+                        document.getElementById('invoice-review-success').classList.remove('hidden');
+                    })
+                    .catch(() => {
+                        form.classList.add('hidden');
+                        document.getElementById('invoice-review-success').classList.remove('hidden');
+                    });
+                }
+            </script>
+            @endif
+
             <!-- Footer Notes -->
             <div class="border-t border-slate-200 dark:border-slate-800 pt-6 text-center text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                 <p class="font-bold text-slate-700 dark:text-slate-300">Terima kasih telah berbelanja di ToTap Store!</p>

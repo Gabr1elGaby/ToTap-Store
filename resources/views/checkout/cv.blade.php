@@ -162,11 +162,105 @@
                         <span>Download File PDF CV</span>
                     </a>
 
-                    <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-4 text-xs font-semibold">
-                        <a href="{{ route('cv.index') }}" class="text-blue-600 dark:text-blue-400 hover:underline">
-                            Kembali ke Beranda CV
-                        </a>
+                    <!-- Rating & Feedback Box (Private for Super Admin) -->
+                    <div id="cv-review-card" class="mt-6 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 rounded-2xl p-5 text-left shadow-sm">
+                        <div class="text-center mb-3">
+                            <span class="text-[10px] uppercase tracking-wider font-bold text-blue-600 dark:text-blue-400">Kepuasan Pelanggan</span>
+                            <h4 class="text-sm font-bold text-slate-900 dark:text-white mt-0.5">Beri Rating & Kritik / Saran</h4>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Kritik & saran Anda hanya dibaca secara privat oleh Super Admin untuk evaluasi & peningkatan layanan.</p>
+                        </div>
+
+                        <form id="cvReviewForm" onsubmit="submitCvReview(event)" class="space-y-3">
+                            <input type="hidden" name="order_id" value="{{ $cv->invoice_number ?? ('CV-' . $cv->id) }}">
+                            <input type="hidden" name="order_type" value="cv">
+                            <input type="hidden" name="customer_name" value="{{ $cv->name }}">
+                            <input type="hidden" name="customer_contact" value="{{ $cv->email ?? $cv->phone }}">
+                            <input type="hidden" name="product_name" value="CV Builder ({{ $cv->template_name }})">
+                            <input type="hidden" id="cv-selected-rating" name="rating" value="5">
+
+                            <!-- Star Picker -->
+                            <div class="flex flex-col items-center justify-center gap-1">
+                                <div class="flex items-center gap-2 text-2xl cursor-pointer" id="cv-star-container">
+                                    <span class="star text-amber-400 transition transform hover:scale-125 select-none" onclick="setCvRating(1)">★</span>
+                                    <span class="star text-amber-400 transition transform hover:scale-125 select-none" onclick="setCvRating(2)">★</span>
+                                    <span class="star text-amber-400 transition transform hover:scale-125 select-none" onclick="setCvRating(3)">★</span>
+                                    <span class="star text-amber-400 transition transform hover:scale-125 select-none" onclick="setCvRating(4)">★</span>
+                                    <span class="star text-amber-400 transition transform hover:scale-125 select-none" onclick="setCvRating(5)">★</span>
+                                </div>
+                                <span id="cv-rating-label" class="text-[11px] font-bold text-amber-500">5/5 - Sangat Puas! ⭐</span>
+                            </div>
+
+                            <!-- Review / Kritik Textarea -->
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">Kritik & Saran Khusus Super Admin:</label>
+                                <textarea name="review_text" rows="2" placeholder="Tulis kritik, saran perbaikan fitur, atau kepuasan Anda..." class="w-full text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:ring-blue-500 focus:border-blue-500 resize-none"></textarea>
+                            </div>
+
+                            <button type="submit" id="cv-submit-review-btn" class="w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl text-xs shadow-md transition">
+                                Kirim Rating & Saran ⭐
+                            </button>
+                        </form>
+
+                        <div id="cv-review-success" class="hidden text-center py-3 space-y-1.5">
+                            <div class="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-base font-bold">
+                                ✓
+                            </div>
+                            <h5 class="text-xs font-bold text-slate-900 dark:text-white">Terima Kasih Atas Masukan Anda!</h5>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400">Rating & saran Anda telah diteruskan ke Super Admin.</p>
+                        </div>
                     </div>
+
+                    <script>
+                        const cvRatingLabels = {
+                            1: '1/5 - Sangat Buruk',
+                            2: '2/5 - Kurang Memuaskan',
+                            3: '3/5 - Cukup',
+                            4: '4/5 - Bagus & Cepat',
+                            5: '5/5 - Sangat Puas! ⭐'
+                        };
+
+                        function setCvRating(num) {
+                            document.getElementById('cv-selected-rating').value = num;
+                            document.getElementById('cv-rating-label').innerText = cvRatingLabels[num] || `${num}/5`;
+                            
+                            const stars = document.querySelectorAll('#cv-star-container .star');
+                            stars.forEach((star, idx) => {
+                                if (idx < num) {
+                                    star.classList.remove('text-gray-300', 'dark:text-gray-600');
+                                    star.classList.add('text-amber-400');
+                                } else {
+                                    star.classList.remove('text-amber-400');
+                                    star.classList.add('text-gray-300', 'dark:text-gray-600');
+                                }
+                            });
+                        }
+
+                        function submitCvReview(e) {
+                            e.preventDefault();
+                            const form = document.getElementById('cvReviewForm');
+                            const formData = new FormData(form);
+                            const btn = document.getElementById('cv-submit-review-btn');
+                            btn.disabled = true;
+                            btn.innerText = 'Mengirim...';
+
+                            fetch('/api/reviews', {
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json'
+                                },
+                                body: formData
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                form.classList.add('hidden');
+                                document.getElementById('cv-review-success').classList.remove('hidden');
+                            })
+                            .catch(() => {
+                                form.classList.add('hidden');
+                                document.getElementById('cv-review-success').classList.remove('hidden');
+                            });
+                        }
+                    </script>
                 </div>
                 @else
                 <!-- PENDING PAYMENT & VERIFICATION CARD -->
