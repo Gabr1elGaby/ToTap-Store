@@ -8,9 +8,17 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             @php
-                $totalUsers = \App\Models\User::where('role', 'customer')->count();
-                $totalProducts = \App\Models\Product::count();
-                $totalRevenue = \App\Models\Payment::where('status', 'PAID')->sum('amount');
+                $totalUsers = \App\Models\User::count();
+                $softwareCount = \App\Models\Product::count();
+                $gamesCount = \Illuminate\Support\Facades\DB::table('games')->count();
+                $cvTemplateCount = \Illuminate\Support\Facades\DB::table('cv_templates')->count();
+                $totalProducts = $softwareCount + $gamesCount + $cvTemplateCount;
+
+                $cvRevenue = \App\Models\Cv::whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->sum('price');
+                $topupRevenue = \App\Models\Transaction::whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->sum('amount');
+                $softwareRevenue = \App\Models\Payment::whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->sum('amount');
+                $totalRevenue = $cvRevenue + $topupRevenue + $softwareRevenue;
+
                 $activeSubscriptions = \App\Models\Subscription::where('status', 'ACTIVE')->count();
 
                 // Real customer reviews and feedback
@@ -164,42 +172,123 @@
                 </a>
             </div>
 
-            <!-- Recent Orders -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <!-- Recent Orders (All Services: Software, CV Builder, Top Up Game) -->
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100 dark:border-gray-700">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-xl font-bold mb-4">Pesanan Terbaru</h3>
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                <span>🧾</span> Transaksi & Pesanan Terbaru (Semua Layanan)
+                            </h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Mencakup seluruh transaksi CV Builder, Top Up Game, dan Software POS.</p>
+                        </div>
+                        <a href="{{ route('admin.transactions.index') }}" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
+                            Lihat Semua Transaksi →
+                        </a>
+                    </div>
                     @php
-                        $recentOrders = \App\Models\Order::with(['user', 'product'])->latest()->take(5)->get();
+                        $recentList = collect();
+
+                        // 1. Software Orders
+                        if (class_exists(\App\Models\Order::class)) {
+                            foreach(\App\Models\Order::with(['user', 'product', 'plan'])->latest()->take(6)->get() as $ord) {
+                                $recentList->push((object)[
+                                    'id' => $ord->order_number,
+                                    'type' => 'software',
+                                    'type_label' => 'Software POS',
+                                    'customer' => $ord->user->name ?? 'Pelanggan POS',
+                                    'item' => ($ord->product->name ?? 'Software') . ' (' . ($ord->plan->name ?? '-') . ')',
+                                    'amount' => $ord->amount,
+                                    'status' => $ord->payment_status,
+                                    'created_at' => $ord->created_at,
+                                ]);
+                            }
+                        }
+
+                        // 2. CV Builder Transactions
+                        if (class_exists(\App\Models\Cv::class)) {
+                            foreach(\App\Models\Cv::latest()->take(6)->get() as $cvItem) {
+                                $recentList->push((object)[
+                                    'id' => $cvItem->invoice_number ?? ('CV-' . $cvItem->id),
+                                    'type' => 'cv',
+                                    'type_label' => 'CV Builder',
+                                    'customer' => $cvItem->name,
+                                    'item' => 'Template: ' . ($cvItem->template_name ?? 'Minimalist'),
+                                    'amount' => $cvItem->price,
+                                    'status' => $cvItem->status,
+                                    'created_at' => $cvItem->created_at,
+                                ]);
+                            }
+                        }
+
+                        // 3. Top Up Game Transactions
+                        if (class_exists(\App\Models\Transaction::class)) {
+                            foreach(\App\Models\Transaction::with(['game', 'gameProduct', 'user'])->latest()->take(6)->get() as $trx) {
+                                $recentList->push((object)[
+                                    'id' => $trx->invoice_number ?? ('TRX-' . $trx->id),
+                                    'type' => 'topup',
+                                    'type_label' => 'Top Up Game',
+                                    'customer' => $trx->user->name ?? ('ID: ' . $trx->target_field_1),
+                                    'item' => ($trx->game->name ?? 'Game') . ' - ' . ($trx->gameProduct->name ?? '-'),
+                                    'amount' => $trx->amount,
+                                    'status' => $trx->status,
+                                    'created_at' => $trx->created_at,
+                                ]);
+                            }
+                        }
+
+                        $allRecentOrders = $recentList->sortByDesc('created_at')->take(8);
                     @endphp
 
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr>
-                                <th class="border-b py-2 px-4">Order ID</th>
-                                <th class="border-b py-2 px-4">Customer</th>
-                                <th class="border-b py-2 px-4">Produk</th>
-                                <th class="border-b py-2 px-4">Paket</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($recentOrders as $order)
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead class="bg-gray-50 dark:bg-gray-900/50 text-gray-500 uppercase tracking-wider font-semibold border-b border-gray-100 dark:border-gray-700">
                                 <tr>
-                                    <td class="border-b py-2 px-4 text-sm font-mono">{{ $order->order_number }}</td>
-                                    <td class="border-b py-2 px-4">{{ $order->user->name }}</td>
-                                    <td class="border-b py-2 px-4">{{ $order->product->name }}</td>
-                                    <td class="border-b py-2 px-4">
-                                        @if($order->plan)
-                                            <span style="display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; background:{{ strtolower($order->plan->name) === 'pro' ? '#FEF3C7' : '#DBEAFE' }}; color:{{ strtolower($order->plan->name) === 'pro' ? '#92400E' : '#1D4ED8' }};">
-                                                {{ strtoupper($order->plan->name) }}
-                                            </span>
-                                        @else
-                                            <span class="text-gray-400 text-xs">-</span>
-                                        @endif
-                                    </td>
+                                    <th class="py-3 px-4">Order / Invoice ID</th>
+                                    <th class="py-3 px-4">Layanan</th>
+                                    <th class="py-3 px-4">Customer</th>
+                                    <th class="py-3 px-4">Item / Produk</th>
+                                    <th class="py-3 px-4">Nominal</th>
+                                    <th class="py-3 px-4">Status</th>
+                                    <th class="py-3 px-4 text-right">Waktu</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                                @forelse($allRecentOrders as $order)
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                                        <td class="py-3 px-4 font-mono font-bold text-gray-900 dark:text-white">{{ $order->id }}</td>
+                                        <td class="py-3 px-4">
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase font-mono {{ $order->type === 'cv' ? 'bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300' : ($order->type === 'software' ? 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300' : 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300') }}">
+                                                {{ $order->type_label }}
+                                            </span>
+                                        </td>
+                                        <td class="py-3 px-4 font-medium text-gray-900 dark:text-white">{{ $order->customer }}</td>
+                                        <td class="py-3 px-4 text-gray-600 dark:text-gray-300">{{ $order->item }}</td>
+                                        <td class="py-3 px-4 font-mono font-bold text-gray-900 dark:text-white">Rp{{ number_format($order->amount, 0, ',', '.') }}</td>
+                                        <td class="py-3 px-4">
+                                            @php
+                                                $st = strtolower($order->status);
+                                            @endphp
+                                            @if($st === 'paid' || $st === 'success')
+                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">LUNAS</span>
+                                            @elseif($st === 'pending')
+                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300">PENDING</span>
+                                            @else
+                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">{{ strtoupper($st) }}</span>
+                                            @endif
+                                        </td>
+                                        <td class="py-3 px-4 text-right text-gray-400 whitespace-nowrap">
+                                            {{ \Carbon\Carbon::parse($order->created_at)->diffForHumans() }}
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="py-6 text-center text-gray-400 text-xs">Belum ada transaksi di sistem.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 

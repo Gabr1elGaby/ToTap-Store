@@ -24,19 +24,22 @@ Route::get('/', function () {
     // Sum of all paid transactions across all modules
     $totalTransactions = 0;
     
-    // Enterprise POS Orders
+    // 1. Enterprise POS Orders
     if (class_exists(\App\Models\Order::class)) {
         $totalTransactions += \App\Models\Order::whereIn('payment_status', ['paid', 'success', 'PAID', 'SUCCESS'])->count();
     }
     
-    // Top Up Transactions
+    // 2. Top Up Game Transactions
+    if (class_exists(\App\Models\Transaction::class)) {
+        $totalTransactions += \App\Models\Transaction::whereIn('status', ['paid', 'success', 'PAID', 'SUCCESS'])->count();
+    }
     if (class_exists(\App\Models\TopupTransaction::class)) {
         $totalTransactions += \App\Models\TopupTransaction::whereIn('payment_status', ['paid', 'success', 'PAID', 'SUCCESS'])->count();
     }
     
-    // CV / General Transactions
-    if (class_exists(\App\Models\Transaction::class)) {
-        $totalTransactions += \App\Models\Transaction::whereIn('status', ['paid', 'success', 'PAID', 'SUCCESS'])->count();
+    // 3. CV Builder Transactions
+    if (class_exists(\App\Models\Cv::class)) {
+        $totalTransactions += \App\Models\Cv::whereIn('status', ['paid', 'success', 'PAID', 'SUCCESS'])->count();
     }
 
         // GET MAX DISCOUNT FOR TOP UP GAMES
