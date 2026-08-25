@@ -424,7 +424,16 @@ class CvController extends Controller
                         'description' => 'Memberikan pelatihan dasar coding dan literasi internet sehat kepada generasi muda.'
                     ]
                 ],
-                'skills' => [
+                'skills' => in_array($slug, ['creative', 'student', 'en-creative-designer']) ? [
+                    ['name' => 'UI/UX & Figma Design', 'level' => 95],
+                    ['name' => 'Adobe Photoshop & Illustrator', 'level' => 90],
+                    ['name' => 'HTML5, CSS3 & Tailwind CSS', 'level' => 85],
+                    ['name' => 'JavaScript & Vue.js', 'level' => 80],
+                    ['name' => 'PHP & Laravel Framework', 'level' => 75],
+                    ['name' => 'Visual Branding & Typography', 'level' => 90],
+                    ['name' => 'Creative Problem Solving', 'level' => null],
+                    ['name' => 'Komunikasi & Kolaborasi Tim', 'level' => null],
+                ] : [
                     ['name' => 'PHP & Laravel Framework'],
                     ['name' => 'JavaScript, Vue.js & Tailwind CSS'],
                     ['name' => 'MySQL & Database Optimization'],
@@ -433,6 +442,12 @@ class CvController extends Controller
                     ['name' => 'Kepemimpinan & Manajemen Proyek'],
                     ['name' => 'Problem Solving & Critical Thinking'],
                     ['name' => 'Komunikasi & Kolaborasi Tim'],
+                ],
+                'tools' => [
+                    ['name' => 'Figma'],
+                    ['name' => 'Adobe Illustrator'],
+                    ['name' => 'Photoshop'],
+                    ['name' => 'VS Code'],
                 ]
             ];
         }
@@ -444,6 +459,7 @@ class CvController extends Controller
         $userData['cv']['projects'] = $userData['projects'];
         $userData['cv']['certificates'] = $userData['certificates'];
         $userData['cv']['skills'] = $userData['skills'];
+        $userData['cv']['tools'] = $userData['tools'] ?? [];
         $userData['cv']['volunteers'] = $userData['volunteers'] ?? [];
 
         $data = (object)$userData['cv'];

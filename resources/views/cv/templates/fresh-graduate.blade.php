@@ -324,24 +324,7 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
                 </div>
                 @endif
 
-                <!-- PENGALAMAN KERJA -->
-                @if(count($experiences) > 0)
-                <div class="right-header">Pengalaman Kerja</div>
-                @foreach($experiences as $exp)
-                <div class="item">
-                    <table class="item-title-row" cellpadding="0" cellspacing="0">
-                        <tr>
-                            <td class="item-title" style="width: 70%;">{{ $exp->position ?? '' }}</td>
-                            <td class="item-date" style="width: 30%;">{{ $exp->start_year ?? '' }} - {{ $exp->is_current ? 'Sekarang' : ($exp->end_year ?? '') }}</td>
-                        </tr>
-                    </table>
-                    <div class="item-subtitle">{{ $exp->company ?? '' }} @if(!empty($exp->location)) | {{ $exp->location }} @endif</div>
-                    <div class="item-desc">{!! nl2br(e($exp->description)) !!}</div>
-                </div>
-                @endforeach
-                @endif
-
-                <!-- RIWAYAT PENDIDIKAN -->
+                <!-- RIWAYAT PENDIDIKAN (PRIORITAS UTAMA FRESH GRADUATE) -->
                 @if(count($educations) > 0)
                 <div class="right-header">Riwayat Pendidikan</div>
                 @foreach($educations as $edu)
@@ -360,6 +343,23 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
                     @if(!empty($edu->description))
                     <div class="item-desc">{!! nl2br(e($edu->description)) !!}</div>
                     @endif
+                </div>
+                @endforeach
+                @endif
+
+                <!-- PENGALAMAN KERJA / MAGANG -->
+                @if(count($experiences) > 0)
+                <div class="right-header">Pengalaman Kerja & Magang</div>
+                @foreach($experiences as $exp)
+                <div class="item">
+                    <table class="item-title-row" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="item-title" style="width: 70%;">{{ $exp->position ?? '' }}</td>
+                            <td class="item-date" style="width: 30%;">{{ $exp->start_year ?? '' }} - {{ $exp->is_current ? 'Sekarang' : ($exp->end_year ?? '') }}</td>
+                        </tr>
+                    </table>
+                    <div class="item-subtitle">{{ $exp->company ?? '' }} @if(!empty($exp->location)) | {{ $exp->location }} @endif</div>
+                    <div class="item-desc">{!! nl2br(e($exp->description)) !!}</div>
                 </div>
                 @endforeach
                 @endif

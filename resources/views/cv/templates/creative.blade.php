@@ -252,12 +252,41 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
                 </ul>
 
                 @if(count($skills) > 0)
-                <div class="left-header">Keahlian</div>
-                <ul class="skill-list">
+                <div class="left-header">Keahlian (Skills)</div>
+                <div style="width: 100%;">
                     @foreach($skills as $skill)
-                    <li>{{ $skill->name ?? '' }}</li>
+                        @php
+                            $lvl = null;
+                            if (isset($skill->level) && is_numeric(trim($skill->level))) {
+                                $lvl = (int) trim($skill->level);
+                                if ($lvl > 100) $lvl = 100;
+                                if ($lvl < 5) $lvl = 5;
+                            }
+                        @endphp
+                        
+                        @if($lvl !== null)
+                        <div style="margin-bottom: 7pt; width: 100%;">
+                            <table style="width: 100%; margin-bottom: 2pt; border-collapse: collapse;">
+                                <tr>
+                                    <td style="font-size: 8.5pt; font-weight: bold; color: #ffffff; text-align: left; vertical-align: middle;">
+                                        {{ $skill->name ?? '' }}
+                                    </td>
+                                    <td style="font-size: 7.5pt; font-weight: bold; color: #38bdf8; text-align: right; width: 35pt; vertical-align: middle;">
+                                        {{ $lvl }}%
+                                    </td>
+                                </tr>
+                            </table>
+                            <div style="width: 100%; height: 4pt; background-color: #334155; border-radius: 2pt; overflow: hidden;">
+                                <div style="width: {{ $lvl }}%; height: 4pt; background-color: #38bdf8; border-radius: 2pt;"></div>
+                            </div>
+                        </div>
+                        @else
+                        <div style="margin-bottom: 4pt; font-size: 8.5pt; color: #f8fafc;">
+                            <span style="color: #38bdf8; font-weight: bold;">•</span> {{ $skill->name ?? '' }}
+                        </div>
+                        @endif
                     @endforeach
-                </ul>
+                </div>
                 @endif
 
                 @if(count($tools) > 0)
