@@ -137,14 +137,22 @@
                         <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" alt="QRIS" class="h-7 object-contain">
                     </div>
                     <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-5">
-                        Scan & Bayar Instan dari Aplikasi M-Banking atau E-Wallet apa pun
+                        Scan menggunakan M-Banking / E-Wallet apa pun. <br>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold rounded-full mt-2 text-xs border border-emerald-200 dark:border-emerald-800">
+                            ⚡ Nominal Terisi Otomatis: Rp{{ number_format($cv->price, 0, ',', '.') }}
+                        </span>
                     </p>
 
                     <!-- QR Box -->
                     <div class="inline-block p-4 bg-white rounded-2xl shadow-inner border border-slate-200 dark:border-slate-700 mb-4">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={{ urlencode('https://totapstore.com/checkout/cv/' . ($cv->access_token ?? $cv->id)) }}" alt="QRIS QR Code" class="w-48 h-48 mx-auto rounded-lg">
-                        <div class="mt-2 flex items-center justify-center gap-1.5 text-[11px] font-bold text-slate-600">
-                            <span>NMID: ID102003892719</span>
+                        @php
+                            $dynamicQris = \App\Helpers\QrisHelper::getDynamicQrisForAmount((int) $cv->price);
+                            $qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' . urlencode($dynamicQris);
+                        @endphp
+                        <img src="{{ $qrSrc }}" alt="QRIS Dinamis ToTap Store" class="w-52 h-52 mx-auto rounded-lg">
+                        <div class="mt-3 text-center space-y-0.5">
+                            <span class="text-xs font-black text-gray-900 block">TOTAP STORE, GAMING</span>
+                            <span class="text-[11px] font-mono text-gray-600 block">NMID: ID1026577601523</span>
                         </div>
                     </div>
 

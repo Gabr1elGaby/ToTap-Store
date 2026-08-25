@@ -72,18 +72,22 @@
                         <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" alt="QRIS" class="h-7 object-contain">
                     </div>
                     <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-6">
-                        Scan & Transfer tepat <span class="font-bold text-indigo-600 dark:text-indigo-400 font-mono">Rp{{ number_format($transaction->amount, 0, ',', '.') }}</span> menggunakan E-Wallet atau M-Banking apa pun
+                        Scan menggunakan M-Banking / E-Wallet apa pun. <br>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold rounded-full mt-2 text-xs border border-emerald-200 dark:border-emerald-800">
+                            ⚡ Nominal Terisi Otomatis: Rp{{ number_format($transaction->amount, 0, ',', '.') }}
+                        </span>
                     </p>
                     
                     <!-- QR Box -->
                     <div class="inline-block p-4 bg-white rounded-2xl shadow-inner border border-gray-200 dark:border-gray-700 mb-4">
                         @php
-                            $qrString = !empty($paymentData['qr_string']) ? $paymentData['qr_string'] : 'https://totapstore.com/topup/checkout/' . $transaction->id;
-                            $qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($qrString);
+                            $dynamicQris = \App\Helpers\QrisHelper::getDynamicQrisForAmount((int) $transaction->amount);
+                            $qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($dynamicQris);
                         @endphp
-                        <img src="{{ $qrSrc }}" alt="QRIS Code" class="w-52 h-52 mx-auto rounded-lg">
-                        <div class="mt-2 text-[11px] font-bold text-gray-600">
-                            <span>NMID: ID102003892719</span>
+                        <img src="{{ $qrSrc }}" alt="QRIS Dinamis ToTap Store" class="w-56 h-56 mx-auto rounded-lg">
+                        <div class="mt-3 text-center space-y-0.5">
+                            <span class="text-xs font-black text-gray-900 block">TOTAP STORE, GAMING</span>
+                            <span class="text-[11px] font-mono text-gray-600 block">NMID: ID1026577601523</span>
                         </div>
                     </div>
 
