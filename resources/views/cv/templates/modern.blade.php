@@ -106,25 +106,22 @@ if (!empty($data->name)) {
         .left-block {
             background-color: #ffffff;
             color: #111827;
-            margin-left: 20px;
-            margin-right: 0px;
-            border-top-left-radius: 20px;
-            border-bottom-left-radius: 20px;
-            padding: 20px 20px 20px 24px;
-            margin-bottom: 20px;
+            margin: 0 16px 20px 16px;
+            border-radius: 16px;
+            padding: 20px 18px 20px 22px;
         }
         
         .left-heading-container {
             text-align: center;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
         .left-heading {
             background-color: #1d2b38;
             color: #ffffff;
-            padding: 5px 25px;
+            padding: 5px 22px;
             border-radius: 12px;
             font-weight: bold;
-            font-size: 10pt;
+            font-size: 9.5pt;
             display: inline-block;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -132,10 +129,11 @@ if (!empty($data->name)) {
         
         .contact-item {
             font-size: 8.5pt;
-            margin-bottom: 11px;
+            margin-bottom: 12px;
             line-height: 1.35;
             color: #111827;
             text-align: left;
+            padding-left: 4px;
             word-wrap: break-word;
             word-break: break-all;
         }
@@ -144,13 +142,13 @@ if (!empty($data->name)) {
             text-transform: uppercase;
             color: #6b7280;
             display: block;
-            margin-bottom: 1px;
+            margin-bottom: 2px;
             letter-spacing: 0.5px;
             font-weight: 700;
         }
         .contact-val {
             color: #111827;
-            font-weight: 500;
+            font-weight: 600;
             display: block;
         }
         
@@ -160,6 +158,7 @@ if (!empty($data->name)) {
             color: #111827;
             text-align: left;
             line-height: 1.35;
+            padding-left: 4px;
         }
         .skill-item::before {
             content: "•";
