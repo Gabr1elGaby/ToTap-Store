@@ -239,16 +239,25 @@ class AdminTransactionController extends Controller
     public function clearAll(Request $request)
     {
         $type = $request->input('type', 'all');
-        if ($type === 'topup' || $type === 'all') {
-            Transaction::truncate();
-        }
-        if ($type === 'software' || $type === 'all') {
-            Order::truncate();
-        }
-        if ($type === 'cv' || $type === 'all') {
-            \Illuminate\Support\Facades\DB::table('cvs')->truncate();
-        }
+        try {
+            \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            
+            if ($type === 'topup' || $type === 'all') {
+                \Illuminate\Support\Facades\DB::table('transactions')->delete();
+            }
+            if ($type === 'software' || $type === 'all') {
+                \Illuminate\Support\Facades\DB::table('orders')->delete();
+            }
+            if ($type === 'cv' || $type === 'all') {
+                \Illuminate\Support\Facades\DB::table('cvs')->delete();
+            }
+            
+            \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        return back()->with('success', "Seluruh data transaksi lama berhasil dibersihkan dan direset!");
+            return back()->with('success', "Seluruh data riwayat transaksi lama (Top Up, Software, dan CV) berhasil dibersihkan!");
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            return back()->with('error', "Gagal membersihkan data: " . $e->getMessage());
+        }
     }
 }
