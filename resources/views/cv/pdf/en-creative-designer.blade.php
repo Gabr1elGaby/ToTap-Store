@@ -23,7 +23,17 @@
             background-color: #ffffff;
         }
 
-        /* DomPDF Multi-Row 2-Column Table for Perfect Pagination */
+        /* 100% FULL-HEIGHT SIDEBAR BACKGROUND (ALWAYS FULL DOWN TO PAPER BOTTOM) */
+        .sidebar-bg {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 32%;
+            background-color: #18181b;
+            z-index: -1000;
+        }
+
         table.cv-table {
             width: 100%;
             border-collapse: collapse;
@@ -34,15 +44,14 @@
         }
         td.sidebar-td {
             width: 32%;
-            background-color: #18181b;
             color: #f4f4f5;
-            padding: 8pt 13pt;
+            padding: 6pt 13pt;
             vertical-align: top;
         }
         td.content-td {
             width: 68%;
             background-color: #ffffff;
-            padding: 8pt 18pt 8pt 16pt;
+            padding: 6pt 18pt 6pt 16pt;
             vertical-align: top;
         }
 
@@ -68,10 +77,10 @@
             border-bottom: 1pt solid #27272a;
             padding-bottom: 2pt;
             margin-top: 6pt;
-            margin-bottom: 4pt;
+            margin-bottom: 3.5pt;
         }
         .contact-item {
-            margin-bottom: 3.5pt;
+            margin-bottom: 3pt;
             line-height: 1.2;
         }
         .contact-label {
@@ -185,7 +194,7 @@
             border-bottom: 1pt solid #cbd5e1;
             padding-bottom: 1.5pt;
             margin-top: 5pt;
-            margin-bottom: 3.5pt;
+            margin-bottom: 3pt;
         }
         .item-block {
             margin-bottom: 4pt;
@@ -225,6 +234,9 @@
     </style>
 </head>
 <body>
+    <!-- FIXED 100% FULL-HEIGHT SIDEBAR BG (ALWAYS FULL TO BOTTOM) -->
+    <div class="sidebar-bg"></div>
+
     @php
         $getVal = function($obj, ...$keys) {
             foreach ($keys as $k) {
@@ -250,7 +262,7 @@
             <col style="width: 68%;">
         </colgroup>
 
-        <!-- ROW 1: HEADER & PROFILE (STARTS AT Y=0 WITH ZERO CUTOFF) -->
+        <!-- ROW 1: TOP SECTION (PHOTO + CONTACTS on Left, NAME + SUMMARY + EXPERIENCE on Right) -->
         <tr>
             <td class="sidebar-td" style="padding-top: 18pt;">
                 @if(!empty($data->photo))
@@ -303,10 +315,40 @@
                     {{ $getVal($data, "profile", "summary") }}
                 </div>
                 @endif
+
+                <!-- PENGALAMAN KERJA (LANGSUNG DI BAWAH RINGKASAN PROFIL TANPA JARAK JAUH) -->
+                @if(!empty($experiences) && count($experiences) > 0)
+                <div class="right-heading" style="margin-top: 4pt;">Work Experience</div>
+                @foreach($experiences as $exp)
+                    @php
+                        $comp = is_array($exp) ? ($exp["company"] ?? "") : ($exp->company ?? "");
+                        $pos  = is_array($exp) ? ($exp["position"] ?? "") : ($exp->position ?? "");
+                        $start= is_array($exp) ? ($exp["start_year"] ?? "") : ($exp->start_year ?? "");
+                        $end  = is_array($exp) ? ($exp["end_year"] ?? "") : ($exp->end_year ?? "");
+                        $isCur= is_array($exp) ? ($exp["is_current"] ?? false) : ($exp->is_current ?? false);
+                        $dateStr = $start ? ($start . " - " . ($isCur ? "Present" : ($end ?: "Present"))) : ($end ?: "");
+                        $desc = is_array($exp) ? ($exp["description"] ?? "") : ($exp->description ?? "");
+                    @endphp
+                    @if(!empty($comp) || !empty($pos))
+                    <div class="item-block">
+                        <table class="item-header-table">
+                            <tr>
+                                <td class="item-title">{{ $pos }}</td>
+                                <td class="item-date">{{ $dateStr }}</td>
+                            </tr>
+                        </table>
+                        <div class="item-subtitle">{{ $comp }}</div>
+                        @if(!empty($desc))
+                        <div class="item-desc">{!! nl2br(e($desc)) !!}</div>
+                        @endif
+                    </div>
+                    @endif
+                @endforeach
+                @endif
             </td>
         </tr>
 
-        <!-- ROW 2: SKILLS (LEFT) & EXPERIENCE (RIGHT) -->
+        <!-- ROW 2: SKILLS & CERTIFICATIONS (Left) | EDUCATION (Right) -->
         <tr>
             <td class="sidebar-td">
                 @if(!empty($skills) && count($skills) > 0)
@@ -359,43 +401,8 @@
                 @endif
             </td>
             <td class="content-td">
-                @if(!empty($experiences) && count($experiences) > 0)
-                <div class="right-heading" style="margin-top: 0;">Work Experience</div>
-                @foreach($experiences as $exp)
-                    @php
-                        $comp = is_array($exp) ? ($exp["company"] ?? "") : ($exp->company ?? "");
-                        $pos  = is_array($exp) ? ($exp["position"] ?? "") : ($exp->position ?? "");
-                        $start= is_array($exp) ? ($exp["start_year"] ?? "") : ($exp->start_year ?? "");
-                        $end  = is_array($exp) ? ($exp["end_year"] ?? "") : ($exp->end_year ?? "");
-                        $isCur= is_array($exp) ? ($exp["is_current"] ?? false) : ($exp->is_current ?? false);
-                        $dateStr = $start ? ($start . " - " . ($isCur ? "Present" : ($end ?: "Present"))) : ($end ?: "");
-                        $desc = is_array($exp) ? ($exp["description"] ?? "") : ($exp->description ?? "");
-                    @endphp
-                    @if(!empty($comp) || !empty($pos))
-                    <div class="item-block">
-                        <table class="item-header-table">
-                            <tr>
-                                <td class="item-title">{{ $pos }}</td>
-                                <td class="item-date">{{ $dateStr }}</td>
-                            </tr>
-                        </table>
-                        <div class="item-subtitle">{{ $comp }}</div>
-                        @if(!empty($desc))
-                        <div class="item-desc">{!! nl2br(e($desc)) !!}</div>
-                        @endif
-                    </div>
-                    @endif
-                @endforeach
-                @endif
-            </td>
-        </tr>
-
-        <!-- ROW 3: RIWAYAT PENDIDIKAN -->
-        @if(!empty($educations) && count($educations) > 0)
-        <tr>
-            <td class="sidebar-td"></td>
-            <td class="content-td">
-                <div class="right-heading">Education</div>
+                @if(!empty($educations) && count($educations) > 0)
+                <div class="right-heading" style="margin-top: 0;">Education</div>
                 @foreach($educations as $edu)
                     @php
                         $inst = is_array($edu) ? ($edu["institution"] ?? "") : ($edu->institution ?? "");
@@ -420,11 +427,11 @@
                     </div>
                     @endif
                 @endforeach
+                @endif
             </td>
         </tr>
-        @endif
 
-        <!-- ROW 4: PROYEK & PORTOFOLIO -->
+        <!-- ROW 3: PROYEK & PORTOFOLIO -->
         @if(!empty($projects) && count($projects) > 0)
         <tr>
             <td class="sidebar-td"></td>
@@ -449,7 +456,7 @@
         </tr>
         @endif
 
-        <!-- ROW 5: PENGALAMAN MAGANG -->
+        <!-- ROW 4: PENGALAMAN MAGANG -->
         @if(!empty($internships) && count($internships) > 0)
         <tr>
             <td class="sidebar-td"></td>
@@ -483,7 +490,7 @@
         </tr>
         @endif
 
-        <!-- ROW 6: ORGANISASI & KEPANITIAAN -->
+        <!-- ROW 5: ORGANISASI & KEPANITIAAN -->
         @if(!empty($organizations) && count($organizations) > 0)
         <tr>
             <td class="sidebar-td" style="padding-bottom: 18pt;"></td>
