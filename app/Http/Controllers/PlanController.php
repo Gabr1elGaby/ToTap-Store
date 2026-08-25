@@ -35,6 +35,7 @@ class PlanController extends Controller
         ]);
         
         Plan::create($data);
+        $this->purgeCache();
 
         return redirect()->route('admin.plans.index')->with('success', 'Plan created successfully.');
     }
@@ -59,6 +60,7 @@ class PlanController extends Controller
         ]);
         
         $plan->update($data);
+        $this->purgeCache();
 
         return redirect()->route('admin.plans.index')->with('success', 'Plan updated successfully.');
     }
@@ -66,6 +68,20 @@ class PlanController extends Controller
     public function destroy(Plan $plan)
     {
         $plan->delete();
+        $this->purgeCache();
         return redirect()->route('admin.plans.index')->with('success', 'Plan deleted successfully.');
+    }
+
+    private function purgeCache()
+    {
+        if (function_exists('opcache_reset')) {
+            @opcache_reset();
+        }
+        $vDir = storage_path('framework/views');
+        if (is_dir($vDir)) {
+            foreach (glob($vDir . '/*') as $f) {
+                if (is_file($f) && basename($f) !== '.gitignore') @unlink($f);
+            }
+        }
     }
 }

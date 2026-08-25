@@ -33,6 +33,8 @@ class ProductController extends Controller
         
         Product::create($data);
 
+        $this->purgeCache();
+
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dibuat.');
     }
 
@@ -55,12 +57,28 @@ class ProductController extends Controller
         
         $product->update($data);
 
+        $this->purgeCache();
+
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui.');
     }
 
     public function destroy(Product $product)
     {
         $product->delete();
+        $this->purgeCache();
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dihapus.');
+    }
+
+    private function purgeCache()
+    {
+        if (function_exists('opcache_reset')) {
+            @opcache_reset();
+        }
+        $vDir = storage_path('framework/views');
+        if (is_dir($vDir)) {
+            foreach (glob($vDir . '/*') as $f) {
+                if (is_file($f) && basename($f) !== '.gitignore') @unlink($f);
+            }
+        }
     }
 }
