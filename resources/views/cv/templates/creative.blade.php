@@ -36,7 +36,7 @@ if (!empty($data->name)) {
     $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ""));
 }
 
-$hasPage2 = (count($projects) > 0 || count($internships) > 0 || count($organizations) > 0);
+$hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internships) > 0 || count($organizations) > 0);
 ?>
 <!DOCTYPE html>
 <html>
@@ -60,16 +60,17 @@ $hasPage2 = (count($projects) > 0 || count($internships) > 0 || count($organizat
             color: #334155;
             line-height: 1.45;
         }
-        table.page1-layout {
+        
+        /* PAGE 1: 2-COLUMN PREMIUM TABLE */
+        .page1-table {
             width: 100%;
+            height: 842pt;
             border-collapse: collapse;
             table-layout: fixed;
         }
-        table.page1-layout, table.page1-layout tr, table.page1-layout td {
-            page-break-inside: auto !important;
-        }
         .sidebar-td {
             width: 32%;
+            height: 842pt;
             background-color: #0f172a;
             color: #cbd5e1;
             padding: 35pt 16pt 30pt 18pt;
@@ -77,6 +78,7 @@ $hasPage2 = (count($projects) > 0 || count($internships) > 0 || count($organizat
         }
         .content-td {
             width: 68%;
+            height: 842pt;
             background-color: #ffffff;
             padding: 35pt 28pt 30pt 24pt;
             vertical-align: top;
@@ -141,7 +143,7 @@ $hasPage2 = (count($projects) > 0 || count($internships) > 0 || count($organizat
         }
 
         .name {
-            font-size: 20pt;
+            font-size: 22pt;
             font-weight: bold;
             color: #0f172a;
             text-transform: uppercase;
@@ -150,7 +152,7 @@ $hasPage2 = (count($projects) > 0 || count($internships) > 0 || count($organizat
             margin-bottom: 2pt;
         }
         .job-title {
-            font-size: 10pt;
+            font-size: 10.5pt;
             font-weight: bold;
             color: #0284c7;
             text-transform: uppercase;
@@ -223,7 +225,7 @@ $hasPage2 = (count($projects) > 0 || count($internships) > 0 || count($organizat
         .page2-fullwidth {
             page-break-before: always;
             width: 100%;
-            padding: 35pt 35pt 30pt 35pt;
+            padding: 38pt 35pt 32pt 35pt;
             background-color: #ffffff;
         }
         .full-heading {
@@ -243,8 +245,8 @@ $hasPage2 = (count($projects) > 0 || count($internships) > 0 || count($organizat
     </style>
 </head>
 <body>
-    <!-- PAGE 1: 2-COLUMN HEADER + MAIN INFO -->
-    <table class="page1-layout" cellpadding="0" cellspacing="0">
+    <!-- PAGE 1: 2-COLUMN HEADER + CORE PROFILE + EDUCATION -->
+    <table class="page1-table" cellpadding="0" cellspacing="0">
         <tr>
             <td class="sidebar-td">
                 <div style="text-align: center; margin-bottom: 16pt;">
@@ -339,22 +341,6 @@ $hasPage2 = (count($projects) > 0 || count($internships) > 0 || count($organizat
                 </div>
                 <?php endif; ?>
 
-                <?php if(count($experiences) > 0): ?>
-                <div class="right-heading">Pengalaman Kerja</div>
-                <?php foreach($experiences as $exp): ?>
-                <div class="item-block">
-                    <table class="item-header-table" cellpadding="0" cellspacing="0">
-                        <tr>
-                            <td class="item-title" style="width: 70%;"><?php echo $exp->position ?? ""; ?></td>
-                            <td class="item-date" style="width: 30%;"><?php echo $exp->start_year ?? ""; ?> - <?php echo $exp->is_current ? "Sekarang" : ($exp->end_year ?? ""); ?></td>
-                        </tr>
-                    </table>
-                    <div class="item-subtitle"><?php echo $exp->company ?? ""; ?> <?php if(!empty($exp->location)): ?> | <?php echo $exp->location; ?> <?php endif; ?></div>
-                    <div class="item-desc"><?php echo nl2br(htmlspecialchars($exp->description ?? "")); ?></div>
-                </div>
-                <?php endforeach; ?>
-                <?php endif; ?>
-
                 <?php if(count($educations) > 0): ?>
                 <div class="right-heading">Riwayat Pendidikan</div>
                 <?php foreach($educations as $edu): ?>
@@ -375,6 +361,21 @@ $hasPage2 = (count($projects) > 0 || count($internships) > 0 || count($organizat
                     <?php endif; ?>
                 </div>
                 <?php endforeach; ?>
+                <?php elseif(count($experiences) > 0): ?>
+                <?php 
+                    $firstExp = $experiences[0];
+                ?>
+                <div class="right-heading">Pengalaman Kerja Terakhir</div>
+                <div class="item-block">
+                    <table class="item-header-table" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="item-title" style="width: 70%;"><?php echo $firstExp->position ?? ""; ?></td>
+                            <td class="item-date" style="width: 30%;"><?php echo $firstExp->start_year ?? ""; ?> - <?php echo $firstExp->is_current ? "Sekarang" : ($firstExp->end_year ?? ""); ?></td>
+                        </tr>
+                    </table>
+                    <div class="item-subtitle"><?php echo $firstExp->company ?? ""; ?> <?php if(!empty($firstExp->location)): ?> | <?php echo $firstExp->location; ?> <?php endif; ?></div>
+                    <div class="item-desc"><?php echo nl2br(htmlspecialchars($firstExp->description ?? "")); ?></div>
+                </div>
                 <?php endif; ?>
             </td>
         </tr>
@@ -383,6 +384,36 @@ $hasPage2 = (count($projects) > 0 || count($internships) > 0 || count($organizat
     <?php if($hasPage2): ?>
     <!-- PAGE 2+: FULL-WIDTH CONTINUATION -->
     <div class="page2-fullwidth">
+        <?php if(count($experiences) > 0 && count($educations) > 0): ?>
+        <div class="full-heading">Pengalaman Kerja</div>
+        <?php foreach($experiences as $exp): ?>
+        <div class="item-block">
+            <table class="item-header-table" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td class="item-title" style="width: 75%; font-size: 10pt;"><?php echo $exp->position ?? ""; ?></td>
+                    <td class="item-date" style="width: 25%;"><?php echo $exp->start_year ?? ""; ?> - <?php echo $exp->is_current ? "Sekarang" : ($exp->end_year ?? ""); ?></td>
+                </tr>
+            </table>
+            <div class="item-subtitle"><?php echo $exp->company ?? ""; ?> <?php if(!empty($exp->location)): ?> | <?php echo $exp->location; ?> <?php endif; ?></div>
+            <div class="item-desc"><?php echo nl2br(htmlspecialchars($exp->description ?? "")); ?></div>
+        </div>
+        <?php endforeach; ?>
+        <?php elseif(count($experiences) > 1 && count($educations) == 0): ?>
+        <div class="full-heading">Pengalaman Kerja Lainnya</div>
+        <?php foreach(array_slice($experiences, 1) as $exp): ?>
+        <div class="item-block">
+            <table class="item-header-table" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td class="item-title" style="width: 75%; font-size: 10pt;"><?php echo $exp->position ?? ""; ?></td>
+                    <td class="item-date" style="width: 25%;"><?php echo $exp->start_year ?? ""; ?> - <?php echo $exp->is_current ? "Sekarang" : ($exp->end_year ?? ""); ?></td>
+                </tr>
+            </table>
+            <div class="item-subtitle"><?php echo $exp->company ?? ""; ?> <?php if(!empty($exp->location)): ?> | <?php echo $exp->location; ?> <?php endif; ?></div>
+            <div class="item-desc"><?php echo nl2br(htmlspecialchars($exp->description ?? "")); ?></div>
+        </div>
+        <?php endforeach; ?>
+        <?php endif; ?>
+
         <?php if(count($projects) > 0): ?>
         <div class="full-heading">Proyek & Portofolio</div>
         <?php foreach($projects as $proj): ?>
