@@ -129,12 +129,53 @@
         <p>© {{ date('Y') }} ToTap Store. Seluruh Hak Cipta Dilindungi.</p>
         
         <div class="flex items-center gap-4">
+            <span class="inline-flex items-center gap-1 text-[11px] text-slate-500">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Auto-cek status aktif</span>
+            </span>
             <a href="/login" class="text-slate-500 hover:text-slate-300 transition flex items-center gap-1.5">
                 <i class="fas fa-lock text-[10px]"></i>
                 <span>Masuk Super Admin</span>
             </a>
         </div>
     </footer>
+
+    <!-- Auto-Recovery Poller Script (Auto-Restores user back when maintenance is turned OFF) -->
+    <script>
+    (function() {
+        let checking = false;
+        async function checkRecovery() {
+            if (checking) return;
+            checking = true;
+            try {
+                const res = await fetch('/api/system-status?t=' + Date.now(), {
+                    headers: { 'Accept': 'application/json' },
+                    cache: 'no-store'
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (!data.maintenance) {
+                        const toast = document.createElement('div');
+                        toast.style.cssText = 'position:fixed;top:24px;left:50%;transform:translateX(-50%);background:#059669;color:#fff;padding:14px 28px;border-radius:16px;font-weight:bold;font-size:14px;box-shadow:0 10px 40px rgba(0,0,0,0.6);z-index:999999;display:flex;align-items:center;gap:10px;animation:scaleToast 0.4s ease;border:1px solid rgba(255,255,255,0.2);';
+                        toast.innerHTML = '<span>✅ Website telah kembali ONLINE! Membuka halaman...</span><style>@keyframes scaleToast{from{transform:translate(-50%,-20px);opacity:0}to{transform:translate(-50%,0);opacity:1}}</style>';
+                        document.body.appendChild(toast);
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 1000);
+                    }
+                }
+            } catch(e) {}
+            finally {
+                checking = false;
+            }
+        }
+
+        setInterval(checkRecovery, 3000);
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) checkRecovery();
+        });
+    })();
+    </script>
 
 </body>
 </html>

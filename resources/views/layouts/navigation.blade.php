@@ -272,3 +272,5 @@
         }
     }
 </script>
+
+@include('components.system-heartbeat')

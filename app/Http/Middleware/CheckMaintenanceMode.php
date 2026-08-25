@@ -23,6 +23,7 @@ class CheckMaintenanceMode
             $request->is('login*') ||
             $request->is('logout*') ||
             $request->is('up') ||
+            $request->is('api/system-status') ||
             $request->is('api/tripay/*') ||
             $request->is('api/duitku/*') ||
             $request->is('api/payment/*')

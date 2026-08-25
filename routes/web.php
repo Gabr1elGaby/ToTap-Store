@@ -78,6 +78,32 @@ Route::get('/cv', [\App\Http\Controllers\CvController::class, 'index'])->name('c
 Route::get('/cv/create', [\App\Http\Controllers\CvController::class, 'create'])->name('cv.create');
 Route::get('/cv/preview-example/{slug}', [\App\Http\Controllers\CvController::class, 'previewExample'])->name('cv.previewExample');
 Route::post('/cv/preview/{slug}', [\App\Http\Controllers\CvController::class, 'preview'])->name('cv.preview');
+Route::get('/api/system-status', function () {
+    $isMaintenance = false;
+    $message = '';
+    try {
+        if (\Illuminate\Support\Facades\Schema::hasTable('settings')) {
+            $mRow = \Illuminate\Support\Facades\DB::table('settings')->where('key', 'maintenance_mode')->first();
+            $isMaintenance = ($mRow && $mRow->value == '1');
+            $msgRow = \Illuminate\Support\Facades\DB::table('settings')->where('key', 'maintenance_message')->first();
+            $message = $msgRow->value ?? '';
+        }
+    } catch (\Throwable $e) {}
+
+    $isAdmin = false;
+    if (auth()->check()) {
+        $user = auth()->user();
+        $isAdmin = in_array(strtolower($user->role ?? ''), ['admin', 'superadmin', 'owner']) || !empty($user->is_admin);
+    }
+
+    return response()->json([
+        'maintenance' => $isMaintenance,
+        'message' => $message,
+        'is_admin' => $isAdmin,
+        'server_time' => now()->toDateTimeString(),
+    ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+})->name('api.system-status');
+
 Route::match(['get', 'post'], '/api/tripay/callback', [\App\Http\Controllers\Api\TripayCallbackController::class, 'handle'])->name('tripay.callback');
 Route::match(['get', 'post'], '/api/duitku/callback', [\App\Http\Controllers\Api\DuitkuCallbackController::class, 'handle'])->name('duitku.callback');
 Route::get('/api/cron/sync-all', [\App\Http\Controllers\Admin\GameProductController::class, 'cronSyncAll'])->name('cron.sync-all');
