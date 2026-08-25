@@ -380,14 +380,20 @@ class TopUpController extends Controller
                     ]);
                 }
                 $parts = explode('#', $target1, 2);
-                $target1 = trim($parts[0]);
-                $target2 = trim($parts[1]);
-                if (strlen($target1) < 2 || strlen($target2) < 2) {
+                $uName = trim($parts[0]);
+                $tag = trim($parts[1]);
+                if (strlen($uName) < 2 || strlen($tag) < 2) {
                     return response()->json([
                         'result' => false,
                         'message' => 'Riot ID dan Tagline tidak boleh kosong! Contoh: Jett#1234',
                     ]);
                 }
+
+                return response()->json([
+                    'result' => true,
+                    'is_checked' => true,
+                    'nickname' => $uName . '#' . $tag,
+                ]);
             }
 
             // JIKA GAME LAIN TIDAK MENDUKUNG CEK NICKNAME (Seperti Roblox, Steam):
@@ -410,7 +416,7 @@ class TopUpController extends Controller
             }
 
             // BLOKIR JIKA ID TIDAK DITEMUKAN / GAGAL
-            $errMsg = $res['message'] ?? 'Kami tidak menemukan User ID: ' . $target1 . ($target2 ? '#' . $target2 : '');
+            $errMsg = $res['message'] ?? 'Kami tidak menemukan User ID: ' . $target1 . ($target2 ? ' (' . $target2 . ')' : '');
             return response()->json([
                 'result' => false,
                 'message' => $errMsg,
