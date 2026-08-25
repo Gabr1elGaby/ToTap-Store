@@ -13,7 +13,7 @@ class CvPaymentController extends Controller
         $cv = DB::table('cvs')
             ->join('cv_templates', 'cvs.template_id', '=', 'cv_templates.id')
             ->where('cvs.id', $cv_id)
-            ->select('cvs.*', 'cv_templates.name as template_name', 'cv_templates.price')
+            ->select('cvs.*', 'cv_templates.name as template_name', 'cv_templates.price', 'cv_templates.slug as template_slug')
             ->first();
 
         if (!$cv) {
