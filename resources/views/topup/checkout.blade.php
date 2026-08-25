@@ -29,8 +29,8 @@
                     
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                         <div class="flex justify-between sm:block bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-100 dark:border-gray-700">
-                            <span class="text-xs text-gray-500 dark:text-gray-400 block font-semibold">Nomor Order ID</span>
-                            <span class="font-mono text-gray-900 dark:text-white font-bold text-sm">{{ $transaction->id }}</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400 block font-semibold">Nomor Invoice</span>
+                            <span class="font-mono text-indigo-600 dark:text-indigo-400 font-bold text-sm">{{ $transaction->invoice_number ?? $transaction->id }}</span>
                         </div>
                         <div class="flex justify-between sm:block bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-100 dark:border-gray-700">
                             <span class="text-xs text-gray-500 dark:text-gray-400 block font-semibold">{{ $transaction->game->target_field_1 ?: 'Player ID' }}</span>

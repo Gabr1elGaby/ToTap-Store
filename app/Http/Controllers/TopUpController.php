@@ -323,8 +323,8 @@ class TopUpController extends Controller
             return back()->with('error', 'Mohon maaf, nominal ' . $product->name . ' sedang dalam pemeliharaan saldo provider. Silakan hubungi Admin.');
         }
         
-        // Buat ID Transaksi Unik (Order ID)
-        $orderId = 'TRX-' . time() . '-' . rand(100, 999);
+        // Buat ID Transaksi & Nomor Invoice Unik (Format: INV/TOPUP/TTS/001/VIII/2026)
+        $orderId = \App\Helpers\InvoiceHelper::generateTopUpInvoice();
         
         // Simpan ke Database
         $transaction = \App\Models\Transaction::create([
@@ -335,7 +335,7 @@ class TopUpController extends Controller
             'target_field_1' => $request->player_id,
             'target_field_2' => $request->zone_id,
             'amount' => $product->price_sell,
-            'payment_method' => $request->payment_method,
+            'payment_method' => $request->payment_method ?? 'qris',
             'status' => 'pending',
         ]);
         

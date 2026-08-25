@@ -219,7 +219,7 @@
                             <table class="w-full text-left border-collapse">
                                 <thead>
                                     <tr class="bg-slate-50 dark:bg-gray-900/60 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider border-b border-gray-200 dark:border-gray-700">
-                                        <th class="py-3.5 px-6">Order ID</th>
+                                        <th class="py-3.5 px-6">No. Invoice</th>
                                         <th class="py-3.5 px-6">Customer</th>
                                         <th class="py-3.5 px-6">Game & Item</th>
                                         <th class="py-3.5 px-6">Target ID</th>
@@ -232,8 +232,8 @@
                                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                                     @foreach($transactions as $trx)
                                         <tr class="hover:bg-slate-50 dark:hover:bg-gray-700/50 transition">
-                                            <td class="py-4 px-6 font-mono text-xs text-indigo-600 dark:text-indigo-400 font-bold">
-                                                {{ $trx->id }}
+                                            <td class="py-4 px-6 font-mono text-xs text-indigo-600 dark:text-indigo-400 font-bold whitespace-nowrap">
+                                                {{ $trx->invoice_number ?? $trx->id }}
                                             </td>
                                             <td class="py-4 px-6">
                                                 @if($trx->user)

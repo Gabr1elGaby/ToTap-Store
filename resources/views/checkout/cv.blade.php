@@ -61,7 +61,7 @@
                     <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
                         <div>
                             <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Nomor Invoice</span>
-                            <p class="text-lg font-mono font-bold text-slate-900 dark:text-white">INV-CV-{{ str_pad($cv->id, 5, '0', STR_PAD_LEFT) }}</p>
+                            <p class="text-lg font-mono font-bold text-slate-900 dark:text-white">{{ $cv->invoice_number ?? ('INV/CV/TTS/' . str_pad($cv->id, 3, '0', STR_PAD_LEFT) . '/' . \App\Helpers\InvoiceHelper::getRomanMonth(\Carbon\Carbon::parse($cv->created_at ?? now())->month) . '/' . \Carbon\Carbon::parse($cv->created_at ?? now())->year) }}</p>
                         </div>
                         <div class="text-right">
                             <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Waktu Pemesanan</span>

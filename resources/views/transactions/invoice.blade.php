@@ -82,8 +82,8 @@
                 </div>
                 <div class="sm:text-right">
                     <div class="text-xs uppercase font-extrabold tracking-widest text-indigo-600 dark:text-indigo-400 mb-1">INVOICE RESMI</div>
-                    <div class="text-lg font-black font-mono text-slate-900 dark:text-white">
-                        {{ $type === 'topup' ? $data->id : $data->order_number }}
+                    <div class="text-base sm:text-lg font-black font-mono text-slate-900 dark:text-white">
+                        {{ $data->invoice_number ?? ($type === 'topup' ? $data->id : $data->order_number) }}
                     </div>
                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
                         {{ $data->created_at->translatedFormat('d F Y, H:i') }} WIB

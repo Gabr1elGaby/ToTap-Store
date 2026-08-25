@@ -71,9 +71,11 @@ class CvController extends Controller
             }
 
             $accessToken = 'cv_' . \Illuminate\Support\Str::random(24);
+            $invoiceNumber = \App\Helpers\InvoiceHelper::generateCvInvoice();
 
             $cvId = DB::table('cvs')->insertGetId([
                 'access_token' => $accessToken,
+                'invoice_number' => $invoiceNumber,
                 'user_id' => auth()->id(),
                 'template_id' => $data['template_id'],
                 'name' => $data['name'],
