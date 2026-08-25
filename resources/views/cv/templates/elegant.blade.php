@@ -56,6 +56,7 @@ if (empty($initials)) {
         @page { margin: 0px; size: a4 portrait; }
         * { box-sizing: border-box; }
         body {
+            position: relative;
             word-wrap: break-word;
             word-break: break-word;
             font-family: 'Helvetica', 'Arial', sans-serif;
@@ -218,8 +219,11 @@ if (empty($initials)) {
     </style>
 </head>
 <body>
+    <!-- Full-height sidebar background strip for 100% A4 coverage -->
+    <div style="position: absolute; top: 0px; left: 0px; width: 32%; height: 842pt; background-color: #2a9d8f; z-index: -100;"></div>
+
     <!-- TOP HEADER -->
-    <div class="header">
+    <div class="header" style="position: relative; z-index: 10;">
         <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
                 <td width="95pt" align="center" valign="top">

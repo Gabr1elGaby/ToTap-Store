@@ -63,6 +63,7 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
             box-sizing: border-box;
         }
         body {
+            position: relative;
             margin: 0;
             padding: 0;
             font-family: 'Helvetica', 'Arial', sans-serif;
@@ -257,9 +258,11 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
             padding: 35pt 35pt 30pt 35pt;
         }
     </style>
-</head>
 <body>
-    <table class="main-table" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse; table-layout: fixed; min-height: 840pt;">
+    <!-- Full-height sidebar background strip for 100% A4 coverage -->
+    <div style="position: absolute; top: 0px; left: 0px; width: 32%; height: 842pt; background-color: #1e293b; z-index: -100;"></div>
+
+    <table class="main-table" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse; table-layout: fixed;">
         <tr>
             <td class="sidebar-td">
                 <div style="text-align: center; margin-bottom: 16pt;">
