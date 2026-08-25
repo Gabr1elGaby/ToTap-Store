@@ -36,6 +36,7 @@ $organizations = $getCol('organizations');
 $projects      = $getCol('projects');
 $certificates  = $getCol('certificates');
 $skills        = $getCol('skills');
+$tools         = $getCol('tools');
 
 $initials = '';
 if (!empty($data->name)) {
@@ -314,6 +315,15 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
                 <ul class="skill-list">
                     @foreach($skills as $skill)
                     <li>{{ $skill->name ?? '' }}</li>
+                    @endforeach
+                </ul>
+                @endif
+                
+                @if(count($tools) > 0)
+                <div class="sidebar-heading">Tools & Software</div>
+                <ul class="skill-list">
+                    @foreach($tools as $tool)
+                    <li>{{ $tool->name ?? '' }}</li>
                     @endforeach
                 </ul>
                 @endif

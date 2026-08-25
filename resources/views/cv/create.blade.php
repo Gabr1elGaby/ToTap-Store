@@ -380,19 +380,19 @@
                             <button @click.prevent="addSoftSkill" class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-bold hover:bg-blue-700 shrink-0 w-full sm:w-auto whitespace-nowrap">Tambah</button>
                         </div>
 
-                    <div x-show="templateSlug === 'creative'">
-                        <label class="block text-xs font-bold text-gray-700 mb-2">Tools / Software</label>
-                        <div class="flex flex-wrap gap-2 mb-4">
+                    <div class="mt-6">
+                        <label class="block text-xs font-bold text-gray-700 mb-2">Tools / Software (Aplikasi & Perangkat Lunak)</label>
+                        <div class="flex flex-wrap gap-2 mb-2">
                             <template x-for="(tool, index) in data.tools" :key="index">
-                                <div class="bg-teal-50 border border-teal-200 text-teal-800 text-sm font-medium px-3 py-1 rounded-full flex items-center gap-2">
+                                <div class="bg-teal-50 border border-teal-200 text-teal-800 text-xs font-medium px-3 py-1 rounded-full flex items-center gap-2">
                                     <span x-text="tool.name"></span>
-                                    <button @click="removeArrayItem('tools', index)" class="text-teal-400 hover:text-teal-600">×</button>
+                                    <button @click="removeArrayItem('tools', index)" class="text-teal-400 hover:text-teal-600 font-bold">×</button>
                                 </div>
                             </template>
                         </div>
-                        <div class="flex gap-2">
-                            <input type="text" x-model="newTool" @keydown.enter.prevent="addTool" class="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Ketik tool (cth: Figma, Adobe Premiere) lalu tekan Enter">
-                            <button @click="addTool" type="button" class="bg-teal-600 text-white px-4 py-2 rounded text-sm font-bold shadow-sm hover:bg-teal-700">Tambah</button>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="text" x-model="newTool" @keydown.enter.prevent="addTool" class="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Ketik tool (cth: Figma, VS Code, Canva)">
+                            <button @click.prevent="addTool" type="button" class="bg-teal-600 text-white px-4 py-2 rounded text-sm font-bold shadow-sm hover:bg-teal-700 shrink-0 w-full sm:w-auto whitespace-nowrap">Tambah</button>
                         </div>
                     </div>
                 </div>

@@ -36,6 +36,7 @@ $organizations = $getCol('organizations');
 $projects      = $getCol('projects');
 $certificates  = $getCol('certificates');
 $skills        = $getCol('skills');
+$tools         = $getCol('tools');
 
 $initials = '';
 if (!empty($data->name)) {
@@ -289,6 +290,15 @@ if (empty($initials)) {
                 @foreach($skills as $skill)
                 <div class="skill-item">
                     {{ $skill->name ?? '' }}
+                </div>
+                @endforeach
+                @endif
+
+                @if(count($tools) > 0)
+                <div class="left-heading">Tools & Software</div>
+                @foreach($tools as $tool)
+                <div class="skill-item">
+                    {{ $tool->name ?? '' }}
                 </div>
                 @endforeach
                 @endif

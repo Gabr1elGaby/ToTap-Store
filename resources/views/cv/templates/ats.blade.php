@@ -125,6 +125,7 @@
         $projects      = $getCol('projects');
         $certificates  = $getCol('certificates');
         $skills        = $getCol('skills');
+        $tools         = $getCol('tools');
     @endphp
 
     <!-- HEADER / DATA PRIBADI & KONTAK -->
@@ -266,6 +267,14 @@
     <div class="section-title">KEAHLIAN & KETERAMPILAN</div>
     <div class="item-desc">
         {{ collect($skills)->pluck('name')->join(' • ') }}
+    </div>
+    @endif
+
+    <!-- PERANGKAT LUNAK & TOOLS -->
+    @if(count($tools) > 0)
+    <div class="section-title">PERANGKAT LUNAK & TOOLS</div>
+    <div class="item-desc">
+        {{ collect($tools)->pluck('name')->join(' • ') }}
     </div>
     @endif
 
