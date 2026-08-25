@@ -61,6 +61,17 @@ $hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internshi
             line-height: 1.4;
         }
         
+        /* Full-height dark sidebar background for Page 1 */
+        .sidebar-bg {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 32%;
+            height: 842pt;
+            background-color: #0f172a;
+            z-index: -10;
+        }
+        
         /* PAGE 1: 2-COLUMN TABLE */
         table.page1-layout {
             width: 100%;
@@ -71,15 +82,15 @@ $hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internshi
         }
         .sidebar-td {
             width: 32%;
-            background-color: #0f172a;
+            background-color: transparent;
             color: #cbd5e1;
-            padding: 26pt 14pt 20pt 16pt;
+            padding: 28pt 16pt 20pt 18pt;
             vertical-align: top;
         }
         .content-td {
             width: 68%;
             background-color: #ffffff;
-            padding: 26pt 24pt 20pt 20pt;
+            padding: 28pt 25pt 20pt 22pt;
             vertical-align: top;
         }
         
@@ -91,7 +102,7 @@ $hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internshi
             letter-spacing: 0.5px;
             border-bottom: 1pt solid rgba(255,255,255,0.15);
             padding-bottom: 2pt;
-            margin-top: 12pt;
+            margin-top: 14pt;
             margin-bottom: 6pt;
         }
         .sidebar-heading:first-of-type {
@@ -99,7 +110,7 @@ $hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internshi
         }
         
         .contact-item {
-            margin-bottom: 5pt;
+            margin-bottom: 6pt;
             font-size: 8pt;
             line-height: 1.25;
         }
@@ -123,12 +134,12 @@ $hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internshi
         }
         .skill-list li {
             font-size: 8pt;
-            margin-bottom: 3pt;
+            margin-bottom: 3.5pt;
             color: #f1f5f9;
         }
         
         .cert-item {
-            margin-bottom: 5pt;
+            margin-bottom: 6pt;
         }
         .cert-title {
             font-size: 8pt;
@@ -142,7 +153,7 @@ $hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internshi
         }
 
         .name {
-            font-size: 20pt;
+            font-size: 22pt;
             font-weight: bold;
             color: #0f172a;
             text-transform: uppercase;
@@ -151,7 +162,7 @@ $hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internshi
             margin-bottom: 2pt;
         }
         .job-title {
-            font-size: 10pt;
+            font-size: 10.5pt;
             font-weight: bold;
             color: #0284c7;
             text-transform: uppercase;
@@ -223,9 +234,12 @@ $hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internshi
         /* PAGE 2+: FULL-WIDTH CONTAINER FROM LEFT TO RIGHT */
         .page2-fullwidth {
             page-break-before: always;
-            width: 100%;
-            padding: 30pt 32pt 25pt 32pt;
+            width: auto;
+            margin: 0;
+            padding: 30pt 35pt 25pt 35pt;
             background-color: #ffffff;
+            position: relative;
+            z-index: 10;
         }
         .full-heading {
             font-size: 10.5pt;
@@ -235,8 +249,8 @@ $hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internshi
             letter-spacing: 0.5px;
             border-bottom: 1.5pt solid #0284c7;
             padding-bottom: 3pt;
-            margin-top: 12pt;
-            margin-bottom: 7pt;
+            margin-top: 14pt;
+            margin-bottom: 8pt;
         }
         .full-heading:first-of-type {
             margin-top: 0;
@@ -244,15 +258,18 @@ $hasPage2 = (count($experiences) > 0 || count($projects) > 0 || count($internshi
     </style>
 </head>
 <body>
-    <!-- PAGE 1: 2-COLUMN TABLE (Header + Profil + Pendidikan) -->
+    <!-- Full-height dark sidebar background for Page 1 -->
+    <div class="sidebar-bg"></div>
+
+    <!-- PAGE 1: 2-COLUMN TABLE -->
     <table class="page1-layout" cellpadding="0" cellspacing="0">
         <tr>
             <td class="sidebar-td">
-                <div style="text-align: center; margin-bottom: 12pt;">
+                <div style="text-align: center; margin-bottom: 14pt;">
                     <?php if(!empty($data->photo)): ?>
-                        <img src="<?php echo $data->photo; ?>" style="width: 60pt; height: 60pt; border-radius: 50%; border: 2.5pt solid #0284c7; display: block; margin: 0 auto; object-fit: cover;">
+                        <img src="<?php echo $data->photo; ?>" style="width: 65pt; height: 65pt; border-radius: 50%; border: 2.5pt solid #0284c7; display: block; margin: 0 auto; object-fit: cover;">
                     <?php else: ?>
-                        <div style="width: 60pt; height: 60pt; border-radius: 50%; border: 2.5pt solid #0284c7; background-color: rgba(255,255,255,0.08); margin: 0 auto; text-align: center; line-height: 60pt; font-size: 18pt; font-weight: bold; color: #0284c7;">
+                        <div style="width: 65pt; height: 65pt; border-radius: 50%; border: 2.5pt solid #0284c7; background-color: rgba(255,255,255,0.08); margin: 0 auto; text-align: center; line-height: 65pt; font-size: 20pt; font-weight: bold; color: #0284c7;">
                             <?php echo $initials; ?>
                         </div>
                     <?php endif; ?>
