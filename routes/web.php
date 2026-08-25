@@ -152,6 +152,34 @@ Route::middleware(['auth', 'verified', 'role:superadmin'])->prefix('admin')->nam
 
     // Customer Reviews & Feedback Management
     Route::resource('reviews', \App\Http\Controllers\Admin\ReviewController::class)->only(['index', 'destroy']);
+
+    // Maintenance Mode Toggle
+    Route::post('/maintenance/toggle', function (\Illuminate\Http\Request $request) {
+        $enabled = $request->input('enabled') == '1' ? '1' : '0';
+        $message = trim($request->input('message') ?? '');
+        if (empty($message)) {
+            $message = 'Sistem ToTap Store sedang dalam peningkatan performa dan pemeliharaan berkala. Kami akan segera kembali!';
+        }
+
+        \Illuminate\Support\Facades\DB::table('settings')->updateOrInsert(
+            ['key' => 'maintenance_mode'],
+            ['value' => $enabled, 'updated_at' => now()]
+        );
+        \Illuminate\Support\Facades\DB::table('settings')->updateOrInsert(
+            ['key' => 'maintenance_message'],
+            ['value' => $message, 'updated_at' => now()]
+        );
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'is_maintenance' => $enabled === '1',
+                'message' => $enabled === '1' ? 'Mode Maintenance berhasil DIAKTIFKAN.' : 'Mode Maintenance berhasil DIMATIKAN (Website Online).',
+            ]);
+        }
+
+        return back()->with('success', $enabled === '1' ? 'Mode Maintenance berhasil DIAKTIFKAN untuk seluruh pengunjung.' : 'Mode Maintenance berhasil DIMATIKAN. Website telah kembali online!');
+    })->name('maintenance.toggle');
 });
 
 require __DIR__.'/auth.php';

@@ -58,7 +58,120 @@
                     $star2 = \Illuminate\Support\Facades\DB::table('customer_reviews')->where('rating', 2)->count();
                     $star1 = \Illuminate\Support\Facades\DB::table('customer_reviews')->where('rating', 1)->count();
                 }
+
+                // Maintenance Mode State
+                $isMaintenance = false;
+                $maintenanceMessage = 'Sistem ToTap Store sedang dalam peningkatan performa dan pemeliharaan berkala. Kami akan segera kembali!';
+                if (\Illuminate\Support\Facades\Schema::hasTable('settings')) {
+                    $mRow = \Illuminate\Support\Facades\DB::table('settings')->where('key', 'maintenance_mode')->first();
+                    $isMaintenance = ($mRow && $mRow->value == '1');
+                    $msgRow = \Illuminate\Support\Facades\DB::table('settings')->where('key', 'maintenance_message')->first();
+                    if ($msgRow && !empty($msgRow->value)) {
+                        $maintenanceMessage = $msgRow->value;
+                    }
+                }
             @endphp
+
+            <!-- NOTIFIKASI SUCCESS / ERROR -->
+            @if(session('success'))
+                <div class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 p-4 rounded-2xl flex items-center gap-3 shadow-sm">
+                    <i class="fas fa-check-circle text-lg"></i>
+                    <span class="font-bold text-sm">{{ session('success') }}</span>
+                </div>
+            @endif
+
+            <!-- KONTROL STATUS SISTEM & MODE MAINTENANCE -->
+            <div class="bg-white dark:bg-gray-800 border {{ $isMaintenance ? 'border-rose-500/40 bg-rose-500/5 dark:border-rose-500/30' : 'border-gray-200 dark:border-gray-700' }} rounded-2xl p-6 shadow-sm transition-all">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-2xl {{ $isMaintenance ? 'bg-rose-500/10 text-rose-500 border border-rose-500/30 shadow-lg shadow-rose-500/20' : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/30 shadow-lg shadow-emerald-500/20' }} flex items-center justify-center text-xl flex-shrink-0">
+                            <i class="fas {{ $isMaintenance ? 'fa-tools animate-bounce' : 'fa-server' }}"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-3 mb-1">
+                                <h3 class="text-lg font-black text-gray-900 dark:text-white">Status Sistem & Mode Maintenance</h3>
+                                @if($isMaintenance)
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-black uppercase tracking-wider bg-rose-500 text-white shadow-md shadow-rose-500/30">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+                                        Maintenance Aktif
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-black uppercase tracking-wider bg-emerald-500 text-white shadow-md shadow-emerald-500/30">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+                                        Website Online
+                                    </span>
+                                @endif
+                            </div>
+                            <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl">
+                                @if($isMaintenance)
+                                    <strong class="text-rose-600 dark:text-rose-400">Website sedang dikunci untuk publik.</strong> Pengunjung umum diarahkan ke halaman maintenance. Hanya akun Super Admin yang dapat mengakses & melihat isi website.
+                                @else
+                                    Website ToTap Store dapat diakses normal oleh semua customer dan pengunjung (Top Up Game, CV Builder, dan Software POS).
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Tombol Aksi Toggle Maintenance -->
+                    <div class="flex items-center gap-3 flex-shrink-0" x-data="{ openEditMsg: false }">
+                        <button type="button" @click="openEditMsg = !openEditMsg" 
+                                class="px-4 py-2.5 rounded-xl font-bold text-xs bg-slate-100 dark:bg-gray-700 hover:bg-slate-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 transition flex items-center gap-2 shadow-sm">
+                            <i class="fas fa-edit"></i>
+                            <span>Pesan Maintenance</span>
+                        </button>
+
+                        <form action="{{ route('admin.maintenance.toggle') }}" method="POST" onsubmit="return confirm('{{ $isMaintenance ? 'Apakah Anda yakin ingin MEMATIKAN mode maintenance dan membuka kembali website untuk publik?' : 'PERINGATAN: Mengaktifkan mode maintenance akan membuat pengunjung umum tidak bisa membuka website ToTap Store. Tetap aktifkan?' }}');">
+                            @csrf
+                            <input type="hidden" name="enabled" value="{{ $isMaintenance ? '0' : '1' }}">
+                            <input type="hidden" name="message" value="{{ $maintenanceMessage }}">
+                            
+                            @if($isMaintenance)
+                                <button type="submit" class="px-5 py-2.5 rounded-xl font-black text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 transition transform active:scale-95 flex items-center gap-2">
+                                    <i class="fas fa-unlock"></i>
+                                    <span>Matikan Maintenance (Buka Website)</span>
+                                </button>
+                            @else
+                                <button type="submit" class="px-5 py-2.5 rounded-xl font-black text-xs bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 transition transform active:scale-95 flex items-center gap-2">
+                                    <i class="fas fa-lock"></i>
+                                    <span>Aktifkan Mode Maintenance</span>
+                                </button>
+                            @endif
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Form Edit Pesan Maintenance (Expandable) -->
+                <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700/60" x-data="{ editing: false }">
+                    <details class="group">
+                        <summary class="flex items-center justify-between cursor-pointer list-none text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
+                            <span class="flex items-center gap-2">
+                                <i class="fas fa-comment-alt"></i>
+                                <span>Kustomisasi Teks Pesan untuk Pengunjung</span>
+                            </span>
+                            <span class="transition group-open:rotate-180">
+                                <i class="fas fa-chevron-down"></i>
+                            </span>
+                        </summary>
+                        <form action="{{ route('admin.maintenance.toggle') }}" method="POST" class="mt-3 space-y-3">
+                            @csrf
+                            <input type="hidden" name="enabled" value="{{ $isMaintenance ? '1' : '0' }}">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                                    Pesan yang tampil pada layar pengunjung saat maintenance:
+                                </label>
+                                <textarea name="message" rows="2" 
+                                    class="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-xs p-3 font-medium focus:ring-indigo-500 focus:border-indigo-500" 
+                                    placeholder="Tulis pesan pemeliharaan...">{{ $maintenanceMessage }}</textarea>
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="submit" class="px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-500 text-white shadow-md transition">
+                                    <i class="fas fa-save mr-1"></i> Simpan Pesan
+                                </button>
+                            </div>
+                        </form>
+                    </details>
+                </div>
+            </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-2xl p-5 border border-gray-100 dark:border-gray-700">

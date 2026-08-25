@@ -13,6 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->trustProxies(at: '*');
+        $middleware->web(append: [
+            \App\Http\Middleware\CheckMaintenanceMode::class,
+        ]);
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'subscribed' => \App\Http\Middleware\CheckSubscription::class,
@@ -27,6 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'topup/checkout/*/verify',
             'api/reviews',
             'admin/games/*/products/sync',
+            'admin/maintenance/toggle',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
