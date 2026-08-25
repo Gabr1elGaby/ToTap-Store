@@ -18,12 +18,12 @@
             padding: 0;
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             color: #1e293b;
-            font-size: 7.5pt;
-            line-height: 1.35;
+            font-size: 7.2pt;
+            line-height: 1.32;
             background-color: #ffffff;
         }
 
-        /* 100% FULL-HEIGHT SIDEBAR BACKGROUND (ALWAYS FULL DOWN TO PAPER BOTTOM) */
+        /* 100% FULL-HEIGHT SIDEBAR BACKGROUND */
         .sidebar-bg {
             position: fixed;
             top: 0;
@@ -39,69 +39,66 @@
             border-collapse: collapse;
             table-layout: fixed;
         }
-        tr {
-            page-break-inside: avoid;
-        }
         td.sidebar-td {
             width: 32%;
             color: #f4f4f5;
-            padding: 6pt 13pt;
+            padding: 18pt 12pt 18pt 12pt;
             vertical-align: top;
         }
         td.content-td {
             width: 68%;
             background-color: #ffffff;
-            padding: 6pt 18pt 6pt 16pt;
+            padding: 18pt 18pt 18pt 15pt;
             vertical-align: top;
         }
 
-        /* SIDEBAR ELEMENTS */
+        /* SIDEBAR ELEMENTS (CONTINUOUS STREAM) */
         .photo-container {
             text-align: center;
             margin-bottom: 8pt;
             width: 100%;
         }
         .photo {
-            width: 60pt;
-            height: 60pt;
+            width: 58pt;
+            height: 58pt;
             border-radius: 50%;
             border: 2pt solid #ec4899;
             display: inline-block;
         }
         .sidebar-heading {
-            font-size: 7.5pt;
+            font-size: 7.2pt;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 0.8px;
             color: #f472b6;
             border-bottom: 1pt solid #27272a;
-            padding-bottom: 2pt;
-            margin-top: 6pt;
-            margin-bottom: 3.5pt;
+            padding-bottom: 1.5pt;
+            margin-top: 6.5pt;
+            margin-bottom: 3pt;
         }
         .contact-item {
-            margin-bottom: 3pt;
+            margin-bottom: 2.5pt;
             line-height: 1.2;
         }
         .contact-label {
-            font-size: 5.5pt;
+            font-size: 5.2pt;
             text-transform: uppercase;
             color: #ec4899;
             font-weight: bold;
             display: block;
         }
         .contact-val {
-            font-size: 7pt;
+            font-size: 6.8pt;
             color: #ffffff;
             word-wrap: break-word;
         }
 
         /* SKILL PROGRESS BARS */
         .skill-bar-item {
-            margin-bottom: 3.5pt;
+            margin-bottom: 3pt;
         }
         .skill-bar-header {
-            font-size: 6.5pt;
+            font-size: 6.2pt;
             color: #f4f4f5;
             font-weight: 600;
             margin-bottom: 1pt;
@@ -117,48 +114,48 @@
             text-align: right;
             color: #ec4899;
             font-weight: bold;
-            font-size: 6pt;
+            font-size: 5.8pt;
         }
         .skill-track {
             width: 100%;
-            height: 3pt;
+            height: 2.8pt;
             background-color: #27272a;
             border-radius: 2pt;
             overflow: hidden;
         }
         .skill-fill {
-            height: 3pt;
+            height: 2.8pt;
             background-color: #ec4899;
             border-radius: 2pt;
         }
         .skill-bullet-item {
-            font-size: 6.5pt;
+            font-size: 6.2pt;
             color: #f4f4f5;
-            margin-bottom: 2pt;
+            margin-bottom: 1.8pt;
             line-height: 1.2;
         }
 
         .cert-item {
-            margin-bottom: 3.5pt;
+            margin-bottom: 3pt;
             line-height: 1.2;
         }
         .cert-title {
-            font-size: 6.5pt;
+            font-size: 6.2pt;
             font-weight: bold;
             color: #ffffff;
         }
         .cert-issuer {
-            font-size: 6pt;
+            font-size: 5.8pt;
             color: #f4f4f5;
         }
         .cert-year {
-            font-size: 6pt;
+            font-size: 5.8pt;
             color: #a1a1aa;
         }
 
-        /* RIGHT MAIN CONTENT */
+        /* RIGHT MAIN CONTENT (CONTINUOUS STREAM) */
         .name {
-            font-size: 15pt;
+            font-size: 14pt;
             font-weight: 800;
             color: #18181b;
             text-transform: uppercase;
@@ -166,27 +163,27 @@
             margin-bottom: 1.5pt;
         }
         .job-title {
-            font-size: 7.5pt;
+            font-size: 7.2pt;
             font-weight: bold;
             color: #db2777;
             text-transform: uppercase;
             letter-spacing: 0.8px;
-            margin-bottom: 4pt;
+            margin-bottom: 3.5pt;
         }
         .header-line {
             border: 0;
             border-top: 1.5pt solid #db2777;
-            margin: 0 0 5pt 0;
+            margin: 0 0 4.5pt 0;
         }
         .summary {
-            font-size: 7pt;
+            font-size: 6.8pt;
             color: #334155;
             text-align: justify;
-            line-height: 1.3;
+            line-height: 1.28;
             margin-bottom: 5pt;
         }
         .right-heading {
-            font-size: 7.5pt;
+            font-size: 7.2pt;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.8px;
@@ -197,7 +194,7 @@
             margin-bottom: 3pt;
         }
         .item-block {
-            margin-bottom: 4pt;
+            margin-bottom: 3.5pt;
         }
         .item-header-table {
             width: 100%;
@@ -205,14 +202,14 @@
             margin-bottom: 1pt;
         }
         .item-title {
-            font-size: 7.5pt;
+            font-size: 7.2pt;
             font-weight: bold;
             color: #18181b;
             text-align: left;
             vertical-align: top;
         }
         .item-date {
-            font-size: 6.5pt;
+            font-size: 6.2pt;
             font-weight: bold;
             color: #db2777;
             text-align: right;
@@ -220,21 +217,21 @@
             white-space: nowrap;
         }
         .item-subtitle {
-            font-size: 7pt;
+            font-size: 6.8pt;
             font-weight: 600;
             color: #475569;
             margin-bottom: 1pt;
         }
         .item-desc {
-            font-size: 6.5pt;
+            font-size: 6.2pt;
             color: #334155;
-            line-height: 1.25;
+            line-height: 1.22;
             text-align: justify;
         }
     </style>
 </head>
 <body>
-    <!-- FIXED 100% FULL-HEIGHT SIDEBAR BG (ALWAYS FULL TO BOTTOM) -->
+    <!-- FIXED 100% FULL-HEIGHT SIDEBAR BG -->
     <div class="sidebar-bg"></div>
 
     @php
@@ -261,10 +258,9 @@
             <col style="width: 32%;">
             <col style="width: 68%;">
         </colgroup>
-
-        <!-- ROW 1: TOP SECTION (PHOTO + CONTACTS on Left, NAME + SUMMARY + EXPERIENCE on Right) -->
         <tr>
-            <td class="sidebar-td" style="padding-top: 18pt;">
+            <!-- SIDEBAR: CONTINUOUS STREAM (Photo -> Kontak -> Keahlian -> Tools -> Sertifikasi) -->
+            <td class="sidebar-td">
                 @if(!empty($data->photo))
                 <div class="photo-container">
                     <img src="{{ $data->photo }}" class="photo" alt="Photo">
@@ -302,8 +298,65 @@
                     <span class="contact-val">{{ $data->website }}</span>
                 </div>
                 @endif
+
+                <!-- KEAHLIAN / SKILLS (LANGSUNG DI BAWAH KONTAK TANPA JARAK KOSONG) -->
+                @if(!empty($skills) && count($skills) > 0)
+                <div class="sidebar-heading">Keahlian</div>
+                @foreach($skills as $s)
+                    @php
+                        $sName = is_array($s) ? ($s["name"] ?? "") : ($s->name ?? "");
+                        $sLvl  = is_array($s) ? ($s["level"] ?? "") : ($s->level ?? "");
+                    @endphp
+                    @if(!empty($sName))
+                        @if(!empty($sLvl) && is_numeric($sLvl) && $sLvl > 0)
+                        <div class="skill-bar-item">
+                            <div class="skill-bar-header">
+                                <span class="skill-name-cell">{{ $sName }}</span>
+                                <span class="skill-pct-cell">{{ $sLvl }}%</span>
+                            </div>
+                            <div class="skill-track"><div class="skill-fill" style="width: {{ $sLvl }}%;"></div></div>
+                        </div>
+                        @else
+                        <div class="skill-bullet-item">• {{ $sName }}</div>
+                        @endif
+                    @endif
+                @endforeach
+                @endif
+
+                <!-- TOOLS & SOFTWARE -->
+                @if(!empty($tools) && count($tools) > 0)
+                <div class="sidebar-heading">Tools & Software</div>
+                @foreach($tools as $tool)
+                    @php $tName = is_array($tool) ? ($tool["name"] ?? "") : ($tool->name ?? ""); @endphp
+                    @if(!empty($tName))
+                    <div class="skill-bullet-item">• {{ $tName }}</div>
+                    @endif
+                @endforeach
+                @endif
+
+                <!-- SERTIFIKASI -->
+                @if(!empty($certificates) && count($certificates) > 0)
+                <div class="sidebar-heading">Sertifikasi</div>
+                @foreach($certificates as $cert)
+                    @php
+                        $cName = is_array($cert) ? ($cert["name"] ?? "") : ($cert->name ?? "");
+                        $cIssuer = is_array($cert) ? ($cert["issuer"] ?? ($cert["publisher"] ?? "")) : ($cert->issuer ?? ($cert->publisher ?? ""));
+                        $cYear = is_array($cert) ? ($cert["year"] ?? "") : ($cert->year ?? "");
+                    @endphp
+                    @if(!empty($cName))
+                    <div class="cert-item">
+                        <div class="cert-title">{{ $cName }}</div>
+                        @if(!empty($cIssuer))<div class="cert-issuer">{{ $cIssuer }}</div>@endif
+                        @if(!empty($cYear))<div class="cert-year">{{ $cYear }}</div>@endif
+                    </div>
+                    @endif
+                @endforeach
+                @endif
+
             </td>
-            <td class="content-td" style="padding-top: 18pt;">
+
+            <!-- MAIN CONTENT: CONTINUOUS STREAM (Name -> Job -> Summary -> Exp -> Edu -> Proj -> Intern -> Org) -->
+            <td class="content-td">
                 <!-- NAMA & POSISI -->
                 <div class="name">{{ $getVal($data, "name") ?: "NAMA LENGKAP" }}</div>
                 <div class="job-title">{{ $getVal($data, "job_title") ?: "POSISI / PROFESI" }}</div>
@@ -316,9 +369,9 @@
                 </div>
                 @endif
 
-                <!-- PENGALAMAN KERJA (LANGSUNG DI BAWAH RINGKASAN PROFIL TANPA JARAK JAUH) -->
+                <!-- PENGALAMAN KERJA -->
                 @if(!empty($experiences) && count($experiences) > 0)
-                <div class="right-heading" style="margin-top: 4pt;">Pengalaman Kerja</div>
+                <div class="right-heading">Pengalaman Kerja</div>
                 @foreach($experiences as $exp)
                     @php
                         $comp = is_array($exp) ? ($exp["company"] ?? "") : ($exp->company ?? "");
@@ -345,64 +398,10 @@
                     @endif
                 @endforeach
                 @endif
-            </td>
-        </tr>
 
-        <!-- ROW 2: SKILLS & CERTIFICATIONS (Left) | EDUCATION (Right) -->
-        <tr>
-            <td class="sidebar-td">
-                @if(!empty($skills) && count($skills) > 0)
-                <div class="sidebar-heading">Keahlian</div>
-                @foreach($skills as $s)
-                    @php
-                        $sName = is_array($s) ? ($s["name"] ?? "") : ($s->name ?? "");
-                        $sLvl  = is_array($s) ? ($s["level"] ?? "") : ($s->level ?? "");
-                    @endphp
-                    @if(!empty($sName))
-                        @if(!empty($sLvl) && is_numeric($sLvl) && $sLvl > 0)
-                        <div class="skill-bar-item">
-                            <div class="skill-bar-header">
-                                <span class="skill-name-cell">{{ $sName }}</span>
-                                <span class="skill-pct-cell">{{ $sLvl }}%</span>
-                            </div>
-                            <div class="skill-track"><div class="skill-fill" style="width: {{ $sLvl }}%;"></div></div>
-                        </div>
-                        @else
-                        <div class="skill-bullet-item">• {{ $sName }}</div>
-                        @endif
-                    @endif
-                @endforeach
-                @endif
-
-                @if(!empty($tools) && count($tools) > 0)
-                <div class="sidebar-heading">Tools & Software</div>
-                @foreach($tools as $tool)
-                    @php $tName = is_array($tool) ? ($tool["name"] ?? "") : ($tool->name ?? ""); @endphp
-                    @if(!empty($tName))<div class="skill-bullet-item">• {{ $tName }}</div>@endif
-                @endforeach
-                @endif
-
-                @if(!empty($certificates) && count($certificates) > 0)
-                <div class="sidebar-heading">Sertifikasi</div>
-                @foreach($certificates as $cert)
-                    @php
-                        $cName = is_array($cert) ? ($cert["name"] ?? "") : ($cert->name ?? "");
-                        $cIssuer = is_array($cert) ? ($cert["issuer"] ?? ($cert["publisher"] ?? "")) : ($cert->issuer ?? ($cert->publisher ?? ""));
-                        $cYear = is_array($cert) ? ($cert["year"] ?? "") : ($cert->year ?? "");
-                    @endphp
-                    @if(!empty($cName))
-                    <div class="cert-item">
-                        <div class="cert-title">{{ $cName }}</div>
-                        @if(!empty($cIssuer))<div class="cert-issuer">{{ $cIssuer }}</div>@endif
-                        @if(!empty($cYear))<div class="cert-year">{{ $cYear }}</div>@endif
-                    </div>
-                    @endif
-                @endforeach
-                @endif
-            </td>
-            <td class="content-td">
+                <!-- RIWAYAT PENDIDIKAN -->
                 @if(!empty($educations) && count($educations) > 0)
-                <div class="right-heading" style="margin-top: 0;">Riwayat Pendidikan</div>
+                <div class="right-heading">Riwayat Pendidikan</div>
                 @foreach($educations as $edu)
                     @php
                         $inst = is_array($edu) ? ($edu["institution"] ?? "") : ($edu->institution ?? "");
@@ -428,14 +427,9 @@
                     @endif
                 @endforeach
                 @endif
-            </td>
-        </tr>
 
-        <!-- ROW 3: PROYEK & PORTOFOLIO -->
-        @if(!empty($projects) && count($projects) > 0)
-        <tr>
-            <td class="sidebar-td"></td>
-            <td class="content-td">
+                <!-- PROYEK & PORTOFOLIO -->
+                @if(!empty($projects) && count($projects) > 0)
                 <div class="right-heading">Proyek & Portofolio</div>
                 @foreach($projects as $proj)
                     @php
@@ -446,21 +440,16 @@
                     @endphp
                     @if(!empty($pName))
                     <div class="item-block">
-                        <div class="item-title">{{ $pName }} @if($pLink)<span style="font-weight: normal; font-size: 6.5pt; color: #db2777;">({{ $pLink }})</span>@endif</div>
-                        @if(!empty($pTech))<div class="item-subtitle" style="font-size: 6.5pt;">{{ $pTech }}</div>@endif
+                        <div class="item-title">{{ $pName }} @if($pLink)<span style="font-weight: normal; font-size: 6.2pt; color: #db2777;">({{ $pLink }})</span>@endif</div>
+                        @if(!empty($pTech))<div class="item-subtitle" style="font-size: 6.2pt;">{{ $pTech }}</div>@endif
                         @if(!empty($pDesc))<div class="item-desc">{!! nl2br(e($pDesc)) !!}</div>@endif
                     </div>
                     @endif
                 @endforeach
-            </td>
-        </tr>
-        @endif
+                @endif
 
-        <!-- ROW 4: PENGALAMAN MAGANG -->
-        @if(!empty($internships) && count($internships) > 0)
-        <tr>
-            <td class="sidebar-td"></td>
-            <td class="content-td">
+                <!-- PENGALAMAN MAGANG -->
+                @if(!empty($internships) && count($internships) > 0)
                 <div class="right-heading">Pengalaman Magang</div>
                 @foreach($internships as $intern)
                     @php
@@ -486,15 +475,10 @@
                     </div>
                     @endif
                 @endforeach
-            </td>
-        </tr>
-        @endif
+                @endif
 
-        <!-- ROW 5: ORGANISASI & KEPANITIAAN -->
-        @if(!empty($organizations) && count($organizations) > 0)
-        <tr>
-            <td class="sidebar-td" style="padding-bottom: 18pt;"></td>
-            <td class="content-td" style="padding-bottom: 18pt;">
+                <!-- ORGANISASI & KEPANITIAAN -->
+                @if(!empty($organizations) && count($organizations) > 0)
                 <div class="right-heading">Organisasi & Kepanitiaan</div>
                 @foreach($organizations as $org)
                     @php
@@ -516,9 +500,10 @@
                     </div>
                     @endif
                 @endforeach
+                @endif
+
             </td>
         </tr>
-        @endif
     </table>
 </body>
 </html>
