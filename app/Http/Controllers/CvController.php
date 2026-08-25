@@ -204,7 +204,7 @@ class CvController extends Controller
         $cv = DB::table('cvs')->where('access_token', $token)->orWhere('id', $token)->first();
         if (!$cv) abort(404, 'CV not found');
 
-        $isAdmin = auth()->check() && (auth()->user()->role === 'admin' || !empty(auth()->user()->is_admin));
+        $isAdmin = auth()->check() && (in_array(strtolower(auth()->user()->role ?? ''), ['admin', 'superadmin', 'owner']) || !empty(auth()->user()->is_admin));
         if ($cv->user_id && auth()->check() && auth()->id() !== $cv->user_id && !$isAdmin && $token == $cv->id) {
             abort(403, 'Akses tidak diizinkan untuk CV ini.');
         }
@@ -241,7 +241,11 @@ class CvController extends Controller
             return view('cv.pending', compact('cv', 'userData', 'template'));
         }
 
-        $pdf = Pdf::loadView('cv.templates.' . $template->slug, array_merge($userData, [
+        $pdfView = view()->exists('cv.pdf.' . $template->slug) 
+            ? 'cv.pdf.' . $template->slug 
+            : 'cv.templates.' . $template->slug;
+
+        $pdf = Pdf::loadView($pdfView, array_merge($userData, [
             'userData' => $userData,
             'template' => $template,
             'data' => $cv,
