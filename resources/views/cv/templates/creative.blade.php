@@ -23,13 +23,13 @@
             word-break: break-word;
         }
         
-        /* PAGE 1 SIDEBAR: POSITION ABSOLUTE COVERING 100% HEIGHT OF PAGE 1 */
+        /* PAGE 1 SIDEBAR (TOTAL WIDTH: 160pt + 32pt = 192pt) */
         .sidebar {
             position: absolute;
             left: 0;
             top: 0;
             bottom: 0;
-            width: 195pt;
+            width: 160pt;
             background-color: #0f172a;
             padding: 32pt 16pt 20pt 16pt;
             color: #cbd5e1;
@@ -47,6 +47,7 @@
             margin-bottom: 10pt;
             margin-top: 16pt;
             display: block;
+            width: 160pt;
         }
         .left-header:first-of-type {
             margin-top: 0;
@@ -56,11 +57,13 @@
             list-style: none;
             padding: 0;
             margin: 0;
+            width: 160pt;
         }
         .contact-list li {
             margin-bottom: 8pt;
             font-size: 8.5pt;
             line-height: 1.35;
+            width: 160pt;
         }
         .contact-label {
             color: #38bdf8;
@@ -80,6 +83,7 @@
             list-style: none;
             padding: 0;
             margin: 0;
+            width: 160pt;
         }
         .skill-list li {
             margin-bottom: 5pt;
@@ -92,11 +96,11 @@
             font-weight: bold;
         }
 
-        /* PAGE 1 MAIN CONTENT (RIGHT COLUMN) */
+        /* PAGE 1 MAIN CONTENT (SAFE 225pt MARGIN TO PREVENT ANY OVERLAP) */
         .content-p1 {
-            margin-left: 215pt;
-            padding: 32pt 30pt 24pt 10pt;
-            width: 350pt;
+            margin-left: 225pt;
+            padding: 32pt 30pt 24pt 5pt;
+            width: 340pt;
         }
 
         /* Section Headings */
@@ -210,13 +214,14 @@
         $hard_skills = $skills->filter(fn($s) => isset($s->level) && $s->level !== '' && $s->level !== null)->all();
         $soft_skills = $skills->filter(fn($s) => !isset($s->level) || $s->level === '' || $s->level === null)->all();
 
+        // Check if we need Page 2 for secondary sections
         $hasPage2 = (count($educations) > 0 || count($organizations) > 0 || count($internships) > 0 || count($certificates) > 0);
     @endphp
 
-    <!-- PAGE 1 ONLY: FULL-HEIGHT LEFT SIDEBAR (BOTTOM: 0 STRETCHES TO BOTTOM OF PAGE 1) -->
+    <!-- PAGE 1 SIDEBAR (BOTTOM: 0 STRETCHES TO BOTTOM OF PAGE 1) -->
     <div class="sidebar">
         <!-- PHOTO & NAME CENTERED WITH TABLE -->
-        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 14pt;">
+        <table width="160pt" cellpadding="0" cellspacing="0" style="margin-bottom: 14pt;">
             <tr>
                 <td align="center" style="text-align: center;">
                     @if(!empty($data->photo))
@@ -262,16 +267,16 @@
 
         @if(count($hard_skills) > 0)
         <div class="left-header">Keahlian Teknis</div>
-        <div style="margin-bottom: 14pt;">
+        <div style="margin-bottom: 14pt; width: 160pt;">
             @foreach($hard_skills as $skill)
-            <div style="margin-bottom: 6pt;">
+            <div style="margin-bottom: 6pt; width: 160pt;">
                 <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 2pt;">
                     <tr>
                         <td style="font-size: 8.5pt; color: #ffffff;">{{ $skill->name ?? '' }}</td>
                         <td align="right" style="font-size: 8pt; color: #38bdf8; font-weight: bold;">{{ $skill->level ?? '' }}%</td>
                     </tr>
                 </table>
-                <div style="width: 100%; background-color: #334155; height: 3.5pt; border-radius: 2pt;">
+                <div style="width: 160pt; background-color: #334155; height: 3.5pt; border-radius: 2pt;">
                     <div style="width: {{ $skill->level ?? '' }}%; background-color: #38bdf8; height: 3.5pt; border-radius: 2pt;"></div>
                 </div>
             </div>
@@ -341,9 +346,7 @@
             @if(!empty($projSub))
             <div class="item-subtitle">{{ implode(' | ', $projSub) }}</div>
             @endif
-            @if(!empty($proj->description))
             <div class="item-desc">{!! nl2br(e($proj->description)) !!}</div>
-            @endif
         </div>
         @endforeach
         @endif

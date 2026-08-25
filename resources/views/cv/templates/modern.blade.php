@@ -70,13 +70,13 @@ $hasPage2 = (count($educations) > 0 || count($organizations) > 0 || count($inter
             word-break: break-word;
         }
         
-        /* PAGE 1 SIDEBAR: POSITION ABSOLUTE COVERING 100% HEIGHT OF PAGE 1 */
+        /* PAGE 1 SIDEBAR (TOTAL WIDTH: 160pt + 32pt = 192pt) */
         .sidebar {
             position: absolute;
             left: 0;
             top: 0;
             bottom: 0;
-            width: 195pt;
+            width: 160pt;
             background-color: #0f172a;
             padding: 32pt 16pt 20pt 16pt;
             color: #cbd5e1;
@@ -93,6 +93,7 @@ $hasPage2 = (count($educations) > 0 || count($organizations) > 0 || count($inter
             margin-bottom: 10pt;
             margin-top: 16pt;
             display: block;
+            width: 160pt;
         }
         .sidebar-heading:first-of-type {
             margin-top: 0;
@@ -102,6 +103,7 @@ $hasPage2 = (count($educations) > 0 || count($organizations) > 0 || count($inter
             margin-bottom: 8pt;
             font-size: 8.5pt;
             line-height: 1.35;
+            width: 160pt;
         }
         .contact-label {
             font-size: 7pt;
@@ -124,6 +126,7 @@ $hasPage2 = (count($educations) > 0 || count($organizations) > 0 || count($inter
             list-style: none;
             padding: 0;
             margin: 0;
+            width: 160pt;
         }
         .skill-list li {
             font-size: 8.5pt;
@@ -141,6 +144,7 @@ $hasPage2 = (count($educations) > 0 || count($organizations) > 0 || count($inter
             margin-bottom: 8pt;
             font-size: 8.5pt;
             color: #f1f5f9;
+            width: 160pt;
         }
         .cert-title {
             font-weight: bold;
@@ -152,11 +156,11 @@ $hasPage2 = (count($educations) > 0 || count($organizations) > 0 || count($inter
             color: #94a3b8;
         }
         
-        /* PAGE 1 MAIN CONTENT (RIGHT COLUMN) */
+        /* PAGE 1 MAIN CONTENT (SAFE 225pt MARGIN TO PREVENT ANY OVERLAP) */
         .content-p1 {
-            margin-left: 215pt;
-            padding: 32pt 30pt 24pt 10pt;
-            width: 350pt;
+            margin-left: 225pt;
+            padding: 32pt 30pt 24pt 5pt;
+            width: 340pt;
         }
         
         .name {
@@ -252,7 +256,7 @@ $hasPage2 = (count($educations) > 0 || count($organizations) > 0 || count($inter
     <!-- PAGE 1 SIDEBAR (BOTTOM: 0 STRETCHES TO BOTTOM OF PAGE 1) -->
     <div class="sidebar">
         <!-- PHOTO CENTERED -->
-        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 14pt;">
+        <table width="160pt" cellpadding="0" cellspacing="0" style="margin-bottom: 14pt;">
             <tr>
                 <td align="center" style="text-align: center;">
                     <table align="center" cellpadding="0" cellspacing="0" style="margin: 0 auto;">

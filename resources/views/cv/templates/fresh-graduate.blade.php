@@ -29,7 +29,7 @@
             left: 0;
             top: 0;
             bottom: 0;
-            width: 195pt;
+            width: 160pt;
             background-color: #111827;
             padding: 32pt 16pt 20pt 16pt;
             color: #e5e7eb;
@@ -59,6 +59,7 @@
             margin-bottom: 8pt;
             font-size: 8.5pt;
             line-height: 1.35;
+            width: 160pt;
         }
         .contact-label {
             font-weight: bold;
@@ -76,9 +77,9 @@
 
         /* PAGE 1 MAIN CONTENT */
         .content-p1 {
-            margin-left: 215pt;
-            padding: 32pt 30pt 24pt 10pt;
-            width: 350pt;
+            margin-left: 225pt;
+            padding: 32pt 30pt 24pt 5pt;
+            width: 340pt;
         }
 
         /* Right Col Elements */
@@ -157,6 +158,7 @@
             list-style: none;
             padding: 0;
             margin: 0 0 14pt 0;
+            width: 160pt;
         }
         .skill-list li {
             margin-bottom: 4pt;
@@ -226,7 +228,7 @@
     <!-- PAGE 1 SIDEBAR (BOTTOM: 0 STRETCHES TO BOTTOM OF PAGE 1) -->
     <div class="sidebar">
         <!-- PHOTO CENTERED -->
-        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 14pt;">
+        <table width="160pt" cellpadding="0" cellspacing="0" style="margin-bottom: 14pt;">
             <tr>
                 <td align="center" style="text-align: center;">
                     @if(!empty($data->photo))
@@ -245,7 +247,7 @@
         </table>
 
         <div class="left-header">Data Diri</div>
-        <div style="margin-bottom: 12pt;">
+        <div style="margin-bottom: 12pt; width: 160pt;">
             @if(!empty($data->phone))
             <div class="contact-item">
                 <span class="contact-label">Telepon</span>
@@ -267,7 +269,7 @@
         </div>
 
         <div class="left-header">Media & Web</div>
-        <div style="margin-bottom: 12pt;">
+        <div style="margin-bottom: 12pt; width: 160pt;">
             @if(!empty($data->linkedin))
             <div class="contact-item">
                 <span class="contact-label">LinkedIn</span>
