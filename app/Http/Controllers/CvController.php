@@ -335,15 +335,14 @@ class CvController extends Controller
                     ]
                 ],
                 'skills' => [
-                    ['name' => 'PHP / Laravel', 'level' => 'Technical'],
-                    ['name' => 'TypeScript / Node.js', 'level' => 'Technical'],
-                    ['name' => 'Go (Golang)', 'level' => 'Technical'],
-                    ['name' => 'PostgreSQL & MySQL', 'level' => 'Technical'],
-                    ['name' => 'Redis & Kafka', 'level' => 'Technical'],
-                    ['name' => 'Docker & Kubernetes', 'level' => 'Cloud'],
-                    ['name' => 'AWS (ECS, S3, RDS, Lambda)', 'level' => 'Cloud'],
-                    ['name' => 'System Architecture & Microservices', 'level' => 'Core'],
-                    ['name' => 'CI/CD & DevOps', 'level' => 'Core'],
+                    ['name' => 'PHP / Laravel Framework'],
+                    ['name' => 'TypeScript / Node.js'],
+                    ['name' => 'PostgreSQL & MySQL Database'],
+                    ['name' => 'RESTful & GraphQL APIs'],
+                    ['name' => 'Docker & Cloud Deployment'],
+                    ['name' => 'AWS Cloud Architecture'],
+                    ['name' => 'CI/CD & DevOps Automation'],
+                    ['name' => 'System Architecture & Scaling'],
                 ]
             ];
         } else {
@@ -426,14 +425,14 @@ class CvController extends Controller
                     ]
                 ],
                 'skills' => [
-                    ['name' => 'PHP & Laravel Framework', 'level' => 'Hard Skill'],
-                    ['name' => 'JavaScript, Node.js & Vue.js', 'level' => 'Hard Skill'],
-                    ['name' => 'MySQL & PostgreSQL Database', 'level' => 'Hard Skill'],
-                    ['name' => 'RESTful API & Integrasi Gateway', 'level' => 'Hard Skill'],
-                    ['name' => 'Git & GitHub Version Control', 'level' => 'Hard Skill'],
-                    ['name' => 'Docker & Cloud Deployment', 'level' => 'Hard Skill'],
-                    ['name' => 'Kepemimpinan & Manajemen Tim', 'level' => 'Soft Skill'],
-                    ['name' => 'Komunikasi Efektif & Problem Solving', 'level' => 'Soft Skill'],
+                    ['name' => 'PHP & Laravel Framework'],
+                    ['name' => 'JavaScript, Vue.js & Tailwind CSS'],
+                    ['name' => 'MySQL & Database Optimization'],
+                    ['name' => 'RESTful API & Payment Gateway'],
+                    ['name' => 'Git & GitHub Version Control'],
+                    ['name' => 'Kepemimpinan & Manajemen Proyek'],
+                    ['name' => 'Problem Solving & Critical Thinking'],
+                    ['name' => 'Komunikasi & Kolaborasi Tim'],
                 ]
             ];
         }

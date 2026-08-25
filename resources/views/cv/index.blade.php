@@ -402,7 +402,8 @@
          x-cloak>
         
         <div style="background: #0f172a; border-radius: 20px; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.9); border: 1px solid #334155; width: 100%; max-width: 900px; height: 94vh; max-height: 950px; display: flex; flex-direction: column; overflow: hidden; margin: auto; position: relative;"
-             @click.away="previewOpen = false">
+             @click.away="previewOpen = false"
+             x-effect="if (previewOpen) { $nextTick(() => { if ($refs.modalBody) $refs.modalBody.scrollTop = 0; }); }">
             
             <!-- Modal Header -->
             <div style="padding: 16px 24px; border-bottom: 1px solid #1e293b; display: flex; align-items: center; justify-content: space-between; background: #1e293b; flex-shrink: 0;">
@@ -431,7 +432,7 @@
             </div>
 
             <!-- Modal Body (Centered A4 Sheet with Zero Data Loss) -->
-            <div style="flex: 1; overflow-y: auto; overflow-x: auto; background: #060913; width: 100%; box-sizing: border-box;">
+            <div x-ref="modalBody" style="flex: 1; overflow-y: auto; overflow-x: auto; background: #060913; width: 100%; box-sizing: border-box; scroll-behavior: smooth;">
                 <div class="a4-modal-wrapper">
                     <div class="a4-modal-sheet">
                         <template x-if="previewOpen">
