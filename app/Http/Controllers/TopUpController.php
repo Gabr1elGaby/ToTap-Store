@@ -20,7 +20,6 @@ class TopUpController extends Controller
     {
         $game = Game::where('slug', $slug)->where('is_active', true)->firstOrFail();
 
-        // 1. Ambil Saldo Modal VIP Reseller (Proteksi Stok dari Admin)
         $threshold = \App\Models\Setting::get('vip_balance_threshold');
         $vipBalance = ($threshold !== null && $threshold !== '') ? (float)$threshold : 0.0;
         
@@ -32,6 +31,46 @@ class TopUpController extends Controller
                 if ($liveBal > 0) {
                     $vipBalance = $liveBal;
                 }
+            }
+
+            // AUTO-UPDATE STOK & HARGA MODAL OTOMATIS DARI VIP RESELLER (Cache 5 Menit)
+            $cacheKey = 'vip_auto_sync_' . $game->slug;
+            if (!Cache::has($cacheKey)) {
+                $filterMap = [
+                    'mobile-legend' => 'Mobile Legends',
+                    'mobile-legends' => 'Mobile Legends',
+                    'valorant' => 'Valorant',
+                    'free-fire' => 'Free Fire',
+                    'freefire' => 'Free Fire',
+                    'roblox' => 'Roblox',
+                    'pubg' => 'PUBG',
+                    'pubg-mobile' => 'PUBG',
+                ];
+                $keyword = $filterMap[$game->slug] ?? $game->name;
+                $apiRes = $vipApi->getGameProducts($keyword);
+                if (isset($apiRes['result']) && $apiRes['result'] === true && !empty($apiRes['data'])) {
+                    $apiItems = collect($apiRes['data'])->keyBy('code');
+                    $localProds = $game->products()->get();
+                    foreach ($localProds as $lp) {
+                        if ($apiItems->has($lp->product_code)) {
+                            $aItem = $apiItems->get($lp->product_code);
+                            $aStatus = strtolower($aItem['status']) === 'available' ? 'available' : 'empty';
+                            $latestModal = (float)($aItem['price']['special'] ?? ($aItem['price']['h2h'] ?? ($aItem['price']['premium'] ?? ($aItem['price']['basic'] ?? $lp->price_modal))));
+                            
+                            $margin = $lp->price_sell > $lp->price_modal ? ($lp->price_sell - $lp->price_modal) : ceil($latestModal * 0.05);
+                            $newSell = $latestModal + $margin;
+                            
+                            if ($lp->price_modal != $latestModal || $lp->status !== $aStatus) {
+                                $lp->update([
+                                    'price_modal' => $latestModal,
+                                    'price_sell' => ceil($newSell),
+                                    'status' => $aStatus,
+                                ]);
+                            }
+                        }
+                    }
+                }
+                Cache::put($cacheKey, true, 300); // 5 minutes cache
             }
         } catch (\Exception $e) {
             // Fallback ke $vipBalance
@@ -193,7 +232,7 @@ class TopUpController extends Controller
         $game = Game::where('slug', $slug)->firstOrFail();
         $threshold = \App\Models\Setting::get('vip_balance_threshold');
         $vipBalance = ($threshold !== null && $threshold !== '') ? (float)$threshold : 0.0;
-
+        
         try {
             $vipApi = app(VipResellerService::class);
             $profile = $vipApi->getProfile();
@@ -203,7 +242,49 @@ class TopUpController extends Controller
                     $vipBalance = $liveBal;
                 }
             }
-        } catch (\Exception $e) {}
+
+            // AUTO-UPDATE STOK & HARGA MODAL OTOMATIS DARI VIP RESELLER (Cache 5 Menit)
+            $cacheKey = 'vip_auto_sync_' . $game->slug;
+            if (!Cache::has($cacheKey)) {
+                $filterMap = [
+                    'mobile-legend' => 'Mobile Legends',
+                    'mobile-legends' => 'Mobile Legends',
+                    'valorant' => 'Valorant',
+                    'free-fire' => 'Free Fire',
+                    'freefire' => 'Free Fire',
+                    'roblox' => 'Roblox',
+                    'pubg' => 'PUBG',
+                    'pubg-mobile' => 'PUBG',
+                ];
+                $keyword = $filterMap[$game->slug] ?? $game->name;
+                $apiRes = $vipApi->getGameProducts($keyword);
+                if (isset($apiRes['result']) && $apiRes['result'] === true && !empty($apiRes['data'])) {
+                    $apiItems = collect($apiRes['data'])->keyBy('code');
+                    $localProds = $game->products()->get();
+                    foreach ($localProds as $lp) {
+                        if ($apiItems->has($lp->product_code)) {
+                            $aItem = $apiItems->get($lp->product_code);
+                            $aStatus = strtolower($aItem['status']) === 'available' ? 'available' : 'empty';
+                            $latestModal = (float)($aItem['price']['special'] ?? ($aItem['price']['h2h'] ?? ($aItem['price']['premium'] ?? ($aItem['price']['basic'] ?? $lp->price_modal))));
+                            
+                            $margin = $lp->price_sell > $lp->price_modal ? ($lp->price_sell - $lp->price_modal) : ceil($latestModal * 0.05);
+                            $newSell = $latestModal + $margin;
+                            
+                            if ($lp->price_modal != $latestModal || $lp->status !== $aStatus) {
+                                $lp->update([
+                                    'price_modal' => $latestModal,
+                                    'price_sell' => ceil($newSell),
+                                    'status' => $aStatus,
+                                ]);
+                            }
+                        }
+                    }
+                }
+                Cache::put($cacheKey, true, 300); // 5 minutes cache
+            }
+        } catch (\Exception $e) {
+            // Fallback ke $vipBalance
+        }
 
         $products = $game->products()->select('id', 'price_modal')->get();
         $stockMap = [];

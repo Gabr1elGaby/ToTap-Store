@@ -66,6 +66,7 @@ Route::get('/cv/create', [\App\Http\Controllers\CvController::class, 'create'])-
 Route::get('/cv/preview-example/{slug}', [\App\Http\Controllers\CvController::class, 'previewExample'])->name('cv.previewExample');
 Route::match(['get', 'post'], '/api/tripay/callback', [\App\Http\Controllers\Api\TripayCallbackController::class, 'handle'])->name('tripay.callback');
 Route::match(['get', 'post'], '/api/duitku/callback', [\App\Http\Controllers\Api\DuitkuCallbackController::class, 'handle'])->name('duitku.callback');
+Route::get('/api/cron/sync-all', [\App\Http\Controllers\Admin\GameProductController::class, 'cronSyncAll'])->name('cron.sync-all');
 Route::get('/topup-status/{slug}', [\App\Http\Controllers\TopUpController::class, 'stockStatus'])->name('topup.stock-status');
 Route::get('/topup', [\App\Http\Controllers\TopUpController::class, 'index'])->name('topup.index');
 Route::get('/topup/{slug}', [\App\Http\Controllers\TopUpController::class, 'show'])->name('topup.show');

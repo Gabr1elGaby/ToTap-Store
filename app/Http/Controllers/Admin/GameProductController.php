@@ -192,4 +192,65 @@ class GameProductController extends Controller
             return back()->with('error', 'Gagal memproses data: ' . $e->getMessage());
         }
     }
+
+    public function cronSyncAll(VipResellerService $api)
+    {
+        $games = Game::where('is_active', true)->get();
+        $totalUpdated = 0;
+
+        $filterMap = [
+            'mobile-legend' => 'Mobile Legends',
+            'mobile-legends' => 'Mobile Legends',
+            'valorant' => 'Valorant',
+            'free-fire' => 'Free Fire',
+            'freefire' => 'Free Fire',
+            'roblox' => 'Roblox',
+            'pubg' => 'PUBG',
+            'pubg-mobile' => 'PUBG',
+        ];
+
+        foreach ($games as $game) {
+            try {
+                $kw = $filterMap[$game->slug] ?? $game->name;
+                $res = $api->getGameProducts($kw);
+                if (isset($res['result']) && $res['result'] === true && !empty($res['data'])) {
+                    $apiItems = collect($res['data'])->keyBy('code');
+                    $localProds = $game->products()->get();
+                    foreach ($localProds as $lp) {
+                        if ($apiItems->has($lp->product_code)) {
+                            $aItem = $apiItems->get($lp->product_code);
+                            $aStatus = strtolower($aItem['status']) === 'available' ? 'available' : 'empty';
+                            $latestModal = (float)($aItem['price']['special'] ?? ($aItem['price']['h2h'] ?? ($aItem['price']['premium'] ?? ($aItem['price']['basic'] ?? $lp->price_modal))));
+                            
+                            $margin = $lp->price_sell > $lp->price_modal ? ($lp->price_sell - $lp->price_modal) : ceil($latestModal * 0.05);
+                            $newSell = $latestModal + $margin;
+                            
+                            if ($lp->price_modal != $latestModal || $lp->status !== $aStatus) {
+                                $lp->update([
+                                    'price_modal' => $latestModal,
+                                    'price_sell' => ceil($newSell),
+                                    'status' => $aStatus,
+                                ]);
+                                $totalUpdated++;
+                            }
+                        }
+                    }
+                }
+            } catch (\Exception $e) {}
+        }
+
+        // Ambil saldo modal terbaru
+        try {
+            $prof = $api->getProfile();
+            if (isset($prof['data']['balance'])) {
+                \App\Models\Setting::set('vip_balance_threshold', (string)$prof['data']['balance']);
+                \App\Models\Setting::set('vip_reseller_balance', (string)$prof['data']['balance']);
+            }
+        } catch (\Exception $e) {}
+
+        return response()->json([
+            'success' => true,
+            'message' => "Auto Sync Selesai! {$totalUpdated} produk & saldo modal berhasil diperbarui.",
+        ]);
+    }
 }
