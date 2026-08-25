@@ -5,7 +5,7 @@
     <title>International Graduate & Internship Resume</title>
     <style>
         @page { margin: 0px; }
-        html { height: 100%; margin: 0; padding: 0; background-color: #ffffff; }
+        html, body { margin: 0; padding: 0; background-color: #ffffff; }
         body {
             word-wrap: break-word;
             word-break: break-word;

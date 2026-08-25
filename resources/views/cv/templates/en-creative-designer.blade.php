@@ -5,7 +5,7 @@
     <title>International Creative & UX/UI Designer Resume</title>
     <style>
         @page { margin: 0px; }
-        html { height: 100%; margin: 0; padding: 0; background-color: #ffffff; }
+        html, body { margin: 0; padding: 0; background-color: #ffffff; }
         body {
             word-wrap: break-word;
             word-break: break-word;
@@ -19,7 +19,9 @@
             background-color: #fff;
         }
         table { border-collapse: collapse; table-layout: fixed; width: 100%; }
-        td { word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; }
+        table, tr, td, tbody { page-break-inside: auto !important; }
+        td { word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; vertical-align: top; }
+        .item-block { page-break-inside: avoid; margin-bottom: 12px; }
 
         .name {
             font-size: 26pt;

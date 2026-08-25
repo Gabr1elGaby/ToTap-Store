@@ -5,7 +5,7 @@
     <title>Global Tech & Corporate ATS Resume</title>
     <style>
         @page { margin: 0px; }
-        html { height: 100%; margin: 0; padding: 0; background-color: #fff; }
+        html, body { margin: 0; padding: 0; background-color: #fff; }
         body {
             padding: 36px 48px;
             word-wrap: break-word;

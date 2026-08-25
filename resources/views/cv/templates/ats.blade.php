@@ -5,7 +5,7 @@
     <title>CV ATS Friendly</title>
     <style>
         @page { margin: 0px; }
-        html { height: 100%; margin: 0; padding: 0; background-color: #fff; }
+        html, body { margin: 0; padding: 0; background-color: #fff; }
         body {
             padding: 40px 50px;
             word-wrap: break-word;
