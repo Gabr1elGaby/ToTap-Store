@@ -248,7 +248,13 @@ class CvController extends Controller
         ]));
         $pdf->setPaper('a4', 'portrait');
         
-        return $pdf->download('CV-' . $cv->name . '.pdf');
+        return response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="CV-' . str_replace(' ', '_', $cv->name) . '.pdf"',
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
+        ]);
     }
 
     public function previewExample($slug)
