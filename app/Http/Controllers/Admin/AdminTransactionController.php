@@ -41,7 +41,28 @@ class AdminTransactionController extends Controller
         // Software / License Orders
         $orders = Order::with(['product', 'plan', 'user'])->latest()->paginate(20);
 
-        return view('admin.transactions.index', compact('transactions', 'orders', 'search', 'status'));
+        // CV Builder Orders
+        $cvOrdersQuery = \Illuminate\Support\Facades\DB::table('cvs')
+            ->join('cv_templates', 'cvs.template_id', '=', 'cv_templates.id')
+            ->select('cvs.*', 'cv_templates.name as template_name', 'cv_templates.price', 'cv_templates.slug as template_slug')
+            ->latest('cvs.created_at');
+
+        if ($search) {
+            $cvOrdersQuery->where(function($q) use ($search) {
+                $q->where('cvs.invoice_number', 'like', "%{$search}%")
+                  ->orWhere('cvs.name', 'like', "%{$search}%")
+                  ->orWhere('cvs.email', 'like', "%{$search}%")
+                  ->orWhere('cvs.phone', 'like', "%{$search}%");
+            });
+        }
+
+        if ($status) {
+            $cvOrdersQuery->where('cvs.status', strtoupper($status));
+        }
+
+        $cvOrders = $cvOrdersQuery->paginate(20, ['*'], 'cv_page')->withQueryString();
+
+        return view('admin.transactions.index', compact('transactions', 'orders', 'cvOrders', 'search', 'status'));
     }
 
     public function invoice(string $id)
@@ -56,13 +77,80 @@ class AdminTransactionController extends Controller
             ]);
         }
 
-        $order = Order::with(['product', 'plan', 'user'])->where('order_number', $id)->firstOrFail();
+        $order = Order::with(['product', 'plan', 'user'])->where('order_number', $id)->first();
+        if ($order) {
+            return view('transactions.invoice', [
+                'type' => 'order',
+                'data' => $order,
+                'isAdmin' => true,
+            ]);
+        }
 
-        return view('transactions.invoice', [
-            'type' => 'order',
-            'data' => $order,
-            'isAdmin' => true,
+        $cv = \Illuminate\Support\Facades\DB::table('cvs')
+            ->join('cv_templates', 'cvs.template_id', '=', 'cv_templates.id')
+            ->where('cvs.invoice_number', $id)
+            ->orWhere('cvs.access_token', $id)
+            ->orWhere('cvs.id', $id)
+            ->select('cvs.*', 'cv_templates.name as template_name', 'cv_templates.price', 'cv_templates.slug as template_slug')
+            ->first();
+
+        if ($cv) {
+            return view('checkout.cv', compact('cv'));
+        }
+
+        abort(404, 'Invoice tidak ditemukan.');
+    }
+
+    public function approveCv($id)
+    {
+        $cv = \Illuminate\Support\Facades\DB::table('cvs')
+            ->where('id', $id)
+            ->orWhere('access_token', $id)
+            ->first();
+
+        if (!$cv) {
+            return back()->with('error', 'Data CV tidak ditemukan.');
+        }
+
+        \Illuminate\Support\Facades\DB::table('cvs')->where('id', $cv->id)->update([
+            'status' => 'PAID',
+            'updated_at' => now(),
         ]);
+
+        return back()->with('success', "Pembayaran CV untuk {$cv->name} (#{$cv->invoice_number}) BERHASIL DI-ACC! Link download PDF kini aktif untuk pengguna.");
+    }
+
+    public function rejectCv($id)
+    {
+        $cv = \Illuminate\Support\Facades\DB::table('cvs')
+            ->where('id', $id)
+            ->orWhere('access_token', $id)
+            ->first();
+
+        if (!$cv) {
+            return back()->with('error', 'Data CV tidak ditemukan.');
+        }
+
+        \Illuminate\Support\Facades\DB::table('cvs')->where('id', $cv->id)->update([
+            'status' => 'FAILED',
+            'updated_at' => now(),
+        ]);
+
+        return back()->with('error', "Pesanan CV (#{$cv->invoice_number}) telah ditolak/dibatalkan.");
+    }
+
+    public function destroyCv($id)
+    {
+        $deleted = \Illuminate\Support\Facades\DB::table('cvs')
+            ->where('id', $id)
+            ->orWhere('access_token', $id)
+            ->delete();
+
+        if ($deleted) {
+            return back()->with('success', "Data pesanan CV #{$id} berhasil dihapus.");
+        }
+
+        return back()->with('error', 'Data CV tidak ditemukan.');
     }
 
     public function approve($id)
@@ -156,6 +244,9 @@ class AdminTransactionController extends Controller
         }
         if ($type === 'software' || $type === 'all') {
             Order::truncate();
+        }
+        if ($type === 'cv' || $type === 'all') {
+            \Illuminate\Support\Facades\DB::table('cvs')->truncate();
         }
 
         return back()->with('success', "Seluruh data transaksi lama berhasil dibersihkan dan direset!");

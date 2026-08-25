@@ -17,6 +17,9 @@
                     <span class="px-4 py-2.5 rounded-2xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/80 text-sm font-bold text-purple-600 dark:text-purple-300 shadow-sm">
                         <i class="fas fa-gamepad mr-1.5"></i> Top Up: {{ $transactions->total() }}
                     </span>
+                    <span class="px-4 py-2.5 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/80 text-sm font-bold text-amber-600 dark:text-amber-300 shadow-sm">
+                        <i class="fas fa-file-alt mr-1.5"></i> CV Builder: {{ $cvOrders->total() }}
+                    </span>
 
                     <!-- Auto-Refresh Live Indicator -->
                     <button id="toggle-autorefresh-btn" type="button" onclick="toggleAutoRefresh()" class="px-4 py-2.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800 text-sm font-bold text-emerald-700 dark:text-emerald-300 shadow-sm flex items-center gap-2 cursor-pointer transition" title="Klik untuk menjeda / melanjutkan auto-refresh">
@@ -78,6 +81,12 @@
                         onclick="filterAdminTrxTab('topup')" 
                         class="admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white flex items-center gap-2 cursor-pointer">
                     <i class="fas fa-gamepad text-purple-500"></i> Transaksi Top Up Game ({{ $transactions->total() }})
+                </button>
+                <button id="admin-tab-cv" 
+                        type="button"
+                        onclick="filterAdminTrxTab('cv')" 
+                        class="admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white flex items-center gap-2 cursor-pointer">
+                    <i class="fas fa-file-alt text-amber-500"></i> Pesanan CV & Resume ({{ $cvOrders->total() }})
                 </button>
             </div>
 
@@ -336,6 +345,129 @@
                 </div>
             </div>
 
+            <!-- TAB 3: Pesanan CV & Resume Builder -->
+            <div id="admin-section-cv" class="admin-trx-section bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-2xl overflow-hidden transition-colors duration-200">
+                <div class="px-6 py-4.5 border-b border-gray-200 dark:border-gray-700/80 flex items-center justify-between bg-slate-50 dark:bg-gray-800/80">
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
+                        <i class="fas fa-file-alt text-amber-500"></i> Daftar Pesanan Pembuatan CV & Resume Builder
+                    </h2>
+                    <span class="text-xs text-amber-600 dark:text-amber-400 font-bold bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
+                        Total: {{ $cvOrders->total() }} Pesanan
+                    </span>
+                </div>
+
+                @if($cvOrders->isEmpty())
+                    <div class="p-12 text-center text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-file-invoice text-5xl mb-3 text-gray-300 dark:text-gray-600"></i>
+                        <p class="text-base font-semibold text-gray-700 dark:text-gray-300">Belum ada pesanan pembuatan CV yang masuk.</p>
+                    </div>
+                @else
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-gray-200 dark:border-gray-700/80 text-[11px] font-extrabold uppercase tracking-wider text-gray-500 dark:text-gray-400 bg-gray-50/50 dark:bg-gray-800/50">
+                                    <th class="py-4 px-6">Invoice</th>
+                                    <th class="py-4 px-6">Pemesan & Kontak</th>
+                                    <th class="py-4 px-6">Template CV</th>
+                                    <th class="py-4 px-6">Tagihan</th>
+                                    <th class="py-4 px-6">Tanggal</th>
+                                    <th class="py-4 px-6 text-center">Status</th>
+                                    <th class="py-4 px-6 text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700/60 text-sm">
+                                @foreach($cvOrders as $cvItem)
+                                    <tr class="hover:bg-gray-50/80 dark:hover:bg-gray-700/40 transition">
+                                        <td class="py-4 px-6 font-mono font-bold text-gray-900 dark:text-white">
+                                            {{ $cvItem->invoice_number ?? ('INV/CV/' . $cvItem->id) }}
+                                        </td>
+                                        <td class="py-4 px-6">
+                                            <div class="font-bold text-gray-900 dark:text-white">{{ $cvItem->name }}</div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">{{ $cvItem->email }}</div>
+                                            @if(!empty($cvItem->phone))
+                                            <div class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">{{ $cvItem->phone }}</div>
+                                            @endif
+                                        </td>
+                                        <td class="py-4 px-6">
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-bold text-xs border border-amber-200 dark:border-amber-800">
+                                                <i class="fas fa-file-alt"></i> {{ $cvItem->template_name }}
+                                            </span>
+                                        </td>
+                                        <td class="py-4 px-6 font-black text-gray-900 dark:text-white">
+                                            Rp{{ number_format($cvItem->price, 0, ',', '.') }}
+                                        </td>
+                                        <td class="py-4 px-6 text-xs text-gray-500 dark:text-gray-400">
+                                            {{ \Carbon\Carbon::parse($cvItem->created_at)->timezone('Asia/Jakarta')->format('d M Y, H:i') }} WIB
+                                        </td>
+                                        <td class="py-4 px-6 text-center">
+                                            @if($cvItem->status === 'PAID')
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-full text-xs font-bold">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Diterima / Paid
+                                                </span>
+                                            @elseif($cvItem->status === 'FAILED')
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 rounded-full text-xs font-bold">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Ditolak
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-full text-xs font-bold animate-pulse">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Menunggu ACC
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="py-4 px-6 text-right">
+                                            <div class="flex items-center justify-end gap-2">
+                                                @if($cvItem->status === 'PENDING')
+                                                    <!-- ACC Button -->
+                                                    <form action="{{ route('admin.transactions.cv.approve', $cvItem->id) }}" method="POST" onsubmit="return confirm('ACC pembayaran CV ini? Link download PDF akan langsung aktif untuk pengguna.');">
+                                                        @csrf
+                                                        <button type="submit" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 cursor-pointer">
+                                                            <i class="fas fa-check"></i> ACC Bayar
+                                                        </button>
+                                                    </form>
+                                                    <!-- Reject Button -->
+                                                    <form action="{{ route('admin.transactions.cv.reject', $cvItem->id) }}" method="POST" onsubmit="return confirm('Tolak pesanan CV ini?');">
+                                                        @csrf
+                                                        <button type="submit" class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 cursor-pointer">
+                                                            <i class="fas fa-times"></i> Tolak
+                                                        </button>
+                                                    </form>
+                                                @endif
+
+                                                @if($cvItem->status === 'PAID')
+                                                    <!-- Download PDF for Admin -->
+                                                    <a href="{{ route('cv.download', $cvItem->access_token ?? $cvItem->id) }}" target="_blank" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm flex items-center gap-1.5">
+                                                        <i class="fas fa-download"></i> PDF
+                                                    </a>
+                                                @endif
+
+                                                <!-- Invoice / Details Link -->
+                                                <a href="{{ route('cv.checkout.show', $cvItem->access_token ?? $cvItem->id) }}" target="_blank" class="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-bold text-xs" title="Lihat Halaman Checkout / Invoice">
+                                                    <i class="fas fa-external-link-alt"></i>
+                                                </a>
+
+                                                <!-- Delete Button -->
+                                                <form action="{{ route('admin.transactions.cv.destroy', $cvItem->id) }}" method="POST" onsubmit="return confirm('Hapus data pesanan CV ini?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="p-2 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 font-bold text-xs cursor-pointer" title="Hapus Data">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @if($cvOrders->hasPages())
+                        <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+                            {{ $cvOrders->links() }}
+                        </div>
+                    @endif
+                @endif
+            </div>
+
         </div>
     </div>
 
@@ -350,24 +482,32 @@
                 btn.className = 'admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white flex items-center gap-2 cursor-pointer';
             });
 
+            const secSoft = document.getElementById('admin-section-software');
+            const secTop = document.getElementById('admin-section-topup');
+            const secCv = document.getElementById('admin-section-cv');
+
             if (tabName === 'all') {
                 sections.forEach(s => s.classList.remove('hidden'));
                 const b = document.getElementById('admin-tab-all');
                 if (b) b.className = 'admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-indigo-600 text-white shadow-md cursor-pointer';
             } else if (tabName === 'software') {
-                const secSoft = document.getElementById('admin-section-software');
-                const secTop = document.getElementById('admin-section-topup');
                 if (secSoft) secSoft.classList.remove('hidden');
                 if (secTop) secTop.classList.add('hidden');
+                if (secCv) secCv.classList.add('hidden');
                 const b = document.getElementById('admin-tab-software');
                 if (b) b.className = 'admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-blue-600 text-white shadow-md flex items-center gap-2 cursor-pointer';
             } else if (tabName === 'topup') {
-                const secSoft = document.getElementById('admin-section-software');
-                const secTop = document.getElementById('admin-section-topup');
                 if (secSoft) secSoft.classList.add('hidden');
                 if (secTop) secTop.classList.remove('hidden');
+                if (secCv) secCv.classList.add('hidden');
                 const b = document.getElementById('admin-tab-topup');
                 if (b) b.className = 'admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-purple-600 text-white shadow-md flex items-center gap-2 cursor-pointer';
+            } else if (tabName === 'cv') {
+                if (secSoft) secSoft.classList.add('hidden');
+                if (secTop) secTop.classList.add('hidden');
+                if (secCv) secCv.classList.remove('hidden');
+                const b = document.getElementById('admin-tab-cv');
+                if (b) b.className = 'admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-amber-600 text-white shadow-md flex items-center gap-2 cursor-pointer';
             }
         }
 

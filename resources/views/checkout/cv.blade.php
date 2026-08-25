@@ -45,10 +45,22 @@
                 </div>
             </a>
             <div class="text-right">
+                @if($cv->status === 'PAID')
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300 rounded-full text-xs font-bold uppercase tracking-wider">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    Pembayaran Berhasil / Diterima
+                </span>
+                @elseif($cv->status === 'FAILED')
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-100 dark:bg-red-950/60 border border-red-200 dark:border-red-800/60 text-red-800 dark:text-red-300 rounded-full text-xs font-bold uppercase tracking-wider">
+                    <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                    Dibatalkan / Ditolak
+                </span>
+                @else
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-100 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60 text-amber-800 dark:text-amber-300 rounded-full text-xs font-bold uppercase tracking-wider">
                     <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                    Menunggu Pembayaran
+                    Menunggu Verifikasi Pembayaran
                 </span>
+                @endif
             </div>
         </div>
 
@@ -127,8 +139,37 @@
                 </div>
             </div>
 
-            <!-- RIGHT COLUMN: QRIS Payment Gateway -->
+            <!-- RIGHT COLUMN: Payment & Download Status -->
             <div class="lg:col-span-5">
+                @if($cv->status === 'PAID')
+                <!-- SUCCESS & DOWNLOAD READY CARD -->
+                <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 shadow-xl border-2 border-emerald-500/40 text-center relative overflow-hidden">
+                    <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-400"></div>
+
+                    <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
+                        <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+
+                    <h3 class="text-xl font-black text-slate-900 dark:text-white mb-2">Pembayaran Berhasil!</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+                        Pembayaran Anda telah diverifikasi oleh Admin. Dokumen CV PDF resolusi tinggi siap diunduh.
+                    </p>
+
+                    <!-- Active Download Button -->
+                    <a href="{{ route('cv.download', $cv->access_token ?? $cv->id) }}" 
+                       class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-4 px-6 rounded-xl shadow-lg shadow-emerald-600/40 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-3 text-base">
+                        <svg class="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span>Download File PDF CV</span>
+                    </a>
+
+                    <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-4 text-xs font-semibold">
+                        <a href="{{ route('cv.index') }}" class="text-blue-600 dark:text-blue-400 hover:underline">
+                            Kembali ke Beranda CV
+                        </a>
+                    </div>
+                </div>
+                @else
+                <!-- PENDING PAYMENT & VERIFICATION CARD -->
                 <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-7 shadow-lg border-2 border-blue-500/30 dark:border-blue-500/20 text-center relative overflow-hidden">
                     <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500"></div>
 
@@ -167,19 +208,57 @@
                         <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-600 dark:text-slate-300 rounded">BRImo</span>
                     </div>
 
-                    <!-- Confirm Payment Form -->
-                    <form action="{{ route('cv.payment.simulate', $cv->access_token ?? $cv->id) }}" method="POST">
-                        @csrf
-                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-600/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 text-sm sm:text-base">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span>Saya Sudah Membayar</span>
-                        </button>
-                    </form>
+                    @php
+                        $invNo = $cv->invoice_number ?? ('INV/CV/TTS/' . $cv->id);
+                        $adminWa = '6281328972073';
+                        $waMsg = "Halo Admin ToTap Store, saya sudah melakukan pembayaran untuk CV & Resume:\n\n"
+                               . "• No. Invoice: " . $invNo . "\n"
+                               . "• Nama Pemesan: " . $cv->name . "\n"
+                               . "• Template: " . ($cv->template_name ?? 'CV') . "\n"
+                               . "• Total Tagihan: Rp " . number_format($cv->price, 0, ',', '.') . "\n\n"
+                               . "Berikut saya kirimkan bukti transfernya. Mohon bantu di-ACC ya min agar link download PDF aktif. Terima kasih!";
+                        $waUrl = "https://wa.me/{$adminWa}?text=" . urlencode($waMsg);
+                    @endphp
 
-                    <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-3">
-                        Setelah pembayaran berhasil diverifikasi, file PDF CV Anda akan otomatis diunduh.
-                    </p>
+                    <!-- WhatsApp Confirmation Button -->
+                    <a href="{{ $waUrl }}" target="_blank"
+                       style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff !important;"
+                       class="w-full font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-emerald-500/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 text-sm sm:text-base mb-3 cursor-pointer">
+                        <svg class="w-5 h-5 flex-shrink-0" style="color: #ffffff !important;" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-5.805 1.534zm6.224-3.82c1.516.903 3.327 1.42 5.093 1.421 5.352 0 9.708-4.355 9.71-9.708.002-2.6-1.009-5.044-2.85-6.885-1.84-1.841-4.285-2.85-6.887-2.851-5.353 0-9.708 4.355-9.71 9.708-.001 1.82.518 3.593 1.498 5.126l-1.018 3.717 3.764-.989z"/></svg>
+                        <span style="color: #ffffff !important; font-weight: 800;">Saya Sudah Membayar</span>
+                    </a>
+
+                    <!-- Locked Download Button -->
+                    <div class="mt-2 p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700/60 text-center">
+                        <button type="button" disabled class="w-full bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 font-bold py-2.5 px-3 rounded-lg flex items-center justify-center gap-2 text-xs cursor-not-allowed">
+                            <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            <span>Download PDF (Menunggu ACC Admin)</span>
+                        </button>
+                        <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-2 leading-relaxed">
+                            ⚡ Halaman ini otomatis mengecek status. Begitu Admin meng-ACC pembayaran, tombol download di atas langsung berubah hijau dan aktif.
+                        </p>
+                    </div>
                 </div>
+
+                <!-- Auto Polling Script -->
+                <script>
+                    const cvToken = "{{ $cv->access_token ?? $cv->id }}";
+                    const checkInterval = setInterval(async () => {
+                        try {
+                            const res = await fetch(`/api/cv/${cvToken}/status`);
+                            if (res.ok) {
+                                const data = await res.json();
+                                if (data.is_paid) {
+                                    clearInterval(checkInterval);
+                                    window.location.reload();
+                                }
+                            }
+                        } catch (err) {
+                            console.error("Status polling error:", err);
+                        }
+                    }, 4000);
+                </script>
+                @endif
             </div>
 
         </div>

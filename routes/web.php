@@ -90,9 +90,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/cv', [\App\Http\Controllers\CvController::class, 'store'])->name('cv.store');
     Route::get('/cv/download/{token}', [\App\Http\Controllers\CvController::class, 'download'])->name('cv.download');
     Route::post('/cv/preview/{slug}', [\App\Http\Controllers\CvController::class, 'preview'])->name('cv.preview');
+    Route::get('/api/cv/{token}/status', [\App\Http\Controllers\CvPaymentController::class, 'statusApi'])->name('cv.status.api');
     
     Route::get('/checkout/cv/{token}', [\App\Http\Controllers\CvPaymentController::class, 'show'])->name('cv.checkout.show');
-    Route::post('/payment/cv/simulate/{token}', [\App\Http\Controllers\CvPaymentController::class, 'simulate'])->name('cv.payment.simulate');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -140,6 +140,12 @@ Route::middleware(['auth', 'verified', 'role:superadmin'])->prefix('admin')->nam
     Route::post('/transactions/{id}/manual-success', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'manualSuccess'])->name('transactions.manual-success')->where('id', '.*');
     Route::post('/transactions/{id}/reject', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'reject'])->name('transactions.reject')->where('id', '.*');
     Route::delete('/transactions/{id}', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'destroy'])->name('transactions.destroy')->where('id', '.*');
+    
+    // Admin CV Transactions Action
+    Route::post('/transactions/cv/{id}/approve', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'approveCv'])->name('transactions.cv.approve');
+    Route::post('/transactions/cv/{id}/reject', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'rejectCv'])->name('transactions.cv.reject');
+    Route::delete('/transactions/cv/{id}', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'destroyCv'])->name('transactions.cv.destroy');
+    
     Route::post('/transactions/clear-all', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'clearAll'])->name('transactions.clear-all');
 
     // Customer Reviews & Feedback Management
