@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Invoice & Pembayaran QRIS - ToTap Store</title>
+    <link rel="icon" href="{{ asset('images/logo-totap-v2.png') }}" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -34,15 +35,15 @@
     <div class="max-w-4xl mx-auto w-full">
         <!-- Header Brand -->
         <div class="flex items-center justify-between mb-8 pb-4 border-b border-slate-200 dark:border-slate-800">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-extrabold text-xl shadow-md shadow-blue-500/20">
-                    T
-                </div>
+            <a href="{{ url('/') }}" class="flex items-center gap-3 group">
+                <img src="{{ asset('images/logo-totap-v2.png') }}" alt="ToTap Store Logo" class="h-11 w-auto object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-200">
                 <div>
-                    <h1 class="text-xl font-bold text-slate-900 dark:text-white leading-tight">ToTap Store</h1>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Payment & Invoice Gateway</p>
+                    <h1 class="text-xl font-extrabold text-slate-900 dark:text-white leading-tight flex items-center gap-2">
+                        ToTap Store
+                    </h1>
+                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Official Payment & Invoice Gateway</p>
                 </div>
-            </div>
+            </a>
             <div class="text-right">
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-100 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60 text-amber-800 dark:text-amber-300 rounded-full text-xs font-bold uppercase tracking-wider">
                     <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>

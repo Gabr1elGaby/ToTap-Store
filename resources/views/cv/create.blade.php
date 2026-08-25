@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lengkapi Data CV - ToTap Store</title>
+    <link rel="icon" href="{{ asset('images/logo-totap-v2.png') }}" type="image/png">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -33,18 +34,24 @@
     <!-- Navbar -->
     <nav class="bg-white border-b border-gray-200 shrink-0 shadow-sm z-10 relative">
         <div class="px-3 sm:px-6 h-14 flex justify-between items-center">
-            <div class="flex items-center gap-1 sm:gap-2">
+            <div class="flex items-center gap-2 sm:gap-4">
+                <a href="{{ url('/') }}" class="flex items-center gap-2 group">
+                    <img src="{{ asset('images/logo-totap-v2.png') }}" alt="ToTap Store" class="h-8 w-auto object-contain drop-shadow-sm group-hover:scale-105 transition-transform">
+                    <span class="font-extrabold text-gray-900 text-sm hidden sm:inline">ToTap Store</span>
+                </a>
+                <span class="text-gray-300">|</span>
                 <a href="{{ route('cv.index') }}" class="text-gray-500 hover:text-gray-900 transition flex items-center gap-1 text-xs sm:text-sm font-semibold shrink-0">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                    <span class="hidden sm:inline">Kembali</span>
+                    <span>Template</span>
                 </a>
-                <span class="text-gray-300 mx-1 sm:mx-2 hidden md:inline">|</span>
-                <span class="font-bold text-gray-900 text-sm hidden md:inline truncate">Template: {{ $template->name }}</span>
+                <span class="text-gray-300 hidden md:inline">|</span>
+                <span class="font-bold text-gray-700 text-xs sm:text-sm hidden md:inline truncate bg-gray-100 px-2 py-0.5 rounded">Template: {{ $template->name }}</span>
             </div>
             <div class="flex items-center gap-2 sm:gap-4 shrink-0">
-                <span class="text-xs sm:text-sm font-medium text-gray-500">Harga: <strong class="text-gray-900">Rp{{ number_format($template->price, 0, ',', '.') }}</strong></span>
-                <button @click="checkout" :disabled="loading" class="bg-blue-600 text-white px-3 sm:px-4 py-1.5 rounded text-xs sm:text-sm font-bold shadow-sm hover:bg-blue-700 transition disabled:opacity-50 shrink-0">
-                    <span x-show="!loading">Pembayaran</span>
+                <span class="text-xs sm:text-sm font-medium text-gray-500">Harga: <strong class="text-blue-600 font-bold">Rp{{ number_format($template->price, 0, ',', '.') }}</strong></span>
+                <button @click="checkout" :disabled="loading" class="bg-blue-600 text-white px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-bold shadow-sm hover:bg-blue-700 transition disabled:opacity-50 shrink-0 flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <span x-show="!loading">Lanjut Pembayaran</span>
                     <span x-show="loading">...</span>
                 </button>
             </div>
