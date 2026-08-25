@@ -17,6 +17,12 @@
                     <span class="px-4 py-2.5 rounded-2xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/80 text-sm font-bold text-purple-600 dark:text-purple-300 shadow-sm">
                         <i class="fas fa-gamepad mr-1.5"></i> Top Up: {{ $transactions->total() }}
                     </span>
+
+                    <!-- Auto-Refresh Live Indicator -->
+                    <button id="toggle-autorefresh-btn" type="button" onclick="toggleAutoRefresh()" class="px-4 py-2.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800 text-sm font-bold text-emerald-700 dark:text-emerald-300 shadow-sm flex items-center gap-2 cursor-pointer transition" title="Klik untuk menjeda / melanjutkan auto-refresh">
+                        <span id="autorefresh-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span id="autorefresh-text">Auto-Refresh: ON (<span id="autorefresh-countdown">10</span>s)</span>
+                    </button>
                     
                     <!-- Clear All Data Button -->
                     <form action="{{ route('admin.transactions.clear-all') }}" method="POST" onsubmit="return confirm('PERINGATAN: Apakah Anda yakin ingin MENGHAPUS SELURUH riwayat transaksi lama? Data yang dihapus tidak dapat dikembalikan.');" class="inline">
@@ -334,7 +340,9 @@
     </div>
 
     <script>
+        // 1. Tab Switcher with LocalStorage Memory
         function filterAdminTrxTab(tabName) {
+            localStorage.setItem('totap_admin_trx_tab', tabName);
             const sections = document.querySelectorAll('.admin-trx-section');
             const allBtns = document.querySelectorAll('.admin-tab-btn');
             
@@ -345,18 +353,81 @@
             if (tabName === 'all') {
                 sections.forEach(s => s.classList.remove('hidden'));
                 const b = document.getElementById('admin-tab-all');
-                b.className = 'admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-indigo-600 text-white shadow-md cursor-pointer';
+                if (b) b.className = 'admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-indigo-600 text-white shadow-md cursor-pointer';
             } else if (tabName === 'software') {
-                document.getElementById('admin-section-software').classList.remove('hidden');
-                document.getElementById('admin-section-topup').classList.add('hidden');
+                const secSoft = document.getElementById('admin-section-software');
+                const secTop = document.getElementById('admin-section-topup');
+                if (secSoft) secSoft.classList.remove('hidden');
+                if (secTop) secTop.classList.add('hidden');
                 const b = document.getElementById('admin-tab-software');
-                b.className = 'admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-blue-600 text-white shadow-md flex items-center gap-2 cursor-pointer';
+                if (b) b.className = 'admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-blue-600 text-white shadow-md flex items-center gap-2 cursor-pointer';
             } else if (tabName === 'topup') {
-                document.getElementById('admin-section-software').classList.add('hidden');
-                document.getElementById('admin-section-topup').classList.remove('hidden');
+                const secSoft = document.getElementById('admin-section-software');
+                const secTop = document.getElementById('admin-section-topup');
+                if (secSoft) secSoft.classList.add('hidden');
+                if (secTop) secTop.classList.remove('hidden');
                 const b = document.getElementById('admin-tab-topup');
-                b.className = 'admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-purple-600 text-white shadow-md flex items-center gap-2 cursor-pointer';
+                if (b) b.className = 'admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-purple-600 text-white shadow-md flex items-center gap-2 cursor-pointer';
             }
         }
+
+        // Restore active tab on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTab = localStorage.getItem('totap_admin_trx_tab') || 'all';
+            filterAdminTrxTab(savedTab);
+        });
+
+        // 2. Real-Time Auto-Refresh Engine (10 Seconds Interval)
+        let autoRefreshEnabled = true;
+        let countdown = 10;
+        const countdownEl = document.getElementById('autorefresh-countdown');
+        const textEl = document.getElementById('autorefresh-text');
+        const dotEl = document.getElementById('autorefresh-dot');
+        const btnEl = document.getElementById('toggle-autorefresh-btn');
+
+        function updateBadge() {
+            if (autoRefreshEnabled) {
+                if (countdownEl) countdownEl.innerText = countdown;
+                if (textEl) textEl.innerHTML = `Auto-Refresh: ON (<span id="autorefresh-countdown">${countdown}</span>s)`;
+                if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse';
+                if (btnEl) btnEl.className = 'px-4 py-2.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800 text-sm font-bold text-emerald-700 dark:text-emerald-300 shadow-sm flex items-center gap-2 cursor-pointer transition';
+            } else {
+                if (textEl) textEl.innerText = 'Auto-Refresh: PAUSED';
+                if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-gray-400';
+                if (btnEl) btnEl.className = 'px-4 py-2.5 rounded-2xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-bold text-gray-500 dark:text-gray-400 shadow-sm flex items-center gap-2 cursor-pointer transition';
+            }
+        }
+
+        function toggleAutoRefresh() {
+            autoRefreshEnabled = !autoRefreshEnabled;
+            countdown = 10;
+            updateBadge();
+        }
+
+        setInterval(() => {
+            if (!autoRefreshEnabled) return;
+            
+            // Check if user is actively typing in a search/filter input
+            const activeInput = document.activeElement;
+            if (activeInput && (activeInput.tagName === 'INPUT' || activeInput.tagName === 'TEXTAREA')) {
+                return; // Pause reload while typing
+            }
+
+            countdown--;
+            if (countdown <= 0) {
+                window.location.reload();
+            } else {
+                updateBadge();
+            }
+        }, 1000);
+
+        // Immediate reload when switching back to this browser tab
+        window.addEventListener('focus', () => {
+            const activeInput = document.activeElement;
+            if (activeInput && (activeInput.tagName === 'INPUT' || activeInput.tagName === 'TEXTAREA')) {
+                return;
+            }
+            window.location.reload();
+        });
     </script>
 </x-app-layout>
