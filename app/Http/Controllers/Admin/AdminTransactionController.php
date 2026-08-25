@@ -236,6 +236,25 @@ class AdminTransactionController extends Controller
         return back()->with('error', "Data transaksi tidak ditemukan.");
     }
 
+    public function destroyCv($id)
+    {
+        try {
+            \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            foreach(['cv_educations', 'cv_experiences', 'cv_skills', 'cv_certificates', 'cv_projects', 'cv_internships', 'cv_organizations'] as $table) {
+                try {
+                    \Illuminate\Support\Facades\DB::table($table)->where('cv_id', $id)->delete();
+                } catch (\Throwable $e) {}
+            }
+            \Illuminate\Support\Facades\DB::table('cvs')->where('id', $id)->orWhere('access_token', $id)->delete();
+            \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+            return back()->with('success', "Data pesanan CV berhasil dihapus.");
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            return back()->with('error', "Gagal menghapus data CV: " . $e->getMessage());
+        }
+    }
+
     public function clearAll(Request $request)
     {
         $type = $request->input('type', 'all');
@@ -243,13 +262,17 @@ class AdminTransactionController extends Controller
             \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
             
             if ($type === 'topup' || $type === 'all') {
-                \Illuminate\Support\Facades\DB::table('transactions')->delete();
+                try { \Illuminate\Support\Facades\DB::table('transactions')->delete(); } catch (\Throwable $e) {}
             }
             if ($type === 'software' || $type === 'all') {
-                \Illuminate\Support\Facades\DB::table('orders')->delete();
+                try { \Illuminate\Support\Facades\DB::table('orders')->delete(); } catch (\Throwable $e) {}
             }
             if ($type === 'cv' || $type === 'all') {
-                \Illuminate\Support\Facades\DB::table('cvs')->delete();
+                foreach(['cv_educations', 'cv_experiences', 'cv_skills', 'cv_certificates', 'cv_projects', 'cv_internships', 'cv_organizations', 'cvs'] as $table) {
+                    try {
+                        \Illuminate\Support\Facades\DB::table($table)->delete();
+                    } catch (\Throwable $e) {}
+                }
             }
             
             \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
