@@ -88,11 +88,21 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
             word-break: break-word;
         }
         
-        .sidebar-td {
-            width: 32%;
+        .sidebar {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 175pt;
+            height: 100%;
+            min-height: 842pt;
             background-color: #0f172a;
             color: #cbd5e1;
             padding: 30pt 16pt 25pt 16pt;
+        }
+
+        .main-content {
+            margin-left: 195pt;
+            padding: 30pt 25pt 25pt 10pt;
         }
         
         .left-header {
@@ -218,12 +228,7 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
     </style>
 </head>
 <body>
-    <!-- Full-height sidebar background strip for 100% A4 coverage -->
-    <div style="position: absolute; top: 0px; left: 0px; width: 32%; height: 842pt; background-color: #0f172a; z-index: -100;"></div>
-
-    <table class="main-table" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse; table-layout: fixed;">
-        <tr>
-            <td class="sidebar-td">
+    <div class="sidebar">
                 <div style="text-align: center; margin-bottom: 16pt;">
                     @if(!empty($data->photo))
                         <img src="{{ $data->photo }}" style="width: 75pt; height: 75pt; border-radius: 50%; border: 3pt solid #38bdf8; display: block; margin: 0 auto; object-fit: cover;">
@@ -314,9 +319,9 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
                 </div>
                 @endforeach
                 @endif
-            </td>
+    </div>
 
-            <td class="content-td">
+    <div class="main-content">
                 <div style="font-size: 20pt; font-weight: bold; color: #0f172a; text-transform: uppercase; line-height: 1.15; margin-bottom: 2pt;">
                     {{ !empty($data->name) ? $data->name : 'NAMA LENGKAP' }}
                 </div>
@@ -421,8 +426,6 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
                 </div>
                 @endforeach
                 @endif
-            </td>
-        </tr>
-    </table>
+    </div>
 </body>
 </html>

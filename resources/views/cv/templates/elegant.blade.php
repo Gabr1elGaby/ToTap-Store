@@ -130,16 +130,19 @@ if (empty($initials)) {
             line-height: 1.4;
         }
         
-        .sidebar-td {
-            width: 32%;
+        .sidebar {
+            position: absolute;
+            left: 0px;
+            width: 175pt;
+            height: 100%;
+            min-height: 842pt;
             background-color: #2a9d8f;
             color: #ffffff;
             padding: 24pt 16pt 20pt 16pt;
         }
-        .content-td {
-            width: 68%;
-            background-color: #ffffff;
-            padding: 24pt 24pt 20pt 20pt;
+        .main-content {
+            margin-left: 195pt;
+            padding: 24pt 24pt 20pt 10pt;
         }
         
         .left-heading {
@@ -252,11 +255,7 @@ if (empty($initials)) {
         </table>
     </div>
 
-    <!-- 2-COLUMN TABLE BODY -->
-    <table class="main-table" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse; table-layout: fixed;">
-        <tr>
-            <!-- LEFT SIDEBAR -->
-            <td class="sidebar-td">
+    <div class="sidebar">
                 <div class="left-heading">Kontak</div>
                 @if(!empty($data->phone))
                 <div class="contact-item">
@@ -322,10 +321,10 @@ if (empty($initials)) {
                 </div>
                 @endforeach
                 @endif
-            </td>
+    </div>
 
-            <!-- MAIN RIGHT CONTENT -->
-            <td class="content-td">
+    <!-- MAIN RIGHT CONTENT -->
+    <div class="main-content">
                 <!-- PENGALAMAN KERJA -->
                 @if(count($experiences) > 0)
                 <div class="right-heading">Pengalaman Kerja</div>
@@ -396,8 +395,6 @@ if (empty($initials)) {
                 </div>
                 @endforeach
                 @endif
-            </td>
-        </tr>
-    </table>
+    </div>
 </body>
 </html>
