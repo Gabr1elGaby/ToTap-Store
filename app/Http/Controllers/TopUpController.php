@@ -274,8 +274,6 @@ class TopUpController extends Controller
                     'type'         => $duitkuRes['type'],
                     'gateway'      => 'duitku',
                     'reference'    => $duitkuRes['reference'] ?? null,
-                    'payment_url'  => $duitkuRes['payment_url'] ?? null,
-                    'qr_url'       => $duitkuRes['qr_url'] ?? null,
                     'qr_string'    => $duitkuRes['qr_string'] ?? null,
                     'bank'         => strtoupper(str_replace(['_va', 'va'], '', $request->payment_method)),
                     'va_number'    => $duitkuRes['va_number'] ?? null,

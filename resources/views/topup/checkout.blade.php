@@ -51,7 +51,10 @@
                     
                     @if($paymentData && $paymentData['type'] === 'qris')
                         <div class="inline-block bg-white p-4 rounded-xl shadow-sm mb-4">
-                            <img src="{{ $paymentData['qr_url'] }}" alt="QRIS Code" class="w-48 h-48 mx-auto">
+                            @php
+                                $qrSrc = $paymentData['qr_url'] ?? (!empty($paymentData['qr_string']) ? 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($paymentData['qr_string']) : '');
+                            @endphp
+                            <img src="{{ $qrSrc }}" alt="QRIS Code" class="w-48 h-48 mx-auto">
                         </div>
                         <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Scan QR Code ini menggunakan GoPay, ShopeePay, OVO, DANA, atau M-Banking Anda.</p>
                     @elseif($paymentData && $paymentData['type'] === 'va')
