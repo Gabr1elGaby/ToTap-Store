@@ -43,7 +43,7 @@ if (!empty($data->name)) {
     $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
 }
 
-$hasPage2 = (count($educations) > 0 || count($organizations) > 0 || count($internships) > 0 || count($certificates) > 0);
+$hasPage2 = (count($internships) > 0 || count($organizations) > 0);
 ?>
 <!DOCTYPE html>
 <html>
@@ -376,57 +376,6 @@ $hasPage2 = (count($educations) > 0 || count($organizations) > 0 || count($inter
         @endforeach
         @endif
 
-        <!-- PROYEK & PORTOFOLIO -->
-        @if(count($projects) > 0)
-        <div class="right-heading">Proyek & Portofolio</div>
-        @foreach($projects as $proj)
-        <div class="item-block">
-            <table class="item-header-table" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td class="item-title" style="width: 75%;">{{ $proj->name ?? '' }}</td>
-                    <td class="item-date" style="width: 25%;">{{ $proj->year ?? $proj->link ?? '' }}</td>
-                </tr>
-            </table>
-            @php
-                $projSub = array_filter([$proj->role ?? '', $proj->technologies ?? '', (!empty($proj->year) ? $proj->link ?? '' : '')]);
-            @endphp
-            @if(!empty($projSub))
-            <div class="item-subtitle">{{ implode(' | ', $projSub) }}</div>
-            @endif
-            <div class="item-desc">{!! nl2br(e($proj->description)) !!}</div>
-        </div>
-        @endforeach
-        @endif
-
-        @if(!$hasPage2)
-            @if(count($educations) > 0)
-            <div class="right-heading">Riwayat Pendidikan</div>
-            @foreach($educations as $edu)
-            <div class="item-block">
-                <table class="item-header-table" cellpadding="0" cellspacing="0">
-                    <tr>
-                        <td class="item-title" style="width: 75%;">{{ $edu->institution ?? '' }}</td>
-                        <td class="item-date" style="width: 25%;">{{ $edu->start_year ?? '' }} - {{ $edu->end_year ?? '' }}</td>
-                    </tr>
-                </table>
-                @php
-                    $deg = $edu->degree ?? '';
-                    $maj = $getVal($edu, 'major', 'field');
-                @endphp
-                <div class="item-subtitle">{{ $deg }}{{ $maj !== '' ? ($deg !== '' ? ' - ' : '') . $maj : '' }}</div>
-                @if(!empty($edu->description))
-                <div class="item-desc">{!! nl2br(e($edu->description)) !!}</div>
-                @endif
-            </div>
-            @endforeach
-            @endif
-        @endif
-        </div>
-    </div>
-
-    <!-- PAGE 2: FULL WIDTH PURE WHITE (NO BLUE BAR, CLEAN TOP MARGIN) -->
-    @if($hasPage2)
-    <div class="page2-container">
         <!-- RIWAYAT PENDIDIKAN -->
         @if(count($educations) > 0)
         <div class="right-heading">Riwayat Pendidikan</div>
@@ -449,7 +398,34 @@ $hasPage2 = (count($educations) > 0 || count($organizations) > 0 || count($inter
         </div>
         @endforeach
         @endif
-        
+
+        <!-- PROYEK & PORTOFOLIO -->
+        @if(count($projects) > 0)
+        <div class="right-heading">Proyek & Portofolio</div>
+        @foreach($projects as $proj)
+        <div class="item-block">
+            <table class="item-header-table" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td class="item-title" style="width: 75%;">{{ $proj->name ?? '' }}</td>
+                    <td class="item-date" style="width: 25%;">{{ $proj->year ?? $proj->link ?? '' }}</td>
+                </tr>
+            </table>
+            @php
+                $projSub = array_filter([$proj->role ?? '', $proj->technologies ?? '', (!empty($proj->year) ? $proj->link ?? '' : '')]);
+            @endphp
+            @if(!empty($projSub))
+            <div class="item-subtitle">{{ implode(' | ', $projSub) }}</div>
+            @endif
+            <div class="item-desc">{!! nl2br(e($proj->description)) !!}</div>
+        </div>
+        @endforeach
+        @endif
+        </div>
+    </div>
+
+    <!-- PAGE 2: FULL WIDTH PURE WHITE (NO BLUE BAR, CLEAN TOP MARGIN) -->
+    @if($hasPage2)
+    <div class="page2-container">
         <!-- MAGANG -->
         @if(count($internships) > 0)
         <div class="right-heading">Pengalaman Magang</div>

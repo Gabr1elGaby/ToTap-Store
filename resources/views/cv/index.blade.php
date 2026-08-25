@@ -436,7 +436,7 @@
                     <div class="a4-modal-sheet">
                         <template x-if="previewOpen">
                             <iframe :src="'/cv/preview-example/' + previewSlug" 
-                                    style="width: 794px; min-height: 1123px; height: 2300px; border: 0; display: block; background: white;"></iframe>
+                                    style="width: 794px; height: 1123px; border: 0; display: block; background: white;"></iframe>
                         </template>
                     </div>
                 </div>

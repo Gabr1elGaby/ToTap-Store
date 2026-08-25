@@ -229,7 +229,7 @@
             $hard_skills = $skills->filter(fn($s) => isset($s->level) && $s->level !== '' && $s->level !== null)->all();
             $soft_skills = $skills->filter(fn($s) => !isset($s->level) || $s->level === '' || $s->level === null)->all();
 
-            $hasPage2 = (count($educations) > 0 || count($organizations) > 0 || count($internships) > 0 || count($certificates) > 0);
+            $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
         @endphp
 
         <!-- PAGE 1 SIDEBAR (BOTTOM: 0 STRETCHES TO BOTTOM OF PAGE 1) -->
@@ -327,6 +327,29 @@
         @endforeach
         @endif
 
+        <!-- RIWAYAT PENDIDIKAN -->
+        @if(count($educations) > 0)
+        <div class="right-header">Riwayat Pendidikan</div>
+        @foreach($educations as $edu)
+        <div class="item">
+            <table class="item-title-row" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td class="item-title" style="width: 75%;">{{ $edu->institution ?? '' }}</td>
+                    <td class="item-date" style="width: 25%;">{{ $edu->start_year ?? '' }} - {{ $edu->end_year ?? '' }}</td>
+                </tr>
+            </table>
+            @php
+                $deg = $edu->degree ?? '';
+                $maj = $getVal($edu, 'major', 'field');
+            @endphp
+            <div class="item-subtitle">{{ $deg }}{{ $maj !== '' ? ($deg !== '' ? ' - ' : '') . $maj : '' }}</div>
+            @if(!empty($edu->description))
+            <div class="item-desc">{!! nl2br(e($edu->description)) !!}</div>
+            @endif
+        </div>
+        @endforeach
+        @endif
+
         <!-- PROYEK & PORTOFOLIO -->
         @if(count($projects) > 0)
         <div class="right-header">Proyek & Portofolio</div>
@@ -371,59 +394,12 @@
             @endforeach
         </ul>
         @endif
-
-        @if(!$hasPage2)
-            @if(count($educations) > 0)
-            <div class="right-header">Riwayat Pendidikan</div>
-            @foreach($educations as $edu)
-            <div class="item">
-                <table class="item-title-row" cellpadding="0" cellspacing="0">
-                    <tr>
-                        <td class="item-title" style="width: 75%;">{{ $edu->institution ?? '' }}</td>
-                        <td class="item-date" style="width: 25%;">{{ $edu->start_year ?? '' }} - {{ $edu->end_year ?? '' }}</td>
-                    </tr>
-                </table>
-                @php
-                    $deg = $edu->degree ?? '';
-                    $maj = $getVal($edu, 'major', 'field');
-                @endphp
-                <div class="item-subtitle">{{ $deg }}{{ $maj !== '' ? ($deg !== '' ? ' - ' : '') . $maj : '' }}</div>
-                @if(!empty($edu->description))
-                <div class="item-desc">{!! nl2br(e($edu->description)) !!}</div>
-                @endif
-            </div>
-            @endforeach
-            @endif
-        @endif
         </div>
     </div>
 
     <!-- PAGE 2: FULL WIDTH PURE WHITE -->
     @if($hasPage2)
     <div class="page2-container">
-        <!-- RIWAYAT PENDIDIKAN -->
-        @if(count($educations) > 0)
-        <div class="right-header">Riwayat Pendidikan</div>
-        @foreach($educations as $edu)
-        <div class="item">
-            <table class="item-title-row" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td class="item-title" style="width: 75%;">{{ $edu->institution ?? '' }}</td>
-                    <td class="item-date" style="width: 25%;">{{ $edu->start_year ?? '' }} - {{ $edu->end_year ?? '' }}</td>
-                </tr>
-            </table>
-            @php
-                $deg = $edu->degree ?? '';
-                $maj = $getVal($edu, 'major', 'field');
-            @endphp
-            <div class="item-subtitle">{{ $deg }}{{ $maj !== '' ? ($deg !== '' ? ' - ' : '') . $maj : '' }}</div>
-            @if(!empty($edu->description))
-            <div class="item-desc">{!! nl2br(e($edu->description)) !!}</div>
-            @endif
-        </div>
-        @endforeach
-        @endif
-
         <!-- PENGALAMAN MAGANG -->
         @if(count($internships) > 0)
         <div class="right-header">Pengalaman Magang</div>

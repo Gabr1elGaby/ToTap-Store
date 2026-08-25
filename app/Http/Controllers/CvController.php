@@ -306,25 +306,8 @@ class CvController extends Controller
                         'description' => "• Engineered scalable RESTful and GraphQL APIs using Laravel, Node.js, and PostgreSQL.\n• Built responsive frontend customer dashboards using Vue.js and Tailwind CSS, increasing user retention by 24%.\n• Automated multi-environment Docker CI/CD deployments on AWS ECS and GitHub Actions."
                     ]
                 ],
-                'internships' => [
-                    [
-                        'company' => 'Gojek Tech Labs',
-                        'position' => 'Software Engineering Intern',
-                        'location' => 'Jakarta',
-                        'start_year' => '2019',
-                        'end_year' => '2019',
-                        'is_current' => false,
-                        'description' => 'Contributed to high-throughput routing algorithms and internal monitoring microservices.'
-                    ]
-                ],
-                'organizations' => [
-                    [
-                        'organization_name' => 'Google Developer Student Clubs (GDSC)',
-                        'role' => 'Lead Technical Mentor',
-                        'period' => '2019 - 2020',
-                        'description' => 'Organized tech workshops and cloud architecture hackathons for 350+ student developers.'
-                    ]
-                ],
+                'internships' => [],
+                'organizations' => [],
                 'projects' => [
                     [
                         'name' => 'CloudSentinel API Security Gateway',
@@ -412,31 +395,8 @@ class CvController extends Controller
                         'description' => "• Membangun sistem informasi manajemen internal berbasis web menggunakan framework Laravel dan MySQL.\n• Mengintegrasikan payment gateway otomatis (QRIS, Virtual Account) dan webhook notifikasi transaksi."
                     ]
                 ],
-                'internships' => [
-                    [
-                        'company' => 'PT Telekomunikasi Indonesia (Telkom)',
-                        'position' => 'Software Engineer Intern',
-                        'location' => 'Jakarta',
-                        'start_year' => '2019',
-                        'end_year' => '2019',
-                        'is_current' => false,
-                        'description' => 'Berpartisipasi dalam riset dan pengembangan dashboard monitoring jaringan berbasis web.'
-                    ]
-                ],
-                'organizations' => [
-                    [
-                        'organization_name' => 'BEM Fasilkom Universitas Indonesia',
-                        'role' => 'Ketua Divisi Komunikasi & Teknologi Informasi (Kominfo)',
-                        'period' => '2019 - 2020',
-                        'description' => 'Memimpin 12 anggota divisi dalam mengelola seluruh portal media dan sistem informasi organisasi kampus.'
-                    ],
-                    [
-                        'organization_name' => 'Himpunan Mahasiswa Ilmu Komputer (HMD)',
-                        'role' => 'Staf Divisi Pengembangan Minat & Bakat',
-                        'period' => '2017 - 2018',
-                        'description' => 'Mengkoordinasikan pelatihan pemrograman dan kompetisi coding tingkat universitas.'
-                    ]
-                ],
+                'internships' => [],
+                'organizations' => [],
                 'projects' => [
                     [
                         'name' => 'Sistem Informasi Manajemen Kasir & Inventaris',
