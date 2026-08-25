@@ -23,35 +23,38 @@
             background-color: #ffffff;
         }
 
-        /* DomPDF 2-Column Table */
+        /* DomPDF Multi-Row 2-Column Table for Perfect Pagination */
         table.cv-table {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
         }
+        tr {
+            page-break-inside: avoid;
+        }
         td.sidebar-td {
             width: 32%;
             background-color: #0f172a;
             color: #cbd5e1;
-            padding: 20pt 13pt;
+            padding: 8pt 13pt;
             vertical-align: top;
         }
         td.content-td {
             width: 68%;
             background-color: #ffffff;
-            padding: 20pt 18pt 18pt 16pt;
+            padding: 8pt 18pt 8pt 16pt;
             vertical-align: top;
         }
 
         /* SIDEBAR ELEMENTS */
         .photo-container {
             text-align: center;
-            margin-bottom: 10pt;
+            margin-bottom: 8pt;
             width: 100%;
         }
         .photo {
-            width: 64pt;
-            height: 64pt;
+            width: 60pt;
+            height: 60pt;
             border-radius: 50%;
             border: 2pt solid #38bdf8;
             display: inline-block;
@@ -64,9 +67,8 @@
             color: #38bdf8;
             border-bottom: 1pt solid #334155;
             padding-bottom: 2pt;
-            margin-top: 8pt;
+            margin-top: 6pt;
             margin-bottom: 4pt;
-            page-break-after: avoid;
         }
         .contact-item {
             margin-bottom: 3.5pt;
@@ -147,7 +149,7 @@
 
         /* RIGHT MAIN CONTENT */
         .name {
-            font-size: 14pt;
+            font-size: 15pt;
             font-weight: 800;
             color: #0f172a;
             text-transform: uppercase;
@@ -172,7 +174,7 @@
             color: #334155;
             text-align: justify;
             line-height: 1.3;
-            margin-bottom: 6pt;
+            margin-bottom: 5pt;
         }
         .right-heading {
             font-size: 7.5pt;
@@ -182,13 +184,11 @@
             color: #0f172a;
             border-bottom: 1pt solid #cbd5e1;
             padding-bottom: 1.5pt;
-            margin-top: 6pt;
+            margin-top: 5pt;
             margin-bottom: 3.5pt;
-            page-break-after: avoid;
         }
         .item-block {
-            margin-bottom: 4.5pt;
-            page-break-inside: avoid;
+            margin-bottom: 4pt;
         }
         .item-header-table {
             width: 100%;
@@ -249,9 +249,10 @@
             <col style="width: 32%;">
             <col style="width: 68%;">
         </colgroup>
+
+        <!-- ROW 1: HEADER & PROFILE (STARTS AT Y=0 WITH ZERO CUTOFF) -->
         <tr>
-            <!-- SIDEBAR (32%) -->
-            <td class="sidebar-td">
+            <td class="sidebar-td" style="padding-top: 18pt;">
                 @if(!empty($data->photo))
                 <div class="photo-container">
                     <img src="{{ $data->photo }}" class="photo" alt="Photo">
@@ -261,7 +262,7 @@
                 <div class="sidebar-heading" style="margin-top: 0;">Contact</div>
                 @if(!empty($data->phone))
                 <div class="contact-item">
-                    <span class="contact-label">Phone / WhatsApp</span>
+                    <span class="contact-label">Phone / WA</span>
                     <span class="contact-val">{{ $data->phone }}</span>
                 </div>
                 @endif
@@ -289,8 +290,25 @@
                     <span class="contact-val">{{ $data->website }}</span>
                 </div>
                 @endif
+            </td>
+            <td class="content-td" style="padding-top: 18pt;">
+                <!-- NAMA & POSISI -->
+                <div class="name">{{ $getVal($data, "name") ?: "FULL NAME" }}</div>
+                <div class="job-title">{{ $getVal($data, "job_title") ?: "PROFESSIONAL TITLE" }}</div>
+                <hr class="header-line">
 
-                <!-- KEAHLIAN / SKILLS -->
+                <!-- PROFIL RINGKAS -->
+                @if($getVal($data, "profile", "summary") !== "")
+                <div class="summary">
+                    {{ $getVal($data, "profile", "summary") }}
+                </div>
+                @endif
+            </td>
+        </tr>
+
+        <!-- ROW 2: SKILLS (LEFT) & EXPERIENCE (RIGHT) -->
+        <tr>
+            <td class="sidebar-td">
                 @if(!empty($skills) && count($skills) > 0)
                 <div class="sidebar-heading">Core Skills</div>
                 @foreach($skills as $s)
@@ -305,9 +323,7 @@
                                 <span class="skill-name-cell">{{ $sName }}</span>
                                 <span class="skill-pct-cell">{{ $sLvl }}%</span>
                             </div>
-                            <div class="skill-track">
-                                <div class="skill-fill" style="width: {{ $sLvl }}%;"></div>
-                            </div>
+                            <div class="skill-track"><div class="skill-fill" style="width: {{ $sLvl }}%;"></div></div>
                         </div>
                         @else
                         <div class="skill-bullet-item">• {{ $sName }}</div>
@@ -316,18 +332,14 @@
                 @endforeach
                 @endif
 
-                <!-- TOOLS & SOFTWARE -->
                 @if(!empty($tools) && count($tools) > 0)
                 <div class="sidebar-heading">Tools & Tech</div>
                 @foreach($tools as $tool)
                     @php $tName = is_array($tool) ? ($tool["name"] ?? "") : ($tool->name ?? ""); @endphp
-                    @if(!empty($tName))
-                    <div class="skill-bullet-item">• {{ $tName }}</div>
-                    @endif
+                    @if(!empty($tName))<div class="skill-bullet-item">• {{ $tName }}</div>@endif
                 @endforeach
                 @endif
 
-                <!-- SERTIFIKASI -->
                 @if(!empty($certificates) && count($certificates) > 0)
                 <div class="sidebar-heading">Certifications</div>
                 @foreach($certificates as $cert)
@@ -345,27 +357,10 @@
                     @endif
                 @endforeach
                 @endif
-
             </td>
-
-            <!-- MAIN CONTENT (68%) -->
             <td class="content-td">
-                
-                <!-- NAMA & POSISI -->
-                <div class="name">{{ $getVal($data, "name") ?: "FULL NAME" }}</div>
-                <div class="job-title">{{ $getVal($data, "job_title") ?: "PROFESSIONAL TITLE" }}</div>
-                <hr class="header-line">
-
-                <!-- PROFIL RINGKAS -->
-                @if($getVal($data, "profile", "summary") !== "")
-                <div class="summary">
-                    {{ $getVal($data, "profile", "summary") }}
-                </div>
-                @endif
-
-                <!-- PENGALAMAN KERJA -->
                 @if(!empty($experiences) && count($experiences) > 0)
-                <div class="right-heading">Work Experience</div>
+                <div class="right-heading" style="margin-top: 0;">Work Experience</div>
                 @foreach($experiences as $exp)
                     @php
                         $comp = is_array($exp) ? ($exp["company"] ?? "") : ($exp->company ?? "");
@@ -392,9 +387,14 @@
                     @endif
                 @endforeach
                 @endif
+            </td>
+        </tr>
 
-                <!-- RIWAYAT PENDIDIKAN -->
-                @if(!empty($educations) && count($educations) > 0)
+        <!-- ROW 3: RIWAYAT PENDIDIKAN -->
+        @if(!empty($educations) && count($educations) > 0)
+        <tr>
+            <td class="sidebar-td"></td>
+            <td class="content-td">
                 <div class="right-heading">Education</div>
                 @foreach($educations as $edu)
                     @php
@@ -420,10 +420,15 @@
                     </div>
                     @endif
                 @endforeach
-                @endif
+            </td>
+        </tr>
+        @endif
 
-                <!-- PROYEK & PORTOFOLIO -->
-                @if(!empty($projects) && count($projects) > 0)
+        <!-- ROW 4: PROYEK & PORTOFOLIO -->
+        @if(!empty($projects) && count($projects) > 0)
+        <tr>
+            <td class="sidebar-td"></td>
+            <td class="content-td">
                 <div class="right-heading">Key Projects & Portfolio</div>
                 @foreach($projects as $proj)
                     @php
@@ -440,10 +445,15 @@
                     </div>
                     @endif
                 @endforeach
-                @endif
+            </td>
+        </tr>
+        @endif
 
-                <!-- PENGALAMAN MAGANG -->
-                @if(!empty($internships) && count($internships) > 0)
+        <!-- ROW 5: PENGALAMAN MAGANG -->
+        @if(!empty($internships) && count($internships) > 0)
+        <tr>
+            <td class="sidebar-td"></td>
+            <td class="content-td">
                 <div class="right-heading">Internship Experience</div>
                 @foreach($internships as $intern)
                     @php
@@ -469,10 +479,15 @@
                     </div>
                     @endif
                 @endforeach
-                @endif
+            </td>
+        </tr>
+        @endif
 
-                <!-- ORGANISASI & KEPANITIAAN -->
-                @if(!empty($organizations) && count($organizations) > 0)
+        <!-- ROW 6: ORGANISASI & KEPANITIAAN -->
+        @if(!empty($organizations) && count($organizations) > 0)
+        <tr>
+            <td class="sidebar-td" style="padding-bottom: 18pt;"></td>
+            <td class="content-td" style="padding-bottom: 18pt;">
                 <div class="right-heading">Organizations</div>
                 @foreach($organizations as $org)
                     @php
@@ -494,10 +509,9 @@
                     </div>
                     @endif
                 @endforeach
-                @endif
-
             </td>
         </tr>
+        @endif
     </table>
 </body>
 </html>
