@@ -238,8 +238,11 @@ if (empty($initials)) {
                 <td valign="top" style="padding-left: 18pt;">
                     <div class="name">{{ !empty($data->name) ? $data->name : 'NAMA LENGKAP' }}</div>
                     <div class="job-title">{{ !empty($data->job_title) ? $data->job_title : 'POSISI / PEKERJAAN' }}</div>
-                    @if(!empty($data->summary) || !empty($data->profile))
-                    <div class="summary">{{ $data->summary ?: $data->profile }}</div>
+                    @php
+                        $summaryText = $getVal($data, 'profile', 'summary', 'about');
+                    @endphp
+                    @if($summaryText !== '')
+                    <div class="summary">{!! nl2br(e($summaryText)) !!}</div>
                     @endif
                 </td>
             </tr>

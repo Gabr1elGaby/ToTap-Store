@@ -348,10 +348,12 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
                 <div class="name">{{ !empty($data->name) ? $data->name : 'NAMA LENGKAP' }}</div>
                 <div class="job-title">{{ !empty($data->job_title) ? $data->job_title : 'POSISI / PEKERJAAN' }}</div>
                 <hr class="header-line">
-                
-                @if(!empty($data->summary) || !empty($data->profile))
+                @php
+                    $summaryText = $getVal($data, 'profile', 'summary', 'about');
+                @endphp
+                @if($summaryText !== '')
                 <div class="summary">
-                    {!! nl2br(e($data->summary ?: $data->profile)) !!}
+                    {!! nl2br(e($summaryText)) !!}
                 </div>
                 @endif
 
