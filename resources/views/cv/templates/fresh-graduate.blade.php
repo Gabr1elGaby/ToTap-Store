@@ -243,7 +243,7 @@
                             <td class="item-date" style="width: 25%;">{{ $int->start_year ?? '' }} - {{ $int->end_year ?? '' }}</td>
                         </tr>
                     </table>
-                    <div class="item-subtitle">{{ $int->company ?? '' }}</div>
+                    <div class="item-subtitle">{{ $int->company ?? '' }}{{ !empty($int->location) ? ' | ' . $int->location : '' }}</div>
                     <div class="item-desc">{!! nl2br(e($int->description)) !!}</div>
                 </div>
                 @endforeach

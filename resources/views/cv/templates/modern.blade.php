@@ -320,7 +320,7 @@ if (!empty($data->name)) {
                 <div class="item-block">
                     <div class="item-meta">{{ $exp->start_year ?? '' }} - {{ isset($exp->is_current) && $exp->is_current ? 'Sekarang' : ($exp->end_year ?? '') }}</div>
                     <div class="item-title">{{ $exp->position ?? '' }}</div>
-                    <div class="item-subtitle">{{ $exp->company ?? '' }}</div>
+                    <div class="item-subtitle">{{ $exp->company ?? '' }}{{ !empty($exp->location) ? ' | ' . $exp->location : '' }}</div>
                     <div class="item-desc">{!! nl2br(e($exp->description ?? '')) !!}</div>
                 </div>
                 @endforeach
@@ -334,7 +334,7 @@ if (!empty($data->name)) {
                 <div class="item-block">
                     <div class="item-meta">{{ $int->start_year ?? '' }} - {{ $int->end_year ?? '' }}</div>
                     <div class="item-title">{{ $int->position ?? '' }}</div>
-                    <div class="item-subtitle">{{ $int->company ?? '' }}</div>
+                    <div class="item-subtitle">{{ $int->company ?? '' }}{{ !empty($int->location) ? ' | ' . $int->location : '' }}</div>
                     <div class="item-desc">{!! nl2br(e($int->description ?? '')) !!}</div>
                 </div>
                 @endforeach
