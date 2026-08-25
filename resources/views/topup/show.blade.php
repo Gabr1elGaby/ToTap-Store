@@ -39,6 +39,13 @@
                     <div>{{ session('success') }}</div>
                 </div>
             @endif
+            @php
+                $gameName = strtolower($game->name);
+                $isRequiresZone = $game->requires_zone_id || str_contains($gameName, 'magic chess') || str_contains($gameName, 'mobile legend');
+                $field1Label = $game->target_field_1 ?: 'User ID';
+                $field2Label = $game->target_field_2 ?: 'Zone ID';
+            @endphp
+
             <!-- Panduan Top Up -->
             <div class="bg-blue-50/80 dark:bg-gray-800 border-l-4 border-blue-600 dark:border-blue-500 rounded-2xl p-5 mb-8 shadow-sm dark:shadow-md border border-blue-100 dark:border-gray-700" data-aos="fade-down">
                 <h3 class="font-bold text-lg mb-3 text-gray-900 dark:text-white flex items-center gap-2">
@@ -50,19 +57,17 @@
                         <span class="font-bold text-blue-600 dark:text-blue-400">1.</span>
                         <div>
                             <span>Masukkan data target 
-                            @if($game->requires_zone_id)
-                                (<strong>{{ $game->target_field_1 }}</strong> dan <strong>{{ $game->target_field_2 ?? 'Zone ID' }}</strong>) 
+                            @if($isRequiresZone)
+                                (<strong>{{ $field1Label }}</strong> dan <strong>{{ $field2Label }}</strong>) 
                             @else
-                                (<strong>{{ $game->target_field_1 }}</strong>) 
+                                (<strong>{{ $game->target_field_1 ?: 'User ID / Player ID' }}</strong>) 
                             @endif
                             yang sesuai dengan akun {{ $game->name }} Anda.</span>
                             
-                            @php
-                                $gameName = strtolower($game->name);
-                            @endphp
-                            
                             @if(str_contains($gameName, 'mobile legend'))
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">Contoh: 12345678 untuk User ID dan 1234 untuk Zone ID.</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">Contoh: <strong>12345678</strong> untuk User ID dan <strong>1234</strong> untuk Zone ID. (Klik avatar profil di pojok kiri atas).</div>
+                            @elseif(str_contains($gameName, 'magic chess'))
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">Contoh: <strong>12345678</strong> untuk User ID dan <strong>1234</strong> untuk Zone ID. (Buka game Magic Chess: Go Go &gt; klik Avatar Profil di pojok kiri atas untuk melihat User ID dan Zone ID).</div>
                             @elseif(str_contains($gameName, 'valorant'))
                                 <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">Contoh: <strong>Jett#1234</strong> atau <strong>Username#TAG</strong> (Lengkap dengan tanda pagar #).</div>
                             @elseif(str_contains($gameName, 'free fire'))
@@ -99,28 +104,28 @@
                     <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-lg rounded-2xl overflow-hidden sticky top-24">
                         <div class="relative w-full h-64 lg:h-48 bg-gradient-to-tr from-slate-900 via-indigo-950 to-slate-900 flex items-center justify-center overflow-hidden">
                             @if($game->cover_image)
-                                <img src="{{ $game->cover_image }}" alt="{{ $game->name }}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
-                            @endif
-                            <div class="{{ $game->cover_image ? 'hidden' : '' }} flex flex-col items-center justify-center p-4 text-center">
-                                <div class="w-14 h-14 rounded-2xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center text-3xl mb-2 text-indigo-400">
-                                    🎮
+                                <img src="{{ $game->cover_image }}" alt="{{ $game->name }}" class="w-full h-full object-cover">
+                            @elseif($game->thumbnail)
+                                <img src="{{ $game->thumbnail }}" alt="{{ $game->name }}" class="w-full h-full object-cover">
+                            @else
+                                <div class="w-20 h-20 bg-indigo-600/20 text-indigo-400 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-gamepad text-3xl"></i>
                                 </div>
-                                <span class="text-white font-black text-base tracking-wide">{{ $game->name }}</span>
-                            </div>
+                            @endif
                         </div>
-                        <div class="p-6">
-                            <h3 class="text-xl font-black text-gray-900 dark:text-white mb-1">{{ $game->name }}</h3>
-                            <p class="text-gray-500 dark:text-gray-400 text-sm mb-4">{{ $game->developer ?? 'T-Store' }}</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                                {{ $game->guide_text ?? 'Top up ' . $game->name . ' proses cepat dan otomatis. Silakan masukkan Player ID Anda, pilih nominal, dan selesaikan pembayaran.' }}
+                        <div class="p-5">
+                            <h3 class="font-black text-xl text-gray-900 dark:text-white">{{ $game->name }}</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ $game->developer ?? 'Moonton' }}</p>
+                            <p class="text-xs text-gray-600 dark:text-gray-300 mt-4 leading-relaxed">
+                                {{ $game->description ?? 'Top up ' . $game->name . ' proses cepat dan otomatis. Silakan masukkan User ID & Zone ID akun Anda, pilih nominal, dan selesaikan pembayaran.' }}
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Kanan: Form Pembelian -->
-                <div class="w-full lg:w-3/4 space-y-6" x-data="{ 
-                    selectedProduct: sessionStorage.getItem('totap_product_{{ $game->slug }}') || null, 
+                <!-- Kanan: Form Transaksi -->
+                <div class="w-full lg:w-3/4" x-data="{
+                    selectedProduct: sessionStorage.getItem('totap_product_{{ $game->slug }}') || null,
                     selectedPayment: sessionStorage.getItem('totap_payment_{{ $game->slug }}') || 'qris',
                     playerId: sessionStorage.getItem('totap_player_id_{{ $game->slug }}') || '',
                     zoneId: sessionStorage.getItem('totap_zone_id_{{ $game->slug }}') || '',
@@ -177,21 +182,21 @@
                                         <h3 class="text-lg font-bold text-gray-900 dark:text-white">Masukkan Tujuan</h3>
                                     </div>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div class="{{ $game->requires_zone_id ? '' : 'md:col-span-2' }}">
+                                        <div class="{{ $isRequiresZone ? '' : 'md:col-span-2' }}">
                                             <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-                                                {{ $game->target_field_1 ?: 'User ID / Player ID' }}
+                                                {{ $field1Label }}
                                             </label>
                                             <input type="text" name="player_id" x-model="playerId" 
-                                                placeholder="{{ $game->target_field_1 ?: ($game->slug == 'valorant' ? 'Contoh: RiotID#1234' : 'Masukkan ' . $game->name . ' ID') }}" required
+                                                placeholder="{{ $isRequiresZone ? 'Contoh: 12345678' : ($game->slug == 'valorant' ? 'Contoh: RiotID#1234' : 'Masukkan ' . $field1Label) }}" required
                                                 class="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm p-3 font-semibold text-sm">
                                         </div>
-                                        @if($game->requires_zone_id)
+                                        @if($isRequiresZone)
                                         <div>
                                             <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-                                                {{ $game->target_field_2 ?: 'Zone ID / Server ID' }}
+                                                {{ $field2Label }}
                                             </label>
                                             <input type="text" name="zone_id" x-model="zoneId" 
-                                                placeholder="{{ $game->target_field_2 ?: 'Contoh: 1234' }}" required
+                                                placeholder="Contoh: 1234" required
                                                 class="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm p-3 font-semibold text-sm">
                                         </div>
                                         @endif
