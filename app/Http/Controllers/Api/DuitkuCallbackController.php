@@ -12,7 +12,6 @@ class DuitkuCallbackController extends Controller
 {
     public function handle(Request $request)
     {
-        // Jika dibuka via browser (GET request)
         if ($request->isMethod('get')) {
             return response()->json([
                 'success' => true,
@@ -23,7 +22,7 @@ class DuitkuCallbackController extends Controller
             ]);
         }
 
-        $apiKey = config('services.duitku.api_key', env('DUITKU_API_KEY', ''));
+        $apiKey = config('services.duitku.api_key', env('DUITKU_API_KEY', '4c127f4a1e4edb4a411d5d753c22762a'));
         $merchantCode = $request->input('merchantCode');
         $amount = $request->input('amount');
         $merchantOrderId = $request->input('merchantOrderId');
@@ -50,13 +49,11 @@ class DuitkuCallbackController extends Controller
             if ($transaction->status !== 'success' && $transaction->status !== 'processing') {
                 $transaction->update([
                     'status' => 'processing',
-                    'paid_at' => now(),
-                    'payment_reference' => $reference,
                 ]);
 
                 // Eksekusi Otomatis ke VIP Reseller
                 try {
-                    $product = $transaction->product ?? $transaction->gameProduct;
+                    $product = $transaction->gameProduct;
                     $game = $transaction->game;
                     if ($product && $game) {
                         $vipService = app(VipResellerService::class);
@@ -70,7 +67,7 @@ class DuitkuCallbackController extends Controller
                         if (isset($orderRes['result']) && $orderRes['result'] === true) {
                             $transaction->update([
                                 'status' => 'success',
-                                'provider_order_id' => $orderRes['data']['trxid'] ?? null,
+                                'provider_trx_id' => $orderRes['data']['trxid'] ?? null,
                             ]);
                         }
                     }

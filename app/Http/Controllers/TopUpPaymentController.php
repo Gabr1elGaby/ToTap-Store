@@ -34,7 +34,6 @@ class TopUpPaymentController extends Controller
             if (isset($detail['statusCode']) && $detail['statusCode'] == '00') {
                 $transaction->update([
                     'status' => 'processing',
-                    'paid_at' => now(),
                 ]);
 
                 // Eksekusi otomatis ke VIP Reseller
@@ -53,7 +52,7 @@ class TopUpPaymentController extends Controller
                         if (isset($orderRes['result']) && $orderRes['result'] === true) {
                             $transaction->update([
                                 'status' => 'success',
-                                'provider_order_id' => $orderRes['data']['trxid'] ?? null,
+                                'provider_trx_id' => $orderRes['data']['trxid'] ?? null,
                             ]);
                         }
                     }
@@ -75,7 +74,6 @@ class TopUpPaymentController extends Controller
                 if ($status === 'PAID') {
                     $transaction->update([
                         'status' => 'processing',
-                        'paid_at' => now(),
                     ]);
 
                     try {
@@ -93,7 +91,7 @@ class TopUpPaymentController extends Controller
                             if (isset($orderRes['result']) && $orderRes['result'] === true) {
                                 $transaction->update([
                                     'status' => 'success',
-                                    'provider_order_id' => $orderRes['data']['trxid'] ?? null,
+                                    'provider_trx_id' => $orderRes['data']['trxid'] ?? null,
                                 ]);
                             }
                         }

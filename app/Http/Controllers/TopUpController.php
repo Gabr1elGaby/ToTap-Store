@@ -282,8 +282,7 @@ class TopUpController extends Controller
                 ]);
 
                 $transaction->update([
-                    'snap_token'        => $snapData,
-                    'payment_reference' => $duitkuRes['reference'] ?? null,
+                    'snap_token' => $snapData,
                 ]);
 
                 return redirect()->route('topup.checkout.show', $transaction->id);
