@@ -20,6 +20,31 @@
                 </div>
             </div>
 
+            @if(session('success'))
+            <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 font-bold text-sm flex items-center gap-3">
+                <i class="fas fa-check-circle text-lg text-emerald-600"></i>
+                <span>{{ session('success') }}</span>
+            </div>
+            @endif
+            @if(session('warning'))
+            <div class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200 font-bold text-sm flex items-center gap-3">
+                <i class="fas fa-exclamation-triangle text-lg text-amber-600"></i>
+                <span>{{ session('warning') }}</span>
+            </div>
+            @endif
+            @if(session('error'))
+            <div class="p-4 rounded-2xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 font-bold text-sm flex items-center gap-3">
+                <i class="fas fa-times-circle text-lg text-red-600"></i>
+                <span>{{ session('error') }}</span>
+            </div>
+            @endif
+            @if(session('info'))
+            <div class="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 font-bold text-sm flex items-center gap-3">
+                <i class="fas fa-info-circle text-lg text-blue-600"></i>
+                <span>{{ session('info') }}</span>
+            </div>
+            @endif
+
             <!-- Tab Switcher -->
             <div class="flex flex-wrap items-center gap-2 bg-white dark:bg-gray-800 p-1.5 rounded-2xl border border-gray-200 dark:border-gray-700 w-fit shadow-sm dark:shadow-lg">
                 <button id="admin-tab-all" 
@@ -242,9 +267,37 @@
                                                 {{ $trx->created_at->format('d M Y, H:i') }}
                                             </td>
                                             <td class="py-4 px-6 text-center whitespace-nowrap">
-                                                <a href="{{ route('admin.transactions.invoice', $trx->id) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 transition shadow-sm">
-                                                    <i class="fas fa-file-invoice"></i> Invoice
-                                                </a>
+                                                <div class="flex items-center justify-center gap-1.5">
+                                                    @if($trx->status === 'pending' || $trx->status === 'paid' || $trx->status === 'processing')
+                                                        <!-- ACC & Auto Fulfillment via API -->
+                                                        <form action="{{ route('admin.transactions.approve', $trx->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin ACC dan OTOMATIS menembak diamond ke ID {{ $trx->target_field_1 }} via API VIP Reseller?');" class="inline">
+                                                            @csrf
+                                                            <button type="submit" title="ACC & Kirim Otomatis via API VIP Reseller" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition cursor-pointer">
+                                                                <i class="fas fa-bolt"></i> ACC (API)
+                                                            </button>
+                                                        </form>
+
+                                                        <!-- Manual Success -->
+                                                        <form action="{{ route('admin.transactions.manual-success', $trx->id) }}" method="POST" onsubmit="return confirm('Tandai pesanan ini Sukses Manual?');" class="inline">
+                                                            @csrf
+                                                            <button type="submit" title="Tandai Sukses Manual" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 transition cursor-pointer">
+                                                                <i class="fas fa-check"></i> Selesai Manual
+                                                            </button>
+                                                        </form>
+
+                                                        <!-- Reject -->
+                                                        <form action="{{ route('admin.transactions.reject', $trx->id) }}" method="POST" onsubmit="return confirm('Tolak/Batalkan pesanan ini?');" class="inline">
+                                                            @csrf
+                                                            <button type="submit" title="Tolak Pesanan" class="inline-flex items-center gap-1 px-2 py-1.5 rounded-xl text-xs font-bold text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 transition cursor-pointer">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </form>
+                                                    @endif
+
+                                                    <a href="{{ route('admin.transactions.invoice', $trx->id) }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition shadow-sm" title="Lihat Invoice">
+                                                        <i class="fas fa-file-invoice"></i>
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                     @endforeach

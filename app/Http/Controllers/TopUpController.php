@@ -339,41 +339,19 @@ class TopUpController extends Controller
             'status' => 'pending',
         ]);
         
-        try {
-            $duitku = app(\App\Services\DuitkuService::class);
-            $duitkuRes = $duitku->createTransaction([
-                'merchant_order_id' => $orderId,
-                'amount'            => (int) $product->price_sell,
-                'method'            => $request->payment_method,
-                'customer_name'     => $request->player_id,
-                'customer_email'    => auth()->check() ? auth()->user()->email : 'customer@totapstore.com',
-                'product_name'      => $game->name . ' - ' . $product->name,
-            ]);
+        // Set snap_token for Manual QRIS & WhatsApp Flow
+        $snapData = json_encode([
+            'type'      => 'manual_qris',
+            'gateway'   => 'manual',
+            'method'    => $request->payment_method ?? 'qris',
+            'amount'    => (int) $product->price_sell,
+        ]);
 
-            if (isset($duitkuRes['success']) && $duitkuRes['success'] === true) {
-                $snapData = json_encode([
-                    'type'         => $duitkuRes['type'],
-                    'gateway'      => 'duitku',
-                    'reference'    => $duitkuRes['reference'] ?? null,
-                    'qr_string'    => $duitkuRes['qr_string'] ?? null,
-                    'bank'         => strtoupper(str_replace(['_va', 'va'], '', $request->payment_method)),
-                    'va_number'    => $duitkuRes['va_number'] ?? null,
-                ]);
+        $transaction->update([
+            'snap_token' => $snapData,
+        ]);
 
-                $transaction->update([
-                    'snap_token' => $snapData,
-                ]);
-
-                return redirect()->route('topup.checkout.show', $transaction->id);
-            }
-
-            $msg = $duitkuRes['message'] ?? 'Gagal membuat transaksi Duitku.';
-            return back()->with('error', $msg);
-
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Duitku TopUp Error: ' . $e->getMessage());
-            return back()->with('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
-        }
+        return redirect()->route('topup.checkout.show', $transaction->id);
     }
 
     public function checkNickname(Request $request, $slug)
