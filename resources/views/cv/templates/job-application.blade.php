@@ -232,6 +232,8 @@ $hasPage2 = (count($internships) > 0 || count($organizations) > 0);
             background-color: #ffffff;
             padding: 35pt 35pt 30pt 35pt;
         }
+    </style>
+</head>
 <body>
     <!-- Full-height sidebar background strip for 100% A4 coverage -->
     <div style="position: absolute; top: 0px; left: 0px; width: 32%; height: 842pt; background-color: #18181b; z-index: -100;"></div>
