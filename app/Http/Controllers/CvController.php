@@ -237,105 +237,241 @@ class CvController extends Controller
 
     public function previewExample($slug)
     {
-        $template = $template = DB::table('cv_templates')->where('slug', $slug)->first(); if (!$template) abort(404);
-        
-        $userData = [
-            'cv' => [
-                'name' => 'John Doe',
-                'job_title' => 'Software Engineer',
-                'email' => 'johndoe@example.com',
-                'phone' => '081234567890',
-                'location' => 'Jakarta, Indonesia',
-                'linkedin' => 'linkedin.com/in/johndoe',
-                'website' => 'johndoe.com',
-                'summary' => 'Seorang Software Engineer berdedikasi dengan pengalaman lebih dari 3 tahun dalam pengembangan web menggunakan PHP, Laravel, dan JavaScript. Memiliki rekam jejak yang terbukti dalam membangun sistem yang skalabel dan efisien serta bekerja sama dalam tim lintas divisi.',
-                'photo' => 'https://i.pravatar.cc/300?img=11', 
+        $template = DB::table('cv_templates')->where('slug', $slug)->first(); 
+        if (!$template) abort(404);
+
+        $isEnglish = ($template->language ?? '') === 'en' || str_starts_with($template->slug, 'en-');
+
+        if ($isEnglish) {
+            $userData = [
+                'cv' => [
+                    'name' => 'ALEXANDER WRIGHT',
+                    'job_title' => 'Senior Full Stack Software Engineer',
+                    'email' => 'alex.wright@example.com',
+                    'phone' => '+62 812-3456-7890',
+                    'address' => 'Jakarta, Indonesia (Open to Remote)',
+                    'location' => 'Jakarta, Indonesia',
+                    'linkedin' => 'linkedin.com/in/alexander-wright',
+                    'website' => 'alexwright.dev',
+                    'profile' => 'Results-driven Senior Software Engineer with 5+ years of experience architecting high-concurrency web systems and distributed microservices. Proven track record of scaling platforms to 2M+ active users and reducing API latency by 35%. Passionate about clean code, automated CI/CD pipelines, and cloud-native solutions.',
+                    'summary' => 'Results-driven Senior Software Engineer with 5+ years of experience architecting high-concurrency web systems and distributed microservices. Proven track record of scaling platforms to 2M+ active users and reducing API latency by 35%. Passionate about clean code, automated CI/CD pipelines, and cloud-native solutions.',
+                    'photo' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80',
+                ],
                 'educations' => [
                     [
-                        'institution' => 'Universitas Indonesia',
-                        'degree' => 'S1 Teknik Informatika',
-                        'field' => 'Ilmu Komputer',
-                        'location' => 'Depok, Jawa Barat',
-                        'start_year' => '2018',
-                        'end_year' => '2022',
+                        'institution' => 'University of Indonesia',
+                        'degree' => 'Bachelor of Science',
+                        'major' => 'Computer Science',
+                        'field' => 'Computer Science',
+                        'location' => 'Jakarta, Indonesia',
+                        'start_year' => '2016',
+                        'end_year' => '2020',
                         'is_current' => false,
-                        'description' => 'Lulus dengan predikat Cum Laude (IPK 3.85)'
+                        'description' => 'Graduated with Honors (GPA: 3.88/4.00) • Head of Competitive Programming Club'
                     ]
                 ],
                 'experiences' => [
                     [
-                        'company' => 'PT Teknologi Nusantara',
-                        'position' => 'Backend Developer',
-                        'location' => 'Jakarta',
-                        'start_year' => '2023',
+                        'company' => 'Fintech Global Nexus Inc.',
+                        'position' => 'Senior Backend Engineer',
+                        'location' => 'Singapore / Remote',
+                        'start_year' => '2022',
                         'end_year' => '',
                         'is_current' => true,
-                        'description' => 'Mengembangkan dan memelihara REST API menggunakan Laravel.'
+                        'description' => "• Architected and deployed payment orchestration microservices processing \$15M+ monthly volume with 99.99% uptime.\n• Spearheaded database partitioning and Redis distributed caching, slashing p99 latency from 450ms to 95ms.\n• Mentored 6 junior/mid-level engineers and established strict unit test coverage benchmarks exceeding 85%."
                     ],
                     [
-                        'company' => 'Startup Digital Kreatif',
-                        'position' => 'Web Developer',
-                        'location' => 'Jakarta',
-                        'start_year' => '2022',
-                        'end_year' => '2023',
+                        'company' => 'Nexora Cloud Technologies',
+                        'position' => 'Full Stack Software Engineer',
+                        'location' => 'Jakarta, Indonesia',
+                        'start_year' => '2020',
+                        'end_year' => '2022',
                         'is_current' => false,
-                        'description' => 'Membangun aplikasi internal perusahaan.'
+                        'description' => "• Engineered scalable RESTful and GraphQL APIs using Laravel, Node.js, and PostgreSQL.\n• Built responsive frontend customer dashboards using Vue.js and Tailwind CSS, increasing user retention by 24%.\n• Automated multi-environment Docker CI/CD deployments on AWS ECS and GitHub Actions."
                     ]
                 ],
                 'internships' => [
                     [
-                        'company' => 'Gojek Indonesia',
-                        'position' => 'Software Engineer Intern',
+                        'company' => 'Gojek Tech Labs',
+                        'position' => 'Software Engineering Intern',
                         'location' => 'Jakarta',
-                        'start_year' => '2021',
-                        'end_year' => '2021',
+                        'start_year' => '2019',
+                        'end_year' => '2019',
                         'is_current' => false,
-                        'description' => 'Berpartisipasi dalam pengembangan fitur layanan.'
+                        'description' => 'Contributed to high-throughput routing algorithms and internal monitoring microservices.'
                     ]
                 ],
                 'organizations' => [
                     [
-                        'organization_name' => 'BEM Fasilkom UI',
-                        'role' => 'Ketua Divisi IT',
-                        'period' => '2020 - 2021',
-                        'description' => 'Memimpin tim beranggotakan 10 orang.'
+                        'organization_name' => 'Google Developer Student Clubs (GDSC)',
+                        'role' => 'Lead Technical Mentor',
+                        'period' => '2019 - 2020',
+                        'description' => 'Organized tech workshops and cloud architecture hackathons for 350+ student developers.'
                     ]
                 ],
                 'projects' => [
                     [
-                        'name' => 'Sistem Manajemen Inventaris',
-                        'technologies' => 'Laravel, MySQL, Tailwind',
-                        'link' => 'github.com/johndoe/inventaris',
-                        'description' => 'Aplikasi open-source untuk melacak stok barang.'
+                        'name' => 'CloudSentinel API Security Gateway',
+                        'technologies' => 'Go, Laravel, Redis, Docker, AWS',
+                        'link' => 'github.com/alexwright/cloudsentinel',
+                        'description' => 'Open-source rate-limiting and JWT security proxy utilized by 1,400+ production services globally.'
+                    ],
+                    [
+                        'name' => 'Real-Time Stock Portfolio Tracker',
+                        'technologies' => 'TypeScript, React, WebSocket, PostgreSQL',
+                        'link' => 'demo.alexwright.dev/tracker',
+                        'description' => 'Sub-second real-time market data analytics platform with automated financial alert triggers.'
                     ]
                 ],
                 'certificates' => [
                     [
+                        'name' => 'AWS Certified Solutions Architect – Associate',
+                        'issuer' => 'Amazon Web Services (AWS)',
+                        'year' => '2023'
+                    ],
+                    [
+                        'name' => 'CKA: Certified Kubernetes Administrator',
+                        'issuer' => 'The Linux Foundation & CNCF',
+                        'year' => '2022'
+                    ]
+                ],
+                'skills' => [
+                    ['name' => 'PHP / Laravel', 'level' => 'Technical'],
+                    ['name' => 'TypeScript / Node.js', 'level' => 'Technical'],
+                    ['name' => 'Go (Golang)', 'level' => 'Technical'],
+                    ['name' => 'PostgreSQL & MySQL', 'level' => 'Technical'],
+                    ['name' => 'Redis & Kafka', 'level' => 'Technical'],
+                    ['name' => 'Docker & Kubernetes', 'level' => 'Cloud'],
+                    ['name' => 'AWS (ECS, S3, RDS, Lambda)', 'level' => 'Cloud'],
+                    ['name' => 'System Architecture & Microservices', 'level' => 'Core'],
+                    ['name' => 'CI/CD & DevOps', 'level' => 'Core'],
+                ]
+            ];
+        } else {
+            // INDONESIAN SAMPLE DATA (Standar Nasional & BUMN)
+            $userData = [
+                'cv' => [
+                    'name' => 'RADITYA PRATAMA, S.Kom.',
+                    'job_title' => 'Software Engineer / Full Stack Developer',
+                    'email' => 'raditya.pratama@email.com',
+                    'phone' => '0812-3456-7890',
+                    'address' => 'Jakarta Selatan, DKI Jakarta',
+                    'location' => 'Jakarta Selatan, DKI Jakarta',
+                    'linkedin' => 'linkedin.com/in/radityapratama',
+                    'website' => 'radityapratama.id',
+                    'profile' => 'Profesional Software Engineer dengan pengalaman lebih dari 4 tahun dalam merancang dan mengembangkan aplikasi web skala besar. Berpengalaman dalam pengembangan RESTful API, arsitektur database, dan integrasi sistem pembayaran. Memiliki rekam jejak yang terbukti dalam membangun sistem yang efisien dan siap berkontribusi optimal bagi kemajuan perusahaan.',
+                    'summary' => 'Profesional Software Engineer dengan pengalaman lebih dari 4 tahun dalam merancang dan mengembangkan aplikasi web skala besar. Berpengalaman dalam pengembangan RESTful API, arsitektur database, dan integrasi sistem pembayaran. Memiliki rekam jejak yang terbukti dalam membangun sistem yang efisien dan siap berkontribusi optimal bagi kemajuan perusahaan.',
+                    'photo' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80',
+                ],
+                'educations' => [
+                    [
+                        'institution' => 'Universitas Indonesia',
+                        'degree' => 'Sarjana Komputer (S.Kom.)',
+                        'major' => 'Teknik Informatika / Ilmu Komputer',
+                        'field' => 'Ilmu Komputer',
+                        'location' => 'Depok, Jawa Barat',
+                        'start_year' => '2016',
+                        'end_year' => '2020',
+                        'is_current' => false,
+                        'description' => 'Lulus dengan predikat Sangat Memuaskan (IPK 3.84 / 4.00) • Penerima Beasiswa Prestasi Akademik'
+                    ]
+                ],
+                'experiences' => [
+                    [
+                        'company' => 'PT Teknologi Nusantara Jaya',
+                        'position' => 'Senior Backend Developer',
+                        'location' => 'Jakarta Selatan',
+                        'start_year' => '2022',
+                        'end_year' => '',
+                        'is_current' => true,
+                        'description' => "• Mengembangkan dan mengelola arsitektur backend transaksi yang memproses puluhan ribu transaksi harian.\n• Mengoptimalkan performa kueri database MySQL dan Redis cache sehingga meningkatkan kecepatan respon server sebesar 35%.\n• Berkolaborasi aktif dengan tim frontend, mobile, dan QA dalam penerapan standar Clean Architecture."
+                    ],
+                    [
+                        'company' => 'PT Solusi Digital Kreatif',
+                        'position' => 'Web Developer',
+                        'location' => 'Jakarta Barat',
+                        'start_year' => '2020',
+                        'end_year' => '2022',
+                        'is_current' => false,
+                        'description' => "• Membangun sistem informasi manajemen internal berbasis web menggunakan framework Laravel dan MySQL.\n• Mengintegrasikan payment gateway otomatis (QRIS, Virtual Account) dan webhook notifikasi transaksi."
+                    ]
+                ],
+                'internships' => [
+                    [
+                        'company' => 'PT Telekomunikasi Indonesia (Telkom)',
+                        'position' => 'Software Engineer Intern',
+                        'location' => 'Jakarta',
+                        'start_year' => '2019',
+                        'end_year' => '2019',
+                        'is_current' => false,
+                        'description' => 'Berpartisipasi dalam riset dan pengembangan dashboard monitoring jaringan berbasis web.'
+                    ]
+                ],
+                'organizations' => [
+                    [
+                        'organization_name' => 'BEM Fasilkom Universitas Indonesia',
+                        'role' => 'Ketua Divisi Komunikasi & Teknologi Informasi (Kominfo)',
+                        'period' => '2019 - 2020',
+                        'description' => 'Memimpin 12 anggota divisi dalam mengelola seluruh portal media dan sistem informasi organisasi kampus.'
+                    ],
+                    [
+                        'organization_name' => 'Himpunan Mahasiswa Ilmu Komputer (HMD)',
+                        'role' => 'Staf Divisi Pengembangan Minat & Bakat',
+                        'period' => '2017 - 2018',
+                        'description' => 'Mengkoordinasikan pelatihan pemrograman dan kompetisi coding tingkat universitas.'
+                    ]
+                ],
+                'projects' => [
+                    [
+                        'name' => 'Sistem Informasi Manajemen Kasir & Inventaris',
+                        'technologies' => 'Laravel, MySQL, Tailwind CSS, Alpine.js',
+                        'link' => 'github.com/raditya/pos-enterprise',
+                        'description' => 'Aplikasi POS multi-cabang dengan fitur laporan keuangan real-time dan manajemen stok otomatis.'
+                    ]
+                ],
+                'certificates' => [
+                    [
+                        'name' => 'Sertifikasi BNSP - Rekayasa Perangkat Lunak (Software Developer)',
+                        'issuer' => 'Badan Nasional Sertifikasi Profesi (BNSP)',
+                        'year' => '2023'
+                    ],
+                    [
                         'name' => 'AWS Certified Cloud Practitioner',
                         'issuer' => 'Amazon Web Services',
-                        'year' => '2023'
+                        'year' => '2022'
                     ]
                 ],
                 'volunteers' => [
                     [
-                        'name' => 'Relawan IT Mengajar',
-                        'role' => 'Mentor Pemrograman',
+                        'name' => 'Relawan Pengajar Literasi Digital Nusantara',
+                        'role' => 'Instruktur Pemrograman Dasar',
                         'year' => '2021',
-                        'description' => 'Mengajarkan dasar-dasar coding.'
+                        'description' => 'Memberikan pelatihan dasar coding dan literasi internet sehat kepada generasi muda.'
                     ]
                 ],
                 'skills' => [
-                    ['name' => 'PHP', 'level' => 'Hard Skill'],
-                    ['name' => 'Laravel', 'level' => 'Hard Skill'],
-                    ['name' => 'JavaScript', 'level' => 'Hard Skill'],
-                    ['name' => 'MySQL', 'level' => 'Hard Skill'],
-                    ['name' => 'Kerja Sama Tim', 'level' => 'Soft Skill'],
-                    ['name' => 'Komunikasi', 'level' => 'Soft Skill'],
+                    ['name' => 'PHP & Laravel Framework', 'level' => 'Hard Skill'],
+                    ['name' => 'JavaScript, Node.js & Vue.js', 'level' => 'Hard Skill'],
+                    ['name' => 'MySQL & PostgreSQL Database', 'level' => 'Hard Skill'],
+                    ['name' => 'RESTful API & Integrasi Gateway', 'level' => 'Hard Skill'],
+                    ['name' => 'Git & GitHub Version Control', 'level' => 'Hard Skill'],
+                    ['name' => 'Docker & Cloud Deployment', 'level' => 'Hard Skill'],
+                    ['name' => 'Kepemimpinan & Manajemen Tim', 'level' => 'Soft Skill'],
+                    ['name' => 'Komunikasi Efektif & Problem Solving', 'level' => 'Soft Skill'],
                 ]
-            ]
-        ];
+            ];
+        }
 
-        $data = isset($userData['cv']) ? (object)$userData['cv'] : (object)[];
+        $userData['cv']['educations'] = $userData['educations'];
+        $userData['cv']['experiences'] = $userData['experiences'];
+        $userData['cv']['internships'] = $userData['internships'];
+        $userData['cv']['organizations'] = $userData['organizations'];
+        $userData['cv']['projects'] = $userData['projects'];
+        $userData['cv']['certificates'] = $userData['certificates'];
+        $userData['cv']['skills'] = $userData['skills'];
+        $userData['cv']['volunteers'] = $userData['volunteers'] ?? [];
+
+        $data = (object)$userData['cv'];
         return view('cv.templates.' . $template->slug, compact('userData', 'template', 'data'));
     }
 
