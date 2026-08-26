@@ -533,15 +533,15 @@
                                         </td>
                                         <td class="py-4 px-6">
                                             @if($dep->status === 'success' || $dep->status === 'paid')
-                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
-                                                    <i class="fas fa-check-circle"></i> Sukses Masuk
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">
+                                                    <i class="fas fa-check-circle text-[10px]"></i> Sukses Masuk
                                                 </span>
                                             @elseif($dep->status === 'pending')
-                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
-                                                    <i class="fas fa-clock animate-spin"></i> Menunggu Bayar
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                                                    <i class="fas fa-clock text-[10px] animate-spin"></i> Menunggu Bayar
                                                 </span>
                                             @else
-                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-gray-500/10 text-gray-600 dark:text-gray-400 border border-gray-500/20">
                                                     {{ ucfirst($dep->status) }}
                                                 </span>
                                             @endif
@@ -555,15 +555,15 @@
                                                     <!-- ACC Deposit Button -->
                                                     <form action="{{ route('admin.deposits.approve', $dep->id) }}" method="POST" onsubmit="return confirm('Setujui permintaan deposit ini? Saldo akun pengguna akan otomatis bertambah.');">
                                                         @csrf
-                                                        <button type="submit" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition flex items-center gap-1 cursor-pointer" title="ACC Saldo Masuk">
-                                                            <i class="fas fa-check"></i> ACC Deposit
+                                                        <button type="submit" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition cursor-pointer" title="ACC Saldo Masuk">
+                                                            <i class="fas fa-check text-xs"></i> ACC Deposit
                                                         </button>
                                                     </form>
 
                                                     <!-- Batalkan Button -->
                                                     <form action="{{ route('admin.deposits.cancel', $dep->id) }}" method="POST" onsubmit="return confirm('Batalkan permintaan deposit ini?');">
                                                         @csrf
-                                                        <button type="submit" class="px-2.5 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-bold text-xs transition cursor-pointer" title="Batalkan">
+                                                        <button type="submit" class="p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/20 font-bold text-xs transition cursor-pointer" title="Batalkan">
                                                             <i class="fas fa-times"></i>
                                                         </button>
                                                     </form>
@@ -573,7 +573,7 @@
                                                 <form action="{{ route('admin.deposits.destroy', $dep->id) }}" method="POST" onsubmit="return confirm('Hapus data deposit ini?');">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="p-2 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 font-bold text-xs cursor-pointer" title="Hapus Data">
+                                                    <button type="submit" class="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20 font-bold text-xs transition cursor-pointer" title="Hapus Data">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
