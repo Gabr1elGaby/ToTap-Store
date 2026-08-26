@@ -84,11 +84,11 @@
 
                 @auth
                 <!-- Saldo Dompet Akun & Isi Saldo Link -->
-                <a href="{{ route('deposit.index') }}" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-gray-950 font-black text-xs shadow-sm transition hover:scale-105 shrink-0" title="Klik untuk Isi Saldo (Deposit)">
+                <a href="{{ route('deposit.index') }}" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-gray-950 font-black text-xs shadow-md transition-all transform hover:scale-105 shrink-0" title="Saldo Akun Anda - Klik untuk Isi Saldo">
                     <svg class="w-4 h-4 text-gray-950 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                     </svg>
-                    <span class="tracking-wide">Rp{{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}</span>
+                    <span class="tracking-tight">Rp{{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}</span>
                 </a>
 
                 <div class="relative ml-2" id="user-menu-dropdown-wrapper">
@@ -105,36 +105,58 @@
                     </button>
 
                     <div id="user-menu-dropdown-menu" 
-                         class="hidden absolute right-0 z-[100] mt-2 w-60 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden py-1.5 animate-in fade-in zoom-in-95 duration-100">
-                        <div class="px-4 py-2.5 bg-gray-50 dark:bg-gray-900/60 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                            <div>
-                                <span class="text-[11px] text-gray-500 dark:text-gray-400 block font-semibold">Saldo Akun:</span>
-                                <span class="font-black text-sm text-emerald-600 dark:text-emerald-400">Rp{{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}</span>
-                            </div>
-                            <a href="{{ route('deposit.index') }}" class="px-2.5 py-1 bg-emerald-500 hover:bg-emerald-400 text-gray-950 font-black text-[10px] rounded-lg shadow-sm transition">
-                                + Isi Saldo
-                            </a>
+                         class="hidden absolute right-0 z-[100] mt-2 w-64 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden py-1 animate-in fade-in zoom-in-95 duration-100">
+                        <div class="px-4 py-3 bg-gray-50 dark:bg-gray-900/70 border-b border-gray-100 dark:border-gray-700/80">
+                            <div class="text-xs font-bold text-gray-900 dark:text-white truncate">{{ Auth::user()->name }}</div>
+                            <div class="text-[11px] text-gray-500 dark:text-gray-400 truncate">{{ Auth::user()->email }}</div>
                         </div>
 
-                        <a href="{{ route('deposit.index') }}" class="block px-4 py-2.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 flex items-center transition">
-                            <i class="fas fa-wallet mr-2.5 text-emerald-500"></i> {{ __('Isi Saldo (Deposit)') }}
-                        </a>
+                        <div class="py-1">
+                            <a href="{{ route('deposit.index') }}" class="px-4 py-2.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 flex items-center justify-between transition">
+                                <span class="flex items-center gap-2.5">
+                                    <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                    </svg>
+                                    Isi Saldo (Deposit)
+                                </span>
+                                <span class="font-mono font-black text-xs">Rp{{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}</span>
+                            </a>
 
-                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-indigo-600 flex items-center transition">
-                            <i class="fas fa-user mr-2.5 text-gray-400"></i> {{ __('Profile') }}
-                        </a>
+                            <a href="{{ route('profile.edit') }}" class="px-4 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/60 hover:text-indigo-600 dark:hover:text-white flex items-center gap-2.5 transition">
+                                <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                Edit Profil
+                            </a>
 
-                        <a href="{{ route('transactions.history') }}" class="block px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-indigo-600 flex items-center transition">
-                            <i class="fas fa-receipt mr-2.5 text-indigo-500"></i> {{ __('Riwayat Transaksi') }}
-                        </a>
+                            <a href="{{ route('transactions.history') }}" class="px-4 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/60 hover:text-indigo-600 dark:hover:text-white flex items-center gap-2.5 transition">
+                                <svg class="w-4 h-4 text-indigo-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                                Riwayat Transaksi
+                            </a>
 
-                        <div class="border-t border-gray-100 dark:border-gray-700 my-1"></div>
+                            @if(Auth::user()->role === 'superadmin')
+                            <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 text-xs font-medium text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/40 flex items-center gap-2.5 transition">
+                                <svg class="w-4 h-4 text-purple-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Panel Super Admin
+                            </a>
+                            @endif
+                        </div>
+
+                        <div class="border-t border-gray-100 dark:border-gray-700/80 my-1"></div>
 
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="w-full text-start px-4 py-2.5 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 flex items-center transition">
-                                <i class="fas fa-sign-out-alt mr-2.5 text-red-500"></i> {{ __('Log Out') }}
+                            <button type="submit" class="w-full text-start px-4 py-2.5 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 flex items-center gap-2.5 transition cursor-pointer">
+                                <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                {{ __('Log Out') }}
                             </button>
                         </form>
                     </div>
