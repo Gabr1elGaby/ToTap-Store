@@ -539,25 +539,20 @@ class TopUpController extends Controller
                 }
             }
 
-            // 5. CEK NICKNAME KE VIP RESELLER API JIKA TERSEDIA
+            // 5. CEK NICKNAME KE VIP RESELLER API (Khusus Game yang didukung server VIP Reseller: MLBB & Free Fire)
             $gameCode = match($gameSlug) {
-                'mobile-legend', 'mobile-legends', 'magic-chess-go-go' => 'mobile-legends',
+                'mobile-legend', 'mobile-legends' => 'mobile-legends',
                 'free-fire', 'freefire' => 'free-fire',
-                'pubg-mobile', 'pubg' => 'pubg-mobile',
-                'genshin-impact' => 'genshin-impact',
-                'honkai-star-rail' => 'honkai-star-rail',
-                'call-of-duty-mobile', 'cod-mobile' => 'cod-mobile',
-                'point-blank' => 'point-blank',
-                'arena-of-valor', 'aov' => 'aov',
                 default => null,
             };
 
             if (!$gameCode) {
-                // Game non-API nickname: pastikan lolos validasi
+                // Game non-API nickname (Magic Chess: Go Go, Roblox, PUBG, Genshin, dll):
+                // Format sudah tervalidasi dengan ketat, izinkan pembeli lanjut konfirmasi data
                 return response()->json([
                     'result' => true,
                     'is_checked' => false,
-                    'message' => 'ID berhasil dimasukkan.',
+                    'nickname' => $target1 . ($target2 ? ' (' . $target2 . ')' : ''),
                 ]);
             }
 
@@ -574,14 +569,16 @@ class TopUpController extends Controller
             $errMsg = $res['message'] ?? '';
             $lowMsg = strtolower($errMsg);
 
-            // Jika Provider tidak menyediakan fitur cek nickname untuk game ini (misal: PUBG, Genshin, dll)
+            // Jika Provider sedang offline / tidak mengizinkan IP / mengembalikan Fails:
             // JANGAN BLOKIR PEMBELI! Izinkan proses checkout tetap berlanjut dengan ID yang diinputkan.
             if (
                 str_contains($lowMsg, 'not available') || 
                 str_contains($lowMsg, 'tidak tersedia') || 
                 str_contains($lowMsg, 'tidak diizinkan') || 
                 str_contains($lowMsg, 'maintenance') ||
-                str_contains($lowMsg, 'provider for game')
+                str_contains($lowMsg, 'provider for game') ||
+                str_contains($lowMsg, 'fails') ||
+                $errMsg === 'Fails.'
             ) {
                 return response()->json([
                     'result' => true,
