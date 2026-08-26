@@ -268,20 +268,20 @@
                                             <div class="flex items-center gap-3.5">
                                                 <input type="radio" name="payment_method" x-model="selectedPayment" value="balance" class="w-5 h-5 text-emerald-600 border-gray-300 focus:ring-emerald-500 cursor-pointer">
                                                 <div>
-                                                    <div class="flex items-center gap-2">
-                                                        <span class="font-bold text-sm sm:text-base text-gray-900 dark:text-white tracking-wide">Saldo Akun</span>
-                                                        @auth
-                                                            <span class="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-black text-[10px] rounded-full border border-emerald-300 dark:border-emerald-700">Rp{{ number_format($userBalance, 0, ',', '.') }}</span>
-                                                        @else
-                                                            <span class="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold text-[10px] rounded-full">Perlu Login</span>
-                                                        @endauth
-                                                    </div>
-                                                    <span class="text-[11px] text-gray-500 dark:text-gray-400 font-medium block mt-0.5">Potong langsung dari Saldo Akun ToTap</span>
-                                                </div>
-                                            </div>
-                                            <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-base shadow-sm border border-emerald-200 dark:border-emerald-800 shrink-0 ml-2">
-                                                <i class="fas fa-wallet"></i>
-                                            </div>
+                                                     <div class="flex items-center gap-2">
+                                                         <span class="font-bold text-sm sm:text-base text-gray-900 dark:text-white tracking-wide">Saldo Akun</span>
+                                                         @auth
+                                                             <span class="px-2.5 py-0.5 bg-emerald-400 text-gray-950 font-black text-xs rounded-full shadow-sm tracking-wide">Rp{{ number_format($userBalance, 0, ',', '.') }}</span>
+                                                         @else
+                                                             <span class="px-2.5 py-0.5 bg-amber-400 text-gray-950 font-bold text-xs rounded-full shadow-sm">Perlu Login</span>
+                                                         @endauth
+                                                     </div>
+                                                     <span class="text-[11px] text-gray-500 dark:text-gray-400 font-medium block mt-0.5">Potong langsung dari Saldo Akun ToTap</span>
+                                                 </div>
+                                             </div>
+                                             <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-base shadow-sm border border-emerald-200 dark:border-emerald-700 shrink-0 ml-2">
+                                                 <i class="fas fa-wallet"></i>
+                                             </div>
                                         </label>
                                     </div>
                                 </div>

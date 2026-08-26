@@ -84,8 +84,8 @@
 
                 @auth
                 <!-- Saldo Dompet Akun -->
-                <a href="{{ route('profile.edit') }}" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-700 text-xs font-black text-emerald-700 dark:text-emerald-300 shadow-sm transition hover:scale-105" title="Saldo Akun Anda">
-                    <i class="fas fa-wallet text-emerald-500"></i>
+                <a href="{{ route('profile.edit') }}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-400 text-gray-950 font-black text-xs shadow-sm transition hover:scale-105" title="Saldo Akun Anda">
+                    <i class="fas fa-wallet text-gray-900"></i>
                     <span>Rp{{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}</span>
                 </a>
 
@@ -223,9 +223,9 @@
                         </div>
                         <div class="font-medium text-xs text-gray-500 dark:text-gray-400">{{ Auth::user()->email }}</div>
                     </div>
-                    <div class="p-2.5 bg-emerald-50 dark:bg-emerald-950 rounded-xl border border-emerald-300 dark:border-emerald-700 flex items-center justify-between">
-                        <span class="text-xs font-bold text-gray-700 dark:text-gray-300">Saldo Akun:</span>
-                        <span class="font-black text-sm text-emerald-600 dark:text-emerald-300">Rp{{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}</span>
+                    <div class="p-2.5 bg-gray-50 dark:bg-gray-800/80 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                        <span class="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1.5"><i class="fas fa-wallet text-emerald-500"></i> Saldo Akun:</span>
+                        <span class="px-2.5 py-0.5 bg-emerald-400 text-gray-950 font-black text-xs rounded-full shadow-sm">Rp{{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}</span>
                     </div>
                 </div>
 
