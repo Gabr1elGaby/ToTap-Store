@@ -483,6 +483,8 @@
                         </div>
                     @endif
                 @endif
+            </div>
+
             <!-- TAB 4: Isi Saldo User (Deposits) -->
             <div id="admin-section-deposit" class="admin-trx-section bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-2xl overflow-hidden transition-colors duration-200">
                 <div class="px-6 py-4.5 border-b border-gray-200 dark:border-gray-700/80 flex items-center justify-between bg-slate-50 dark:bg-gray-800/80">
@@ -551,7 +553,7 @@
                                             <div class="flex items-center justify-end gap-2">
                                                 @if($dep->status === 'pending')
                                                     <!-- ACC Deposit Button -->
-                                                    <form action="{{ route('admin.deposits.approve', $dep->id) }}" method="POST" onsubmit="return confirm('Setujui isi saldo Rp{{ number_format($dep->amount, 0, \',\', \'.\') }} untuk user {{ $dep->user->name ?? \'User\' }}? Saldo user akan bertambah otomatis.');">
+                                                    <form action="{{ route('admin.deposits.approve', $dep->id) }}" method="POST" onsubmit="return confirm('Setujui permintaan deposit ini? Saldo akun pengguna akan otomatis bertambah.');">
                                                         @csrf
                                                         <button type="submit" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition flex items-center gap-1 cursor-pointer" title="ACC Saldo Masuk">
                                                             <i class="fas fa-check"></i> ACC Deposit
