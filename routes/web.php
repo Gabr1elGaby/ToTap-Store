@@ -148,6 +148,7 @@ Route::middleware(['auth', 'verified', 'role:superadmin'])->prefix('admin')->nam
 
     Route::resource('products', \App\Http\Controllers\ProductController::class);
     Route::resource('plans', \App\Http\Controllers\PlanController::class);
+    Route::post('cv-templates/update-all', [\App\Http\Controllers\Admin\CvTemplateController::class, 'updateAll'])->name('cv-templates.update-all');
     Route::resource('cv-templates', \App\Http\Controllers\Admin\CvTemplateController::class)->only(['index', 'edit', 'update']);
     
     // Manual Customer Provisioning

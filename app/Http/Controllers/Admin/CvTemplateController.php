@@ -44,4 +44,39 @@ class CvTemplateController extends Controller
 
         return redirect()->route('admin.cv-templates.index')->with('success', 'Harga dan Diskon Template CV berhasil diperbarui.');
     }
+
+    public function updateAll(Request $request)
+    {
+        $request->validate([
+            'price' => 'required|numeric|min:0',
+            'price_normal' => 'nullable|numeric|min:0',
+            'scope' => 'nullable|string|in:all,id,en',
+        ]);
+
+        $query = DB::table('cv_templates');
+        if ($request->scope === 'id') {
+            $query->where('language', 'id');
+        } elseif ($request->scope === 'en') {
+            $query->where('language', 'en');
+        }
+
+        $count = $query->update([
+            'price' => $request->price,
+            'price_normal' => $request->price_normal,
+            'updated_at' => now(),
+        ]);
+
+        $scopeName = match($request->scope) {
+            'id' => 'Template Bahasa Indonesia (7 Template)',
+            'en' => 'Template Bahasa Inggris (6 Template)',
+            default => 'Seluruh Template CV (13 Template)'
+        };
+
+        $cvProduct = DB::table('products')->where('slug', 'like', '%cv%')->orWhere('name', 'like', '%cv%')->first();
+        if ($cvProduct) {
+            return redirect()->route('admin.products.edit', $cvProduct->id)->with('success', "Berhasil menerapkan harga & diskon untuk {$scopeName} secara serentak!");
+        }
+
+        return redirect()->route('admin.cv-templates.index')->with('success', "Berhasil menerapkan harga & diskon untuk {$scopeName} secara serentak!");
+    }
 }

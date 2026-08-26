@@ -52,6 +52,49 @@
                         <i class="fas fa-file-alt text-indigo-600 dark:text-indigo-400"></i> Pengaturan Harga Template CV
                     </h3>
                 </div>
+
+                <!-- MASS UPDATE / UBAH SEMUA HARGA SEKALIGUS -->
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-indigo-50/70 via-purple-50/50 to-pink-50/70 dark:from-indigo-950/30 dark:via-purple-950/20 dark:to-pink-950/30">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div>
+                            <h4 class="text-sm font-extrabold text-indigo-950 dark:text-indigo-200 flex items-center gap-2">
+                                <i class="fas fa-bolt text-amber-500"></i> Ubah Harga & Diskon Sekaligus (Mass Update)
+                            </h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                Atur harga jual dan harga coret (diskon) untuk seluruh template CV secara serentak dalam sekali klik.
+                            </p>
+                        </div>
+                    </div>
+
+                    <form action="{{ route('admin.cv-templates.update-all') }}" method="POST" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
+                        @csrf
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Target Template</label>
+                            <select name="scope" class="w-full py-2 px-3 text-xs font-semibold rounded-xl bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="all">⚡ Semua Template (13 Template)</option>
+                                <option value="id">🇮🇩 Hanya Bahasa Indonesia (7 Template)</option>
+                                <option value="en">🇬🇧 Hanya Bahasa Inggris (6 Template)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Harga Normal / Coret (Rp)</label>
+                            <input type="number" name="price_normal" placeholder="Contoh: 20000" value="20000" min="0" step="1" class="w-full py-2 px-3 text-xs font-semibold rounded-xl bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Harga Promo / Beli (Rp)</label>
+                            <input type="number" name="price" placeholder="Contoh: 5000" value="5000" min="0" step="1" required class="w-full py-2 px-3 text-xs font-semibold rounded-xl bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <button type="submit" onclick="return confirm('Apakah Anda yakin ingin mengubah harga seluruh template CV terpilih secara serentak?')" class="w-full py-2.5 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-xs font-black rounded-xl shadow-md transition flex items-center justify-center gap-1.5">
+                                <i class="fas fa-check-double"></i> Terapkan ke Semua
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
                 <div class="p-6">
                     @php
                         $cvTemplates = \Illuminate\Support\Facades\DB::table('cv_templates')->orderBy('id')->get();
