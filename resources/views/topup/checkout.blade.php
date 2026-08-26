@@ -266,7 +266,7 @@
                 btn.disabled = true;
             }
 
-            fetch('{{ route("topup.verify", $transaction->id) }}', {
+            fetch('{{ route("topup.checkout.verify", $transaction->id) }}', {
                 headers: { 'Accept': 'application/json' }
             })
             .then(res => res.json())
@@ -309,7 +309,7 @@
 
         if (!isAlreadyPaid) {
             pollInterval = setInterval(() => {
-                fetch('{{ route("topup.verify", $transaction->id) }}', {
+                fetch('{{ route("topup.checkout.verify", $transaction->id) }}', {
                     headers: { 'Accept': 'application/json' }
                 })
                 .then(res => res.json())

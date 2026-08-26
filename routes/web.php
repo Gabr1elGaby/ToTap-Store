@@ -125,6 +125,7 @@ Route::post('/topup/{slug}/check-nickname', [\App\Http\Controllers\TopUpControll
 Route::post('/topup/{slug}/process', [\App\Http\Controllers\TopUpController::class, 'process'])->name('topup.process');
 Route::get('/topup/checkout/{id}', [\App\Http\Controllers\TopUpPaymentController::class, 'show'])->name('topup.checkout.show')->where('id', '.*');
 Route::post('/topup/checkout/{id}/verify', [\App\Http\Controllers\TopUpPaymentController::class, 'verify'])->name('topup.checkout.verify')->where('id', '.*');
+Route::post('/topup/verify/{id}', [\App\Http\Controllers\TopUpPaymentController::class, 'verify'])->name('topup.verify')->where('id', '.*');
 
 // Rute Transaksi / Aksi CV & Software (Backend Auth Lock)
 Route::middleware(['auth'])->group(function () {
