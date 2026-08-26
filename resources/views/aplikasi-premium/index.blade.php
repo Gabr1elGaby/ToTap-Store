@@ -11,7 +11,7 @@
 
             <div class="text-center mb-12">
                 <div class="flex items-center justify-center gap-3 mb-4">
-                    <img src="{{ asset('images/aplikasi-premium-logo.png') }}" alt="Aplikasi Premium" class="w-16 h-16 object-contain" onerror="this.src='{{ asset('images/aplikasi-premium-logo.jpg') }}'">
+                    <img src="{{ asset('images/aplikasi-premium-logo.jpg') }}" alt="Aplikasi Premium" class="w-16 h-16 object-contain">
                     <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white" style="font-family: 'Righteous', cursive; letter-spacing: 2px;">
                         <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-600 dark:from-amber-400 dark:to-orange-500">APLIKASI</span> PREMIUM
                     </h1>
