@@ -71,8 +71,8 @@
                         <!-- Input Nominal Custom -->
                         <div>
                             <label class="block text-xs font-bold text-gray-800 dark:text-gray-200 mb-2">Atau Masukkan Nominal Lain (Rp)</label>
-                            <div class="relative rounded-2xl shadow-sm">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 dark:text-gray-400 font-bold text-sm">
+                            <div class="flex rounded-2xl shadow-sm overflow-hidden border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:border-emerald-500 transition">
+                                <div class="px-5 py-3.5 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 font-mono font-black text-base flex items-center border-r border-gray-300 dark:border-gray-700 select-none">
                                     Rp
                                 </div>
                                 <input type="number" 
@@ -82,8 +82,8 @@
                                        max="5000000" 
                                        step="1000"
                                        required
-                                       placeholder="Contoh: 75000"
-                                       class="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-2xl font-mono font-black text-gray-900 dark:text-white text-base focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
+                                       placeholder="50000"
+                                       class="w-full px-4 py-3.5 bg-transparent border-0 font-mono font-black text-gray-900 dark:text-white text-base focus:ring-0 focus:outline-none">
                             </div>
                             <div class="text-[11px] text-gray-500 dark:text-gray-400 mt-1.5 flex justify-between font-semibold">
                                 <span>Minimal Rp5.000</span>
