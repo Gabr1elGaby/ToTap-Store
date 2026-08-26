@@ -303,17 +303,43 @@ class TopUpController extends Controller
     public function process(Request $request, $slug)
     {
         $game = Game::where('slug', $slug)->firstOrFail();
+        $gameSlug = strtolower($game->slug);
+        $playerId = trim($request->player_id);
+        $zoneId = trim($request->zone_id ?? '');
 
         $rules = [
             'product_id' => 'required|exists:game_products,id',
             'player_id' => 'required|string|max:255',
         ];
 
-        if ($game->requires_zone_id) {
+        $isZoneRequired = $game->requires_zone_id || str_contains($gameSlug, 'magic-chess') || str_contains($gameSlug, 'mobile-legend');
+        if ($isZoneRequired) {
             $rules['zone_id'] = 'required|string|max:255';
         }
 
         $request->validate($rules);
+
+        // 1. Validasi Valorant: HANYA Valorant yang boleh dan wajib menyertakan '#'
+        if ($gameSlug === 'valorant') {
+            if (!str_contains($playerId, '#')) {
+                return back()->with('error', 'Format Riot ID salah! Wajib menyertakan tanda pagar (#), contoh: Jett#1234 atau Username#TAG');
+            }
+        } else {
+            // Semua game selain Valorant dilarang memakai '#'
+            if (str_contains($playerId, '#') || str_contains($zoneId, '#')) {
+                return back()->with('error', 'Format ID salah! Karakter "#" hanya digunakan untuk Riot ID Valorant. Untuk game ' . $game->name . ', masukkan User ID angka yang benar.');
+            }
+        }
+
+        // 2. Validasi Angka untuk game dengan Zone ID (MLBB, Magic Chess, dll)
+        if ($isZoneRequired) {
+            if (!preg_match('/^[0-9]+$/', $playerId)) {
+                return back()->with('error', 'User ID ' . $game->name . ' harus berupa angka (contoh: 12345678), tanpa huruf atau simbol.');
+            }
+            if (!preg_match('/^[0-9]+$/', $zoneId)) {
+                return back()->with('error', 'Zone ID ' . $game->name . ' harus berupa angka (contoh: 1234), tanpa huruf atau simbol.');
+            }
+        }
         
         $product = GameProduct::findOrFail($request->product_id);
         
@@ -332,8 +358,8 @@ class TopUpController extends Controller
             'user_id' => auth()->id(),
             'game_id' => $game->id,
             'game_product_id' => $product->id,
-            'target_field_1' => $request->player_id,
-            'target_field_2' => $request->zone_id,
+            'target_field_1' => $playerId,
+            'target_field_2' => $isZoneRequired ? $zoneId : null,
             'amount' => $product->price_sell,
             'payment_method' => $request->payment_method ?? 'qris',
             'status' => 'pending',
@@ -362,17 +388,10 @@ class TopUpController extends Controller
             
             $target1 = trim($request->player_id);
             $target2 = trim($request->zone_id ?? '');
-            
-            $gameCode = match(strtolower($game->slug)) {
-                'mobile-legend', 'mobile-legends' => 'mobile-legends',
-                'free-fire', 'freefire' => 'free-fire',
-                'pubg-mobile', 'pubg' => 'pubg-mobile',
-                'valorant' => 'valorant',
-                default => null,
-            };
+            $gameSlug = strtolower($game->slug);
 
-            // VALIDASI KHUSUS VALORANT: Wajib ada format Username#TAG
-            if (strtolower($game->slug) === 'valorant') {
+            // 1. VALIDASI KHUSUS VALORANT: HANYA Valorant yang boleh dan wajib memakai tanda '#' (Riot ID: Username#TAG)
+            if ($gameSlug === 'valorant') {
                 if (!str_contains($target1, '#')) {
                     return response()->json([
                         'result' => false,
@@ -396,8 +415,43 @@ class TopUpController extends Controller
                 ]);
             }
 
-            // JIKA GAME LAIN TIDAK MENDUKUNG CEK NICKNAME (Seperti Roblox, Steam):
+            // 2. UNTUK SEMUA GAME SELAIN VALORANT: DILARANG MENGGUNAKAN SIMBOL '#'!
+            if (str_contains($target1, '#') || str_contains($target2, '#')) {
+                return response()->json([
+                    'result' => false,
+                    'message' => 'Format ID salah! Karakter "#" hanya untuk Riot ID Valorant. Untuk game ' . $game->name . ', masukkan User ID angka yang benar.',
+                ]);
+            }
+
+            // 3. VALIDASI NUMERIK UNTUK GAME BERBASIS ANGKA & ZONE ID (MLBB, Magic Chess, dll)
+            $isZoneRequired = $game->requires_zone_id || str_contains($gameSlug, 'magic-chess') || str_contains($gameSlug, 'mobile-legend');
+            if ($isZoneRequired) {
+                if (!preg_match('/^[0-9]+$/', $target1)) {
+                    return response()->json([
+                        'result' => false,
+                        'message' => 'User ID ' . $game->name . ' harus berupa angka (contoh: 12345678), tanpa simbol atau huruf.',
+                    ]);
+                }
+                if (!preg_match('/^[0-9]+$/', $target2)) {
+                    return response()->json([
+                        'result' => false,
+                        'message' => 'Zone ID ' . $game->name . ' harus berupa angka (contoh: 1234).',
+                    ]);
+                }
+            }
+
+            // 4. CEK NICKNAME KE VIP RESELLER API JIKA TERSEDIA
+            $gameCode = match($gameSlug) {
+                'mobile-legend', 'mobile-legends', 'magic-chess-go-go' => 'mobile-legends',
+                'free-fire', 'freefire' => 'free-fire',
+                'pubg-mobile', 'pubg' => 'pubg-mobile',
+                'genshin-impact' => 'genshin-impact',
+                'honkai-star-rail' => 'honkai-star-rail',
+                default => null,
+            };
+
             if (!$gameCode) {
+                // Game non-API nickname (misal Roblox / Steam): pastikan lolos validasi
                 return response()->json([
                     'result' => true,
                     'is_checked' => false,
@@ -415,8 +469,8 @@ class TopUpController extends Controller
                 ]);
             }
 
-            // BLOKIR JIKA ID TIDAK DITEMUKAN / GAGAL
-            $errMsg = $res['message'] ?? 'Kami tidak menemukan User ID: ' . $target1 . ($target2 ? ' (' . $target2 . ')' : '');
+            // Jika API memberikan pesan error nickname tidak ditemukan
+            $errMsg = $res['message'] ?? ('User ID ' . $target1 . ($target2 ? ' (' . $target2 . ')' : '') . ' tidak ditemukan di game ' . $game->name . '. Silakan periksa kembali.');
             return response()->json([
                 'result' => false,
                 'message' => $errMsg,
@@ -424,7 +478,7 @@ class TopUpController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'result' => false,
-                'message' => 'Kami tidak menemukan User ID tersebut. Harap periksa kembali.',
+                'message' => 'Terjadi kesalahan saat memeriksa User ID. Silakan periksa kembali format ID Anda.',
             ]);
         }
     }
