@@ -85,7 +85,9 @@
                 @auth
                 <!-- Saldo Dompet Akun -->
                 <a href="{{ route('profile.edit') }}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-400 text-gray-950 font-black text-xs shadow-sm transition hover:scale-105" title="Saldo Akun Anda">
-                    <i class="fas fa-wallet text-gray-900"></i>
+                    <svg class="w-3.5 h-3.5 text-gray-950 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
                     <span>Rp{{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}</span>
                 </a>
 
@@ -224,7 +226,12 @@
                         <div class="font-medium text-xs text-gray-500 dark:text-gray-400">{{ Auth::user()->email }}</div>
                     </div>
                     <div class="p-2.5 bg-gray-50 dark:bg-gray-800/80 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                        <span class="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1.5"><i class="fas fa-wallet text-emerald-500"></i> Saldo Akun:</span>
+                        <span class="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </svg>
+                            Saldo Akun:
+                        </span>
                         <span class="px-2.5 py-0.5 bg-emerald-400 text-gray-950 font-black text-xs rounded-full shadow-sm">Rp{{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}</span>
                     </div>
                 </div>

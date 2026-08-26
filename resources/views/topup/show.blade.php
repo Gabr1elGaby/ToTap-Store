@@ -249,10 +249,7 @@
                                                :class="selectedPayment === 'qris' ? 'border-indigo-600 dark:border-indigo-500 bg-indigo-50/80 dark:bg-gray-900 ring-2 ring-indigo-500/20' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 hover:border-gray-300 dark:hover:border-gray-600'">
                                             <div class="flex items-center gap-3.5">
                                                 <input type="radio" name="payment_method" x-model="selectedPayment" value="qris" class="w-5 h-5 text-indigo-600 border-gray-300 focus:ring-indigo-500 cursor-pointer">
-                                                <div>
-                                                    <span class="font-bold text-sm sm:text-base text-gray-900 dark:text-white tracking-wide block">QRIS All Payment</span>
-                                                    <span class="text-[11px] text-gray-500 dark:text-gray-400 font-medium">BCA, DANA, GoPay, OVO, ShopeePay</span>
-                                                </div>
+                                                <span class="font-bold text-sm sm:text-base text-gray-900 dark:text-white tracking-wide">QRIS All Payment</span>
                                             </div>
                                             <div class="bg-white p-1.5 rounded-xl shadow-sm border border-gray-200 shrink-0 ml-2">
                                                 <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" alt="QRIS" class="h-6 object-contain">
@@ -267,21 +264,20 @@
                                                :class="selectedPayment === 'balance' ? 'border-emerald-600 dark:border-emerald-500 bg-emerald-50/80 dark:bg-gray-900 ring-2 ring-emerald-500/20' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 hover:border-gray-300 dark:hover:border-gray-600'">
                                             <div class="flex items-center gap-3.5">
                                                 <input type="radio" name="payment_method" x-model="selectedPayment" value="balance" class="w-5 h-5 text-emerald-600 border-gray-300 focus:ring-emerald-500 cursor-pointer">
-                                                <div>
-                                                     <div class="flex items-center gap-2">
-                                                         <span class="font-bold text-sm sm:text-base text-gray-900 dark:text-white tracking-wide">Saldo Akun</span>
-                                                         @auth
-                                                             <span class="px-2.5 py-0.5 bg-emerald-400 text-gray-950 font-black text-xs rounded-full shadow-sm tracking-wide">Rp{{ number_format($userBalance, 0, ',', '.') }}</span>
-                                                         @else
-                                                             <span class="px-2.5 py-0.5 bg-amber-400 text-gray-950 font-bold text-xs rounded-full shadow-sm">Perlu Login</span>
-                                                         @endauth
-                                                     </div>
-                                                     <span class="text-[11px] text-gray-500 dark:text-gray-400 font-medium block mt-0.5">Potong langsung dari Saldo Akun ToTap</span>
-                                                 </div>
-                                             </div>
-                                             <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-base shadow-sm border border-emerald-200 dark:border-emerald-700 shrink-0 ml-2">
-                                                 <i class="fas fa-wallet"></i>
-                                             </div>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="font-bold text-sm sm:text-base text-gray-900 dark:text-white tracking-wide">Saldo Akun</span>
+                                                    @auth
+                                                        <span class="px-2.5 py-0.5 bg-emerald-400 text-gray-950 font-black text-xs rounded-full shadow-sm tracking-wide">Rp{{ number_format($userBalance, 0, ',', '.') }}</span>
+                                                    @else
+                                                        <span class="px-2.5 py-0.5 bg-amber-400 text-gray-950 font-bold text-xs rounded-full shadow-sm">Perlu Login</span>
+                                                    @endauth
+                                                </div>
+                                            </div>
+                                            <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-base shadow-sm border border-emerald-200 dark:border-emerald-700 shrink-0 ml-2">
+                                                <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                                </svg>
+                                            </div>
                                         </label>
                                     </div>
                                 </div>
