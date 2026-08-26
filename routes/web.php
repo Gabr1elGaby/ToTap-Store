@@ -144,6 +144,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/payment/success/{order_number}', [\App\Http\Controllers\PaymentController::class, 'success'])->name('payment.success');
     Route::get('/subscription/active/{product_id}', [\App\Http\Controllers\SubscriptionController::class, 'active'])->name('subscription.active');
 
+    // Wallet Deposit Routes (Isi Saldo Akun)
+    Route::get('/deposit', [\App\Http\Controllers\DepositController::class, 'index'])->name('deposit.index');
+    Route::post('/deposit/process', [\App\Http\Controllers\DepositController::class, 'process'])->name('deposit.process');
+    Route::get('/deposit/{id}', [\App\Http\Controllers\DepositController::class, 'show'])->name('deposit.show')->where('id', '.*');
+    Route::get('/api/deposit/{id}/status', [\App\Http\Controllers\DepositController::class, 'statusApi'])->name('deposit.status.api')->where('id', '.*');
+
     Route::get('/transactions', [\App\Http\Controllers\TransactionHistoryController::class, 'index'])->name('transactions.history');
     Route::get('/transactions/{id}/invoice', [\App\Http\Controllers\TransactionHistoryController::class, 'invoice'])->name('transactions.invoice')->where('id', '.*');
 
@@ -190,6 +196,11 @@ Route::middleware(['auth', 'verified', 'role:superadmin'])->prefix('admin')->nam
     Route::post('/transactions/{id}/manual-success', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'manualSuccess'])->name('transactions.manual-success')->where('id', '.*');
     Route::post('/transactions/{id}/reject', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'reject'])->name('transactions.reject')->where('id', '.*');
     Route::delete('/transactions/{id}', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'destroy'])->name('transactions.destroy')->where('id', '.*');
+
+    // Admin User Deposit Management
+    Route::post('/deposits/{id}/approve', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'approveDeposit'])->name('deposits.approve')->where('id', '.*');
+    Route::post('/deposits/{id}/cancel', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'cancelDeposit'])->name('deposits.cancel')->where('id', '.*');
+    Route::delete('/deposits/{id}', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'destroyDeposit'])->name('deposits.destroy')->where('id', '.*');
 
     // Customer Reviews & Feedback Management
     Route::resource('reviews', \App\Http\Controllers\Admin\ReviewController::class)->only(['index', 'destroy']);

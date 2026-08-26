@@ -83,8 +83,8 @@
                 </button>
 
                 @auth
-                <!-- Saldo Dompet Akun -->
-                <a href="{{ route('profile.edit') }}" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-gray-950 font-black text-xs shadow-sm transition hover:scale-105 shrink-0" title="Saldo Akun Anda">
+                <!-- Saldo Dompet Akun & Isi Saldo Link -->
+                <a href="{{ route('deposit.index') }}" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-gray-950 font-black text-xs shadow-sm transition hover:scale-105 shrink-0" title="Klik untuk Isi Saldo (Deposit)">
                     <svg class="w-4 h-4 text-gray-950 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                     </svg>
@@ -106,10 +106,19 @@
 
                     <div id="user-menu-dropdown-menu" 
                          class="hidden absolute right-0 z-[100] mt-2 w-60 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden py-1.5 animate-in fade-in zoom-in-95 duration-100">
-                        <div class="px-4 py-2.5 bg-gray-50 dark:bg-gray-900/60 border-b border-gray-100 dark:border-gray-700">
-                            <span class="text-[11px] text-gray-500 dark:text-gray-400 block font-semibold">Saldo Akun:</span>
-                            <span class="font-black text-sm text-emerald-600 dark:text-emerald-400">Rp{{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}</span>
+                        <div class="px-4 py-2.5 bg-gray-50 dark:bg-gray-900/60 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                            <div>
+                                <span class="text-[11px] text-gray-500 dark:text-gray-400 block font-semibold">Saldo Akun:</span>
+                                <span class="font-black text-sm text-emerald-600 dark:text-emerald-400">Rp{{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}</span>
+                            </div>
+                            <a href="{{ route('deposit.index') }}" class="px-2.5 py-1 bg-emerald-500 hover:bg-emerald-400 text-gray-950 font-black text-[10px] rounded-lg shadow-sm transition">
+                                + Isi Saldo
+                            </a>
                         </div>
+
+                        <a href="{{ route('deposit.index') }}" class="block px-4 py-2.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 flex items-center transition">
+                            <i class="fas fa-wallet mr-2.5 text-emerald-500"></i> {{ __('Isi Saldo (Deposit)') }}
+                        </a>
 
                         <a href="{{ route('profile.edit') }}" class="block px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-indigo-600 flex items-center transition">
                             <i class="fas fa-user mr-2.5 text-gray-400"></i> {{ __('Profile') }}
@@ -235,6 +244,10 @@
                         <span class="px-2.5 py-0.5 bg-emerald-400 text-gray-950 font-black text-xs rounded-full shadow-sm">Rp{{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}</span>
                     </div>
                 </div>
+
+                <x-responsive-nav-link :href="route('deposit.index')">
+                    <i class="fas fa-wallet mr-2 text-emerald-500"></i> {{ __('Isi Saldo (Deposit)') }}
+                </x-responsive-nav-link>
 
                 <x-responsive-nav-link :href="route('profile.edit')">
                     <i class="fas fa-user mr-2 text-gray-400"></i> {{ __('Profile') }}

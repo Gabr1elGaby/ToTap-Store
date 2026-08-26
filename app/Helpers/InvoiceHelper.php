@@ -89,4 +89,39 @@ class InvoiceHelper
         $sequence = str_pad($nextNum, 3, '0', STR_PAD_LEFT);
         return "INV/CV/TTS/{$sequence}/{$monthRoman}/{$year}";
     }
+
+    /**
+     * Format: DEP/TTS/001/VIII/2026
+     * Resets sequence to 001 every year
+     */
+    public static function generateDepositInvoice(): string
+    {
+        $year = date('Y');
+        $monthRoman = self::getRomanMonth(date('n'));
+
+        try {
+            $latest = DB::table('deposits')
+                ->whereYear('created_at', $year)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            $nextNum = 1;
+            if ($latest && !empty($latest->id)) {
+                if (preg_match('/DEP\/TTS\/(\d+)\//', $latest->id, $matches)) {
+                    $nextNum = (int)$matches[1] + 1;
+                } else {
+                    $count = DB::table('deposits')->whereYear('created_at', $year)->count();
+                    $nextNum = $count + 1;
+                }
+            } else {
+                $count = DB::table('deposits')->whereYear('created_at', $year)->count();
+                $nextNum = max(1, $count + 1);
+            }
+        } catch (\Exception $e) {
+            $nextNum = 1;
+        }
+
+        $sequence = str_pad($nextNum, 3, '0', STR_PAD_LEFT);
+        return "DEP/TTS/{$sequence}/{$monthRoman}/{$year}";
+    }
 }

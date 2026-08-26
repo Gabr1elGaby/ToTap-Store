@@ -62,7 +62,23 @@ class AdminTransactionController extends Controller
 
         $cvOrders = $cvOrdersQuery->paginate(20, ['*'], 'cv_page')->withQueryString();
 
-        return view('admin.transactions.index', compact('transactions', 'orders', 'cvOrders', 'search', 'status'));
+        // User Wallet Deposits
+        $depositsQuery = \App\Models\Deposit::with('user')->latest();
+        if ($search) {
+            $depositsQuery->where(function($q) use ($search) {
+                $q->where('id', 'like', "%{$search}%")
+                  ->orWhereHas('user', function($uq) use ($search) {
+                      $uq->where('name', 'like', "%{$search}%")
+                         ->orWhere('email', 'like', "%{$search}%");
+                  });
+            });
+        }
+        if ($status) {
+            $depositsQuery->where('status', $status);
+        }
+        $deposits = $depositsQuery->paginate(20, ['*'], 'dep_page')->withQueryString();
+
+        return view('admin.transactions.index', compact('transactions', 'orders', 'cvOrders', 'deposits', 'search', 'status'));
     }
 
     public function invoice(string $id)
@@ -327,5 +343,38 @@ class AdminTransactionController extends Controller
             \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
             return back()->with('error', "Gagal membersihkan data: " . $e->getMessage());
         }
+    }
+
+    public function approveDeposit($id)
+    {
+        $deposit = \App\Models\Deposit::with('user')->findOrFail($id);
+        if ($deposit->status === 'success') {
+            return back()->with('info', "Deposit #{$id} sudah disetujui sebelumnya.");
+        }
+
+        $deposit->update([
+            'status' => 'success',
+            'paid_at' => now(),
+        ]);
+
+        if ($deposit->user) {
+            $deposit->user->increment('balance', $deposit->amount);
+        }
+
+        return back()->with('success', "Deposit #{$id} sebesar Rp" . number_format($deposit->amount, 0, ',', '.') . " berhasil disetujui! Saldo akun user " . ($deposit->user->name ?? 'User') . " telah bertambah.");
+    }
+
+    public function cancelDeposit($id)
+    {
+        $deposit = \App\Models\Deposit::findOrFail($id);
+        $deposit->update(['status' => 'cancelled']);
+        return back()->with('success', "Deposit #{$id} berhasil dibatalkan.");
+    }
+
+    public function destroyDeposit($id)
+    {
+        $deposit = \App\Models\Deposit::findOrFail($id);
+        $deposit->delete();
+        return back()->with('success', "Data deposit #{$id} berhasil dihapus.");
     }
 }

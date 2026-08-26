@@ -20,6 +20,9 @@
                     <span class="px-4 py-2.5 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/80 text-sm font-bold text-amber-600 dark:text-amber-300 shadow-sm">
                         <i class="fas fa-file-alt mr-1.5"></i> CV Builder: {{ $cvOrders->total() }}
                     </span>
+                    <span class="px-4 py-2.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 text-sm font-bold text-emerald-600 dark:text-emerald-300 shadow-sm">
+                        <i class="fas fa-wallet mr-1.5"></i> Isi Saldo: {{ $deposits->total() }}
+                    </span>
 
                     <!-- Auto-Refresh Live Indicator -->
                     <button id="toggle-autorefresh-btn" type="button" onclick="toggleAutoRefresh()" class="px-4 py-2.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800 text-sm font-bold text-emerald-700 dark:text-emerald-300 shadow-sm flex items-center gap-2 cursor-pointer transition" title="Klik untuk menjeda / melanjutkan auto-refresh">
@@ -87,6 +90,12 @@
                         onclick="filterAdminTrxTab('cv')" 
                         class="admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white flex items-center gap-2 cursor-pointer">
                     <i class="fas fa-file-alt text-amber-500"></i> Pesanan CV & Resume ({{ $cvOrders->total() }})
+                </button>
+                <button id="admin-tab-deposit" 
+                        type="button"
+                        onclick="filterAdminTrxTab('deposit')" 
+                        class="admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white flex items-center gap-2 cursor-pointer">
+                    <i class="fas fa-wallet text-emerald-500"></i> Isi Saldo User ({{ $deposits->total() }})
                 </button>
             </div>
 
@@ -474,6 +483,111 @@
                         </div>
                     @endif
                 @endif
+            <!-- TAB 4: Isi Saldo User (Deposits) -->
+            <div id="admin-section-deposit" class="admin-trx-section bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-2xl overflow-hidden transition-colors duration-200">
+                <div class="px-6 py-4.5 border-b border-gray-200 dark:border-gray-700/80 flex items-center justify-between bg-slate-50 dark:bg-gray-800/80">
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
+                        <i class="fas fa-wallet text-emerald-500"></i> Daftar Permintaan Isi Saldo (Deposit) User
+                    </h2>
+                    <span class="text-xs text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                        Total: {{ $deposits->total() }} Transaksi
+                    </span>
+                </div>
+
+                @if($deposits->isEmpty())
+                    <div class="p-12 text-center text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-wallet text-5xl mb-3 text-gray-300 dark:text-gray-600"></i>
+                        <p class="text-base font-semibold text-gray-700 dark:text-gray-300">Belum ada transaksi pengisian saldo akun.</p>
+                    </div>
+                @else
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 dark:bg-gray-800/80 text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider border-b border-gray-200 dark:border-gray-700">
+                                <tr>
+                                    <th class="py-4 px-6">ID Deposit</th>
+                                    <th class="py-4 px-6">Pengguna</th>
+                                    <th class="py-4 px-6">Nominal Saldo</th>
+                                    <th class="py-4 px-6">Metode</th>
+                                    <th class="py-4 px-6">Status</th>
+                                    <th class="py-4 px-6">Waktu</th>
+                                    <th class="py-4 px-6 text-right">Aksi Super Admin</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 dark:divide-gray-700/60 font-medium">
+                                @foreach($deposits as $dep)
+                                    <tr class="hover:bg-slate-50/80 dark:hover:bg-gray-700/40 transition-colors">
+                                        <td class="py-4 px-6 font-mono font-bold text-gray-900 dark:text-white">
+                                            {{ $dep->id }}
+                                        </td>
+                                        <td class="py-4 px-6">
+                                            <div class="font-bold text-gray-900 dark:text-white">{{ $dep->user->name ?? 'User #' . $dep->user_id }}</div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">{{ $dep->user->email ?? '-' }}</div>
+                                        </td>
+                                        <td class="py-4 px-6 font-black text-emerald-600 dark:text-emerald-400 font-mono text-base">
+                                            Rp{{ number_format($dep->amount, 0, ',', '.') }}
+                                        </td>
+                                        <td class="py-4 px-6 uppercase font-bold text-xs text-gray-600 dark:text-gray-300">
+                                            {{ $dep->payment_method }}
+                                        </td>
+                                        <td class="py-4 px-6">
+                                            @if($dep->status === 'success' || $dep->status === 'paid')
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
+                                                    <i class="fas fa-check-circle"></i> Sukses Masuk
+                                                </span>
+                                            @elseif($dep->status === 'pending')
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+                                                    <i class="fas fa-clock animate-spin"></i> Menunggu Bayar
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                                                    {{ ucfirst($dep->status) }}
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="py-4 px-6 text-xs text-gray-500 dark:text-gray-400">
+                                            {{ $dep->created_at->format('d M Y, H:i') }}
+                                        </td>
+                                        <td class="py-4 px-6 text-right">
+                                            <div class="flex items-center justify-end gap-2">
+                                                @if($dep->status === 'pending')
+                                                    <!-- ACC Deposit Button -->
+                                                    <form action="{{ route('admin.deposits.approve', $dep->id) }}" method="POST" onsubmit="return confirm('Setujui isi saldo Rp{{ number_format($dep->amount, 0, \',\', \'.\') }} untuk user {{ $dep->user->name ?? \'User\' }}? Saldo user akan bertambah otomatis.');">
+                                                        @csrf
+                                                        <button type="submit" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition flex items-center gap-1 cursor-pointer" title="ACC Saldo Masuk">
+                                                            <i class="fas fa-check"></i> ACC Deposit
+                                                        </button>
+                                                    </form>
+
+                                                    <!-- Batalkan Button -->
+                                                    <form action="{{ route('admin.deposits.cancel', $dep->id) }}" method="POST" onsubmit="return confirm('Batalkan permintaan deposit ini?');">
+                                                        @csrf
+                                                        <button type="submit" class="px-2.5 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-bold text-xs transition cursor-pointer" title="Batalkan">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
+
+                                                <!-- Delete Button -->
+                                                <form action="{{ route('admin.deposits.destroy', $dep->id) }}" method="POST" onsubmit="return confirm('Hapus data deposit ini?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="p-2 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 font-bold text-xs cursor-pointer" title="Hapus Data">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @if($deposits->hasPages())
+                        <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+                            {{ $deposits->links() }}
+                        </div>
+                    @endif
+                @endif
             </div>
 
         </div>
@@ -493,6 +607,7 @@
             const secSoft = document.getElementById('admin-section-software');
             const secTop = document.getElementById('admin-section-topup');
             const secCv = document.getElementById('admin-section-cv');
+            const secDep = document.getElementById('admin-section-deposit');
 
             if (tabName === 'all') {
                 sections.forEach(s => s.classList.remove('hidden'));
@@ -502,20 +617,30 @@
                 if (secSoft) secSoft.classList.remove('hidden');
                 if (secTop) secTop.classList.add('hidden');
                 if (secCv) secCv.classList.add('hidden');
+                if (secDep) secDep.classList.add('hidden');
                 const b = document.getElementById('admin-tab-software');
                 if (b) b.className = 'admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-blue-600 text-white shadow-md flex items-center gap-2 cursor-pointer';
             } else if (tabName === 'topup') {
                 if (secSoft) secSoft.classList.add('hidden');
                 if (secTop) secTop.classList.remove('hidden');
                 if (secCv) secCv.classList.add('hidden');
+                if (secDep) secDep.classList.add('hidden');
                 const b = document.getElementById('admin-tab-topup');
                 if (b) b.className = 'admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-purple-600 text-white shadow-md flex items-center gap-2 cursor-pointer';
             } else if (tabName === 'cv') {
                 if (secSoft) secSoft.classList.add('hidden');
                 if (secTop) secTop.classList.add('hidden');
                 if (secCv) secCv.classList.remove('hidden');
+                if (secDep) secDep.classList.add('hidden');
                 const b = document.getElementById('admin-tab-cv');
                 if (b) b.className = 'admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-amber-600 text-white shadow-md flex items-center gap-2 cursor-pointer';
+            } else if (tabName === 'deposit') {
+                if (secSoft) secSoft.classList.add('hidden');
+                if (secTop) secTop.classList.add('hidden');
+                if (secCv) secCv.classList.add('hidden');
+                if (secDep) secDep.classList.remove('hidden');
+                const b = document.getElementById('admin-tab-deposit');
+                if (b) b.className = 'admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-emerald-600 text-white shadow-md flex items-center gap-2 cursor-pointer';
             }
         }
 
