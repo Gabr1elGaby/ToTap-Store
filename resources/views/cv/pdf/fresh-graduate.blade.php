@@ -35,13 +35,13 @@
             width: 32%;
             background-color: #312e81;
             color: #cbd5e1;
-            padding: 20pt 12pt 20pt 12pt;
+            padding: 22pt 14pt 22pt 14pt;
             vertical-align: top;
         }
         td.main-td {
             width: 68%;
             background-color: #ffffff;
-            padding: 20pt 18pt 20pt 16pt;
+            padding: 22pt 32pt 22pt 20pt; /* Generous 32pt right margin */
             vertical-align: top;
         }
 
@@ -167,26 +167,19 @@
         .item-desc {
             font-size: 6.8pt;
             color: #334155;
-            text-align: justify;
+            text-align: left; /* Left align for comfortable natural reading */
             line-height: 1.32;
         }
 
-        /* PAGE 2+: 100% FULL-WIDTH CONTINUATION (NO LEFT SIDEBAR!) */
+        /* PAGE 2+: 100% FULL-WIDTH CONTINUATION (NO NAME, NO HEADER, NO LEFT SIDEBAR) */
         .page-break {
             page-break-before: always;
         }
         .full-page-container {
-            padding: 22pt 26pt 22pt 26pt;
+            padding: 24pt 34pt 24pt 34pt; /* Generous 34pt left and right margins */
             background-color: #ffffff;
             width: 100%;
             box-sizing: border-box;
-        }
-        .full-page-header {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 10pt;
-            border-bottom: 1.5pt solid #0f172a;
-            padding-bottom: 3pt;
         }
     </style>
 </head>
@@ -376,21 +369,10 @@
         </tr>
     </table>
 
-    <!-- PAGE 2+: 100% FULL-WIDTH CONTINUATION (Rendered Only if Content Exists) -->
+    <!-- PAGE 2+: 100% FULL-WIDTH CONTINUATION (NO NAME, NO HEADER, NO LEFT SIDEBAR) -->
     @if($hasPage2)
     <div class="page-break"></div>
     <div class="full-page-container">
-        <table class="full-page-header">
-            <tr>
-                <td style="font-size: 10pt; font-weight: 900; color: #0f172a; text-transform: uppercase;">
-                    {{ $getVal($data, "name") ?: "NAMA LENGKAP" }}
-                </td>
-                <td style="text-align: right; font-size: 7pt; font-weight: bold; color: #4f46e5; text-transform: uppercase;">
-                    {{ $getVal($data, "job_title") ?: "POSISI / PEKERJAAN" }}
-                </td>
-            </tr>
-        </table>
-
         <!-- REMAINING WORK EXPERIENCE (IF ANY) -->
         @if(!empty($expPage2) && count($expPage2) > 0)
         <div class="main-heading" style="margin-top: 0;">Pengalaman Kerja (Lanjutan)</div>
@@ -419,7 +401,7 @@
 
         <!-- PROJECTS & PORTFOLIO (FULL WIDTH 100%) -->
         @if(!empty($projects) && count($projects) > 0)
-        <div class="main-heading">Proyek & Portofolio</div>
+        <div class="main-heading" @if(empty($expPage2) || count($expPage2) == 0) style="margin-top: 0;" @endif>Proyek & Portofolio</div>
         @foreach($projects as $prj)
             @php
                 $pName = $p($prj, "name");
