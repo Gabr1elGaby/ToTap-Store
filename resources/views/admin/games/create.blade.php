@@ -20,28 +20,66 @@
                         <i class="fas fa-magic"></i>
                     </div>
                     <div class="flex-1">
-                        <h3 class="text-lg font-black text-white">Auto-Fill Data Game Populer</h3>
+                        <h3 class="text-lg font-black text-white">Auto-Fill Data Game & Voucher (VIP Payment)</h3>
                         <p class="text-xs text-indigo-100 mt-1 font-medium">
-                            Pilih game di bawah ini untuk mengisi seluruh data yang diperlukan secara otomatis (Format User ID, Zone ID, Publisher, dan Panduan Top Up).
+                            Pilih game atau voucher di bawah ini untuk mengisi seluruh formulir secara otomatis dengan format ID, Zone, Publisher, dan panduan yang sesuai.
                         </p>
 
                         <div class="mt-4 flex flex-wrap items-center gap-3">
                             <select x-model="selectedPreset" @change="applyPreset()" style="background-color: rgba(255, 255, 255, 0.2); color: #ffffff;" class="backdrop-blur border border-white/40 rounded-xl px-4 py-2.5 text-xs font-bold focus:ring-2 focus:ring-emerald-400 focus:outline-none cursor-pointer">
-                                <option value="" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">-- Pilih Game Populer (Auto-Fill) --</option>
-                                <option value="steam" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">🎮 Steam Wallet IDR (Nomor WhatsApp / Voucher)</option>
-                                <option value="mlbb" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Mobile Legends (User ID + Zone ID)</option>
-                                <option value="magic_chess" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Magic Chess: Go Go (User ID + Zone ID)</option>
-                                <option value="free_fire" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Free Fire (Player ID)</option>
-                                <option value="pubg" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">PUBG Mobile (Player ID)</option>
-                                <option value="valorant" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Valorant (Riot ID + Tagline)</option>
-                                <option value="genshin" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Genshin Impact (UID + Server)</option>
-                                <option value="hsr" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Honkai: Star Rail (UID + Server)</option>
-                                <option value="codm" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Call of Duty: Mobile (OpenID)</option>
-                                <option value="hok" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Honor of Kings (UID)</option>
-                                <option value="blood_strike" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Blood Strike (User ID)</option>
-                                <option value="aov" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Arena of Valor (OpenID)</option>
-                                <option value="point_blank" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Point Blank (Zepetto ID)</option>
-                                <option value="roblox" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Roblox (Username)</option>
+                                <option value="" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">-- Pilih Game / Voucher (35+ Game VIP Reseller) --</option>
+                                
+                                <optgroup label="🎮 Game Mobile Populer" style="color: #111827; background: #ffffff;">
+                                    <option value="mlbb" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Mobile Legends: Bang Bang (User ID + Zone ID)</option>
+                                    <option value="magic_chess" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Magic Chess: Go Go (User ID + Zone ID)</option>
+                                    <option value="free_fire" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Free Fire & FF Max (Player ID)</option>
+                                    <option value="pubg" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">PUBG Mobile (Player ID / UID)</option>
+                                    <option value="hok" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Honor of Kings (UID)</option>
+                                    <option value="genshin" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Genshin Impact (UID + Server)</option>
+                                    <option value="hsr" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Honkai: Star Rail (UID + Server)</option>
+                                    <option value="zzz" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Zenless Zone Zero (UID + Server)</option>
+                                    <option value="codm" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Call of Duty: Mobile (OpenID)</option>
+                                    <option value="blood_strike" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Blood Strike (User ID)</option>
+                                    <option value="aov" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Arena of Valor (OpenID)</option>
+                                    <option value="wild_rift" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">League of Legends: Wild Rift (Riot ID#Tag)</option>
+                                    <option value="tft" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Teamfight Tactics (TFT Mobile) (Riot ID#Tag)</option>
+                                    <option value="fc_mobile" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">EA SPORTS FC Mobile (UID)</option>
+                                    <option value="efootball" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">eFootball 2025 Mobile (User ID)</option>
+                                    <option value="metal_slug" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Metal Slug: Awakening (Role ID + Server ID)</option>
+                                    <option value="ragnarok_origin" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Ragnarok Origin (Secret ID + Server)</option>
+                                    <option value="super_sus" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Super Sus (Space ID)</option>
+                                    <option value="eggy_party" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Eggy Party (User ID)</option>
+                                    <option value="stumble_guys" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Stumble Guys (Username)</option>
+                                    <option value="undawn" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Undawn (Player ID)</option>
+                                    <option value="lifeafter" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">LifeAfter (Account ID + Server)</option>
+                                    <option value="sausage_man" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Sausage Man (Character ID)</option>
+                                    <option value="tof" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Tower of Fantasy (UID + Server)</option>
+                                    <option value="higgs_domino" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Higgs Domino Island (User ID)</option>
+                                    <option value="roblox" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Roblox (Username)</option>
+                                </optgroup>
+
+                                <optgroup label="💻 Game PC" style="color: #111827; background: #ffffff;">
+                                    <option value="valorant" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Valorant (Riot ID + Tagline)</option>
+                                    <option value="point_blank" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Point Blank Zepetto (User ID)</option>
+                                    <option value="steam" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Steam Wallet IDR (Nomor WhatsApp / Voucher)</option>
+                                </optgroup>
+
+                                <optgroup label="🎟️ Voucher Game & Console" style="color: #111827; background: #ffffff;">
+                                    <option value="gplay" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Google Play Voucher IDR (Nomor WhatsApp)</option>
+                                    <option value="psn" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">PlayStation Network (PSN IDR) (Nomor WhatsApp)</option>
+                                    <option value="nintendo" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Nintendo eShop Card (Nomor WhatsApp)</option>
+                                    <option value="garena_shells" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Garena Shells (Nomor WhatsApp)</option>
+                                    <option value="unipin" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">UniPin Voucher IDR (Nomor WhatsApp)</option>
+                                    <option value="razer_gold" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Razer Gold IDR (Nomor WhatsApp)</option>
+                                </optgroup>
+
+                                <optgroup label="🎬 Aplikasi & Streaming" style="color: #111827; background: #ffffff;">
+                                    <option value="spotify" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Spotify Premium (Nomor WhatsApp / Email)</option>
+                                    <option value="netflix" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Netflix Premium (Nomor WhatsApp / Email)</option>
+                                    <option value="youtube" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">YouTube Premium (Nomor WhatsApp / Email)</option>
+                                    <option value="wetv" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">WeTV VIP (Nomor WhatsApp / Email)</option>
+                                    <option value="vidio" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Vidio Premier Platinum (Nomor WhatsApp / Email)</option>
+                                </optgroup>
                             </select>
 
                             <button type="button" @click="applyPreset()" x-show="selectedPreset" style="background-color: #10b981; color: #ffffff;" class="px-4 py-2.5 rounded-xl hover:opacity-90 font-black text-xs shadow-lg transition flex items-center gap-1.5 cursor-pointer">
@@ -59,19 +97,19 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Nama Game <span class="text-red-500">*</span></label>
-                            <input type="text" name="name" x-model="name" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-bold" required placeholder="Contoh: Mobile Legends">
+                            <label class="block text-sm font-bold text-gray-900 dark:text-gray-100">Nama Game <span class="text-red-500">*</span></label>
+                            <input type="text" name="name" x-model="name" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-bold" placeholder="Contoh: Mobile Legends" required>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Developer / Publisher</label>
+                            <label class="block text-sm font-bold text-gray-900 dark:text-gray-100">Developer / Publisher</label>
                             <input type="text" name="developer" x-model="developer" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white" placeholder="Contoh: Moonton / Garena / Riot Games">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Kategori</label>
+                            <label class="block text-sm font-bold text-gray-900 dark:text-gray-100">Kategori</label>
                             <select name="category" x-model="category" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-bold">
                                 <option value="Mobile Game">Mobile Game</option>
                                 <option value="PC Game">PC Game</option>
@@ -81,75 +119,69 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Status Game</label>
+                            <label class="block text-sm font-bold text-gray-900 dark:text-gray-100">Status Game</label>
                             <select name="is_active" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-bold">
                                 <option value="1">Aktif (Tampil di Website)</option>
-                                <option value="0">Sembunyikan / Nonaktif</option>
+                                <option value="0">Nonaktif (Disembunyikan)</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Upload Gambar -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Upload Thumbnail (Kotak 1:1)</label>
-                            <input type="file" name="thumbnail" accept="image/*" 
-                                   onchange="const [file] = this.files; if(file){ const p = document.getElementById('thumb-preview'); p.src = URL.createObjectURL(file); p.classList.remove('hidden'); }"
-                                   class="w-full mt-1.5 p-2 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white text-xs">
-                            <img id="thumb-preview" src="" class="h-20 w-20 object-cover mt-2.5 rounded-xl border border-gray-300 dark:border-gray-600 hidden">
+                            <label class="block text-sm font-bold text-gray-900 dark:text-gray-100">Upload Thumbnail (Kotak 1:1)</label>
+                            <input type="file" name="thumbnail" class="w-full mt-1.5 p-2 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white text-sm" accept="image/*">
                         </div>
 
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Upload Cover (Banner Memanjang)</label>
-                            <input type="file" name="cover_image" accept="image/*" 
-                                   onchange="const [file] = this.files; if(file){ const p = document.getElementById('cover-preview'); p.src = URL.createObjectURL(file); p.classList.remove('hidden'); }"
-                                   class="w-full mt-1.5 p-2 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white text-xs">
-                            <img id="cover-preview" src="" class="h-20 w-full max-w-xs object-cover mt-2.5 rounded-xl border border-gray-300 dark:border-gray-600 hidden">
+                            <label class="block text-sm font-bold text-gray-900 dark:text-gray-100">Upload Cover (Banner Memanjang)</label>
+                            <input type="file" name="cover_image" class="w-full mt-1.5 p-2 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white text-sm" accept="image/*">
                         </div>
                     </div>
 
-                    <!-- Data Target / Akun yang Diperlukan -->
-                    <div class="p-5 rounded-2xl bg-slate-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-700 space-y-4">
-                        <div class="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-2">
-                            <i class="fas fa-id-card text-indigo-500"></i>
-                            Data Akun yang Diperlukan Pembeli
-                        </div>
-
+                    <!-- Custom Form Input Fields -->
+                    <div class="p-6 bg-slate-50 dark:bg-gray-900/50 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-4">
+                        <h4 class="font-bold text-gray-900 dark:text-white text-sm flex items-center gap-2">
+                            <i class="fas fa-id-card text-indigo-500"></i> Data Akun yang Diperlukan Pembeli
+                        </h4>
+                        
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300">Label Input 1 (Data Akun Utama) <span class="text-red-500">*</span></label>
-                                <input type="text" name="target_field_1" x-model="target_field_1" placeholder="Contoh: User ID / Player ID" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white text-sm font-semibold" required>
+                                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300">Label Target 1 (Data No / ID Utama) <span class="text-red-500">*</span></label>
+                                <input type="text" name="target_field_1" x-model="target_field_1" class="w-full mt-1 p-2.5 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white text-sm font-mono" placeholder="Contoh: User ID / Player ID / Riot ID / No WhatsApp" required>
                             </div>
-                            <div x-show="requires_zone_id">
-                                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300">Label Input 2 (Zone / Server ID)</label>
-                                <input type="text" name="target_field_2" x-model="target_field_2" placeholder="Contoh: Zone ID / Server" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white text-sm font-semibold">
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300">Label Target 2 (Data Zone / Server - Opsional)</label>
+                                <input type="text" name="target_field_2" x-model="target_field_2" class="w-full mt-1 p-2.5 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white text-sm font-mono" placeholder="Contoh: Zone ID / Server ID (Kosongkan jika tidak ada)">
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-3 pt-2">
-                            <input type="checkbox" name="requires_zone_id" id="requires_zone_id" x-model="requires_zone_id" value="1" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500 border-gray-300 cursor-pointer">
-                            <label for="requires_zone_id" class="text-xs font-bold text-gray-700 dark:text-gray-300 cursor-pointer">
-                                Game ini membutuhkan 2 kolom input (seperti Mobile Legends / Genshin Impact)
+                        <div class="pt-2">
+                            <label class="inline-flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="requires_zone_id" x-model="requires_zone_id" value="1" class="rounded border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500">
+                                <span class="text-sm font-bold text-gray-900 dark:text-gray-100">Game Membutuhkan Zone ID / Server ID Terpisah</span>
                             </label>
+                            <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">Centang jika game memerlukan 2 kolom input terpisah (seperti Mobile Legends / Genshin Impact). Jangan dicentang jika game hanya butuh 1 ID atau Nomor WhatsApp (seperti Free Fire, Valorant, atau Steam Wallet).</p>
                         </div>
                     </div>
 
-                    <!-- Panduan / Petunjuk Top Up -->
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Panduan / Cara Cek ID Akun</label>
-                        <textarea name="guide_text" x-model="guide_text" rows="3" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white text-sm font-medium" placeholder="Tuliskan petunjuk cara melihat ID game..."></textarea>
+                        <label class="block text-sm font-bold text-gray-900 dark:text-gray-100">Panduan / Petunjuk Menemukan ID Game</label>
+                        <textarea name="guide_text" x-model="guide_text" rows="3" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white text-sm" placeholder="Contoh: Untuk menemukan User ID dan Zone ID Anda, buka profil in-game di pojok kiri atas..."></textarea>
                     </div>
 
-                    <div class="pt-4 flex items-center justify-end gap-3">
-                        <a href="{{ route('admin.games.index') }}" class="px-5 py-3 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold text-xs transition">
+                    <div class="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <a href="{{ route('admin.games.index') }}" class="px-5 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 font-bold text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
                             Batal
                         </a>
-                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-indigo-600/30 transition cursor-pointer flex items-center gap-2 text-sm">
-                            <i class="fas fa-save"></i> Simpan Game Baru
+                        <button type="submit" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md shadow-indigo-600/30 transition">
+                            Simpan Game Baru
                         </button>
                     </div>
                 </form>
             </div>
+
         </div>
     </div>
 
@@ -165,15 +197,7 @@
                 requires_zone_id: false,
                 guide_text: '',
                 presets: {
-                    steam: {
-                        name: 'Steam Wallet IDR',
-                        developer: 'Valve Corporation',
-                        category: 'PC Game',
-                        target_field_1: 'Nomor WhatsApp / No HP',
-                        target_field_2: '',
-                        requires_zone_id: false,
-                        guide_text: 'Masukkan Nomor WhatsApp Anda. Kode Voucher Steam Wallet (Serial Number) akan dikirimkan dan tampil otomatis pada invoice setelah pembayaran berhasil.'
-                    },
+                    // Mobile Games
                     mlbb: {
                         name: 'Mobile Legends',
                         developer: 'Moonton',
@@ -210,14 +234,14 @@
                         requires_zone_id: false,
                         guide_text: 'Buka profil PUBG Mobile Anda di pojok kiri atas, salin deretan angka Player ID di samping avatar.'
                     },
-                    valorant: {
-                        name: 'Valorant',
-                        developer: 'Riot Games',
-                        category: 'PC Game',
-                        target_field_1: 'Riot ID (Username#TAG)',
+                    hok: {
+                        name: 'Honor of Kings',
+                        developer: 'Level Infinite',
+                        category: 'Mobile Game',
+                        target_field_1: 'UID Honor of Kings',
                         target_field_2: '',
                         requires_zone_id: false,
-                        guide_text: 'Masukkan Riot ID lengkap dengan tanda pagar (#), contoh: Jett#1234.'
+                        guide_text: 'Buka profil Honor of Kings Anda, salin nomor UID akun pada menu Pengaturan Akun.'
                     },
                     genshin: {
                         name: 'Genshin Impact',
@@ -237,6 +261,15 @@
                         requires_zone_id: true,
                         guide_text: 'Masukkan 9 digit UID Honkai: Star Rail yang tertera di menu ponsel in-game dan pilih Server Anda.'
                     },
+                    zzz: {
+                        name: 'Zenless Zone Zero',
+                        developer: 'COGNOSPHERE',
+                        category: 'Mobile Game',
+                        target_field_1: 'UID Zenless Zone Zero',
+                        target_field_2: 'Server (Asia/America/Europe/TW_HK_MO)',
+                        requires_zone_id: true,
+                        guide_text: 'Masukkan UID ZZZ yang tertera pada kartu profil game dan pilih Server Anda.'
+                    },
                     codm: {
                         name: 'Call of Duty: Mobile',
                         developer: 'Garena',
@@ -245,15 +278,6 @@
                         target_field_2: '',
                         requires_zone_id: false,
                         guide_text: 'Buka menu Pengaturan in-game CODM > Lainnya > Salin nomor OpenID Anda.'
-                    },
-                    hok: {
-                        name: 'Honor of Kings',
-                        developer: 'Level Infinite',
-                        category: 'Mobile Game',
-                        target_field_1: 'UID Honor of Kings',
-                        target_field_2: '',
-                        requires_zone_id: false,
-                        guide_text: 'Buka profil Honor of Kings Anda, salin nomor UID akun pada menu Pengaturan Akun.'
                     },
                     blood_strike: {
                         name: 'Blood Strike',
@@ -273,14 +297,131 @@
                         requires_zone_id: false,
                         guide_text: 'Buka menu Pengaturan AOV > Umum > Salin OpenID Anda.'
                     },
-                    point_blank: {
-                        name: 'Point Blank',
-                        developer: 'Zepetto',
-                        category: 'PC Game',
-                        target_field_1: 'User ID Zepetto',
+                    wild_rift: {
+                        name: 'League of Legends: Wild Rift',
+                        developer: 'Riot Games',
+                        category: 'Mobile Game',
+                        target_field_1: 'Riot ID (Username#TAG)',
                         target_field_2: '',
                         requires_zone_id: false,
-                        guide_text: 'Masukkan User ID akun Zepetto Point Blank Anda.'
+                        guide_text: 'Masukkan Riot ID lengkap dengan tanda pagar (#), contoh: Yasuo#ID1.'
+                    },
+                    tft: {
+                        name: 'Teamfight Tactics Mobile',
+                        developer: 'Riot Games',
+                        category: 'Mobile Game',
+                        target_field_1: 'Riot ID (Username#TAG)',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Riot ID akun TFT Anda lengkap dengan tag (#), contoh: Player#1234.'
+                    },
+                    fc_mobile: {
+                        name: 'EA SPORTS FC Mobile',
+                        developer: 'Electronic Arts (EA)',
+                        category: 'Mobile Game',
+                        target_field_1: 'UID FC Mobile',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Buka Pengaturan FC Mobile > Akun > Salin UID akun Anda.'
+                    },
+                    efootball: {
+                        name: 'eFootball 2025 Mobile',
+                        developer: 'KONAMI',
+                        category: 'Mobile Game',
+                        target_field_1: 'User ID eFootball',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Buka Menu Dukungan Ekstra in-game > Detail Pengguna > Salin User ID Anda.'
+                    },
+                    metal_slug: {
+                        name: 'Metal Slug: Awakening',
+                        developer: 'VNG Games',
+                        category: 'Mobile Game',
+                        target_field_1: 'Role ID (UID)',
+                        target_field_2: 'Server ID',
+                        requires_zone_id: true,
+                        guide_text: 'Salin Role ID pada profil avatar dan masukkan nomor Server ID Metal Slug Anda.'
+                    },
+                    ragnarok_origin: {
+                        name: 'Ragnarok Origin Global',
+                        developer: 'Gravity',
+                        category: 'Mobile Game',
+                        target_field_1: 'Secret ID Karakter',
+                        target_field_2: 'Server Name',
+                        requires_zone_id: true,
+                        guide_text: 'Salin Secret ID karakter dari menu Pengaturan Akun dan pilih Server Anda.'
+                    },
+                    super_sus: {
+                        name: 'Super Sus',
+                        developer: 'PIProduction',
+                        category: 'Mobile Game',
+                        target_field_1: 'Space ID',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Buka profil Super Sus Anda di pojok kiri atas dan salin Space ID akun.'
+                    },
+                    eggy_party: {
+                        name: 'Eggy Party',
+                        developer: 'NetEase Games',
+                        category: 'Mobile Game',
+                        target_field_1: 'User ID Eggy Party',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Salin nomor User ID yang tertera pada profil avatar Eggy Party Anda.'
+                    },
+                    stumble_guys: {
+                        name: 'Stumble Guys',
+                        developer: 'Scopely',
+                        category: 'Mobile Game',
+                        target_field_1: 'Username In-Game',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Username akun Stumble Guys Anda dengan tepat.'
+                    },
+                    undawn: {
+                        name: 'Undawn',
+                        developer: 'Garena',
+                        category: 'Mobile Game',
+                        target_field_1: 'Player ID Undawn',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Buka profil Undawn di pojok kiri atas, salin Player ID akun Anda.'
+                    },
+                    lifeafter: {
+                        name: 'LifeAfter',
+                        developer: 'NetEase Games',
+                        category: 'Mobile Game',
+                        target_field_1: 'Account ID LifeAfter',
+                        target_field_2: 'Server Name',
+                        requires_zone_id: true,
+                        guide_text: 'Salin Account ID dari menu profil dan pilih Server LifeAfter Anda.'
+                    },
+                    sausage_man: {
+                        name: 'Sausage Man',
+                        developer: 'XD Entertainment',
+                        category: 'Mobile Game',
+                        target_field_1: 'Character ID',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Salin 6-8 digit Character ID pada menu profil avatar Sausage Man Anda.'
+                    },
+                    tof: {
+                        name: 'Tower of Fantasy',
+                        developer: 'Level Infinite',
+                        category: 'Mobile Game',
+                        target_field_1: 'UID Tower of Fantasy',
+                        target_field_2: 'Server Name',
+                        requires_zone_id: true,
+                        guide_text: 'Salin UID akun dan pilih Server Tower of Fantasy Anda.'
+                    },
+                    higgs_domino: {
+                        name: 'Higgs Domino Island',
+                        developer: 'Higgs Games',
+                        category: 'Mobile Game',
+                        target_field_1: 'User ID Higgs Domino',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Buka profil avatar Higgs Domino Anda di pojok kiri atas dan salin deretan angka User ID.'
                     },
                     roblox: {
                         name: 'Roblox',
@@ -290,6 +431,138 @@
                         target_field_2: '',
                         requires_zone_id: false,
                         guide_text: 'Masukkan Username resmi akun Roblox Anda (bukan Display Name).'
+                    },
+
+                    // PC Games
+                    valorant: {
+                        name: 'Valorant',
+                        developer: 'Riot Games',
+                        category: 'PC Game',
+                        target_field_1: 'Riot ID (Username#TAG)',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Riot ID lengkap dengan tanda pagar (#), contoh: Jett#1234.'
+                    },
+                    point_blank: {
+                        name: 'Point Blank',
+                        developer: 'Zepetto',
+                        category: 'PC Game',
+                        target_field_1: 'User ID Zepetto',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan User ID / Login ID akun Zepetto Point Blank Anda.'
+                    },
+                    steam: {
+                        name: 'Steam Wallet IDR',
+                        developer: 'Valve Corporation',
+                        category: 'PC Game',
+                        target_field_1: 'Nomor WhatsApp / No HP',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Nomor WhatsApp Anda. Kode Voucher Steam Wallet (Serial Number) akan dikirimkan dan tampil otomatis pada invoice setelah pembayaran berhasil.'
+                    },
+
+                    // Voucher & Gift Cards
+                    gplay: {
+                        name: 'Google Play Voucher IDR',
+                        developer: 'Google LLC',
+                        category: 'Voucher',
+                        target_field_1: 'Nomor WhatsApp / No HP',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Nomor WhatsApp Anda. Kode Voucher Google Play akan dikirimkan otomatis setelah transaksi sukses.'
+                    },
+                    psn: {
+                        name: 'PlayStation Network (PSN Card IDR)',
+                        developer: 'Sony PlayStation',
+                        category: 'Voucher',
+                        target_field_1: 'Nomor WhatsApp / No HP',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Nomor WhatsApp Anda untuk menerima kode voucher PSN Card.'
+                    },
+                    nintendo: {
+                        name: 'Nintendo eShop Card',
+                        developer: 'Nintendo',
+                        category: 'Voucher',
+                        target_field_1: 'Nomor WhatsApp / No HP',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Nomor WhatsApp Anda untuk menerima kode voucher Nintendo eShop.'
+                    },
+                    garena_shells: {
+                        name: 'Garena Shells',
+                        developer: 'Garena',
+                        category: 'Voucher',
+                        target_field_1: 'Nomor WhatsApp / No HP',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Nomor WhatsApp Anda untuk menerima serial kode voucher Garena Shells.'
+                    },
+                    unipin: {
+                        name: 'UniPin Voucher IDR',
+                        developer: 'UniPin',
+                        category: 'Voucher',
+                        target_field_1: 'Nomor WhatsApp / No HP',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Nomor WhatsApp Anda untuk menerima serial kode voucher UniPin.'
+                    },
+                    razer_gold: {
+                        name: 'Razer Gold IDR',
+                        developer: 'Razer Inc.',
+                        category: 'Voucher',
+                        target_field_1: 'Nomor WhatsApp / No HP',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Nomor WhatsApp Anda untuk menerima serial kode voucher Razer Gold.'
+                    },
+
+                    // Streaming & Apps
+                    spotify: {
+                        name: 'Spotify Premium',
+                        developer: 'Spotify AB',
+                        category: 'App & Entertainment',
+                        target_field_1: 'Nomor WhatsApp / Email',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Nomor WhatsApp aktif Anda untuk konfirmasi proses aktivasi paket Spotify Premium.'
+                    },
+                    netflix: {
+                        name: 'Netflix Premium',
+                        developer: 'Netflix Inc.',
+                        category: 'App & Entertainment',
+                        target_field_1: 'Nomor WhatsApp / Email',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Nomor WhatsApp aktif Anda untuk pengiriman detail akun/paket Netflix Premium.'
+                    },
+                    youtube: {
+                        name: 'YouTube Premium',
+                        developer: 'Google LLC',
+                        category: 'App & Entertainment',
+                        target_field_1: 'Email Google Akun / WhatsApp',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Email Google Anda yang akan di-upgrade ke YouTube Premium dan Nomor WhatsApp Anda.'
+                    },
+                    wetv: {
+                        name: 'WeTV VIP',
+                        developer: 'Image Future / Tencent',
+                        category: 'App & Entertainment',
+                        target_field_1: 'Nomor WhatsApp / Email',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Nomor WhatsApp Anda untuk aktivasi akun WeTV VIP.'
+                    },
+                    vidio: {
+                        name: 'Vidio Premier Platinum',
+                        developer: 'PT Vidio Dot Com',
+                        category: 'App & Entertainment',
+                        target_field_1: 'Nomor WhatsApp / Email',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Nomor WhatsApp Anda untuk pengiriman voucher/aktivasi paket Vidio Premier.'
                     }
                 },
                 applyPreset() {
