@@ -32,20 +32,15 @@
             <label for="name" class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
                 {{ __('Nama Lengkap') }} <span class="text-red-500">*</span>
             </label>
-            <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 dark:text-gray-500">
-                    <i class="fas fa-id-badge text-sm"></i>
-                </div>
-                <input id="name" 
-                       name="name" 
-                       type="text" 
-                       class="block w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl text-sm font-semibold text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition shadow-sm" 
-                       value="{{ old('name', $user->name) }}" 
-                       required 
-                       autofocus 
-                       autocomplete="name" 
-                       placeholder="Contoh: Super Admin" />
-            </div>
+            <input id="name" 
+                   name="name" 
+                   type="text" 
+                   class="block w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl text-sm font-semibold text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition shadow-sm" 
+                   value="{{ old('name', $user->name) }}" 
+                   required 
+                   autofocus 
+                   autocomplete="name" 
+                   placeholder="Contoh: Super Admin" />
             <x-input-error class="mt-1.5 text-xs" :messages="$errors->get('name')" />
         </div>
 
@@ -54,19 +49,14 @@
             <label for="email" class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
                 {{ __('Alamat Email') }} <span class="text-red-500">*</span>
             </label>
-            <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 dark:text-gray-500">
-                    <i class="fas fa-envelope text-sm"></i>
-                </div>
-                <input id="email" 
-                       name="email" 
-                       type="email" 
-                       class="block w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl text-sm font-semibold text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition shadow-sm" 
-                       value="{{ old('email', $user->email) }}" 
-                       required 
-                       autocomplete="username" 
-                       placeholder="nama@email.com" />
-            </div>
+            <input id="email" 
+                   name="email" 
+                   type="email" 
+                   class="block w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl text-sm font-semibold text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition shadow-sm" 
+                   value="{{ old('email', $user->email) }}" 
+                   required 
+                   autocomplete="username" 
+                   placeholder="nama@email.com" />
             <x-input-error class="mt-1.5 text-xs" :messages="$errors->get('email')" />
         </div>
 
@@ -235,14 +225,11 @@
                 {{ __('Ubah / Pasang Nomor WhatsApp Baru') }}
             </label>
             <div class="flex flex-col sm:flex-row gap-3">
-                <div class="relative flex-1">
-                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-emerald-500">
-                        <i class="fab fa-whatsapp text-lg"></i>
-                    </div>
+                <div class="flex-1">
                     <input type="text" 
                            x-model="newPhone" 
                            placeholder="Contoh: 081234567890" 
-                           class="block w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl text-sm font-semibold text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition shadow-sm" />
+                           class="block w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl text-sm font-semibold text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition shadow-sm" />
                 </div>
                 <button type="button" 
                         @click="sendOtp()" 
