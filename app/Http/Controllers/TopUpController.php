@@ -399,11 +399,19 @@ class TopUpController extends Controller
                 }
 
                 if (isset($orderRes['result']) && $orderRes['result'] === true) {
+                    $provStatus = strtolower($orderRes['data']['status'] ?? 'processing');
+                    $finalStatus = ($provStatus === 'success') ? 'success' : 'processing';
+
                     $transaction->update([
-                        'status' => 'success',
+                        'status' => $finalStatus,
                         'provider_trx_id' => $orderRes['data']['trxid'] ?? null,
                     ]);
-                    return redirect()->route('topup.checkout.show', $transaction->id)->with('success', 'Pembayaran via Saldo Akun berhasil! Pesanan langsung terkirim.');
+
+                    if ($finalStatus === 'success') {
+                        return redirect()->route('topup.checkout.show', $transaction->id)->with('success', 'Pembayaran via Saldo Akun berhasil! Diamond/Item langsung masuk ke akun Anda.');
+                    } else {
+                        return redirect()->route('topup.checkout.show', $transaction->id)->with('info', 'Pembayaran via Saldo Akun berhasil! Pesanan sedang dalam antrean proses server provider.');
+                    }
                 } else {
                     // JIKA PROVIDER GAGAL/MENOLAK: OTOMATIS REFUND DANA KE SALDO AKUN USER!
                     $errMsg = $orderRes['message'] ?? 'Provider gagal memproses pesanan.';
