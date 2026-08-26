@@ -55,18 +55,16 @@ class VipResellerService
 
     public function createOrder($serviceCode, $targetId, $targetZone = '')
     {
-        $dataNo = $targetZone ? "{$targetId}{$targetZone}" : $targetId;
-
         $payload = [
             'key' => $this->apiKey,
             'sign' => $this->generateSign(),
             'type' => 'order',
             'service' => $serviceCode,
-            'data_no' => $dataNo,
+            'data_no' => trim($targetId),
         ];
 
         if (!empty($targetZone)) {
-            $payload['data_zone'] = $targetZone;
+            $payload['data_zone'] = trim($targetZone);
         }
 
         $response = Http::connectTimeout(60)->timeout(120)->retry(3, 2000)->asForm()->post("{$this->baseUrl}/game-feature", $payload);
