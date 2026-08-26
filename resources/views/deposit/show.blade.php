@@ -54,7 +54,7 @@
                 @else
                     <!-- TAMPILAN MENUNGGU PEMBAYARAN QRIS -->
                     <div>
-                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-xs font-black border border-amber-300 dark:border-amber-700 mb-2">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 text-amber-500 dark:text-amber-400 text-xs font-black border border-amber-500/30 mb-2">
                             <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
                             Menunggu Pembayaran
                         </div>
