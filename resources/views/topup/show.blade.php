@@ -359,8 +359,37 @@
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
 
-                    const accountName = data.nickname ? data.nickname : formData.get('player_id');
-                    const playerIdDisplay = formData.get('player_id') + (formData.get('zone_id') ? ' (' + formData.get('zone_id') + ')' : '');
+                    let accountRowHtml = '';
+                    if (data.is_checked && data.nickname) {
+                        accountRowHtml = `
+                            <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-gray-500 dark:text-gray-400 font-semibold">Nama Akun (IGN):</span>
+                                <span class="font-black text-emerald-600 dark:text-emerald-400">${data.nickname}</span>
+                            </div>
+                        `;
+                    }
+
+                    let idRowsHtml = '';
+                    if (formData.get('zone_id')) {
+                        idRowsHtml = `
+                            <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-gray-500 dark:text-gray-400 font-semibold">User ID:</span>
+                                <span class="font-mono font-bold text-gray-900 dark:text-white">${formData.get('player_id')}</span>
+                            </div>
+                            <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-gray-500 dark:text-gray-400 font-semibold">Zone ID:</span>
+                                <span class="font-mono font-bold text-gray-900 dark:text-white">${formData.get('zone_id')}</span>
+                            </div>
+                        `;
+                    } else {
+                        idRowsHtml = `
+                            <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-gray-500 dark:text-gray-400 font-semibold">ID / Target:</span>
+                                <span class="font-mono font-bold text-gray-900 dark:text-white">${formData.get('player_id')}</span>
+                            </div>
+                        `;
+                    }
+
                     const payMethodDisplay = payMethodVal === 'balance' ? 'Saldo Akun (Dompet Web)' : 'QRIS All Payment';
 
                     Swal.fire({
@@ -371,14 +400,8 @@
                                     <span class="text-gray-500 dark:text-gray-400 font-semibold">Game:</span>
                                     <span class="font-bold text-gray-900 dark:text-white">{{ $game->name }}</span>
                                 </div>
-                                <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
-                                    <span class="text-gray-500 dark:text-gray-400 font-semibold">Nama Akun:</span>
-                                    <span class="font-black text-emerald-600 dark:text-emerald-400">${accountName}</span>
-                                </div>
-                                <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
-                                    <span class="text-gray-500 dark:text-gray-400 font-semibold">ID Tujuan:</span>
-                                    <span class="font-mono font-bold text-gray-900 dark:text-white">${playerIdDisplay}</span>
-                                </div>
+                                ${accountRowHtml}
+                                ${idRowsHtml}
                                 <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
                                     <span class="text-gray-500 dark:text-gray-400 font-semibold">Item:</span>
                                     <span class="font-bold text-indigo-600 dark:text-indigo-400">${productName}</span>
