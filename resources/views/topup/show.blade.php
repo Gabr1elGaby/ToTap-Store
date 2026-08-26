@@ -50,21 +50,19 @@
             <div class="bg-blue-50/80 dark:bg-gray-800 border-l-4 border-blue-600 dark:border-blue-500 rounded-2xl p-5 mb-8 shadow-sm dark:shadow-md border border-blue-100 dark:border-gray-700" data-aos="fade-down">
                 <h3 class="font-bold text-lg mb-3 text-gray-900 dark:text-white flex items-center gap-2">
                     <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    Cara Top Up {{ $game->name }}
+                    Panduan & Cara Pemesanan {{ $game->name }}
                 </h3>
                 <ul class="space-y-2 text-sm md:text-base text-gray-700 dark:text-gray-300">
                     <li class="flex items-start gap-2">
                         <span class="font-bold text-blue-600 dark:text-blue-400">1.</span>
                         <div>
-                            <span>Masukkan data target 
-                            @if($isRequiresZone)
-                                (<strong>{{ $field1Label }}</strong> dan <strong>{{ $field2Label }}</strong>) 
-                            @else
-                                (<strong>{{ $game->target_field_1 ?: 'User ID / Player ID' }}</strong>) 
-                            @endif
-                            yang sesuai dengan akun {{ $game->name }} Anda.</span>
+                            <span>Masukkan data <strong>{{ $field1Label }}</strong> @if($isRequiresZone) dan <strong>{{ $field2Label }}</strong> @endif yang valid.</span>
                             
-                            @if(str_contains($gameName, 'mobile legend'))
+                            @if(!empty($game->guide_text))
+                                <div class="text-xs text-indigo-700 dark:text-indigo-300 font-semibold mt-1 bg-indigo-50 dark:bg-indigo-950/60 p-2.5 rounded-lg border border-indigo-100 dark:border-indigo-800/40">
+                                    <i class="fas fa-info-circle mr-1"></i> {{ $game->guide_text }}
+                                </div>
+                            @elseif(str_contains($gameName, 'mobile legend'))
                                 <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">Contoh: <strong>12345678</strong> untuk User ID dan <strong>1234</strong> untuk Zone ID. (Klik avatar profil di pojok kiri atas).</div>
                             @elseif(str_contains($gameName, 'magic chess'))
                                 <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">Contoh: <strong>12345678</strong> untuk User ID dan <strong>1234</strong> untuk Zone ID. (Buka game Magic Chess: Go Go &gt; klik Avatar Profil di pojok kiri atas untuk melihat User ID dan Zone ID).</div>
@@ -85,7 +83,7 @@
                     </li>
                     <li class="flex items-start gap-2">
                         <span class="font-bold text-blue-600 dark:text-blue-400">2.</span>
-                        <span>Pilih nominal item atau layanan yang Anda inginkan dari daftar yang tersedia.</span>
+                        <span>Pilih nominal item atau voucher yang Anda inginkan dari daftar yang tersedia.</span>
                     </li>
                     <li class="flex items-start gap-2">
                         <span class="font-bold text-blue-600 dark:text-blue-400">3.</span>
@@ -93,7 +91,7 @@
                     </li>
                     <li class="flex items-start gap-2">
                         <span class="font-bold text-blue-600 dark:text-blue-400">4.</span>
-                        <span>Klik tombol <strong>Beli Sekarang</strong> dan selesaikan pembayaran. Pesanan akan masuk otomatis!</span>
+                        <span>Klik tombol <strong>Beli Sekarang</strong> dan selesaikan pembayaran. @if($game->category == 'Voucher' || str_contains($gameName, 'voucher') || str_contains($gameName, 'wallet')) Kode voucher akan otomatis tampil di invoice dan dikirimkan ke WhatsApp Anda! @else Pesanan akan diproses otomatis! @endif</span>
                     </li>
                 </ul>
             </div>
