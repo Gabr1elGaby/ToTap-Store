@@ -47,10 +47,34 @@
                 <!-- Card -->
                 <div class="w-full md:w-[calc(50%-1rem)] max-w-md bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-md flex flex-col p-8 relative overflow-hidden transition-all duration-200 hover:shadow-xl">
                     @php
-                        $bestPlan = $product->plans->first();
                         $discountPercent = 0;
-                        if($bestPlan && $bestPlan->price_normal > 0 && $bestPlan->price_normal > $bestPlan->price) {
-                            $discountPercent = round((($bestPlan->price_normal - $bestPlan->price) / $bestPlan->price_normal) * 100);
+                        $minPrice = null;
+                        $minPriceNormal = null;
+
+                        if (str_contains(strtolower($product->name), 'cv') || str_contains(strtolower($product->slug ?? ''), 'cv')) {
+                            $minTpl = \Illuminate\Support\Facades\DB::table('cv_templates')->where('status', 'active')->orderBy('price')->first();
+                            if ($minTpl) {
+                                $minPrice = $minTpl->price;
+                                $minPriceNormal = $minTpl->price_normal;
+                            }
+                            $maxCvDiscount = \Illuminate\Support\Facades\DB::table('cv_templates')
+                                ->where('status', 'active')
+                                ->where('price_normal', '>', 0)
+                                ->whereColumn('price_normal', '>', 'price')
+                                ->selectRaw('MAX(ROUND(((price_normal - price) / price_normal) * 100)) as max_discount')
+                                ->value('max_discount');
+                            if ($maxCvDiscount > 0) {
+                                $discountPercent = (int) $maxCvDiscount;
+                            }
+                        } else {
+                            $bestPlan = $product->plans->first();
+                            if ($bestPlan) {
+                                $minPrice = $bestPlan->price;
+                                $minPriceNormal = $bestPlan->price_normal;
+                                if ($bestPlan->price_normal > 0 && $bestPlan->price_normal > $bestPlan->price) {
+                                    $discountPercent = round((($bestPlan->price_normal - $bestPlan->price) / $bestPlan->price_normal) * 100);
+                                }
+                            }
                         }
                     @endphp
                     
@@ -87,11 +111,11 @@
                             <div class="flex justify-between items-center">
                                 <div>
                                     <p class="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-1">HARGA MULAI</p>
-                                    @if($bestPlan)
-                                        @if($bestPlan->price_normal > 0 && $bestPlan->price_normal > $bestPlan->price)
-                                            <div class="text-xs text-gray-400 line-through mb-0.5">Rp {{ number_format($bestPlan->price_normal, 0, ',', '.') }}</div>
+                                    @if(!is_null($minPrice))
+                                        @if($minPriceNormal > 0 && $minPriceNormal > $minPrice)
+                                            <div class="text-xs text-gray-400 line-through mb-0.5">Rp {{ number_format($minPriceNormal, 0, ',', '.') }}</div>
                                         @endif
-                                        <p class="text-2xl font-extrabold text-gray-900 dark:text-white">Rp {{ number_format($bestPlan->price, 0, ',', '.') }}</p>
+                                        <p class="text-2xl font-extrabold text-gray-900 dark:text-white">Rp {{ number_format($minPrice, 0, ',', '.') }}</p>
                                     @else
                                         <p class="text-lg font-bold text-gray-900 dark:text-white">Belum tersedia</p>
                                     @endif
