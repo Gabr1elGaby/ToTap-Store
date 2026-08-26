@@ -238,19 +238,19 @@
                                 <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-xl rounded-2xl p-5">
                                     <div class="flex items-center gap-3 mb-4">
                                         <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold shadow-md shadow-indigo-500/20">3</div>
-                                        <h3 class="text-lg font-black text-gray-900 dark:text-white">Metode Pembayaran</h3>
+                                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Metode Pembayaran</h3>
                                     </div>
                                     <div class="space-y-2.5">
                                         <!-- QRIS (Satu-satunya metode pembayaran instan) -->
-                                        <label class="relative flex items-center justify-between p-4 border-2 border-indigo-600 dark:border-indigo-400 bg-indigo-50/90 dark:bg-slate-900/90 rounded-2xl cursor-pointer shadow-md transition hover:border-indigo-500">
+                                        <label class="relative flex items-center justify-between p-4 border-2 border-indigo-600 dark:border-indigo-500 bg-indigo-50 dark:bg-gray-900 rounded-2xl cursor-pointer shadow-md transition hover:border-indigo-400">
                                             <div class="flex items-center gap-3.5">
                                                 <input type="radio" x-model="selectedPayment" value="qris" checked class="w-5 h-5 text-indigo-600 border-gray-300 focus:ring-indigo-500 cursor-pointer">
                                                 <div>
                                                     <div class="flex items-center gap-2 flex-wrap">
-                                                        <span class="font-black text-sm text-gray-900 dark:text-white tracking-wide">QRIS All Payment</span>
-                                                        <span class="bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-300 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Otomatis & Cepat</span>
+                                                        <span class="font-bold text-sm text-gray-900 dark:text-white tracking-wide">QRIS All Payment</span>
+                                                        <span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Otomatis & Cepat</span>
                                                     </div>
-                                                    <div class="text-xs text-gray-700 dark:text-gray-200 mt-1 font-semibold leading-relaxed">
+                                                    <div class="text-xs text-gray-600 dark:text-gray-300 mt-1 font-medium leading-relaxed">
                                                         GoPay, OVO, DANA, ShopeePay, LinkAja, BCA & Semua M-Banking
                                                     </div>
                                                 </div>
