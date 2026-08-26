@@ -170,7 +170,6 @@
                     <form action="{{ route('topup.process', $game->slug) }}" method="POST" id="topup-form">
                         @csrf
                         <input type="hidden" name="product_id" x-model="selectedProduct">
-                        <input type="hidden" name="payment_method" x-model="selectedPayment">
                         
                         <div class="flex flex-col xl:flex-row gap-6 items-start">
                             <!-- Kolom Tengah: Tujuan & Nominal -->
