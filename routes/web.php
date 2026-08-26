@@ -261,3 +261,15 @@ Route::get('/software', function () {
     }])->get();
     return view('software.index', compact('softwareProducts'));
 })->name('software.index');
+
+Route::get('/aplikasi-premium', function () {
+    $apps = \App\Models\Game::where('is_active', true)
+        ->where(function($q) {
+            $q->where('category', 'Aplikasi Premium')
+              ->orWhere('category', 'App & Entertainment')
+              ->orWhere('category', 'LIKE', '%aplikasi%')
+              ->orWhere('category', 'LIKE', '%streaming%');
+        })
+        ->get();
+    return view('aplikasi-premium.index', compact('apps'));
+})->name('aplikasi-premium.index');
