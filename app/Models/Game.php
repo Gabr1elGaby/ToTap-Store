@@ -18,7 +18,9 @@ class Game extends Model
         'cover_image',
         'guide_text',
         'is_active',
-        'requires_zone_id'
+        'requires_zone_id',
+        'target_field_1',
+        'target_field_2',
     ];
 
     public function products()

@@ -86,8 +86,8 @@ class GameController extends Controller
             'target_field_2' => 'nullable|string',
         ]);
 
-        $validated['is_active'] = $request->has('is_active');
-        $validated['requires_zone_id'] = $request->has('requires_zone_id');
+        $validated['is_active'] = $request->input('is_active') == '1' || $request->input('is_active') === true || $request->has('is_active');
+        $validated['requires_zone_id'] = $request->has('requires_zone_id') ? 1 : 0;
         $validated['slug'] = Str::slug($validated['name']);
 
         $uploadDir = public_path('images/games');
@@ -130,10 +130,12 @@ class GameController extends Controller
             'guide_text' => 'nullable|string',
             'target_field_1' => 'nullable|string',
             'target_field_2' => 'nullable|string',
+            'is_active' => 'nullable',
+            'requires_zone_id' => 'nullable',
         ]);
 
-        $validated['is_active'] = $request->has('is_active');
-        $validated['requires_zone_id'] = $request->has('requires_zone_id');
+        $validated['is_active'] = $request->input('is_active') == '1' || $request->input('is_active') === true;
+        $validated['requires_zone_id'] = $request->has('requires_zone_id') ? 1 : 0;
 
         if ($request->name !== $game->name) {
             $validated['slug'] = Str::slug($validated['name']);
