@@ -180,7 +180,7 @@ class AdminTransactionController extends Controller
                 } else {
                     $errMsg = $orderRes['message'] ?? 'API Provider gagal memproses pesanan.';
                     $transaction->update(['status' => 'paid']);
-                    return back()->with('warning', "Pembayaran Diterima, namun API VIP Reseller membalas: \"{$errMsg}\". Anda dapat melakukan pengisian manual lalu klik 'Tandai Sukses Manual'.");
+                    return back()->with('warning', "API VIP Reseller Menolak: \"{$errMsg}\". Dana Anda di VIP Reseller aman (tidak terpotong). Anda dapat klik tombol 'Refund Saldo' untuk mengembalikan dana ke customer, atau kirim manual lalu klik 'Manual'.");
                 }
             }
         } catch (\Exception $e) {
