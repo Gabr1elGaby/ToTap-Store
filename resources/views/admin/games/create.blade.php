@@ -14,36 +14,37 @@
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             <!-- Card Template Otomatis -->
-            <div class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 rounded-3xl p-6 sm:p-7 text-white shadow-xl border border-indigo-700/50">
+            <div style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%); color: #ffffff !important;" class="rounded-3xl p-6 sm:p-7 shadow-xl border border-indigo-500/30">
                 <div class="flex items-start gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur flex items-center justify-center text-indigo-200 text-2xl shrink-0 border border-white/20">
+                    <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-white text-2xl shrink-0 border border-white/30">
                         <i class="fas fa-magic"></i>
                     </div>
                     <div class="flex-1">
                         <h3 class="text-lg font-black text-white">Auto-Fill Data Game Populer</h3>
-                        <p class="text-xs text-indigo-200 mt-1">
+                        <p class="text-xs text-indigo-100 mt-1 font-medium">
                             Pilih game di bawah ini untuk mengisi seluruh data yang diperlukan secara otomatis (Format User ID, Zone ID, Publisher, dan Panduan Top Up).
                         </p>
 
                         <div class="mt-4 flex flex-wrap items-center gap-3">
-                            <select x-model="selectedPreset" @change="applyPreset()" class="bg-white/10 backdrop-blur border border-white/30 text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:ring-2 focus:ring-emerald-400 focus:outline-none cursor-pointer">
-                                <option value="" class="text-gray-900 font-bold">-- Pilih Game Populer (Auto-Fill) --</option>
-                                <option value="mlbb" class="text-gray-900 font-bold">Mobile Legends (User ID + Zone ID)</option>
-                                <option value="magic_chess" class="text-gray-900 font-bold">Magic Chess: Go Go (User ID + Zone ID)</option>
-                                <option value="free_fire" class="text-gray-900 font-bold">Free Fire (Player ID)</option>
-                                <option value="pubg" class="text-gray-900 font-bold">PUBG Mobile (Player ID)</option>
-                                <option value="valorant" class="text-gray-900 font-bold">Valorant (Riot ID + Tagline)</option>
-                                <option value="genshin" class="text-gray-900 font-bold">Genshin Impact (UID + Server)</option>
-                                <option value="hsr" class="text-gray-900 font-bold">Honkai: Star Rail (UID + Server)</option>
-                                <option value="codm" class="text-gray-900 font-bold">Call of Duty: Mobile (OpenID)</option>
-                                <option value="hok" class="text-gray-900 font-bold">Honor of Kings (UID)</option>
-                                <option value="blood_strike" class="text-gray-900 font-bold">Blood Strike (User ID)</option>
-                                <option value="aov" class="text-gray-900 font-bold">Arena of Valor (OpenID)</option>
-                                <option value="point_blank" class="text-gray-900 font-bold">Point Blank (Zepetto ID)</option>
-                                <option value="roblox" class="text-gray-900 font-bold">Roblox (Username)</option>
+                            <select x-model="selectedPreset" @change="applyPreset()" style="background-color: rgba(255, 255, 255, 0.2); color: #ffffff;" class="backdrop-blur border border-white/40 rounded-xl px-4 py-2.5 text-xs font-bold focus:ring-2 focus:ring-emerald-400 focus:outline-none cursor-pointer">
+                                <option value="" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">-- Pilih Game Populer (Auto-Fill) --</option>
+                                <option value="steam" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">🎮 Steam Wallet IDR (Nomor WhatsApp / Voucher)</option>
+                                <option value="mlbb" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Mobile Legends (User ID + Zone ID)</option>
+                                <option value="magic_chess" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Magic Chess: Go Go (User ID + Zone ID)</option>
+                                <option value="free_fire" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Free Fire (Player ID)</option>
+                                <option value="pubg" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">PUBG Mobile (Player ID)</option>
+                                <option value="valorant" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Valorant (Riot ID + Tagline)</option>
+                                <option value="genshin" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Genshin Impact (UID + Server)</option>
+                                <option value="hsr" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Honkai: Star Rail (UID + Server)</option>
+                                <option value="codm" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Call of Duty: Mobile (OpenID)</option>
+                                <option value="hok" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Honor of Kings (UID)</option>
+                                <option value="blood_strike" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Blood Strike (User ID)</option>
+                                <option value="aov" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Arena of Valor (OpenID)</option>
+                                <option value="point_blank" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Point Blank (Zepetto ID)</option>
+                                <option value="roblox" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Roblox (Username)</option>
                             </select>
 
-                            <button type="button" @click="applyPreset()" x-show="selectedPreset" class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-gray-950 font-black text-xs shadow transition flex items-center gap-1.5 cursor-pointer">
+                            <button type="button" @click="applyPreset()" x-show="selectedPreset" style="background-color: #10b981; color: #ffffff;" class="px-4 py-2.5 rounded-xl hover:opacity-90 font-black text-xs shadow-lg transition flex items-center gap-1.5 cursor-pointer">
                                 <i class="fas fa-check"></i> Terapkan Format
                             </button>
                         </div>
@@ -164,6 +165,15 @@
                 requires_zone_id: false,
                 guide_text: '',
                 presets: {
+                    steam: {
+                        name: 'Steam Wallet IDR',
+                        developer: 'Valve Corporation',
+                        category: 'PC Game',
+                        target_field_1: 'Nomor WhatsApp / No HP',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Nomor WhatsApp Anda. Kode Voucher Steam Wallet (Serial Number) akan dikirimkan dan tampil otomatis pada invoice setelah pembayaran berhasil.'
+                    },
                     mlbb: {
                         name: 'Mobile Legends',
                         developer: 'Moonton',
