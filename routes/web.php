@@ -183,6 +183,7 @@ Route::middleware(['auth', 'verified', 'role:superadmin'])->prefix('admin')->nam
     Route::resource('games', \App\Http\Controllers\Admin\GameController::class);
     Route::get('games/{game}/products/sync', [\App\Http\Controllers\Admin\GameProductController::class, 'syncForm'])->name('games.products.sync');
     Route::post('games/{game}/products/sync', [\App\Http\Controllers\Admin\GameProductController::class, 'syncProcess'])->name('games.products.sync.process');
+    Route::post('games/{game}/products/cleanup-non-idr', [\App\Http\Controllers\Admin\GameProductController::class, 'cleanupNonIdr'])->name('games.products.cleanup-non-idr');
     Route::resource('games.products', \App\Http\Controllers\Admin\GameProductController::class)->except(['create', 'store', 'show']);
 
     // Admin Actions (Placed before wildcard routes)

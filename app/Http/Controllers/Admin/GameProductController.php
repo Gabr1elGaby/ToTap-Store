@@ -48,7 +48,22 @@ class GameProductController extends Controller
     public function destroy(Game $game, GameProduct $product)
     {
         $product->delete();
-        return redirect()->route('admin.games.products.index', $game)->with('success', 'Produk berhasil dihapus.');
+        return back()->with('success', 'Produk berhasil dihapus.');
+    }
+
+    public function cleanupNonIdr(Game $game)
+    {
+        $deleted = 0;
+        $all = $game->products()->get();
+        foreach ($all as $p) {
+            $n = strtoupper($p->name . ' ' . $p->product_code);
+            if (preg_match('/(PHP|MYR|INR|THB|SGD|USD|EUR|BRL|TRY|VND|TWD|AUD|SAR|AED|HKD|GLOBAL|MALAYSIA|PHILIPPINES|THAILAND|SINGAPORE)/', $n)) {
+                $p->delete();
+                $deleted++;
+            }
+        }
+
+        return back()->with('success', "Berhasil membersihkan {$deleted} produk non-IDR (mata uang asing)!");
     }
 
     public function syncForm(Game $game)
@@ -85,6 +100,7 @@ class GameProductController extends Controller
             $name = trim($item['name']);
             $nameUpper = strtoupper($name);
             $nameLower = strtolower($name);
+            $codeUpper = strtoupper($item['code'] ?? '');
             $modal = $item['price']['special'] ?? ($item['price']['h2h'] ?? ($item['price']['premium'] ?? ($item['price']['basic'] ?? 0)));
 
             // 1. FILTER SAMPAH & HARGA MODAL NOL
@@ -96,8 +112,9 @@ class GameProductController extends Controller
                 continue; 
             }
 
-            // 3. FILTER NON-IDN DAN VOUCHER
-            if (preg_match('/\b(global|brazil|br|my|malaysia|ph|philippines|skin|charisma|p\.ace|champion|lightborn|epic|voucher|gift card|eur|usd|hkd|riot cash)\b/i', $name)) {
+            // 3. FILTER MATA UANG ASING (HANYA AMBIL IDR / INDONESIA)
+            if (preg_match('/(php|myr|inr|thb|sgd|usd|eur|brl|try|vnd|twd|aud|sar|aed|hkd|brazil|malaysia|philippines|thailand|singapore|vietnam|taiwan)/i', $name) 
+                || preg_match('/(php|myr|inr|thb|sgd|usd|eur|brl|try|vnd|twd|aud|sar|aed|hkd)/i', $codeUpper)) {
                 continue;
             }
 

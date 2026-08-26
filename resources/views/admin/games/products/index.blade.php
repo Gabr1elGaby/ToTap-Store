@@ -17,9 +17,17 @@
                     <h3 class="text-lg font-bold text-gray-900 dark:text-white">Daftar Nominal Aktif ({{ $products->count() }} Item)</h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400">Produk yang tampil hanya yang berstatus valid dan tersedia dari provider.</p>
                 </div>
-                <a href="{{ route('admin.games.products.sync', $game) }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-5 rounded-xl text-xs shadow-md transition flex items-center gap-2">
-                    <i class="fas fa-sync-alt"></i> Tarik Data Otomatis (VIP Reseller)
-                </a>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <form action="{{ route('admin.games.products.cleanup-non-idr', $game) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus seluruh produk nominal selain mata uang Rupiah/IDR (seperti PHP, MYR, THB, INR, USD, dll)?');">
+                        @csrf
+                        <button type="submit" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer shadow-sm">
+                            <i class="fas fa-broom"></i> Bersihkan Non-IDR (Asing)
+                        </button>
+                    </form>
+                    <a href="{{ route('admin.games.products.sync', $game) }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-5 rounded-xl text-xs shadow-md transition flex items-center gap-2">
+                        <i class="fas fa-sync-alt"></i> Tarik Data Otomatis (VIP Reseller)
+                    </a>
+                </div>
             </div>
             
             @if(session('success'))
@@ -57,9 +65,18 @@
                                         </span>
                                     </td>
                                     <td class="py-3.5 px-4 text-right">
-                                        <a href="{{ route('admin.games.products.edit', ['game' => $game->id, 'product' => $prod->id]) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 transition">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </a>
+                                        <div class="inline-flex items-center gap-1.5 justify-end">
+                                            <a href="{{ route('admin.games.products.edit', ['game' => $game->id, 'product' => $prod->id]) }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 transition">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            <form action="{{ route('admin.games.products.destroy', ['game' => $game->id, 'product' => $prod->id]) }}" method="POST" onsubmit="return confirm('Hapus nominal ini?');" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 transition cursor-pointer">
+                                                    <i class="fas fa-trash-alt"></i> Hapus
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                                 @endforeach
