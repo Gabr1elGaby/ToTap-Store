@@ -51,7 +51,7 @@
             </div>
 
             <!-- Desktop Right Actions (Theme Toggle + Auth Dropdown/Buttons) -->
-            <div class="hidden sm:flex sm:items-center sm:gap-3 sm:ms-6">
+            <div class="hidden sm:flex sm:items-center sm:gap-4 sm:ms-6">
                 
                 <!-- Light / Dark Mode Toggle Button (Desktop) -->
                 <button type="button"
@@ -70,7 +70,7 @@
                             document.querySelectorAll('.moon-icon-btn').forEach(el => el.classList.add('hidden'));
                         }
                     "
-                    class="p-2 rounded-xl text-gray-600 dark:text-gray-300 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-gray-700/60 transition focus:outline-none flex items-center justify-center border border-gray-200 dark:border-gray-700 shadow-sm"
+                    class="p-2 rounded-xl text-gray-600 dark:text-gray-300 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-gray-700/60 transition focus:outline-none flex items-center justify-center border border-gray-200 dark:border-gray-700 shadow-sm shrink-0"
                     title="Ganti Mode Terang / Gelap">
                     <!-- Sun Icon (Active in Dark mode) -->
                     <svg class="sun-icon-btn w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -84,14 +84,14 @@
 
                 @auth
                 <!-- Saldo Dompet Akun -->
-                <a href="{{ route('profile.edit') }}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-400 text-gray-950 font-black text-xs shadow-sm transition hover:scale-105" title="Saldo Akun Anda">
-                    <svg class="w-3.5 h-3.5 text-gray-950 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="{{ route('profile.edit') }}" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-gray-950 font-black text-xs shadow-sm transition hover:scale-105 shrink-0" title="Saldo Akun Anda">
+                    <svg class="w-4 h-4 text-gray-950 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                     </svg>
-                    <span>Rp{{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}</span>
+                    <span class="tracking-wide">Rp{{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}</span>
                 </a>
 
-                <div class="relative" id="user-menu-dropdown-wrapper">
+                <div class="relative ml-2" id="user-menu-dropdown-wrapper">
                     <button type="button" 
                             onclick="toggleUserDropdownMenu(event)" 
                             class="inline-flex items-center px-3.5 py-2 border border-gray-300 dark:border-gray-700 text-sm leading-4 font-bold rounded-xl text-gray-800 dark:text-white bg-white dark:bg-gray-800 hover:text-indigo-600 dark:hover:text-blue-400 focus:outline-none transition ease-in-out duration-150 shadow-sm cursor-pointer">
