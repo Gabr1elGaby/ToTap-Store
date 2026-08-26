@@ -257,7 +257,18 @@
                             <img src="{{ asset('images/software-logo.png') }}" alt="Software" class="w-full h-full object-contain" style="filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.1));">
                         </div>
                         
-                        <h3 class="text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors" style="font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 14px; letter-spacing: 0.5px;">SOFTWARE</h3>
+                    <!-- KATEGORI: APLIKASI PREMIUM -->
+                    <a href="{{ route('topup.index', ['category' => 'app']) }}" 
+                       class="relative shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center justify-center group border border-gray-300 dark:border-gray-700 category-card-glow bg-white dark:bg-gray-900" 
+                       style="width: 180px; height: 200px; text-decoration: none; border-radius: 24px;"
+                       data-aos="zoom-in" data-aos-delay="200">
+                        
+                        <!-- Icon -->
+                        <div class="relative flex items-center justify-center mb-2 group-hover:-translate-y-2 transition-transform duration-300" style="width: 130px; height: 130px;">
+                            <img src="{{ asset('images/aplikasi-premium-logo.png') }}" alt="Aplikasi Premium" class="w-full h-full object-contain" style="filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.1));">
+                        </div>
+                        
+                        <h3 class="text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors text-center" style="font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 13px; letter-spacing: 0.5px;">APLIKASI PREMIUM</h3>
                     </a>
 
                 </div>

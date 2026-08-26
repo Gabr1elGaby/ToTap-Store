@@ -113,8 +113,9 @@
                             <select name="category" x-model="category" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-bold">
                                 <option value="Mobile Game">Mobile Game</option>
                                 <option value="PC Game">PC Game</option>
+                                <option value="Aplikasi Premium">Aplikasi Premium</option>
                                 <option value="Voucher">Voucher</option>
-                                <option value="App & Entertainment">App & Entertainment</option>
+                                <option value="App & Entertainment">App & Entertainment (Streaming)</option>
                             </select>
                         </div>
 
