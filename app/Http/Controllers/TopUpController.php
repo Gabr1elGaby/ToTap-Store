@@ -559,7 +559,7 @@ class TopUpController extends Controller
 
             $res = $api->checkNickname($gameCode, $target1, $target2);
 
-            if (isset($res['result']) && $res['result'] === true && isset($res['data'])) {
+            if (isset($res['result']) && $res['result'] === true && !empty($res['data'])) {
                 return response()->json([
                     'result' => true,
                     'is_checked' => true,
@@ -567,11 +567,29 @@ class TopUpController extends Controller
                 ]);
             }
 
-            // Jika API memberikan pesan error nickname tidak ditemukan
-            $errMsg = $res['message'] ?? ('User ID ' . $target1 . ($target2 ? ' (' . $target2 . ')' : '') . ' tidak ditemukan di game ' . $game->name . '. Silakan periksa kembali.');
+            $errMsg = $res['message'] ?? '';
+            $lowMsg = strtolower($errMsg);
+
+            // Jika Provider tidak menyediakan fitur cek nickname untuk game ini (misal: PUBG, Genshin, dll)
+            // JANGAN BLOKIR PEMBELI! Izinkan proses checkout tetap berlanjut dengan ID yang diinputkan.
+            if (
+                str_contains($lowMsg, 'not available') || 
+                str_contains($lowMsg, 'tidak tersedia') || 
+                str_contains($lowMsg, 'tidak diizinkan') || 
+                str_contains($lowMsg, 'maintenance') ||
+                str_contains($lowMsg, 'provider for game')
+            ) {
+                return response()->json([
+                    'result' => true,
+                    'is_checked' => false,
+                    'nickname' => $target1 . ($target2 ? ' (' . $target2 . ')' : ''),
+                ]);
+            }
+
+            // Jika API benar-benar menyatakan User ID tidak ditemukan (User Not Found):
             return response()->json([
                 'result' => false,
-                'message' => $errMsg,
+                'message' => $errMsg ?: ('User ID ' . $target1 . ($target2 ? ' (' . $target2 . ')' : '') . ' tidak ditemukan di game ' . $game->name . '. Silakan periksa kembali.'),
             ]);
         } catch (\Exception $e) {
             return response()->json([
