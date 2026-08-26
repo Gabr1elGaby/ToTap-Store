@@ -516,10 +516,14 @@ class TopUpController extends Controller
                     $rJson = $robloxRes->json();
                     if (!empty($rJson['data']) && isset($rJson['data'][0]['name'])) {
                         $robloxUser = $rJson['data'][0];
+                        $rNick = $robloxUser['name'] . ' (ID: ' . $robloxUser['id'] . ')';
+                        if (isset($robloxUser['displayName']) && $robloxUser['displayName'] !== $robloxUser['name']) {
+                            $rNick .= ' - ' . $robloxUser['displayName'];
+                        }
                         return response()->json([
                             'result' => true,
                             'is_checked' => true,
-                            'nickname' => $robloxUser['name'] . (isset($robloxUser['displayName']) && $robloxUser['displayName'] !== $robloxUser['name'] ? ' (' . $robloxUser['displayName'] . ')' : ''),
+                            'nickname' => $rNick,
                         ]);
                     } else {
                         return response()->json([
