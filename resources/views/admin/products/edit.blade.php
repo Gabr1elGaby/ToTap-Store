@@ -61,7 +61,7 @@
                             <thead class="bg-slate-50 dark:bg-gray-900/50">
                                 <tr>
                                     <th scope="col" class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Template Name</th>
-                                    <th scope="col" class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Price (Biaya Unduh)</th>
+                                    <th scope="col" class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Harga & Diskon</th>
                                     <th scope="col" class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
                                     <th scope="col" class="px-6 py-3.5 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aksi</th>
                                 </tr>
@@ -73,8 +73,18 @@
                                         <div class="text-sm font-bold text-gray-900 dark:text-white">{{ $t->name }}</div>
                                         <div class="text-xs text-gray-500 dark:text-gray-400 font-mono">{{ $t->slug }}</div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-indigo-600 dark:text-indigo-400">
-                                        Rp{{ number_format($t->price, 0, ',', '.') }}
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-black text-indigo-600 dark:text-indigo-400">
+                                            Rp{{ number_format($t->price, 0, ',', '.') }}
+                                        </div>
+                                        @if(!empty($t->price_normal) && $t->price_normal > $t->price)
+                                        <div class="flex items-center gap-1.5 mt-0.5">
+                                            <span class="text-xs text-gray-400 line-through">Rp{{ number_format($t->price_normal, 0, ',', '.') }}</span>
+                                            <span class="text-[10px] font-black px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-500 border border-rose-500/20">
+                                                -{{ round((($t->price_normal - $t->price) / $t->price_normal) * 100) }}%
+                                            </span>
+                                        </div>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-bold rounded-full {{ $t->status === 'active' ? 'bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20' }}">

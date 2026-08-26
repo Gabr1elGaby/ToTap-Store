@@ -21,13 +21,24 @@
                             @enderror
                         </div>
 
-                        <div class="mb-4">
-                            <label for="price" class="block text-sm font-bold text-gray-700 dark:text-gray-300">Harga Unduh (Rp)</label>
-                            <input type="number" name="price" id="price" value="{{ old('price', $template->price) }}" min="0" step="1" class="mt-1 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm rounded-xl">
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Isi 0 untuk membuatnya gratis.</p>
-                            @error('price')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="price_normal" class="block text-sm font-bold text-gray-700 dark:text-gray-300">Harga Normal / Coret (Rp)</label>
+                                <input type="number" name="price_normal" id="price_normal" value="{{ old('price_normal', $template->price_normal ?? '') }}" min="0" step="1" placeholder="Contoh: 20000" class="mt-1 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm rounded-xl">
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Harga sebelum diskon (akan ditampilkan tercoret).</p>
+                                @error('price_normal')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="price" class="block text-sm font-bold text-gray-700 dark:text-gray-300">Harga Promo / Beli Sekarang (Rp)</label>
+                                <input type="number" name="price" id="price" value="{{ old('price', $template->price) }}" min="0" step="1" placeholder="Contoh: 5000" class="mt-1 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm rounded-xl">
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Biaya aktual yang dibayar user (Isi 0 untuk gratis).</p>
+                                @error('price')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
 
                         <div class="mb-6">

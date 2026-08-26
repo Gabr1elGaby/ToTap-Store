@@ -37,6 +37,11 @@ class CvTemplateController extends Controller
             'updated_at' => now(),
         ]);
 
-        return redirect()->route('admin.cv-templates.index')->with('success', 'CV Template updated successfully.');
+        $cvProduct = DB::table('products')->where('slug', 'like', '%cv%')->orWhere('name', 'like', '%cv%')->first();
+        if ($cvProduct) {
+            return redirect()->route('admin.products.edit', $cvProduct->id)->with('success', 'Harga dan Diskon Template CV berhasil diperbarui.');
+        }
+
+        return redirect()->route('admin.cv-templates.index')->with('success', 'Harga dan Diskon Template CV berhasil diperbarui.');
     }
 }
