@@ -34,8 +34,11 @@
                     <x-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.*')">
                         {{ __('Products') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('admin.games.index')" :active="request()->routeIs('admin.games.*')">
+                    <x-nav-link :href="route('admin.games.index')" :active="request()->routeIs('admin.games.*') && !request()->has('category')">
                         {{ __('Top Up Game') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('admin.games.index', ['category' => 'app-premium'])" :active="request()->has('category') && request()->get('category') === 'app-premium'">
+                        {{ __('App Premium') }}
                     </x-nav-link>
                     <x-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.plans.*')">
                         {{ __('Plans') }}
@@ -222,8 +225,11 @@
                 <x-responsive-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.*')">
                     <i class="fas fa-boxes mr-2 text-blue-500"></i> {{ __('Products') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.games.index')" :active="request()->routeIs('admin.games.*')">
+                <x-responsive-nav-link :href="route('admin.games.index')" :active="request()->routeIs('admin.games.*') && !request()->has('category')">
                     <i class="fas fa-gamepad mr-2 text-purple-500"></i> {{ __('Top Up Game') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.games.index', ['category' => 'app-premium'])" :active="request()->has('category') && request()->get('category') === 'app-premium'">
+                    <i class="fas fa-crown mr-2 text-amber-500"></i> {{ __('App Premium') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.plans.*')">
                     <i class="fas fa-tags mr-2 text-green-500"></i> {{ __('Plans') }}

@@ -59,9 +59,18 @@
 
             <!-- Header & Action -->
             <div class="flex justify-between items-center">
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Daftar Game Aktif</h3>
+                @if(request()->get('category') === 'app-premium')
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            <i class="fas fa-crown text-amber-500"></i> Kelola Aplikasi Premium
+                        </h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Tambahkan layanan seperti Spotify, Netflix, YouTube Premium, dll. Set kategori ke <strong>"Aplikasi Premium"</strong>.</p>
+                    </div>
+                @else
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Daftar Game Aktif</h3>
+                @endif
                 <a href="{{ route('admin.games.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-5 rounded-xl text-xs shadow-md transition">
-                    + Tambah Game Baru
+                    + Tambah {{ request()->get('category') === 'app-premium' ? 'Aplikasi Premium' : 'Game Baru' }}
                 </a>
             </div>
 

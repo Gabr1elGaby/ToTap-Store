@@ -10,9 +10,21 @@ use Illuminate\Support\Str;
 
 class GameController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $games = Game::withCount('products')->orderBy('name')->paginate(25);
+        $categoryFilter = $request->query('category');
+        $query = Game::withCount('products')->orderBy('name');
+
+        if ($categoryFilter === 'app-premium') {
+            $query->where(function($q) {
+                $q->where('category', 'Aplikasi Premium')
+                  ->orWhere('category', 'App & Entertainment')
+                  ->orWhere('category', 'LIKE', '%aplikasi%')
+                  ->orWhere('category', 'LIKE', '%streaming%');
+            });
+        }
+
+        $games = $query->paginate(25)->appends($request->query());
         $vipBalance = (float) Setting::get('vip_balance_threshold', 0);
         $vipProfileData = null;
 
