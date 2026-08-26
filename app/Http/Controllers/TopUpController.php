@@ -383,12 +383,20 @@ class TopUpController extends Controller
             // 3. Coba kirim otomatis ke Provider (VIP Reseller)
             try {
                 $vipService = app(\App\Services\VipResellerService::class);
-                $orderRes = $vipService->order(
-                    $product->product_code,
-                    $playerId,
-                    $isZoneRequired ? $zoneId : '',
-                    $transaction->id
-                );
+                if (method_exists($vipService, 'order')) {
+                    $orderRes = $vipService->order(
+                        $product->product_code,
+                        $playerId,
+                        $isZoneRequired ? $zoneId : '',
+                        $transaction->id
+                    );
+                } else {
+                    $orderRes = $vipService->createOrder(
+                        $product->product_code,
+                        $playerId,
+                        $isZoneRequired ? $zoneId : ''
+                    );
+                }
 
                 if (isset($orderRes['result']) && $orderRes['result'] === true) {
                     $transaction->update([

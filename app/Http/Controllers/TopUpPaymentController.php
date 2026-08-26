@@ -42,12 +42,20 @@ class TopUpPaymentController extends Controller
                     $game = $transaction->game;
                     if ($product && $game) {
                         $vipService = app(VipResellerService::class);
-                        $orderRes = $vipService->order(
-                            $product->product_code,
-                            $transaction->target_field_1,
-                            $transaction->target_field_2,
-                            $transaction->id
-                        );
+                        if (method_exists($vipService, 'order')) {
+                            $orderRes = $vipService->order(
+                                $product->product_code,
+                                $transaction->target_field_1,
+                                $transaction->target_field_2,
+                                $transaction->id
+                            );
+                        } else {
+                            $orderRes = $vipService->createOrder(
+                                $product->product_code,
+                                $transaction->target_field_1,
+                                $transaction->target_field_2 ?? ''
+                            );
+                        }
 
                         if (isset($orderRes['result']) && $orderRes['result'] === true) {
                             $transaction->update([
@@ -81,12 +89,20 @@ class TopUpPaymentController extends Controller
                         $game = $transaction->game;
                         if ($product && $game) {
                             $vipService = app(VipResellerService::class);
-                            $orderRes = $vipService->order(
-                                $product->product_code,
-                                $transaction->target_field_1,
-                                $transaction->target_field_2,
-                                $transaction->id
-                            );
+                            if (method_exists($vipService, 'order')) {
+                                $orderRes = $vipService->order(
+                                    $product->product_code,
+                                    $transaction->target_field_1,
+                                    $transaction->target_field_2,
+                                    $transaction->id
+                                );
+                            } else {
+                                $orderRes = $vipService->createOrder(
+                                    $product->product_code,
+                                    $transaction->target_field_1,
+                                    $transaction->target_field_2 ?? ''
+                                );
+                            }
 
                             if (isset($orderRes['result']) && $orderRes['result'] === true) {
                                 $transaction->update([

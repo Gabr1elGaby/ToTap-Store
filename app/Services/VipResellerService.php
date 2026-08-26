@@ -48,17 +48,28 @@ class VipResellerService
         return $response->json();
     }
 
+    public function order($serviceCode, $targetId, $targetZone = '', $customTrxId = '')
+    {
+        return $this->createOrder($serviceCode, $targetId, $targetZone);
+    }
+
     public function createOrder($serviceCode, $targetId, $targetZone = '')
     {
         $dataNo = $targetZone ? "{$targetId}{$targetZone}" : $targetId;
 
-        $response = Http::connectTimeout(60)->timeout(120)->retry(3, 2000)->asForm()->post("{$this->baseUrl}/game-feature", [
+        $payload = [
             'key' => $this->apiKey,
             'sign' => $this->generateSign(),
             'type' => 'order',
             'service' => $serviceCode,
-            'data_no' => $dataNo
-        ]);
+            'data_no' => $dataNo,
+        ];
+
+        if (!empty($targetZone)) {
+            $payload['data_zone'] = $targetZone;
+        }
+
+        $response = Http::connectTimeout(60)->timeout(120)->retry(3, 2000)->asForm()->post("{$this->baseUrl}/game-feature", $payload);
 
         return $response->json();
     }
