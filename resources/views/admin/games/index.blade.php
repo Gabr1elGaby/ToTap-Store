@@ -114,6 +114,13 @@
                                             <a href="{{ route('admin.games.edit', $game) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 transition">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
+                                            <form action="{{ route('admin.games.destroy', $game) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus game {{ $game->name }} beserta seluruh produknya?');" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 transition cursor-pointer" title="Hapus Game">
+                                                    <i class="fas fa-trash-alt"></i> Hapus
+                                                </button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>

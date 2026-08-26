@@ -180,7 +180,14 @@ class GameController extends Controller
 
     public function destroy(Game $game)
     {
-        $game->delete();
-        return redirect()->route('admin.games.index')->with('success', 'Game berhasil dihapus.');
+        try {
+            $gameName = $game->name;
+            // Delete all products associated with this game first
+            $game->products()->delete();
+            $game->delete();
+            return redirect()->route('admin.games.index')->with('success', "Game '{$gameName}' beserta seluruh produknya berhasil dihapus.");
+        } catch (\Throwable $e) {
+            return redirect()->route('admin.games.index')->with('error', 'Gagal menghapus game: ' . $e->getMessage());
+        }
     }
 }

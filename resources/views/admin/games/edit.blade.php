@@ -123,14 +123,26 @@
                         <textarea name="guide_text" x-model="guide_text" rows="3" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white text-sm font-medium" placeholder="Tuliskan petunjuk cara melihat ID game..."></textarea>
                     </div>
 
-                    <div class="pt-4 flex items-center justify-end gap-3">
-                        <a href="{{ route('admin.games.index') }}" class="px-5 py-3 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold text-xs transition">
-                            Batal
-                        </a>
-                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-indigo-600/30 transition cursor-pointer flex items-center gap-2 text-sm">
-                            <i class="fas fa-save"></i> Simpan Perubahan
+                    <div class="pt-4 flex items-center justify-between border-t border-gray-200 dark:border-gray-700">
+                        <button type="button" 
+                                onclick="if(confirm('Apakah Anda yakin ingin menghapus game {{ $game->name }} beserta seluruh produknya?')) { document.getElementById('delete-game-form').submit(); }"
+                                class="px-5 py-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 font-bold text-xs border border-red-500/30 transition flex items-center gap-1.5 cursor-pointer">
+                            <i class="fas fa-trash-alt"></i> Hapus Game
                         </button>
+                        <div class="flex items-center gap-3">
+                            <a href="{{ route('admin.games.index') }}" class="px-5 py-3 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold text-xs transition">
+                                Batal
+                            </a>
+                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-indigo-600/30 transition cursor-pointer flex items-center gap-2 text-sm">
+                                <i class="fas fa-save"></i> Simpan Perubahan
+                            </button>
+                        </div>
                     </div>
+                </form>
+
+                <form id="delete-game-form" action="{{ route('admin.games.destroy', $game) }}" method="POST" class="hidden">
+                    @csrf
+                    @method('DELETE')
                 </form>
             </div>
         </div>
