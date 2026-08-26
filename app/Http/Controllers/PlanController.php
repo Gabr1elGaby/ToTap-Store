@@ -31,6 +31,7 @@ class PlanController extends Controller
             'duration_days' => 'required|integer|min:0',
             'user_limit' => 'nullable|integer',
             'transaction_limit' => 'nullable|integer',
+            'features' => 'nullable|string',
             'is_active' => 'boolean',
         ]);
         
@@ -56,6 +57,7 @@ class PlanController extends Controller
             'duration_days' => 'required|integer|min:0',
             'user_limit' => 'nullable|integer',
             'transaction_limit' => 'nullable|integer',
+            'features' => 'nullable|string',
             'is_active' => 'boolean',
         ]);
         

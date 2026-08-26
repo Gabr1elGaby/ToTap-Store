@@ -41,6 +41,11 @@
                             <label class="block font-medium text-sm text-gray-700 dark:text-gray-300" for="user_limit">User Limit (Optional)</label>
                             <input class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full" id="user_limit" type="number" name="user_limit" value="{{ $plan->user_limit }}" />
                         </div>
+                        <div class="mb-4">
+                            <label class="block font-bold text-sm text-gray-700 dark:text-gray-300" for="features">Daftar Fitur / Poin Teks Paket (1 Baris = 1 Centang)</label>
+                            <textarea class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full font-mono text-sm" id="features" name="features" rows="5" placeholder="Maksimal 7 User&#10;Akses penuh sistem&#10;Support WhatsApp 24 Jam">{{ old('features', $plan->features) }}</textarea>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">💡 Tulis teks atau poin fitur paket di sini (pisahkan per baris). Setiap baris akan otomatis tampil dengan ikon centang hijau di halaman produk/kasir.</p>
+                        </div>
                         <div class="mb-4 block">
                             <label for="is_active" class="inline-flex items-center">
                                 <input id="is_active" type="checkbox" class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800" name="is_active" value="1" {{ $plan->is_active ? 'checked' : '' }}>

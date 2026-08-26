@@ -74,26 +74,37 @@
                               </div>
                             
                             <ul class="text-gray-700 dark:text-gray-300 mb-8 flex-grow space-y-3">
-                                @if($plan->user_limit)
+                                @if(!empty($plan->features))
+                                    @foreach(preg_split('/\r\n|\r|\n/', $plan->features) as $featureLine)
+                                        @if(trim($featureLine))
+                                            <li class="flex items-center">
+                                                <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                {{ trim($featureLine) }}
+                                            </li>
+                                        @endif
+                                    @endforeach
+                                @else
+                                    @if($plan->user_limit)
+                                        <li class="flex items-center">
+                                            <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            Maksimal {{ $plan->user_limit }} User
+                                        </li>
+                                    @endif
+                                    @if($plan->transaction_limit)
+                                        <li class="flex items-center">
+                                            <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            {{ $plan->transaction_limit }} Transaksi
+                                        </li>
+                                    @endif
                                     <li class="flex items-center">
                                         <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                        Maksimal {{ $plan->user_limit }} User
+                                        Akses penuh sistem
                                     </li>
-                                @endif
-                                @if($plan->transaction_limit)
                                     <li class="flex items-center">
                                         <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                        {{ $plan->transaction_limit }} Transaksi
+                                        Bantuan CS WhatsApp Cepat
                                     </li>
                                 @endif
-                                <li class="flex items-center">
-                                    <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    Akses penuh sistem
-                                </li>
-                                <li class="flex items-center">
-                                    <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    Bantuan CS WhatsApp Cepat
-                                </li>
                             </ul>
 
                             @auth
