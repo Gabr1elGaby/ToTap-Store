@@ -34,12 +34,48 @@
                     <x-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.*')">
                         {{ __('Products') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('admin.games.index')" :active="request()->routeIs('admin.games.*') && !request()->has('category')">
-                        {{ __('Top Up Game') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('admin.games.index', ['category' => 'app-premium'])" :active="request()->has('category') && request()->get('category') === 'app-premium'">
-                        {{ __('App Premium') }}
-                    </x-nav-link>
+                    <!-- Dropdown Top Up & App -->
+                    <div class="relative inline-flex items-center" x-data="{ open: false }" @click.outside="open = false" @close.stop="open = false">
+                        <button @click="open = !open" 
+                                type="button" 
+                                class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.games.*') ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400 font-black' : 'border-transparent text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 font-bold' }} text-sm leading-5 transition duration-150 ease-in-out cursor-pointer">
+                            <span>{{ __('Top Up & App') }}</span>
+                            <svg class="ms-1.5 h-4 w-4 fill-current transition-transform duration-200" :class="{ 'rotate-180': open }" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <div x-show="open" 
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="transform opacity-0 scale-95"
+                             x-transition:enter-end="transform opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75"
+                             x-transition:leave-start="transform opacity-100 scale-100"
+                             x-transition:leave-end="transform opacity-0 scale-95"
+                             class="absolute top-full left-0 mt-3 w-56 rounded-2xl shadow-2xl bg-white dark:bg-gray-800 ring-1 ring-black/5 dark:ring-white/10 border border-gray-100 dark:border-gray-700 py-2 z-50 overflow-hidden"
+                             style="display: none;">
+                            <a href="{{ route('admin.games.index', ['category' => 'game']) }}" 
+                               class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-gray-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition">
+                                <span class="w-7 h-7 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center text-sm shrink-0">🎮</span>
+                                <div>
+                                    <div class="font-bold">Top Up Game</div>
+                                    <div class="text-[10px] text-gray-400 font-normal">Game Mobile, PC, Voucher</div>
+                                </div>
+                            </a>
+                            <a href="{{ route('admin.games.index', ['category' => 'app-premium']) }}" 
+                               class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-amber-50 dark:hover:bg-gray-700 hover:text-amber-600 dark:hover:text-amber-400 transition border-t border-gray-100 dark:border-gray-700">
+                                <span class="w-7 h-7 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-sm shrink-0">👑</span>
+                                <div>
+                                    <div class="font-bold">Aplikasi Premium</div>
+                                    <div class="text-[10px] text-gray-400 font-normal">Spotify, Netflix, YouTube</div>
+                                </div>
+                            </a>
+                            <a href="{{ route('admin.games.index', ['category' => 'all']) }}" 
+                               class="flex items-center gap-3 px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition border-t border-gray-100 dark:border-gray-700">
+                                <span class="w-7 h-7 rounded-xl bg-slate-500/10 text-slate-600 flex items-center justify-center text-xs shrink-0">🌟</span>
+                                <span>Semua Layanan</span>
+                            </a>
+                        </div>
+                    </div>
                     <x-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.plans.*')">
                         {{ __('Plans') }}
                     </x-nav-link>
@@ -225,11 +261,8 @@
                 <x-responsive-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.*')">
                     <i class="fas fa-boxes mr-2 text-blue-500"></i> {{ __('Products') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.games.index')" :active="request()->routeIs('admin.games.*') && !request()->has('category')">
-                    <i class="fas fa-gamepad mr-2 text-purple-500"></i> {{ __('Top Up Game') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.games.index', ['category' => 'app-premium'])" :active="request()->has('category') && request()->get('category') === 'app-premium'">
-                    <i class="fas fa-crown mr-2 text-amber-500"></i> {{ __('App Premium') }}
+                <x-responsive-nav-link :href="route('admin.games.index')" :active="request()->routeIs('admin.games.*')">
+                    <i class="fas fa-gamepad mr-2 text-purple-500"></i> {{ __('Top Up & App') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.plans.*')">
                     <i class="fas fa-tags mr-2 text-green-500"></i> {{ __('Plans') }}

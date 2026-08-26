@@ -5,7 +5,7 @@
                 &larr; Kembali
             </a>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Tambah Game Baru') }}
+                {{ request('category') === 'Aplikasi Premium' ? __('Tambah Layanan Aplikasi Premium') : __('Tambah Game Baru') }}
             </h2>
         </div>
     </x-slot>
@@ -188,12 +188,16 @@
 
     <script>
         function gameForm() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const defaultCategory = urlParams.get('category') || 'Mobile Game';
+            const defaultField1 = defaultCategory === 'Aplikasi Premium' ? 'Nomor WhatsApp / Akun' : 'User ID';
+            
             return {
                 selectedPreset: '',
                 name: '',
                 developer: '',
-                category: 'Mobile Game',
-                target_field_1: 'User ID',
+                category: defaultCategory,
+                target_field_1: defaultField1,
                 target_field_2: '',
                 requires_zone_id: false,
                 guide_text: '',

@@ -12,7 +12,7 @@ class GameController extends Controller
 {
     public function index(Request $request)
     {
-        $categoryFilter = $request->query('category');
+        $categoryFilter = $request->query('category', 'all');
         $query = Game::withCount('products')->orderBy('name');
 
         if ($categoryFilter === 'app-premium') {
@@ -22,9 +22,44 @@ class GameController extends Controller
                   ->orWhere('category', 'LIKE', '%aplikasi%')
                   ->orWhere('category', 'LIKE', '%streaming%');
             });
+        } elseif ($categoryFilter === 'game') {
+            $query->where(function($q) {
+                $q->whereNull('category')
+                  ->orWhere('category', '')
+                  ->orWhere('category', 'Mobile Game')
+                  ->orWhere('category', 'PC Game')
+                  ->orWhere('category', 'Voucher')
+                  ->orWhere(function($sq) {
+                      $sq->where('category', 'NOT LIKE', '%aplikasi%')
+                         ->where('category', 'NOT LIKE', '%streaming%')
+                         ->where('category', 'NOT LIKE', '%entertainment%');
+                  });
+            });
         }
 
         $games = $query->paginate(25)->appends($request->query());
+
+        // Count totals for tab badges
+        $totalAll = Game::count();
+        $totalApp = Game::where(function($q) {
+            $q->where('category', 'Aplikasi Premium')
+              ->orWhere('category', 'App & Entertainment')
+              ->orWhere('category', 'LIKE', '%aplikasi%')
+              ->orWhere('category', 'LIKE', '%streaming%');
+        })->count();
+        $totalGame = Game::where(function($q) {
+            $q->whereNull('category')
+              ->orWhere('category', '')
+              ->orWhere('category', 'Mobile Game')
+              ->orWhere('category', 'PC Game')
+              ->orWhere('category', 'Voucher')
+              ->orWhere(function($sq) {
+                  $sq->where('category', 'NOT LIKE', '%aplikasi%')
+                     ->where('category', 'NOT LIKE', '%streaming%')
+                     ->where('category', 'NOT LIKE', '%entertainment%');
+              });
+        })->count();
+
         $vipBalance = (float) Setting::get('vip_balance_threshold', 0);
         $vipProfileData = null;
 
@@ -43,7 +78,7 @@ class GameController extends Controller
             // Keep existing balance from setting on network error
         }
 
-        return view('admin.games.index', compact('games', 'vipBalance', 'vipProfileData'));
+        return view('admin.games.index', compact('games', 'vipBalance', 'vipProfileData', 'categoryFilter', 'totalAll', 'totalGame', 'totalApp'));
     }
 
     public function syncBalance()

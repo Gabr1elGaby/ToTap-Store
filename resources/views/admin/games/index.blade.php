@@ -57,20 +57,29 @@
                 </div>
             </div>
 
-            <!-- Header & Action -->
-            <div class="flex justify-between items-center">
-                @if(request()->get('category') === 'app-premium')
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                            <i class="fas fa-crown text-amber-500"></i> Kelola Aplikasi Premium
-                        </h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Tambahkan layanan seperti Spotify, Netflix, YouTube Premium, dll. Set kategori ke <strong>"Aplikasi Premium"</strong>.</p>
-                    </div>
-                @else
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Daftar Game Aktif</h3>
-                @endif
-                <a href="{{ route('admin.games.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-5 rounded-xl text-xs shadow-md transition">
-                    + Tambah {{ request()->get('category') === 'app-premium' ? 'Aplikasi Premium' : 'Game Baru' }}
+            <!-- Category Filter Tabs & Add Button Bar -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div class="flex flex-wrap items-center gap-2">
+                    <a href="{{ route('admin.games.index', ['category' => 'all']) }}" 
+                       class="px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center gap-2 {{ ($categoryFilter === 'all' || !$categoryFilter) ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700' }}">
+                        <span>🌟</span> Semua Layanan
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black {{ ($categoryFilter === 'all' || !$categoryFilter) ? 'bg-white/20 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' }}">{{ $totalAll ?? 0 }}</span>
+                    </a>
+                    <a href="{{ route('admin.games.index', ['category' => 'game']) }}" 
+                       class="px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center gap-2 {{ $categoryFilter === 'game' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700' }}">
+                        <span>🎮</span> Top Up Game
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black {{ $categoryFilter === 'game' ? 'bg-white/20 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' }}">{{ $totalGame ?? 0 }}</span>
+                    </a>
+                    <a href="{{ route('admin.games.index', ['category' => 'app-premium']) }}" 
+                       class="px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center gap-2 {{ $categoryFilter === 'app-premium' ? 'bg-amber-500 text-white shadow-md shadow-amber-500/30' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700' }}">
+                        <span>👑</span> Aplikasi Premium
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black {{ $categoryFilter === 'app-premium' ? 'bg-white/20 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' }}">{{ $totalApp ?? 0 }}</span>
+                    </a>
+                </div>
+
+                <a href="{{ route('admin.games.create', ['category' => ($categoryFilter === 'app-premium' ? 'Aplikasi Premium' : '')]) }}" 
+                   class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs {{ $categoryFilter === 'app-premium' ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-md shadow-amber-500/30' : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/30' }} transition cursor-pointer">
+                    <i class="fas fa-plus"></i> Tambah {{ $categoryFilter === 'app-premium' ? 'Aplikasi Premium' : ($categoryFilter === 'game' ? 'Game Baru' : 'Layanan Baru') }}
                 </a>
             </div>
 
