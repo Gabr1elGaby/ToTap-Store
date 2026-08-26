@@ -304,7 +304,7 @@
 
                     @php
                         $invNo = $cv->invoice_number ?? ('INV/CV/TTS/' . $cv->id);
-                        $adminWa = '6281328972073';
+                        $adminWa = '6285198503253';
                         $waMsg = "Halo Admin ToTap Store, saya sudah melakukan pembayaran untuk CV & Resume:\n\n"
                                . "• No. Invoice: " . $invNo . "\n"
                                . "• Nama Pemesan: " . $cv->name . "\n"

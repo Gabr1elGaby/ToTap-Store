@@ -110,7 +110,7 @@
                             <span id="btn-check-text" class="text-gray-950 font-black">Saya Sudah Bayar (Cek Saldo)</span>
                         </button>
 
-                        <a href="https://wa.me/6281234567890?text=Halo%20Admin%20ToTap%20Store,%20saya%20sudah%20melakukan%20isi%20saldo%20dengan%20nomor%20deposit:%20{{ $deposit->id }}%20sebesar%20Rp{{ number_format($deposit->amount, 0, ',', '.') }}" 
+                        <a href="https://wa.me/6285198503253?text=Halo%20Admin%20ToTap%20Store,%20saya%20sudah%20melakukan%20isi%20saldo%20dengan%20nomor%20deposit:%20{{ $deposit->id }}%20sebesar%20Rp{{ number_format($deposit->amount, 0, ',', '.') }}" 
                            target="_blank" 
                            class="w-full py-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-bold text-xs rounded-2xl transition flex items-center justify-center gap-2 border border-gray-200 dark:border-gray-600">
                             <i class="fab fa-whatsapp text-emerald-500 text-sm"></i>

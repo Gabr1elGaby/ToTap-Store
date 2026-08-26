@@ -74,7 +74,7 @@
                 
                 @php
                     $paymentData = json_decode($transaction->snap_token, true);
-                    $adminWa = '6281328972073';
+                    $adminWa = '6285198503253';
                     $waMsg = "Halo Admin ToTap Store, saya sudah transfer untuk pesanan Top Up Game:\n\n"
                            . "• Order ID: " . $transaction->id . "\n"
                            . "• Game: " . ($transaction->game->name ?? 'Game') . "\n"
