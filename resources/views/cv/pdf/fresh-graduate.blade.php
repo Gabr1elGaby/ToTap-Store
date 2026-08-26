@@ -41,7 +41,7 @@
         td.main-td {
             width: 68%;
             background-color: #ffffff;
-            padding: 22pt 32pt 22pt 20pt; /* Generous 32pt right margin */
+            padding: 22pt 28pt 22pt 18pt; /* Inset right padding */
             vertical-align: top;
         }
 
@@ -167,19 +167,25 @@
         .item-desc {
             font-size: 6.8pt;
             color: #334155;
-            text-align: left; /* Left align for comfortable natural reading */
+            text-align: justify; /* RATA KANAN KIRI */
             line-height: 1.32;
         }
 
-        /* PAGE 2+: 100% FULL-WIDTH CONTINUATION (NO NAME, NO HEADER, NO LEFT SIDEBAR) */
+        /* PAGE 2+: 100% FULL-WIDTH CONTINUATION VIA TABLE (NO MEPEK KANAN) */
         .page-break {
             page-break-before: always;
         }
-        .full-page-container {
-            padding: 24pt 34pt 24pt 34pt; /* Generous 34pt left and right margins */
-            background-color: #ffffff;
+        table.page2-table {
             width: 100%;
-            box-sizing: border-box;
+            border-collapse: collapse;
+            table-layout: fixed;
+            margin: 0;
+            padding: 0;
+        }
+        td.page2-td {
+            padding: 24pt 30pt 24pt 30pt; /* Balanced 30pt margins left and right */
+            vertical-align: top;
+            background-color: #ffffff;
         }
     </style>
 </head>
@@ -369,100 +375,104 @@
         </tr>
     </table>
 
-    <!-- PAGE 2+: 100% FULL-WIDTH CONTINUATION (NO NAME, NO HEADER, NO LEFT SIDEBAR) -->
+    <!-- PAGE 2+: 100% FULL-WIDTH CONTINUATION VIA TABLE (NO NAME, NO MEPEK KANAN) -->
     @if($hasPage2)
     <div class="page-break"></div>
-    <div class="full-page-container">
-        <!-- REMAINING WORK EXPERIENCE (IF ANY) -->
-        @if(!empty($expPage2) && count($expPage2) > 0)
-        <div class="main-heading" style="margin-top: 0;">Pengalaman Kerja (Lanjutan)</div>
-        @foreach($expPage2 as $exp)
-            @php
-                $comp = $p($exp, "company");
-                $pos  = $p($exp, "position");
-                $start= $p($exp, "start_year");
-                $end  = $p($exp, "end_year");
-                $isCur= $p($exp, "is_current");
-                $dateStr = $start ? ($start . " - " . ($isCur ? "Sekarang" : ($end ?: "Sekarang"))) : ($end ?: "");
-                $desc = $p($exp, "description");
-            @endphp
-            <div class="item-block">
-                <table class="item-header-table">
-                    <tr>
-                        <td class="item-title">{{ $pos }}</td>
-                        <td class="item-date">{{ $dateStr }}</td>
-                    </tr>
-                </table>
-                <div class="item-subtitle">{{ $comp }}</div>
-                @if(!empty($desc))<div class="item-desc">{!! nl2br(e($desc)) !!}</div>@endif
-            </div>
-        @endforeach
-        @endif
+    <table class="page2-table">
+        <tr>
+            <td class="page2-td">
+                <!-- REMAINING WORK EXPERIENCE (IF ANY) -->
+                @if(!empty($expPage2) && count($expPage2) > 0)
+                <div class="main-heading" style="margin-top: 0;">Pengalaman Kerja (Lanjutan)</div>
+                @foreach($expPage2 as $exp)
+                    @php
+                        $comp = $p($exp, "company");
+                        $pos  = $p($exp, "position");
+                        $start= $p($exp, "start_year");
+                        $end  = $p($exp, "end_year");
+                        $isCur= $p($exp, "is_current");
+                        $dateStr = $start ? ($start . " - " . ($isCur ? "Sekarang" : ($end ?: "Sekarang"))) : ($end ?: "");
+                        $desc = $p($exp, "description");
+                    @endphp
+                    <div class="item-block">
+                        <table class="item-header-table">
+                            <tr>
+                                <td class="item-title">{{ $pos }}</td>
+                                <td class="item-date">{{ $dateStr }}</td>
+                            </tr>
+                        </table>
+                        <div class="item-subtitle">{{ $comp }}</div>
+                        @if(!empty($desc))<div class="item-desc">{!! nl2br(e($desc)) !!}</div>@endif
+                    </div>
+                @endforeach
+                @endif
 
-        <!-- PROJECTS & PORTFOLIO (FULL WIDTH 100%) -->
-        @if(!empty($projects) && count($projects) > 0)
-        <div class="main-heading" @if(empty($expPage2) || count($expPage2) == 0) style="margin-top: 0;" @endif>Proyek & Portofolio</div>
-        @foreach($projects as $prj)
-            @php
-                $pName = $p($prj, "name");
-                $pRole = $p($prj, "role");
-                $pTech = $p($prj, "technologies");
-                $pLink = $p($prj, "link");
-                $pDesc = $p($prj, "description");
-                $pSub  = implode(" | ", array_filter([$pRole, $pTech, $pLink]));
-            @endphp
-            <div class="item-block">
-                <div class="item-title">{{ $pName }}</div>
-                @if(!empty($pSub))<div class="item-subtitle">{{ $pSub }}</div>@endif
-                @if(!empty($pDesc))<div class="item-desc">{!! nl2br(e($pDesc)) !!}</div>@endif
-            </div>
-        @endforeach
-        @endif
+                <!-- PROJECTS & PORTFOLIO (FULL WIDTH 100%) -->
+                @if(!empty($projects) && count($projects) > 0)
+                <div class="main-heading" @if(empty($expPage2) || count($expPage2) == 0) style="margin-top: 0;" @endif>Proyek & Portofolio</div>
+                @foreach($projects as $prj)
+                    @php
+                        $pName = $p($prj, "name");
+                        $pRole = $p($prj, "role");
+                        $pTech = $p($prj, "technologies");
+                        $pLink = $p($prj, "link");
+                        $pDesc = $p($prj, "description");
+                        $pSub  = implode(" | ", array_filter([$pRole, $pTech, $pLink]));
+                    @endphp
+                    <div class="item-block">
+                        <div class="item-title">{{ $pName }}</div>
+                        @if(!empty($pSub))<div class="item-subtitle">{{ $pSub }}</div>@endif
+                        @if(!empty($pDesc))<div class="item-desc">{!! nl2br(e($pDesc)) !!}</div>@endif
+                    </div>
+                @endforeach
+                @endif
 
-        <!-- INTERNSHIPS (FULL WIDTH 100%) -->
-        @if(!empty($internships) && count($internships) > 0)
-        <div class="main-heading">Pengalaman Magang</div>
-        @foreach($internships as $intern)
-            @php
-                $iComp = $p($intern, "company");
-                $iPos  = $p($intern, "position");
-                $iPer  = $p($intern, "period");
-                $iDesc = $p($intern, "description");
-            @endphp
-            <div class="item-block">
-                <table class="item-header-table">
-                    <tr>
-                        <td class="item-title">{{ $iPos }} — {{ $iComp }}</td>
-                        <td class="item-date">{{ $iPer }}</td>
-                    </tr>
-                </table>
-                @if(!empty($iDesc))<div class="item-desc">{!! nl2br(e($iDesc)) !!}</div>@endif
-            </div>
-        @endforeach
-        @endif
+                <!-- INTERNSHIPS (FULL WIDTH 100%) -->
+                @if(!empty($internships) && count($internships) > 0)
+                <div class="main-heading">Pengalaman Magang</div>
+                @foreach($internships as $intern)
+                    @php
+                        $iComp = $p($intern, "company");
+                        $iPos  = $p($intern, "position");
+                        $iPer  = $p($intern, "period");
+                        $iDesc = $p($intern, "description");
+                    @endphp
+                    <div class="item-block">
+                        <table class="item-header-table">
+                            <tr>
+                                <td class="item-title">{{ $iPos }} — {{ $iComp }}</td>
+                                <td class="item-date">{{ $iPer }}</td>
+                            </tr>
+                        </table>
+                        @if(!empty($iDesc))<div class="item-desc">{!! nl2br(e($iDesc)) !!}</div>@endif
+                    </div>
+                @endforeach
+                @endif
 
-        <!-- ORGANIZATIONS (FULL WIDTH 100%) -->
-        @if(!empty($organizations) && count($organizations) > 0)
-        <div class="main-heading">Pengalaman Organisasi</div>
-        @foreach($organizations as $org)
-            @php
-                $oName = $p($org, "organization_name");
-                $oRole = $p($org, "role");
-                $oPer  = $p($org, "period");
-                $oDesc = $p($org, "description");
-            @endphp
-            <div class="item-block">
-                <table class="item-header-table">
-                    <tr>
-                        <td class="item-title">{{ $oRole }} — {{ $oName }}</td>
-                        <td class="item-date">{{ $oPer }}</td>
-                    </tr>
-                </table>
-                @if(!empty($oDesc))<div class="item-desc">{!! nl2br(e($oDesc)) !!}</div>@endif
-            </div>
-        @endforeach
-        @endif
-    </div>
+                <!-- ORGANIZATIONS (FULL WIDTH 100%) -->
+                @if(!empty($organizations) && count($organizations) > 0)
+                <div class="main-heading">Pengalaman Organisasi</div>
+                @foreach($organizations as $org)
+                    @php
+                        $oName = $p($org, "organization_name");
+                        $oRole = $p($org, "role");
+                        $oPer  = $p($org, "period");
+                        $oDesc = $p($org, "description");
+                    @endphp
+                    <div class="item-block">
+                        <table class="item-header-table">
+                            <tr>
+                                <td class="item-title">{{ $oRole }} — {{ $oName }}</td>
+                                <td class="item-date">{{ $oPer }}</td>
+                            </tr>
+                        </table>
+                        @if(!empty($oDesc))<div class="item-desc">{!! nl2br(e($oDesc)) !!}</div>@endif
+                    </div>
+                @endforeach
+                @endif
+            </td>
+        </tr>
+    </table>
     @endif
 </body>
 </html>
