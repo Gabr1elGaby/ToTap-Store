@@ -14,31 +14,47 @@
                 </div>
             @endif
 
-            <!-- VIP Reseller Balance Setting Card -->
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="p-2 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
-                            <i class="fas fa-shield-alt text-lg"></i>
-                        </span>
-                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Batas Saldo Modal VIP Reseller (Proteksi Stok)</h3>
+            @if(session('error'))
+                <div class="bg-red-500/10 border border-red-500 text-red-600 dark:text-red-400 px-4 py-3 rounded-2xl flex items-center gap-2 shadow-sm font-semibold">
+                    <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+                </div>
+            @endif
+
+            <!-- VIP Reseller Live Balance Card -->
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-colors duration-200">
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-500/20 shadow-sm shrink-0">
+                            <i class="fas fa-wallet text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h3 class="text-base font-black text-gray-900 dark:text-white">Saldo Akun VIP Reseller (Live API)</h3>
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Real-Time Auto-Update
+                                </span>
+                            </div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 max-w-xl">
+                                Saldo tersinkronisasi langsung dari provider VIP Reseller. Nominal produk yang harga modalnya di atas saldo ini akan otomatis berstatus <strong>Stok Habis</strong>.
+                            </p>
+                        </div>
                     </div>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-xl">
-                        Nominal game yang harga modalnya lebih besar dari saldo ini akan <strong class="text-red-500">otomatis dinonaktifkan (Stok Habis)</strong> agar pesanan tidak gagal.
-                    </p>
                 </div>
                 
-                <form action="{{ route('admin.games.update-balance') }}" method="POST" class="flex items-center gap-2 w-full md:w-auto">
-                    @csrf
-                    <div class="relative">
-                        <span class="absolute left-3 top-2.5 text-xs font-bold text-gray-400">Rp</span>
-                        <input type="number" name="balance" value="{{ $vipBalance ?? \App\Models\Setting::get('vip_balance_threshold', 0) }}" min="0" step="1000" required
-                            class="pl-9 pr-3 py-2 bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl text-sm font-bold w-40 focus:ring-indigo-500 focus:border-indigo-500">
+                <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 pt-3 md:pt-0 border-gray-100 dark:border-gray-700">
+                    <div class="text-left md:text-right">
+                        <div class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Saldo Terkini di VIP Reseller</div>
+                        <div class="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 font-mono tracking-tight">
+                            Rp{{ number_format($vipBalance ?? 0, 0, ',', '.') }}
+                        </div>
                     </div>
-                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md transition whitespace-nowrap">
-                        Simpan Saldo
-                    </button>
-                </form>
+                    <form action="{{ route('admin.games.sync-balance') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="px-4 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition flex items-center gap-2 cursor-pointer whitespace-nowrap" title="Sinkronkan Saldo Terbaru dari VIP Reseller">
+                            <i class="fas fa-sync-alt"></i> Refresh Saldo
+                        </button>
+                    </form>
+                </div>
             </div>
 
             <!-- Header & Action -->

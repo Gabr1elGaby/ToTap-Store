@@ -14,7 +14,41 @@ class GameController extends Controller
     {
         $games = Game::withCount('products')->orderBy('name')->paginate(25);
         $vipBalance = (float) Setting::get('vip_balance_threshold', 0);
-        return view('admin.games.index', compact('games', 'vipBalance'));
+        $vipProfileData = null;
+
+        // Auto-fetch real-time VIP Reseller Balance from API
+        try {
+            $vip = new \App\Services\VipResellerService();
+            $profile = $vip->getProfile();
+            if (isset($profile['result']) && $profile['result'] === true && isset($profile['data']['balance'])) {
+                $liveBal = (float) $profile['data']['balance'];
+                Setting::set('vip_balance_threshold', (string) $liveBal);
+                Setting::set('vip_reseller_balance', (string) $liveBal);
+                $vipBalance = $liveBal;
+                $vipProfileData = $profile['data'];
+            }
+        } catch (\Throwable $e) {
+            // Keep existing balance from setting on network error
+        }
+
+        return view('admin.games.index', compact('games', 'vipBalance', 'vipProfileData'));
+    }
+
+    public function syncBalance()
+    {
+        try {
+            $vip = new \App\Services\VipResellerService();
+            $profile = $vip->getProfile();
+            if (isset($profile['result']) && $profile['result'] === true && isset($profile['data']['balance'])) {
+                $liveBal = (float) $profile['data']['balance'];
+                Setting::set('vip_balance_threshold', (string) $liveBal);
+                Setting::set('vip_reseller_balance', (string) $liveBal);
+                return back()->with('success', 'Saldo VIP Reseller berhasil disinkronkan langsung dari API: Rp ' . number_format($liveBal, 0, ',', '.'));
+            }
+            return back()->with('error', 'Gagal memuat saldo dari VIP Reseller: ' . ($profile['message'] ?? 'API tidak merespons'));
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     public function updateBalance(Request $request)
