@@ -351,8 +351,66 @@ class TopUpController extends Controller
         
         // Buat ID Transaksi & Nomor Invoice Unik (Format: INV/TOPUP/TTS/001/VIII/2026)
         $orderId = \App\Helpers\InvoiceHelper::generateTopUpInvoice();
+        $paymentMethod = $request->payment_method === 'balance' ? 'balance' : 'qris';
         
-        // Simpan ke Database
+        // JIKA MEMILIH PEMBAYARAN MENGGUNAKAN SALDO AKUN
+        if ($paymentMethod === 'balance') {
+            if (!auth()->check()) {
+                return back()->with('error', 'Silakan login terlebih dahulu untuk menggunakan pembayaran Saldo Akun.');
+            }
+            $user = auth()->user();
+            if ((float)$user->balance < (float)$product->price_sell) {
+                return back()->with('error', 'Saldo Akun Anda (Rp' . number_format($user->balance, 0, ',', '.') . ') tidak mencukupi untuk pembayaran ini.');
+            }
+
+            // 1. Potong Saldo User
+            $user->decrement('balance', $product->price_sell);
+
+            // 2. Simpan Transaksi Berstatus Processing
+            $transaction = \App\Models\Transaction::create([
+                'id' => $orderId,
+                'user_id' => $user->id,
+                'game_id' => $game->id,
+                'game_product_id' => $product->id,
+                'target_field_1' => $playerId,
+                'target_field_2' => $isZoneRequired ? $zoneId : null,
+                'amount' => $product->price_sell,
+                'payment_method' => 'balance',
+                'status' => 'processing',
+                'snap_token' => json_encode(['type' => 'balance', 'gateway' => 'wallet', 'amount' => (int) $product->price_sell]),
+            ]);
+
+            // 3. Coba kirim otomatis ke Provider (VIP Reseller)
+            try {
+                $vipService = app(\App\Services\VipResellerService::class);
+                $orderRes = $vipService->order(
+                    $product->product_code,
+                    $playerId,
+                    $isZoneRequired ? $zoneId : '',
+                    $transaction->id
+                );
+
+                if (isset($orderRes['result']) && $orderRes['result'] === true) {
+                    $transaction->update([
+                        'status' => 'success',
+                        'provider_trx_id' => $orderRes['data']['trxid'] ?? null,
+                    ]);
+                    return redirect()->route('topup.checkout.show', $transaction->id)->with('success', 'Pembayaran via Saldo Akun berhasil! Pesanan langsung terkirim.');
+                } else {
+                    // JIKA PROVIDER GAGAL/MENOLAK: OTOMATIS REFUND DANA KE SALDO AKUN USER!
+                    $errMsg = $orderRes['message'] ?? 'Provider gagal memproses pesanan.';
+                    $user->increment('balance', $product->price_sell);
+                    $transaction->update([
+                        'status' => 'refunded',
+                    ]);
+                    return redirect()->route('topup.checkout.show', $transaction->id)->with('warning', 'Pesanan gagal diproses: ' . $errMsg . '. Dana sebesar Rp' . number_format($product->price_sell, 0, ',', '.') . ' telah OTOMATIS dikembalikan ke Saldo Akun Anda.');
+                }
+            } catch (\Exception $e) {
+                return redirect()->route('topup.checkout.show', $transaction->id)->with('info', 'Pembayaran via Saldo Akun berhasil diterima! Pesanan Anda sedang diproses.');
+            }
+        }
+
+        // JIKA PEMBAYARAN MANUAL QRIS (DEFAULT)
         $transaction = \App\Models\Transaction::create([
             'id' => $orderId,
             'user_id' => auth()->id(),
@@ -361,7 +419,7 @@ class TopUpController extends Controller
             'target_field_1' => $playerId,
             'target_field_2' => $isZoneRequired ? $zoneId : null,
             'amount' => $product->price_sell,
-            'payment_method' => $request->payment_method ?? 'qris',
+            'payment_method' => 'qris',
             'status' => 'pending',
         ]);
         
@@ -369,7 +427,7 @@ class TopUpController extends Controller
         $snapData = json_encode([
             'type'      => 'manual_qris',
             'gateway'   => 'manual',
-            'method'    => $request->payment_method ?? 'qris',
+            'method'    => 'qris',
             'amount'    => (int) $product->price_sell,
         ]);
 

@@ -83,6 +83,12 @@
                 </button>
 
                 @auth
+                <!-- Saldo Dompet Akun -->
+                <a href="{{ route('profile.edit') }}" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-700 text-xs font-black text-emerald-700 dark:text-emerald-300 shadow-sm transition hover:scale-105" title="Saldo Akun Anda">
+                    <i class="fas fa-wallet text-emerald-500"></i>
+                    <span>Rp{{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}</span>
+                </a>
+
                 <div class="relative" id="user-menu-dropdown-wrapper">
                     <button type="button" 
                             onclick="toggleUserDropdownMenu(event)" 
@@ -97,7 +103,12 @@
                     </button>
 
                     <div id="user-menu-dropdown-menu" 
-                         class="hidden absolute right-0 z-[100] mt-2 w-56 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden py-1.5 animate-in fade-in zoom-in-95 duration-100">
+                         class="hidden absolute right-0 z-[100] mt-2 w-60 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden py-1.5 animate-in fade-in zoom-in-95 duration-100">
+                        <div class="px-4 py-2.5 bg-gray-50 dark:bg-gray-900/60 border-b border-gray-100 dark:border-gray-700">
+                            <span class="text-[11px] text-gray-500 dark:text-gray-400 block font-semibold">Saldo Akun:</span>
+                            <span class="font-black text-sm text-emerald-600 dark:text-emerald-400">Rp{{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}</span>
+                        </div>
+
                         <a href="{{ route('profile.edit') }}" class="block px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-indigo-600 flex items-center transition">
                             <i class="fas fa-user mr-2.5 text-gray-400"></i> {{ __('Profile') }}
                         </a>
@@ -205,11 +216,17 @@
             <!-- Khusus Customer: Profile, Riwayat Transaksi & Invoice, dan Log Out -->
             @auth
             <div class="pt-3 pb-2 space-y-1">
-                <div class="px-4 mb-3">
-                    <div class="font-bold text-base text-gray-900 dark:text-white flex items-center gap-2">
-                        <i class="fas fa-user-circle text-indigo-500"></i> {{ Auth::user()->name }}
+                <div class="px-4 mb-3 space-y-2">
+                    <div>
+                        <div class="font-bold text-base text-gray-900 dark:text-white flex items-center gap-2">
+                            <i class="fas fa-user-circle text-indigo-500"></i> {{ Auth::user()->name }}
+                        </div>
+                        <div class="font-medium text-xs text-gray-500 dark:text-gray-400">{{ Auth::user()->email }}</div>
                     </div>
-                    <div class="font-medium text-xs text-gray-500 dark:text-gray-400">{{ Auth::user()->email }}</div>
+                    <div class="p-2.5 bg-emerald-50 dark:bg-emerald-950 rounded-xl border border-emerald-300 dark:border-emerald-700 flex items-center justify-between">
+                        <span class="text-xs font-bold text-gray-700 dark:text-gray-300">Saldo Akun:</span>
+                        <span class="font-black text-sm text-emerald-600 dark:text-emerald-300">Rp{{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}</span>
+                    </div>
                 </div>
 
                 <x-responsive-nav-link :href="route('profile.edit')">

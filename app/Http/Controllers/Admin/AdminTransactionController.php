@@ -184,6 +184,57 @@ class AdminTransactionController extends Controller
         return back()->with('success', "Pesanan #{$transaction->id} berhasil disetujui.");
     }
 
+    public function refundToBalance($id)
+    {
+        $transaction = Transaction::with(['user', 'game', 'gameProduct'])->findOrFail($id);
+
+        if ($transaction->status === 'refunded') {
+            return back()->with('info', "Transaksi #{$transaction->id} sudah berstatus Refund sebelumnya.");
+        }
+
+        if (!$transaction->user_id || !$transaction->user) {
+            return back()->with('error', "Transaksi #{$transaction->id} tidak terhubung dengan akun user terdaftar, tidak dapat di-refund ke Saldo Akun.");
+        }
+
+        $user = $transaction->user;
+        $amount = (float) $transaction->amount;
+
+        // 1. Tambah Saldo User
+        $user->increment('balance', $amount);
+
+        // 2. Update status transaksi
+        $transaction->update([
+            'status' => 'refunded',
+        ]);
+
+        // 3. Kirim notifikasi WhatsApp via Fonnte jika nomor telepon user tersedia
+        if (!empty($user->phone_number)) {
+            try {
+                $targetPhone = preg_replace('/[^0-9]/', '', $user->phone_number);
+                if (str_starts_with($targetPhone, '0')) {
+                    $targetPhone = '62' . substr($targetPhone, 1);
+                }
+                $token = \App\Models\Setting::get('fonnte_token', 'mEa7Y6Lq5u@U8b2Q8J1#');
+                $gameName = $transaction->game->name ?? 'Game';
+                $waMsg = "Halo *{$user->name}*,\n\n"
+                       . "Pesanan Top Up Anda *#{$transaction->id}* ({$gameName}) telah dibatalkan oleh Admin.\n\n"
+                       . "💰 Dana sebesar *Rp" . number_format($amount, 0, ',', '.') . "* telah berhasil *DIKEMBALIKAN KE SALDO AKUN TOTAP STORE* Anda.\n\n"
+                       . "Saldo Anda saat ini: *Rp" . number_format($user->balance, 0, ',', '.') . "*\n"
+                       . "Anda dapat menggunakan saldo ini untuk memesan kembali dengan User ID yang benar tanpa perlu transfer uang lagi.\n\n"
+                       . "Kunjungi: https://totapstore.com\nTerima kasih!";
+
+                \Illuminate\Support\Facades\Http::withHeaders([
+                    'Authorization' => $token,
+                ])->post('https://api.fonnte.com/send', [
+                    'target' => $targetPhone,
+                    'message' => $waMsg,
+                ]);
+            } catch (\Throwable $e) {}
+        }
+
+        return back()->with('success', "Dana sebesar Rp" . number_format($amount, 0, ',', '.') . " BERHASIL DI-REFUND ke Saldo Akun {$user->name}! Status transaksi kini 'Refunded'.");
+    }
+
     public function manualSuccess($id)
     {
         $transaction = Transaction::findOrFail($id);

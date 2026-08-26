@@ -243,15 +243,44 @@
                                         <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold shadow-md shadow-indigo-500/20">3</div>
                                         <h3 class="text-lg font-bold text-gray-900 dark:text-white">Metode Pembayaran</h3>
                                     </div>
-                                    <div class="space-y-2.5">
-                                        <!-- QRIS (Satu-satunya metode pembayaran instan) -->
-                                        <label class="relative flex items-center justify-between p-4 border-2 border-indigo-600 dark:border-indigo-500 bg-indigo-50/80 dark:bg-gray-900 rounded-2xl cursor-pointer shadow-md transition hover:border-indigo-400">
+                                    <div class="space-y-3">
+                                        <!-- QRIS (Default) -->
+                                        <label class="relative flex items-center justify-between p-4 border-2 rounded-2xl cursor-pointer shadow-sm transition"
+                                               :class="selectedPayment === 'qris' ? 'border-indigo-600 dark:border-indigo-500 bg-indigo-50/80 dark:bg-gray-900 ring-2 ring-indigo-500/20' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 hover:border-gray-300 dark:hover:border-gray-600'">
                                             <div class="flex items-center gap-3.5">
-                                                <input type="radio" x-model="selectedPayment" value="qris" checked class="w-5 h-5 text-indigo-600 border-gray-300 focus:ring-indigo-500 cursor-pointer">
-                                                <span class="font-bold text-sm sm:text-base text-gray-900 dark:text-white tracking-wide">QRIS All Payment</span>
+                                                <input type="radio" name="payment_method" x-model="selectedPayment" value="qris" class="w-5 h-5 text-indigo-600 border-gray-300 focus:ring-indigo-500 cursor-pointer">
+                                                <div>
+                                                    <span class="font-bold text-sm sm:text-base text-gray-900 dark:text-white tracking-wide block">QRIS All Payment</span>
+                                                    <span class="text-[11px] text-gray-500 dark:text-gray-400 font-medium">BCA, DANA, GoPay, OVO, ShopeePay</span>
+                                                </div>
                                             </div>
                                             <div class="bg-white p-1.5 rounded-xl shadow-sm border border-gray-200 shrink-0 ml-2">
                                                 <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" alt="QRIS" class="h-6 object-contain">
+                                            </div>
+                                        </label>
+
+                                        <!-- Saldo Akun / Wallet -->
+                                        @php
+                                            $userBalance = auth()->check() ? (float)auth()->user()->balance : 0;
+                                        @endphp
+                                        <label class="relative flex items-center justify-between p-4 border-2 rounded-2xl cursor-pointer shadow-sm transition"
+                                               :class="selectedPayment === 'balance' ? 'border-emerald-600 dark:border-emerald-500 bg-emerald-50/80 dark:bg-gray-900 ring-2 ring-emerald-500/20' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 hover:border-gray-300 dark:hover:border-gray-600'">
+                                            <div class="flex items-center gap-3.5">
+                                                <input type="radio" name="payment_method" x-model="selectedPayment" value="balance" class="w-5 h-5 text-emerald-600 border-gray-300 focus:ring-emerald-500 cursor-pointer">
+                                                <div>
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="font-bold text-sm sm:text-base text-gray-900 dark:text-white tracking-wide">Saldo Akun</span>
+                                                        @auth
+                                                            <span class="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-black text-[10px] rounded-full border border-emerald-300 dark:border-emerald-700">Rp{{ number_format($userBalance, 0, ',', '.') }}</span>
+                                                        @else
+                                                            <span class="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold text-[10px] rounded-full">Perlu Login</span>
+                                                        @endauth
+                                                    </div>
+                                                    <span class="text-[11px] text-gray-500 dark:text-gray-400 font-medium block mt-0.5">Potong langsung dari Saldo Akun ToTap</span>
+                                                </div>
+                                            </div>
+                                            <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-base shadow-sm border border-emerald-200 dark:border-emerald-800 shrink-0 ml-2">
+                                                <i class="fas fa-wallet"></i>
                                             </div>
                                         </label>
                                     </div>
@@ -274,6 +303,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         const form = document.getElementById('topup-form');
+        const currentUserBalance = {{ auth()->check() ? (float)auth()->user()->balance : 0 }};
         
         form.addEventListener('submit', function(e) {
             e.preventDefault(); // Cegah submit langsung
@@ -292,6 +322,23 @@
             }
             if (!formData.get('player_id')) {
                 Swal.fire({ icon: 'warning', title: 'Oops...', text: 'Masukkan ID Anda terlebih dahulu!' });
+                return;
+            }
+
+            const payMethodVal = formData.get('payment_method') || 'qris';
+            const prodEl = document.querySelector(`[data-product-id="${formData.get('product_id')}"]`);
+            const productName = prodEl ? prodEl.getAttribute('data-product-name') : 'Item Game';
+            const productPrice = prodEl ? prodEl.getAttribute('data-product-price') : '';
+            const productRawPrice = prodEl ? parseInt(productPrice.replace(/[^0-9]/g, '')) : 0;
+
+            if (payMethodVal === 'balance' && currentUserBalance < productRawPrice) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Saldo Akun Tidak Cukup!',
+                    text: 'Saldo akun Anda saat ini (Rp' + currentUserBalance.toLocaleString('id-ID') + ') tidak mencukupi untuk nominal ' + productPrice + '. Silakan pilih metode QRIS All Payment.',
+                    confirmButtonColor: '#4f46e5',
+                    confirmButtonText: 'Pilih QRIS'
+                });
                 return;
             }
             
@@ -316,11 +363,9 @@
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
 
-                    const prodEl = document.querySelector(`[data-product-id="${formData.get('product_id')}"]`);
-                    const productName = prodEl ? prodEl.getAttribute('data-product-name') : 'Item Game';
-                    const productPrice = prodEl ? prodEl.getAttribute('data-product-price') : '';
                     const accountName = data.nickname ? data.nickname : formData.get('player_id');
                     const playerIdDisplay = formData.get('player_id') + (formData.get('zone_id') ? ' (' + formData.get('zone_id') + ')' : '');
+                    const payMethodDisplay = payMethodVal === 'balance' ? 'Saldo Akun (Dompet Web)' : 'QRIS All Payment';
 
                     Swal.fire({
                         title: '<span class="text-lg font-black text-gray-900 dark:text-white">Konfirmasi Data Pesanan</span>',
@@ -344,7 +389,7 @@
                                 </div>
                                 <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
                                     <span class="text-gray-500 dark:text-gray-400 font-semibold">Metode Bayar:</span>
-                                    <span class="font-bold text-gray-900 dark:text-white">QRIS All Payment</span>
+                                    <span class="font-bold text-gray-900 dark:text-white">${payMethodDisplay}</span>
                                 </div>
                                 <div class="flex justify-between items-center pt-2">
                                     <span class="text-gray-700 dark:text-gray-300 font-bold">Total Tagihan:</span>

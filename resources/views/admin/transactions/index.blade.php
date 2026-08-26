@@ -271,10 +271,14 @@
                                             <td class="py-4 px-6 font-bold text-gray-900 dark:text-white whitespace-nowrap">
                                                 Rp{{ number_format($trx->amount, 0, ',', '.') }}
                                             </td>
-                                            <td class="py-4 px-6 whitespace-nowrap">
+                                             <td class="py-4 px-6 whitespace-nowrap">
                                                 @if($trx->status === 'paid' || $trx->status === 'success')
                                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">
                                                         <i class="fas fa-check-circle text-[10px]"></i> Sukses
+                                                    </span>
+                                                @elseif($trx->status === 'refunded')
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+                                                        <i class="fas fa-undo text-[10px]"></i> Refunded
                                                     </span>
                                                 @elseif($trx->status === 'pending')
                                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
@@ -290,7 +294,7 @@
                                                 {{ $trx->created_at->format('d M Y, H:i') }}
                                             </td>
                                             <td class="py-4 px-6 text-center whitespace-nowrap">
-                                                <div class="flex items-center justify-center gap-1.5">
+                                                <div class="flex items-center justify-center gap-1.5 flex-wrap">
                                                     @if($trx->status === 'pending' || $trx->status === 'paid' || $trx->status === 'processing')
                                                         <!-- ACC & Auto Fulfillment via API -->
                                                         <form action="{{ route('admin.transactions.approve', $trx->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin ACC dan OTOMATIS menembak diamond ke ID {{ $trx->target_field_1 }} via API VIP Reseller?');" class="inline">
@@ -304,9 +308,19 @@
                                                         <form action="{{ route('admin.transactions.manual-success', $trx->id) }}" method="POST" onsubmit="return confirm('Tandai pesanan ini Sukses Manual?');" class="inline">
                                                             @csrf
                                                             <button type="submit" title="Tandai Sukses Manual" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 transition cursor-pointer">
-                                                                <i class="fas fa-check"></i> Selesai Manual
+                                                                <i class="fas fa-check"></i> Manual
                                                             </button>
                                                         </form>
+
+                                                        @if($trx->user_id)
+                                                        <!-- Refund ke Saldo Akun -->
+                                                        <form action="{{ route('admin.transactions.refund', $trx->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin me-REFUND dana sebesar Rp{{ number_format($trx->amount, 0, ',', '.') }} ke Saldo Akun {{ $trx->user ? $trx->user->name : 'User' }}?');" class="inline">
+                                                            @csrf
+                                                            <button type="submit" title="Refund ke Saldo Akun User" class="inline-flex items-center gap-1 px-2 py-1.5 rounded-xl text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/80 hover:bg-amber-200 dark:hover:bg-amber-900 border border-amber-300 dark:border-amber-700 transition cursor-pointer">
+                                                                <i class="fas fa-undo"></i> Refund Saldo
+                                                            </button>
+                                                        </form>
+                                                        @endif
 
                                                         <!-- Reject -->
                                                         <form action="{{ route('admin.transactions.reject', $trx->id) }}" method="POST" onsubmit="return confirm('Tolak/Batalkan pesanan ini?');" class="inline">
@@ -318,7 +332,7 @@
                                                     @endif
 
                                                     <a href="{{ route('admin.transactions.invoice', $trx->id) }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition shadow-sm" title="Lihat Invoice">
-                                                        <i class="fas fa-file-invoice"></i>
+                                                        <i class="fas fa-file-invoice"></i> Invoice
                                                     </a>
 
                                                     <!-- Delete Row -->
