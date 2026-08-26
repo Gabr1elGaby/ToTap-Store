@@ -212,9 +212,12 @@
                                     
                                     @foreach($categories as $cat => $catProducts)
                                         <h4 class="font-bold text-gray-800 dark:text-gray-200 mb-3 mt-6 border-b border-gray-200 dark:border-gray-700 pb-2">{{ $cat }}</h4>
-                                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                             @foreach($catProducts as $product)
                                                 <div @click="if(!stockMap['{{ $product->id }}']) selectedProduct = '{{ $product->id }}'"
+                                                     data-product-id="{{ $product->id }}"
+                                                     data-product-name="{{ $product->name }}"
+                                                     data-product-price="Rp{{ number_format($product->price_sell, 0, ',', '.') }}"
                                                      :class="{
                                                          'border-2 border-dashed border-gray-200 dark:border-gray-700/80 bg-gray-50/80 dark:bg-gray-800/30 opacity-50 cursor-not-allowed select-none': stockMap['{{ $product->id }}'],
                                                          'border-2 border-indigo-600 bg-indigo-50/90 dark:bg-indigo-900/50 shadow-md ring-2 ring-indigo-500/20 scale-[1.02] cursor-pointer': !stockMap['{{ $product->id }}'] && selectedProduct == '{{ $product->id }}',
@@ -228,10 +231,10 @@
                                                     </template>
                                                 </div>
                                             @endforeach
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
+                                         </div>
+                                     @endforeach
+                                 </div>
+                             </div>
 
                             <!-- Kolom Kanan: Metode Pembayaran -->
                             <div class="w-full xl:w-5/12 space-y-6" style="position: sticky; top: 6rem; align-self: flex-start;">
@@ -308,22 +311,73 @@
             })
             .then(res => res.json())
             .then(data => {
-                // 1. JIKA ID BENAR (result: true): LANGSUNG SUBMIT TANPA POP-UP KONFIRMASI LAGI
+                // 1. JIKA ID BENAR (result: true): TAMPILKAN MODAL KONFIRMASI PESANAN DENGAN NICKNAME!
                 if (data.result === true) {
-                    submitBtn.innerHTML = 'ID Valid! Mengalihkan ke Pembayaran...';
+                    submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
-                    
-                    // Bersihkan sessionStorage karena pesanan sudah sukses diproses
-                    sessionStorage.removeItem('totap_product_{{ $game->slug }}');
-                    sessionStorage.removeItem('totap_payment_{{ $game->slug }}');
-                    sessionStorage.removeItem('totap_player_id_{{ $game->slug }}');
-                    sessionStorage.removeItem('totap_zone_id_{{ $game->slug }}');
-                    sessionStorage.removeItem('totap_auto_submit_{{ $game->slug }}');
-                    
-                    // Native HTML form submission
-                    HTMLFormElement.prototype.submit.call(form);
+
+                    const prodEl = document.querySelector(`[data-product-id="${formData.get('product_id')}"]`);
+                    const productName = prodEl ? prodEl.getAttribute('data-product-name') : 'Item Game';
+                    const productPrice = prodEl ? prodEl.getAttribute('data-product-price') : '';
+                    const accountName = data.nickname ? data.nickname : formData.get('player_id');
+                    const playerIdDisplay = formData.get('player_id') + (formData.get('zone_id') ? ' (' + formData.get('zone_id') + ')' : '');
+
+                    Swal.fire({
+                        title: '<span class="text-lg font-black text-gray-900 dark:text-white">Konfirmasi Data Pesanan</span>',
+                        html: `
+                            <div class="text-left text-xs space-y-2.5 p-4 rounded-2xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 my-2">
+                                <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
+                                    <span class="text-gray-500 dark:text-gray-400 font-semibold">Game:</span>
+                                    <span class="font-bold text-gray-900 dark:text-white">{{ $game->name }}</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
+                                    <span class="text-gray-500 dark:text-gray-400 font-semibold">Nama Akun:</span>
+                                    <span class="font-black text-emerald-600 dark:text-emerald-400">${accountName}</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
+                                    <span class="text-gray-500 dark:text-gray-400 font-semibold">ID Tujuan:</span>
+                                    <span class="font-mono font-bold text-gray-900 dark:text-white">${playerIdDisplay}</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
+                                    <span class="text-gray-500 dark:text-gray-400 font-semibold">Item:</span>
+                                    <span class="font-bold text-indigo-600 dark:text-indigo-400">${productName}</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
+                                    <span class="text-gray-500 dark:text-gray-400 font-semibold">Metode Bayar:</span>
+                                    <span class="font-bold text-gray-900 dark:text-white">QRIS All Payment</span>
+                                </div>
+                                <div class="flex justify-between items-center pt-2">
+                                    <span class="text-gray-700 dark:text-gray-300 font-bold">Total Tagihan:</span>
+                                    <span class="font-black text-sm text-emerald-600 dark:text-emerald-400">${productPrice}</span>
+                                </div>
+                            </div>
+                            <p class="text-[11px] text-gray-500 dark:text-gray-400 text-center mt-2">Pastikan data akun dan item sudah sesuai sebelum melanjutkan pembayaran.</p>
+                        `,
+                        showCancelButton: true,
+                        confirmButtonText: 'Lanjutkan Pembayaran 👉',
+                        cancelButtonText: 'Batal / Ubah',
+                        confirmButtonColor: '#4f46e5',
+                        cancelButtonColor: '#6b7280',
+                        reverseButtons: true,
+                        customClass: {
+                            popup: 'rounded-3xl dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 shadow-2xl'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            submitBtn.innerHTML = 'Memproses Pesanan... <i class="fas fa-spinner fa-spin ml-2"></i>';
+                            submitBtn.disabled = true;
+                            
+                            sessionStorage.removeItem('totap_product_{{ $game->slug }}');
+                            sessionStorage.removeItem('totap_payment_{{ $game->slug }}');
+                            sessionStorage.removeItem('totap_player_id_{{ $game->slug }}');
+                            sessionStorage.removeItem('totap_zone_id_{{ $game->slug }}');
+                            sessionStorage.removeItem('totap_auto_submit_{{ $game->slug }}');
+                            
+                            HTMLFormElement.prototype.submit.call(form);
+                        }
+                    });
                 } else {
-                    // 2. JIKA ID SALAH (result: false): BLOKIR DAN BERITAHU TANPA SURUH LANJUT
+                    // 2. JIKA ID SALAH (result: false): BLOKIR DAN BERITAHU
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
                     
@@ -331,18 +385,25 @@
                     
                     Swal.fire({
                         icon: 'error',
-                        title: 'ID Game Tidak Valid!',
+                        title: 'ID Game Tidak Ditemukan!',
                         text: errorMsg,
                         confirmButtonColor: '#4f46e5',
-                        confirmButtonText: 'Periksa Kembali'
+                        confirmButtonText: 'Periksa Kembali',
+                        customClass: {
+                            popup: 'rounded-3xl dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 shadow-2xl'
+                        }
                     });
                 }
             })
             .catch(err => {
-                // Fallback: Jika ada gangguan AJAX, langsung submit form ke proses transaksi
-                submitBtn.innerHTML = 'Memproses Pesanan...';
+                submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
-                HTMLFormElement.prototype.submit.call(form);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Memeriksa ID',
+                    text: 'Terjadi gangguan jaringan saat memvalidasi ID. Silakan coba beberapa saat lagi.',
+                    confirmButtonColor: '#4f46e5'
+                });
             });
         });
     </script>

@@ -9,16 +9,16 @@
                 <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
                     <div>
                         <h2 class="text-2xl font-black text-gray-900 dark:text-white">Detail Pembayaran & Invoice</h2>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Selesaikan pembayaran untuk memproses pesanan top up game Anda.</p>
+                        <p class="text-xs text-gray-600 dark:text-gray-300 font-medium mt-0.5">Selesaikan pembayaran untuk memproses pesanan top up game Anda.</p>
                     </div>
                     <div>
                         @if($isPaid)
-                            <span id="status-badge" class="px-3.5 py-1.5 bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80 rounded-full text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5">
+                            <span id="status-badge" class="px-3.5 py-1.5 bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 rounded-full text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                                 Sukses Terkirim
                             </span>
                         @else
-                            <span id="status-badge" class="px-3.5 py-1.5 bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/80 rounded-full text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5">
+                            <span id="status-badge" class="px-3.5 py-1.5 bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 rounded-full text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
                                 Menunggu Verifikasi
                             </span>
@@ -34,21 +34,21 @@
                         @endif
                         <div>
                             <h3 class="text-lg font-black text-gray-900 dark:text-white">{{ $transaction->game->name }}</h3>
-                            <p class="text-indigo-600 dark:text-indigo-400 font-bold text-sm">{{ $transaction->gameProduct->name }}</p>
+                            <p class="text-indigo-600 dark:text-indigo-300 font-black text-sm">{{ $transaction->gameProduct->name }}</p>
                         </div>
                     </div>
                     
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                        <div class="flex justify-between sm:block bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-700">
-                            <span class="text-xs text-gray-500 dark:text-gray-400 block font-semibold">Nomor Invoice</span>
-                            <span class="font-mono text-indigo-600 dark:text-indigo-400 font-bold text-sm">{{ $transaction->invoice_number ?? ('TRX-' . $transaction->id) }}</span>
+                        <div class="flex justify-between sm:block bg-white dark:bg-gray-800 p-3.5 rounded-xl border border-gray-200 dark:border-gray-700">
+                            <span class="text-xs text-gray-600 dark:text-gray-300 block font-bold">Nomor Invoice</span>
+                            <span class="font-mono text-indigo-600 dark:text-indigo-300 font-black text-sm">{{ $transaction->invoice_number ?? ('TRX-' . $transaction->id) }}</span>
                         </div>
-                        <div class="flex justify-between sm:block bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-700">
-                            <span class="text-xs text-gray-500 dark:text-gray-400 block font-semibold">{{ $transaction->game->target_field_1 ?: 'Player ID' }}</span>
-                            <span class="text-gray-900 dark:text-white font-bold text-sm font-mono">
+                        <div class="flex justify-between sm:block bg-white dark:bg-gray-800 p-3.5 rounded-xl border border-gray-200 dark:border-gray-700">
+                            <span class="text-xs text-gray-600 dark:text-gray-300 block font-bold">{{ $transaction->game->target_field_1 ?: 'Player ID' }}</span>
+                            <span class="text-gray-900 dark:text-white font-black text-sm font-mono">
                                 {{ $transaction->target_field_1 }}
                                 @if($transaction->target_field_2)
-                                <span class="text-indigo-600 dark:text-indigo-400">({{ $transaction->target_field_2 }})</span>
+                                <span class="text-indigo-600 dark:text-indigo-300">({{ $transaction->target_field_2 }})</span>
                                 @endif
                             </span>
                         </div>
@@ -58,10 +58,10 @@
                 <!-- Total Amount Banner -->
                 <div class="flex justify-between items-center bg-indigo-50 dark:bg-gray-900 p-5 rounded-2xl border border-indigo-200 dark:border-gray-700 mb-8">
                     <div>
-                        <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block">Total Tagihan</span>
-                        <span class="text-xs text-gray-500 dark:text-gray-400">Bebas biaya admin gateway (Rp0)</span>
+                        <span class="text-xs font-black text-indigo-600 dark:text-indigo-300 uppercase tracking-wider block">Total Tagihan</span>
+                        <span class="text-xs text-gray-600 dark:text-gray-300 font-medium">Bebas biaya admin gateway (Rp0)</span>
                     </div>
-                    <span class="text-3xl font-black text-indigo-600 dark:text-indigo-400 font-mono">Rp{{ number_format($transaction->amount, 0, ',', '.') }}</span>
+                    <span class="text-3xl font-black text-indigo-600 dark:text-emerald-400 font-mono">Rp{{ number_format($transaction->amount, 0, ',', '.') }}</span>
                 </div>
                 
                 @php
