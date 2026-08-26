@@ -182,9 +182,28 @@ class GameController extends Controller
     {
         try {
             $gameName = $game->name;
-            // Delete all products associated with this game first
-            $game->products()->delete();
-            $game->delete();
+            \Illuminate\Support\Facades\DB::transaction(function () use ($game) {
+                $productIds = $game->products()->pluck('id')->toArray();
+                if (!empty($productIds)) {
+                    try {
+                        \App\Models\Transaction::whereIn('game_product_id', $productIds)->update(['game_product_id' => null]);
+                    } catch (\Throwable $e) {}
+                    try {
+                        \Illuminate\Support\Facades\DB::table('topup_transactions')->whereIn('game_product_id', $productIds)->update(['game_product_id' => null]);
+                    } catch (\Throwable $e) {}
+                }
+
+                try {
+                    \App\Models\Transaction::where('game_id', $game->id)->update(['game_id' => null]);
+                } catch (\Throwable $e) {}
+                try {
+                    \Illuminate\Support\Facades\DB::table('topup_transactions')->where('game_id', $game->id)->update(['game_id' => null]);
+                } catch (\Throwable $e) {}
+
+                $game->products()->delete();
+                $game->delete();
+            });
+
             return redirect()->route('admin.games.index')->with('success', "Game '{$gameName}' beserta seluruh produknya berhasil dihapus.");
         } catch (\Throwable $e) {
             return redirect()->route('admin.games.index')->with('error', 'Gagal menghapus game: ' . $e->getMessage());
