@@ -18,29 +18,28 @@ Route::get('/', function () {
         $q->where('is_active', true)->orderBy('price');
     }])->get();
 
-    // REAL-TIME STATS
+    // REAL-TIME STATS (100% SYNCHRONIZED ACROSS DASHBOARD & HOMEPAGE)
     $totalUsers = \Illuminate\Support\Facades\DB::table('users')->count();
     
-    // Sum of all paid transactions across all modules
-    $totalTransactions = 0;
-    
     // 1. CV Builder Transactions
+    $paidCvCount = 0;
     if (\Illuminate\Support\Facades\Schema::hasTable('cvs')) {
-        $totalTransactions += \Illuminate\Support\Facades\DB::table('cvs')->whereIn('status', ['paid', 'success', 'PAID', 'SUCCESS'])->count();
+        $paidCvCount = \Illuminate\Support\Facades\DB::table('cvs')->whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->count();
     }
 
     // 2. Top Up Game Transactions
+    $topupTrxCount = 0;
     if (\Illuminate\Support\Facades\Schema::hasTable('transactions')) {
-        $totalTransactions += \Illuminate\Support\Facades\DB::table('transactions')->whereIn('status', ['paid', 'success', 'PAID', 'SUCCESS'])->count();
-    }
-    if (\Illuminate\Support\Facades\Schema::hasTable('topup_transactions')) {
-        $totalTransactions += \Illuminate\Support\Facades\DB::table('topup_transactions')->whereIn('payment_status', ['paid', 'success', 'PAID', 'SUCCESS'])->count();
+        $topupTrxCount = \Illuminate\Support\Facades\DB::table('transactions')->whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->count();
     }
     
     // 3. Enterprise POS Orders
+    $softwareOrdersCount = 0;
     if (\Illuminate\Support\Facades\Schema::hasTable('orders')) {
-        $totalTransactions += \Illuminate\Support\Facades\DB::table('orders')->whereIn('payment_status', ['paid', 'success', 'PAID', 'SUCCESS'])->count();
+        $softwareOrdersCount = \Illuminate\Support\Facades\DB::table('orders')->whereIn('payment_status', ['PAID', 'paid', 'SUCCESS', 'success'])->count();
     }
+
+    $totalTransactions = $paidCvCount + $topupTrxCount + $softwareOrdersCount;
 
         // GET MAX DISCOUNT FOR TOP UP GAMES
     $maxGameDiscount = \Illuminate\Support\Facades\DB::table('game_products')

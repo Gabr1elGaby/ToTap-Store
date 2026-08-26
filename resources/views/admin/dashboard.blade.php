@@ -14,30 +14,33 @@
                 $cvTemplateCount = \Illuminate\Support\Facades\DB::table('cv_templates')->count();
                 $totalProducts = $softwareCount + $gamesCount + $cvTemplateCount;
 
-                // CV Revenue: count of paid CVs * Rp15.000
-                $paidCvCount = \Illuminate\Support\Facades\DB::table('cvs')->whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->count();
-                $cvRevenue = $paidCvCount * 15000;
+                // 1. CV Builder Purchases & Revenue
+                $paidCvCount = 0;
+                $cvRevenue = 0;
+                if (\Illuminate\Support\Facades\Schema::hasTable('cvs')) {
+                    $paidCvCount = \Illuminate\Support\Facades\DB::table('cvs')->whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->count();
+                    if (\Illuminate\Support\Facades\Schema::hasTable('cv_templates')) {
+                        $cvRevenue = (float) \Illuminate\Support\Facades\DB::table('cvs')
+                            ->leftJoin('cv_templates', 'cvs.template_id', '=', 'cv_templates.id')
+                            ->whereIn('cvs.status', ['PAID', 'paid', 'SUCCESS', 'success'])
+                            ->sum(\Illuminate\Support\Facades\DB::raw('COALESCE(cv_templates.price, 5000)'));
+                    }
+                }
 
-                // Top Up Game Revenue & Count
+                // 2. Top Up Game Purchases & Revenue
                 $topupTrxCount = 0;
                 $topupRevenue = 0;
                 if (\Illuminate\Support\Facades\Schema::hasTable('transactions')) {
-                    $topupTrxCount += \Illuminate\Support\Facades\DB::table('transactions')->whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->count();
-                    $topupRevenue += (float) \Illuminate\Support\Facades\DB::table('transactions')->whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->sum('amount');
-                }
-                if (\Illuminate\Support\Facades\Schema::hasTable('topup_transactions')) {
-                    $topupTrxCount += \Illuminate\Support\Facades\DB::table('topup_transactions')->whereIn('payment_status', ['PAID', 'paid', 'SUCCESS', 'success'])->count();
-                    $topupRevenue += (float) \Illuminate\Support\Facades\DB::table('topup_transactions')->whereIn('payment_status', ['PAID', 'paid', 'SUCCESS', 'success'])->sum('amount');
+                    $topupTrxCount = \Illuminate\Support\Facades\DB::table('transactions')->whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->count();
+                    $topupRevenue = (float) \Illuminate\Support\Facades\DB::table('transactions')->whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->sum('amount');
                 }
 
-                // Software POS Revenue & Count
+                // 3. Software POS Purchases & Revenue
                 $softwareOrdersCount = 0;
                 $softwareRevenue = 0;
                 if (\Illuminate\Support\Facades\Schema::hasTable('orders')) {
-                    $softwareOrdersCount += \Illuminate\Support\Facades\DB::table('orders')->whereIn('payment_status', ['PAID', 'paid', 'SUCCESS', 'success'])->count();
-                }
-                if (\Illuminate\Support\Facades\Schema::hasTable('payments')) {
-                    $softwareRevenue += (float) \Illuminate\Support\Facades\DB::table('payments')->whereIn('status', ['PAID', 'paid', 'SUCCESS', 'success'])->sum('amount');
+                    $softwareOrdersCount = \Illuminate\Support\Facades\DB::table('orders')->whereIn('payment_status', ['PAID', 'paid', 'SUCCESS', 'success'])->count();
+                    $softwareRevenue = (float) \Illuminate\Support\Facades\DB::table('orders')->whereIn('payment_status', ['PAID', 'paid', 'SUCCESS', 'success'])->sum('amount');
                 }
 
                 $totalPurchases = $paidCvCount + $topupTrxCount + $softwareOrdersCount;
