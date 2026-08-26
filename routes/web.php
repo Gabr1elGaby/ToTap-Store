@@ -77,6 +77,7 @@ Route::get('/', function () {
 
 // SUBMIT CUSTOMER REVIEW
 Route::post('/api/reviews', [\App\Http\Controllers\CustomerReviewController::class, 'store'])->name('reviews.store');
+Route::post('/api/customer-reviews', [\App\Http\Controllers\CustomerReviewController::class, 'store'])->name('customer-reviews.store');
 
 
 

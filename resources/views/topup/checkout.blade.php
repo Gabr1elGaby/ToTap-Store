@@ -345,7 +345,7 @@
             btn.disabled = true;
 
             const formData = new FormData(document.getElementById('topupInlineReviewForm'));
-            fetch('{{ route("customer-reviews.store") }}', {
+            fetch('{{ route("reviews.store") }}', {
                 method: 'POST',
                 body: formData,
                 headers: {
