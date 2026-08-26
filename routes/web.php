@@ -149,6 +149,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/phone/send-otp', [ProfileController::class, 'sendPhoneOtp'])->name('profile.phone.send-otp');
+    Route::post('/profile/phone/verify-otp', [ProfileController::class, 'verifyPhoneOtp'])->name('profile.phone.verify-otp');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
