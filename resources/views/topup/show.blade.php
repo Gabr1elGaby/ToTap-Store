@@ -242,18 +242,10 @@
                                     </div>
                                     <div class="space-y-2.5">
                                         <!-- QRIS (Satu-satunya metode pembayaran instan) -->
-                                        <label class="relative flex items-center justify-between p-4 border-2 border-indigo-600 dark:border-indigo-500 bg-indigo-50 dark:bg-gray-900 rounded-2xl cursor-pointer shadow-md transition hover:border-indigo-400">
+                                        <label class="relative flex items-center justify-between p-4 border-2 border-indigo-600 dark:border-indigo-500 bg-indigo-50/80 dark:bg-gray-900 rounded-2xl cursor-pointer shadow-md transition hover:border-indigo-400">
                                             <div class="flex items-center gap-3.5">
                                                 <input type="radio" x-model="selectedPayment" value="qris" checked class="w-5 h-5 text-indigo-600 border-gray-300 focus:ring-indigo-500 cursor-pointer">
-                                                <div>
-                                                    <div class="flex items-center gap-2 flex-wrap">
-                                                        <span class="font-bold text-sm text-gray-900 dark:text-white tracking-wide">QRIS All Payment</span>
-                                                        <span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Otomatis & Cepat</span>
-                                                    </div>
-                                                    <div class="text-xs text-gray-600 dark:text-gray-300 mt-1 font-medium leading-relaxed">
-                                                        GoPay, OVO, DANA, ShopeePay, LinkAja, BCA & Semua M-Banking
-                                                    </div>
-                                                </div>
+                                                <span class="font-bold text-sm sm:text-base text-gray-900 dark:text-white tracking-wide">QRIS All Payment</span>
                                             </div>
                                             <div class="bg-white p-1.5 rounded-xl shadow-sm border border-gray-200 shrink-0 ml-2">
                                                 <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" alt="QRIS" class="h-6 object-contain">
