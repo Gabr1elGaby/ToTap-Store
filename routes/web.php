@@ -140,10 +140,10 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/checkout/{plan}', [\App\Http\Controllers\CheckoutController::class, 'show'])->name('checkout');
     Route::post('/checkout/{plan}/process', [\App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');
-    Route::get('/payment/{order_number}', [\App\Http\Controllers\PaymentController::class, 'page'])->name('payment.page');
-    Route::get('/payment/status/{order_number}', [\App\Http\Controllers\PaymentController::class, 'status'])->name('payment.status');
-    Route::post('/payment/simulate/{order_number}', [\App\Http\Controllers\PaymentController::class, 'simulate'])->name('payment.simulate');
-    Route::get('/payment/success/{order_number}', [\App\Http\Controllers\PaymentController::class, 'success'])->name('payment.success');
+    Route::get('/payment/{order_number}', [\App\Http\Controllers\PaymentController::class, 'page'])->name('payment.page')->where('order_number', '.*');
+    Route::get('/payment/status/{order_number}', [\App\Http\Controllers\PaymentController::class, 'status'])->name('payment.status')->where('order_number', '.*');
+    Route::post('/payment/simulate/{order_number}', [\App\Http\Controllers\PaymentController::class, 'simulate'])->name('payment.simulate')->where('order_number', '.*');
+    Route::get('/payment/success/{order_number}', [\App\Http\Controllers\PaymentController::class, 'success'])->name('payment.success')->where('order_number', '.*');
     Route::get('/subscription/active/{product_id}', [\App\Http\Controllers\SubscriptionController::class, 'active'])->name('subscription.active');
 
     // Wallet Deposit Routes (Isi Saldo Akun)
@@ -190,6 +190,11 @@ Route::middleware(['auth', 'verified', 'role:superadmin'])->prefix('admin')->nam
     Route::match(['GET', 'POST'], '/transactions/cv/{id}/approve', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'approveCv'])->name('transactions.cv.approve');
     Route::match(['GET', 'POST'], '/transactions/cv/{id}/reject', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'rejectCv'])->name('transactions.cv.reject');
     Route::match(['GET', 'POST', 'DELETE'], '/transactions/cv/{id}', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'destroyCv'])->name('transactions.cv.destroy');
+
+    // Admin Software & Kasir Order Actions
+    Route::match(['GET', 'POST'], '/transactions/order/{id}/approve', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'approveOrder'])->name('transactions.order.approve')->where('id', '.*');
+    Route::match(['GET', 'POST'], '/transactions/order/{id}/reject', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'rejectOrder'])->name('transactions.order.reject')->where('id', '.*');
+    Route::match(['GET', 'POST', 'DELETE'], '/transactions/order/{id}', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'destroyOrder'])->name('transactions.order.destroy')->where('id', '.*');
 
     // Admin Transactions & Invoices Management
     Route::get('/transactions', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'index'])->name('transactions.index');

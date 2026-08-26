@@ -127,7 +127,7 @@
                                     <th class="py-3.5 px-6">Total Biaya</th>
                                     <th class="py-3.5 px-6">Status Bayar</th>
                                     <th class="py-3.5 px-6">Tanggal</th>
-                                    <th class="py-3.5 px-6 text-center">Invoice</th>
+                                    <th class="py-3.5 px-6 text-center">Aksi & Invoice</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-sm">
@@ -165,9 +165,13 @@
                                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">
                                                     <i class="fas fa-check-circle text-[10px]"></i> Lunas / Aktif
                                                 </span>
+                                            @elseif($ord->payment_status === 'FAILED')
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
+                                                    <i class="fas fa-times-circle text-[10px]"></i> Dibatalkan
+                                                </span>
                                             @else
                                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                                                    <i class="fas fa-clock text-[10px]"></i> {{ $ord->payment_status }}
+                                                    <i class="fas fa-clock text-[10px]"></i> Menunggu
                                                 </span>
                                             @endif
                                         </td>
@@ -175,9 +179,39 @@
                                             {{ $ord->created_at->format('d M Y, H:i') }}
                                         </td>
                                         <td class="py-4 px-6 text-center whitespace-nowrap">
-                                            <a href="{{ route('admin.transactions.invoice', $ord->order_number) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 transition shadow-sm">
-                                                <i class="fas fa-file-invoice"></i> Invoice
-                                            </a>
+                                            <div class="flex items-center justify-center gap-1.5">
+                                                @if($ord->payment_status !== 'PAID')
+                                                    <!-- ACC / Selesai -->
+                                                    <form action="{{ route('admin.transactions.order.approve', $ord->id) }}" method="POST" class="inline" onsubmit="return confirm('ACC dan aktifkan langganan software untuk pesanan ini?')">
+                                                        @csrf
+                                                        <button type="submit" class="px-2.5 py-1.5 rounded-lg text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/60 hover:bg-emerald-200 border border-emerald-300 dark:border-emerald-700 transition flex items-center gap-1 shadow-sm" title="ACC & Aktifkan Lisensi">
+                                                            <i class="fas fa-check"></i> <span>ACC</span>
+                                                        </button>
+                                                    </form>
+
+                                                    <!-- Tolak / Cancel -->
+                                                    <form action="{{ route('admin.transactions.order.reject', $ord->id) }}" method="POST" class="inline" onsubmit="return confirm('Tolak pesanan software ini?')">
+                                                        @csrf
+                                                        <button type="submit" class="p-1.5 rounded-lg text-xs font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-950/60 hover:bg-red-200 border border-red-300 dark:border-red-700 transition" title="Tolak Pesanan">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
+
+                                                <!-- Invoice -->
+                                                <a href="{{ route('admin.transactions.invoice', $ord->order_number) }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 transition shadow-sm" title="Lihat Invoice">
+                                                    <i class="fas fa-file-invoice"></i> <span>Invoice</span>
+                                                </a>
+
+                                                <!-- Hapus -->
+                                                <form action="{{ route('admin.transactions.order.destroy', $ord->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus permanen riwayat pesanan software #{{ $ord->order_number }}?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="p-1.5 rounded-lg text-xs text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition" title="Hapus Riwayat">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach

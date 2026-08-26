@@ -59,6 +59,44 @@ class InvoiceHelper
     }
 
     /**
+     * Format: INV/KASIR/TTS/001/VIII/2026
+     * Resets sequence to 001 every year specifically for Kasir (POS)
+     */
+    public static function generateKasirInvoice(): string
+    {
+        $year = date('Y');
+        $monthRoman = self::getRomanMonth(date('n'));
+
+        $latest = DB::table('orders')
+            ->whereYear('created_at', $year)
+            ->where('order_number', 'LIKE', 'INV/KASIR/TTS/%')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $nextNum = 1;
+        if ($latest && !empty($latest->order_number)) {
+            if (preg_match('/INV\/KASIR\/TTS\/(\d+)\//', $latest->order_number, $matches)) {
+                $nextNum = (int)$matches[1] + 1;
+            } else {
+                $count = DB::table('orders')
+                    ->whereYear('created_at', $year)
+                    ->where('order_number', 'LIKE', 'INV/KASIR/TTS/%')
+                    ->count();
+                $nextNum = $count + 1;
+            }
+        } else {
+            $count = DB::table('orders')
+                ->whereYear('created_at', $year)
+                ->where('order_number', 'LIKE', 'INV/KASIR/TTS/%')
+                ->count();
+            $nextNum = max(1, $count + 1);
+        }
+
+        $sequence = str_pad($nextNum, 3, '0', STR_PAD_LEFT);
+        return "INV/KASIR/TTS/{$sequence}/{$monthRoman}/{$year}";
+    }
+
+    /**
      * Format: INV/CV/TTS/001/VIII/2026
      * Resets sequence to 001 every year
      */

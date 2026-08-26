@@ -155,6 +155,78 @@ class AdminTransactionController extends Controller
         return redirect()->route('admin.transactions.index')->with('error', "Pesanan CV (#{$cv->invoice_number}) telah ditolak/dibatalkan.");
     }
 
+    public function approveOrder($id)
+    {
+        $order = Order::with(['product', 'plan', 'user'])->where('id', $id)->orWhere('order_number', $id)->first();
+
+        if (!$order) {
+            return redirect()->route('admin.transactions.index')->with('error', 'Data pesanan software tidak ditemukan.');
+        }
+
+        $order->update([
+            'payment_status' => 'PAID',
+            'order_status' => 'COMPLETED',
+            'updated_at' => now(),
+        ]);
+
+        // Aktifkan Subscription untuk pengguna
+        if ($order->user_id && $order->product_id) {
+            $duration = $order->plan->duration_days ?? 365;
+            \App\Models\Subscription::updateOrCreate(
+                [
+                    'user_id' => $order->user_id,
+                    'product_id' => $order->product_id,
+                ],
+                [
+                    'plan_id' => $order->plan_id,
+                    'order_id' => $order->id,
+                    'status' => 'ACTIVE',
+                    'start_date' => now(),
+                    'end_date' => now()->addDays($duration),
+                ]
+            );
+        }
+
+        return redirect()->route('admin.transactions.index')->with('success', "Pesanan Software #{$order->order_number} BERHASIL DI-ACC! Lisensi pelanggan kini aktif.");
+    }
+
+    public function rejectOrder($id)
+    {
+        $order = Order::where('id', $id)->orWhere('order_number', $id)->first();
+
+        if (!$order) {
+            return redirect()->route('admin.transactions.index')->with('error', 'Data pesanan software tidak ditemukan.');
+        }
+
+        $order->update([
+            'payment_status' => 'FAILED',
+            'order_status' => 'CANCELLED',
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->route('admin.transactions.index')->with('error', "Pesanan Software #{$order->order_number} telah ditolak/dibatalkan.");
+    }
+
+    public function destroyOrder($id)
+    {
+        try {
+            \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            $order = Order::where('id', $id)->orWhere('order_number', $id)->first();
+            if ($order) {
+                \App\Models\Subscription::where('order_id', $order->id)->delete();
+                $order->delete();
+            } else {
+                \Illuminate\Support\Facades\DB::table('orders')->where('id', $id)->orWhere('order_number', $id)->delete();
+            }
+            \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+            return back()->with('success', "Data pesanan software berhasil dihapus.");
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            return back()->with('error', "Gagal menghapus data order: " . $e->getMessage());
+        }
+    }
+
     public function approve($id)
     {
         $transaction = Transaction::with(['game', 'gameProduct', 'user'])->findOrFail($id);

@@ -67,8 +67,21 @@ class CheckoutController extends Controller
             session(['checkout_email' => $targetUser->email]);
         }
 
-        // 1. Create Order
-        $orderNumber = 'ORD-' . now()->format('Ymd') . '-' . strtoupper(Str::random(6));
+        // 1. Create Order with Kasir Invoice format if Kasir POS
+        $isKasir = false;
+        if ($plan->product) {
+            $prodName = strtolower($plan->product->name ?? '');
+            $prodSlug = strtolower($plan->product->slug ?? '');
+            if (str_contains($prodName, 'kasir') || str_contains($prodSlug, 'kasir')) {
+                $isKasir = true;
+            }
+        }
+
+        if ($isKasir) {
+            $orderNumber = \App\Helpers\InvoiceHelper::generateKasirInvoice();
+        } else {
+            $orderNumber = 'ORD-' . now()->format('Ymd') . '-' . strtoupper(Str::random(6));
+        }
         
         $order = Order::create([
             'order_number' => $orderNumber,
