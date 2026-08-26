@@ -60,7 +60,7 @@
                             @foreach($presets as $p)
                                 <button type="button" 
                                         @click="amount = {{ $p }}; customAmount = ''"
-                                        :class="amount == {{ $p }} ? 'border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/60 ring-2 ring-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-black' : 'border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 font-bold hover:border-gray-300 dark:hover:border-gray-600'"
+                                        :class="amount == {{ $p }} ? 'border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/60 ring-2 ring-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-black shadow-md' : 'border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 font-bold hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-emerald-500/50'"
                                         class="p-4 rounded-2xl text-center transition-all transform active:scale-95 shadow-sm cursor-pointer">
                                     <div class="text-xs text-gray-500 dark:text-gray-400 font-semibold mb-1">Paket</div>
                                     <div class="text-sm sm:text-base tracking-tight font-black" :class="amount == {{ $p }} ? 'text-emerald-600 dark:text-emerald-300 font-black' : 'text-gray-900 dark:text-white font-bold'">Rp{{ number_format($p, 0, ',', '.') }}</div>
@@ -197,7 +197,7 @@
                             </thead>
                             <tbody class="divide-y divide-gray-100 dark:divide-gray-700/60 font-medium text-gray-800 dark:text-gray-200">
                                 @foreach($deposits as $d)
-                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition">
+                                    <tr class="hover:bg-gray-100/70 dark:hover:bg-gray-700/50 transition-colors">
                                         <td class="py-3.5 px-3 font-mono font-bold text-gray-900 dark:text-white">{{ $d->id }}</td>
                                         <td class="py-3.5 px-3 text-gray-600 dark:text-gray-300">{{ $d->created_at->format('d M Y, H:i') }}</td>
                                         <td class="py-3.5 px-3 font-black text-emerald-600 dark:text-emerald-400 font-mono text-sm">Rp{{ number_format($d->amount, 0, ',', '.') }}</td>
