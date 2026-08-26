@@ -27,7 +27,7 @@
                 </div>
                 
                 <!-- Order Summary Card -->
-                <div class="bg-slate-50 dark:bg-gray-900/70 rounded-2xl p-6 mb-8 border border-gray-200 dark:border-gray-700/80">
+                <div class="bg-gray-50 dark:bg-gray-900 rounded-2xl p-6 mb-8 border border-gray-200 dark:border-gray-700">
                     <div class="flex items-center gap-4 mb-4 pb-4 border-b border-gray-200 dark:border-gray-800">
                         @if($transaction->game->thumbnail)
                         <img src="{{ $transaction->game->thumbnail }}" class="w-16 h-16 rounded-2xl object-cover shadow-md border border-gray-200 dark:border-gray-700">
@@ -39,11 +39,11 @@
                     </div>
                     
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                        <div class="flex justify-between sm:block bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-100 dark:border-gray-700">
+                        <div class="flex justify-between sm:block bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-700">
                             <span class="text-xs text-gray-500 dark:text-gray-400 block font-semibold">Nomor Invoice</span>
                             <span class="font-mono text-indigo-600 dark:text-indigo-400 font-bold text-sm">{{ $transaction->invoice_number ?? ('TRX-' . $transaction->id) }}</span>
                         </div>
-                        <div class="flex justify-between sm:block bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-100 dark:border-gray-700">
+                        <div class="flex justify-between sm:block bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-700">
                             <span class="text-xs text-gray-500 dark:text-gray-400 block font-semibold">{{ $transaction->game->target_field_1 ?: 'Player ID' }}</span>
                             <span class="text-gray-900 dark:text-white font-bold text-sm font-mono">
                                 {{ $transaction->target_field_1 }}
@@ -56,7 +56,7 @@
                 </div>
                 
                 <!-- Total Amount Banner -->
-                <div class="flex justify-between items-center bg-indigo-50 dark:bg-indigo-950/40 p-5 rounded-2xl border border-indigo-100 dark:border-indigo-800 mb-8">
+                <div class="flex justify-between items-center bg-indigo-50 dark:bg-gray-900 p-5 rounded-2xl border border-indigo-200 dark:border-gray-700 mb-8">
                     <div>
                         <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block">Total Tagihan</span>
                         <span class="text-xs text-gray-500 dark:text-gray-400">Bebas biaya admin gateway (Rp0)</span>
@@ -151,20 +151,22 @@
                 </div>
 
                 <!-- 2. PENDING QRIS & PAYMENT CARD (Hidden if already paid) -->
-                <div id="topup-pending-card" class="{{ $isPaid ? 'hidden' : '' }} bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 mb-6 text-center border-2 border-indigo-500/30 dark:border-indigo-500/20 shadow-lg">
+                <div id="topup-pending-card" class="{{ $isPaid ? 'hidden' : '' }} bg-gray-50 dark:bg-gray-900 rounded-3xl p-6 sm:p-8 mb-6 text-center border-2 border-gray-200 dark:border-gray-700 shadow-lg">
                     <!-- QRIS Header -->
-                    <div class="flex items-center justify-center gap-2 mb-2">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" alt="QRIS" class="h-7 object-contain">
+                    <div class="flex items-center justify-center gap-2 mb-3">
+                        <div class="bg-white p-2 rounded-xl shadow-sm border border-gray-200 inline-block">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" alt="QRIS" class="h-7 object-contain">
+                        </div>
                     </div>
-                    <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-6">
-                        Scan menggunakan M-Banking / E-Wallet apa pun. <br>
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold rounded-full mt-2 text-xs border border-emerald-200 dark:border-emerald-800">
+                    <p class="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-6">
+                        Scan QRIS di bawah menggunakan M-Banking atau E-Wallet apa pun. <br>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-bold rounded-full mt-2 text-xs border border-emerald-300 dark:border-emerald-700">
                             ⚡ Nominal Terisi Otomatis: Rp{{ number_format($transaction->amount, 0, ',', '.') }}
                         </span>
                     </p>
                     
                     <!-- QR Box -->
-                    <div class="inline-block p-4 bg-white rounded-2xl shadow-inner border border-gray-200 dark:border-gray-700 mb-4">
+                    <div class="inline-block p-4 bg-white rounded-2xl shadow-md border-2 border-gray-200 dark:border-gray-600 mb-4">
                         @php
                             $dynamicQris = \App\Helpers\QrisHelper::getDynamicQrisForAmount((int) $transaction->amount);
                             $qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($dynamicQris);
@@ -178,13 +180,13 @@
 
                     <!-- Supported E-Wallets -->
                     <div class="flex flex-wrap items-center justify-center gap-2 mb-6">
-                        <span class="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-xs font-bold text-gray-600 dark:text-gray-300 rounded-lg">GoPay</span>
-                        <span class="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-xs font-bold text-gray-600 dark:text-gray-300 rounded-lg">OVO</span>
-                        <span class="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-xs font-bold text-gray-600 dark:text-gray-300 rounded-lg">DANA</span>
-                        <span class="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-xs font-bold text-gray-600 dark:text-gray-300 rounded-lg">ShopeePay</span>
-                        <span class="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-xs font-bold text-gray-600 dark:text-gray-300 rounded-lg">BCA Mobile</span>
-                        <span class="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-xs font-bold text-gray-600 dark:text-gray-300 rounded-lg">Livin'</span>
-                        <span class="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-xs font-bold text-gray-600 dark:text-gray-300 rounded-lg">BRImo</span>
+                        <span class="px-2.5 py-1 bg-gray-200 dark:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-300 rounded-lg">GoPay</span>
+                        <span class="px-2.5 py-1 bg-gray-200 dark:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-300 rounded-lg">OVO</span>
+                        <span class="px-2.5 py-1 bg-gray-200 dark:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-300 rounded-lg">DANA</span>
+                        <span class="px-2.5 py-1 bg-gray-200 dark:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-300 rounded-lg">ShopeePay</span>
+                        <span class="px-2.5 py-1 bg-gray-200 dark:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-300 rounded-lg">BCA Mobile</span>
+                        <span class="px-2.5 py-1 bg-gray-200 dark:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-300 rounded-lg">Livin'</span>
+                        <span class="px-2.5 py-1 bg-gray-200 dark:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-300 rounded-lg">BRImo</span>
                     </div>
 
                     <!-- Action Buttons -->
@@ -203,11 +205,6 @@
                             <span class="font-extrabold text-white">Saya Sudah Bayar (Cek Status)</span>
                         </button>
                     </div>
-
-                    <p class="text-[11px] text-gray-400 dark:text-gray-500 mt-4 max-w-md mx-auto">
-                        💡 <em>Halaman ini otomatis mengecek status setiap 3 detik. Begitu pesanan Anda di-ACC oleh Admin, proses top up langsung selesai secara otomatis!</em>
-                    </p>
-                </div>
 
                     <p class="text-[11px] text-gray-400 dark:text-gray-500 mt-4 max-w-md mx-auto">
                         💡 <em>Halaman ini otomatis mengecek status setiap 3 detik. Begitu pesanan Anda di-ACC oleh Admin, proses top up langsung selesai secara otomatis!</em>

@@ -440,18 +440,50 @@ class TopUpController extends Controller
                 }
             }
 
-            // 4. CEK NICKNAME KE VIP RESELLER API JIKA TERSEDIA
+            // 4. VALIDASI KHUSUS ROBLOX: Cek ke API Resmi Roblox
+            if ($gameSlug === 'roblox') {
+                try {
+                    $robloxRes = \Illuminate\Support\Facades\Http::timeout(6)->post('https://users.roblox.com/v1/usernames/users', [
+                        'usernames' => [$target1],
+                        'excludeBannedUsers' => false
+                    ]);
+                    $rJson = $robloxRes->json();
+                    if (!empty($rJson['data']) && isset($rJson['data'][0]['name'])) {
+                        $robloxUser = $rJson['data'][0];
+                        return response()->json([
+                            'result' => true,
+                            'is_checked' => true,
+                            'nickname' => $robloxUser['name'] . (isset($robloxUser['displayName']) && $robloxUser['displayName'] !== $robloxUser['name'] ? ' (' . $robloxUser['displayName'] . ')' : ''),
+                        ]);
+                    } else {
+                        return response()->json([
+                            'result' => false,
+                            'message' => 'Username Roblox "' . $target1 . '" tidak ditemukan di server Roblox. Pastikan penulisan username benar!',
+                        ]);
+                    }
+                } catch (\Exception $exRoblox) {
+                    return response()->json([
+                        'result' => false,
+                        'message' => 'Gagal memverifikasi Username Roblox. Pastikan username sudah terdaftar.',
+                    ]);
+                }
+            }
+
+            // 5. CEK NICKNAME KE VIP RESELLER API JIKA TERSEDIA
             $gameCode = match($gameSlug) {
                 'mobile-legend', 'mobile-legends', 'magic-chess-go-go' => 'mobile-legends',
                 'free-fire', 'freefire' => 'free-fire',
                 'pubg-mobile', 'pubg' => 'pubg-mobile',
                 'genshin-impact' => 'genshin-impact',
                 'honkai-star-rail' => 'honkai-star-rail',
+                'call-of-duty-mobile', 'cod-mobile' => 'cod-mobile',
+                'point-blank' => 'point-blank',
+                'arena-of-valor', 'aov' => 'aov',
                 default => null,
             };
 
             if (!$gameCode) {
-                // Game non-API nickname (misal Roblox / Steam): pastikan lolos validasi
+                // Game non-API nickname: pastikan lolos validasi
                 return response()->json([
                     'result' => true,
                     'is_checked' => false,
