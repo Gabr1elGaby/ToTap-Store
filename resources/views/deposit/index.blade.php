@@ -72,7 +72,7 @@
                         <div>
                             <label class="block text-xs font-bold text-gray-800 dark:text-gray-200 mb-2">Atau Masukkan Nominal Lain (Rp)</label>
                             <div class="flex rounded-2xl shadow-sm overflow-hidden border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:border-emerald-500 transition">
-                                <div class="px-5 py-3.5 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 font-mono font-black text-base flex items-center border-r border-gray-300 dark:border-gray-700 select-none">
+                                <div class="px-5 py-3.5 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 font-mono font-black text-base flex items-center border-r border-gray-300 dark:border-gray-700 select-none shrink-0">
                                     Rp
                                 </div>
                                 <input type="number" 
@@ -83,7 +83,7 @@
                                        step="1000"
                                        required
                                        placeholder="50000"
-                                       class="w-full px-4 py-3.5 bg-transparent border-0 font-mono font-black text-gray-900 dark:text-white text-base focus:ring-0 focus:outline-none">
+                                       class="w-full px-4 py-3.5 bg-white dark:bg-gray-900 border-0 font-mono font-black text-gray-900 dark:text-white text-base focus:ring-0 focus:outline-none placeholder-gray-400 dark:placeholder-gray-500">
                             </div>
                             <div class="text-[11px] text-gray-500 dark:text-gray-400 mt-1.5 flex justify-between font-semibold">
                                 <span>Minimal Rp5.000</span>
