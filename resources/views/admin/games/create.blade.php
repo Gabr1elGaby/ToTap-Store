@@ -81,6 +81,7 @@
                                     <option value="capcut" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">CapCut Pro (Masukan Email / No HP)</option>
                                     <option value="gemini" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Gemini (Masukan Email Google)</option>
                                     <option value="iqiyi" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">iQIYI Premium (Masukan Email / No HP)</option>
+                                    <option value="netflix" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Netflix Premium (Masukan Email / No WhatsApp)</option>
                                     <option value="vidio" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Vidio Premier (Email / No WhatsApp)</option>
                                     <option value="vision_plus" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Vision Plus (Masukan Email / No HP)</option>
                                     <option value="viu" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Viu Premium (Masukan Email / No HP)</option>
@@ -605,6 +606,17 @@
                         target_field_2: '',
                         requires_zone_id: false,
                         guide_text: 'Masukkan Email atau No HP akun iQIYI Anda untuk aktivasi akun iQIYI VIP / Premium.'
+                    },
+                    netflix: {
+                        name: 'Netflix Premium',
+                        developer: 'Netflix, Inc.',
+                        description: 'Langganan Netflix Premium Ultra HD 4K resmi garansi aktif. Akun dikirim instan detik itu juga.',
+                        category: 'Aplikasi Premium',
+                        target_field_1: 'Masukan Email / No WhatsApp',
+                        target_field_1_help: 'Data akun (Email & Password) dan Profile PIN Netflix akan otomatis langsung muncul di layar dan invoice Anda.',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan alamat Email atau Nomor WhatsApp Anda. Data akun resmi Netflix Premium (Email, Password, dan PIN Profil) akan otomatis tampil di layar dan invoice Anda setelah pembayaran.'
                     },
                     vidio: {
                         name: 'Vidio Premier',
