@@ -369,8 +369,16 @@ class TopUpController extends Controller
             return back()->with('error', 'Mohon maaf, nominal ' . $product->name . ' sedang dalam pemeliharaan saldo provider. Silakan hubungi Admin.');
         }
         
-        // Buat ID Transaksi & Nomor Invoice Unik (Format: INV/TOPUP/TTS/001/VIII/2026)
-        $orderId = \App\Helpers\InvoiceHelper::generateTopUpInvoice();
+        // Cek apakah produk yang dibeli adalah Aplikasi Premium
+        $isApp = in_array($game->category, ['Aplikasi Premium', 'App & Entertainment', 'streaming']) 
+            || str_contains(strtolower($game->category ?? ''), 'app') 
+            || str_contains(strtolower($game->category ?? ''), 'aplikasi');
+
+        // Buat ID Transaksi & Nomor Invoice Unik (Format Aplikasi Premium: INV/APKPRE/TTS/001/VIII/2026 | Game: INV/TOPUP/TTS/001/VIII/2026)
+        $orderId = $isApp 
+            ? \App\Helpers\InvoiceHelper::generateAppPremiumInvoice() 
+            : \App\Helpers\InvoiceHelper::generateTopUpInvoice();
+            
         $paymentMethod = $request->payment_method === 'balance' ? 'balance' : 'qris';
         
         // JIKA MEMILIH PEMBAYARAN MENGGUNAKAN SALDO AKUN

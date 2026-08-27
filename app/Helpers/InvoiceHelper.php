@@ -59,6 +59,50 @@ class InvoiceHelper
     }
 
     /**
+     * Format: INV/APKPRE/TTS/001/VIII/2026
+     * Resets sequence to 001 every year specifically for Aplikasi Premium
+     */
+    public static function generateAppPremiumInvoice(): string
+    {
+        $year = date('Y');
+        $monthRoman = self::getRomanMonth(date('n'));
+
+        // Query transaksi aplikasi premium di tahun berjalan
+        $latest = DB::table('transactions')
+            ->whereYear('created_at', $year)
+            ->where(function ($q) {
+                $q->where('id', 'LIKE', 'INV/APKPRE/TTS/%')
+                  ->orWhere('id', 'LIKE', 'INV/APKPRE/%');
+            })
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        $nextNum = 1;
+        if ($latest) {
+            if (isset($latest->invoice_number) && preg_match('/INV\/APKPRE\/(?:TTS\/)?(\d+)\//', $latest->invoice_number, $m1)) {
+                $nextNum = (int)$m1[1] + 1;
+            } elseif (preg_match('/INV\/APKPRE\/(?:TTS\/)?(\d+)\//', $latest->id, $m2)) {
+                $nextNum = (int)$m2[1] + 1;
+            } else {
+                $count = DB::table('transactions')
+                    ->whereYear('created_at', $year)
+                    ->where('id', 'LIKE', 'INV/APKPRE%')
+                    ->count();
+                $nextNum = $count + 1;
+            }
+        } else {
+            $count = DB::table('transactions')
+                ->whereYear('created_at', $year)
+                ->where('id', 'LIKE', 'INV/APKPRE%')
+                ->count();
+            $nextNum = max(1, $count + 1);
+        }
+
+        $sequence = str_pad($nextNum, 3, '0', STR_PAD_LEFT);
+        return "INV/APKPRE/TTS/{$sequence}/{$monthRoman}/{$year}";
+    }
+
+    /**
      * Format: INV/KASIR/TTS/001/VIII/2026
      * Resets sequence to 001 every year specifically for Kasir (POS)
      */
