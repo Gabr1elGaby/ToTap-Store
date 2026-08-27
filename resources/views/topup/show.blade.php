@@ -12,13 +12,19 @@
 </style>
 <x-app-layout>
     <x-slot name="header">
+        @php
+            $catLowerHeader = strtolower($game->category ?? '');
+            $isAppHeader = str_contains($catLowerHeader, 'app') || str_contains($catLowerHeader, 'aplikasi') || str_contains($catLowerHeader, 'streaming') || str_contains($catLowerHeader, 'entertainment');
+            $backUrl = $isAppHeader ? url('/aplikasi-premium') : url('/topup');
+            $titlePrefix = $isAppHeader ? 'Langganan' : 'Top Up';
+        @endphp
         <div class="flex items-center gap-4">
-            <a href="{{ url('/topup') }}" class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white rounded-xl border border-gray-300 dark:border-gray-700 transition-all shadow-sm">
+            <a href="{{ $backUrl }}" class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white rounded-xl border border-gray-300 dark:border-gray-700 transition-all shadow-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 Kembali
             </a>
             <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight border-l-2 border-indigo-600 dark:border-indigo-400 pl-4">
-                Top Up {{ $game->name }}
+                {{ $titlePrefix }} {{ $game->name }}
             </h2>
         </div>
     </x-slot>
