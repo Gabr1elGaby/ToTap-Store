@@ -43,6 +43,23 @@ class TransactionHistoryController extends Controller
             ->first();
 
         if ($transaction) {
+            if (empty($transaction->provider_sn) && !empty($transaction->provider_trx_id)) {
+                try {
+                    $vipService = app(\App\Services\VipResellerService::class);
+                    $statusRes = $vipService->checkOrderStatus($transaction->provider_trx_id);
+                    if (isset($statusRes['result']) && $statusRes['result'] === true && !empty($statusRes['data'])) {
+                        $pData = is_array($statusRes['data']) && isset($statusRes['data'][0]) ? $statusRes['data'][0] : $statusRes['data'];
+                        $sn = $pData['sn'] ?? ($pData['note'] ?? null);
+                        if (!empty($sn)) {
+                            $transaction->update([
+                                'provider_sn' => $sn,
+                                'status' => 'success',
+                            ]);
+                        }
+                    }
+                } catch (\Throwable $e) {}
+            }
+
             return view('transactions.invoice', [
                 'type' => 'topup',
                 'data' => $transaction,

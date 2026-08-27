@@ -14,6 +14,28 @@ class TopUpPaymentController extends Controller
     public function show($id)
     {
         $transaction = Transaction::with(['game', 'gameProduct'])->findOrFail($id);
+
+        // Jika transaksi memiliki provider_trx_id tapi provider_sn nya masih kosong,
+        // otomatis tarik data akun / SN terbaru dari VIP Reseller secara real-time!
+        if (empty($transaction->provider_sn) && !empty($transaction->provider_trx_id)) {
+            try {
+                $vipService = app(VipResellerService::class);
+                $statusRes = $vipService->checkOrderStatus($transaction->provider_trx_id);
+                if (isset($statusRes['result']) && $statusRes['result'] === true && !empty($statusRes['data'])) {
+                    $pData = is_array($statusRes['data']) && isset($statusRes['data'][0]) ? $statusRes['data'][0] : $statusRes['data'];
+                    $sn = $pData['sn'] ?? ($pData['note'] ?? null);
+                    if (!empty($sn)) {
+                        $transaction->update([
+                            'provider_sn' => $sn,
+                            'status' => 'success',
+                        ]);
+                    }
+                }
+            } catch (\Throwable $e) {
+                Log::warning('Auto sync provider_sn on checkout view failed: ' . $e->getMessage());
+            }
+        }
+
         return view('topup.checkout', compact('transaction'));
     }
 
