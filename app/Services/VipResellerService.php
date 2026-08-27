@@ -111,4 +111,21 @@ class VipResellerService
         
         return $response->json();
     }
+
+    public function checkOrderStatus($trxId = '')
+    {
+        $payload = [
+            'key' => $this->apiKey,
+            'sign' => $this->generateSign(),
+            'type' => 'status',
+        ];
+        if (!empty($trxId)) {
+            $payload['trxid'] = trim($trxId);
+        } else {
+            $payload['limit'] = 10;
+        }
+
+        $response = Http::connectTimeout(30)->asForm()->post("{$this->baseUrl}/game-feature", $payload);
+        return $response->json();
+    }
 }

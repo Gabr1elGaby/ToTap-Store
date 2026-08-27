@@ -279,12 +279,14 @@ class AdminTransactionController extends Controller
                 }
 
                 if (isset($orderRes['result']) && $orderRes['result'] === true) {
+                    $sn = $orderRes['data']['sn'] ?? ($orderRes['data']['note'] ?? null);
                     $transaction->update([
                         'status' => 'success',
                         'provider_trx_id' => $orderRes['data']['trxid'] ?? null,
+                        'provider_sn' => $sn,
                     ]);
 
-                    return back()->with('success', "Pesanan #{$transaction->id} BERHASIL di-ACC! Diamond berhasil dikirim otomatis via API VIP Reseller.");
+                    return back()->with('success', "Pesanan #{$transaction->id} BERHASIL di-ACC! " . ($sn ? "Detail Akun/SN: {$sn}" : "Proses sukses via API VIP Reseller."));
                 } else {
                     $errMsg = $orderRes['message'] ?? 'API Provider gagal memproses pesanan.';
                     $transaction->update(['status' => 'paid']);
@@ -298,6 +300,38 @@ class AdminTransactionController extends Controller
 
         $transaction->update(['status' => 'success']);
         return back()->with('success', "Pesanan #{$transaction->id} berhasil disetujui.");
+    }
+
+    public function syncProviderStatus($id, \App\Services\VipResellerService $vipService)
+    {
+        $transaction = Transaction::findOrFail($id);
+        if (!$transaction->provider_trx_id) {
+            return back()->with('warning', 'Transaksi ini tidak memiliki Provider TRX ID.');
+        }
+
+        try {
+            $statusRes = $vipService->checkOrderStatus($transaction->provider_trx_id);
+            if (isset($statusRes['result']) && $statusRes['result'] === true && !empty($statusRes['data'])) {
+                $pData = is_array($statusRes['data']) && isset($statusRes['data'][0]) ? $statusRes['data'][0] : $statusRes['data'];
+                $pStatus = strtolower($pData['status'] ?? '');
+                $sn = $pData['sn'] ?? ($pData['note'] ?? $transaction->provider_sn);
+
+                $updateData = ['provider_sn' => $sn];
+                if ($pStatus === 'success') {
+                    $updateData['status'] = 'success';
+                } elseif ($pStatus === 'error' || $pStatus === 'failed') {
+                    $updateData['status'] = 'failed';
+                }
+
+                $transaction->update($updateData);
+
+                return back()->with('success', "Status berhasil diperbarui dari VIP Reseller: Status [{$pStatus}]" . ($sn ? " | Informasi Akun: {$sn}" : ''));
+            } else {
+                return back()->with('warning', 'Respon dari VIP Reseller: ' . ($statusRes['message'] ?? 'Data tidak ditemukan.'));
+            }
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal memeriksa status: ' . $e->getMessage());
+        }
     }
 
     public function refundToBalance($id)

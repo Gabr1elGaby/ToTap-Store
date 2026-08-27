@@ -484,6 +484,12 @@
                                                 @if($appTrx->target_field_2)
                                                     <div class="text-gray-500 text-[11px] mt-0.5 font-sans">Request: {{ $appTrx->target_field_2 }}</div>
                                                 @endif
+                                                @if(!empty($appTrx->provider_sn))
+                                                    <div class="mt-1.5 p-2 bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700/80 rounded-xl text-amber-900 dark:text-amber-200 text-[11px] font-mono break-all select-all shadow-sm">
+                                                        <span class="font-extrabold text-amber-700 dark:text-amber-400 block text-[10px] uppercase tracking-wider mb-0.5"><i class="fas fa-key"></i> DETAIL AKUN / SN:</span>
+                                                        {{ $appTrx->provider_sn }}
+                                                    </div>
+                                                @endif
                                             </td>
                                             <td class="py-4 px-6 font-bold text-gray-900 dark:text-white whitespace-nowrap">
                                                 Rp{{ number_format($appTrx->amount, 0, ',', '.') }}
@@ -538,6 +544,16 @@
                                                             @csrf
                                                             <button type="submit" title="Tandai Sukses Manual" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition cursor-pointer">
                                                                 <i class="fas fa-check-double"></i> Selesai
+                                                            </button>
+                                                        </form>
+                                                    @endif
+
+                                                    @if(!empty($appTrx->provider_trx_id))
+                                                        <!-- Cek & Tarik Status/SN dari VIP Reseller -->
+                                                        <form action="{{ route('admin.transactions.sync-status', $appTrx->id) }}" method="POST" class="inline">
+                                                            @csrf
+                                                            <button type="submit" title="Tarik Status & SN Akun Terbaru dari VIP Reseller" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 transition cursor-pointer">
+                                                                <i class="fas fa-sync-alt"></i> Cek Provider
                                                             </button>
                                                         </form>
                                                     @endif

@@ -201,6 +201,7 @@ Route::middleware(['auth', 'verified', 'role:superadmin'])->prefix('admin')->nam
     Route::get('/transactions', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'index'])->name('transactions.index');
     Route::get('/transactions/{id}/invoice', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'invoice'])->name('transactions.invoice')->where('id', '.*');
     Route::post('/transactions/{id}/approve', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'approve'])->name('transactions.approve')->where('id', '.*');
+    Route::post('/transactions/{id}/sync-status', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'syncProviderStatus'])->name('transactions.sync-status')->where('id', '.*');
     Route::post('/transactions/{id}/refund', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'refundToBalance'])->name('transactions.refund')->where('id', '.*');
     Route::post('/transactions/{id}/manual-success', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'manualSuccess'])->name('transactions.manual-success')->where('id', '.*');
     Route::post('/transactions/{id}/reject', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'reject'])->name('transactions.reject')->where('id', '.*');

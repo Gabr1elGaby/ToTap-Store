@@ -111,7 +111,34 @@
                             </p>
                         </div>
 
-                        @if($isAppService)
+                        @if(!empty($transaction->provider_sn))
+                        <!-- Kotak Informasi Akun & Password Resmi dari Provider -->
+                        <div class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/60 dark:to-orange-950/40 border-2 border-amber-400 dark:border-amber-500 p-5 rounded-2xl text-left space-y-3 max-w-lg mx-auto shadow-lg">
+                            <div class="flex items-center justify-between border-b border-amber-200 dark:border-amber-800/80 pb-2.5">
+                                <div class="flex items-center gap-2 font-black text-amber-900 dark:text-amber-200 text-sm">
+                                    <i class="fas fa-key text-amber-500 text-base"></i> Detail Akun / Akses Langganan
+                                </div>
+                                <span class="text-[10px] font-extrabold bg-amber-200 dark:bg-amber-800 text-amber-900 dark:text-amber-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                    Aktif & Resmi
+                                </span>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-[11px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300">Informasi Login / Serial Number:</label>
+                                <div class="p-3 bg-white dark:bg-gray-900 rounded-xl border border-amber-300 dark:border-amber-700 font-mono text-xs text-gray-900 dark:text-amber-100 break-all select-all flex items-center justify-between gap-3 shadow-inner">
+                                    <span class="font-bold text-indigo-900 dark:text-indigo-200">{{ $transaction->provider_sn }}</span>
+                                    <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($transaction->provider_sn) }}'); alert('Detail akun berhasil disalin ke clipboard!');" class="px-3 py-1.5 text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow transition whitespace-nowrap cursor-pointer flex items-center gap-1">
+                                        <i class="fas fa-copy"></i> Salin
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="text-[11px] text-amber-800 dark:text-amber-300 space-y-1 pt-2 border-t border-amber-200 dark:border-amber-800/60">
+                                <p class="flex items-center gap-1.5"><i class="fas fa-check-circle text-emerald-500"></i> Gunakan email dan password di atas untuk login ke aplikasi.</p>
+                                <p class="flex items-center gap-1.5"><i class="fas fa-info-circle text-blue-500"></i> Jika tertera link (URL), Anda dapat membuka link tersebut untuk melihat panduan / PIN profil Anda.</p>
+                            </div>
+                        </div>
+                        @elseif($isAppService)
                         <!-- Kotak Informasi Email & Undangan Aplikasi Premium -->
                         <div class="bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 p-4 sm:p-5 rounded-2xl text-left space-y-2 max-w-lg mx-auto shadow-sm">
                             <div class="flex items-center gap-2 font-black text-amber-800 dark:text-amber-300 text-sm">

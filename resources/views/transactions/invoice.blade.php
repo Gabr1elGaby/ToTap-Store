@@ -176,6 +176,32 @@
                 </table>
             </div>
 
+            @if($type === 'topup' && !empty($data->provider_sn))
+            <!-- Informasi Akun / Serial Number Resmi (Aplikasi Premium / Voucher) -->
+            <div class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/30 border-2 border-amber-400 dark:border-amber-500/80 rounded-2xl p-5 shadow-sm space-y-3">
+                <div class="flex items-center justify-between border-b border-amber-200 dark:border-amber-800/60 pb-2.5">
+                    <div class="flex items-center gap-2 font-black text-amber-900 dark:text-amber-200 text-sm">
+                        <i class="fas fa-key text-amber-500"></i> INFORMASI AKUN / AKSES RESMI
+                    </div>
+                    <span class="text-[10px] font-extrabold bg-amber-200 dark:bg-amber-800 text-amber-900 dark:text-amber-100 px-2.5 py-0.5 rounded-full uppercase">
+                        Aktif
+                    </span>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300 mb-1.5">Detail Login / Serial Number:</label>
+                    <div class="p-3 bg-white dark:bg-slate-900 rounded-xl border border-amber-300 dark:border-amber-700 font-mono text-xs text-slate-900 dark:text-amber-100 break-all select-all flex items-center justify-between gap-3 shadow-inner">
+                        <span class="font-bold text-indigo-900 dark:text-indigo-200">{{ $data->provider_sn }}</span>
+                        <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($data->provider_sn) }}'); alert('Detail akun berhasil disalin ke clipboard!');" class="no-print px-3 py-1.5 text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow transition whitespace-nowrap cursor-pointer flex items-center gap-1">
+                            <i class="fas fa-copy"></i> Salin
+                        </button>
+                    </div>
+                </div>
+                <p class="text-[11px] text-amber-800 dark:text-amber-300">
+                    💡 <em>Gunakan detail akun di atas untuk login ke aplikasi. Jika tertera link panduan (URL), buka link tersebut untuk panduan aktivasi profil.</em>
+                </p>
+            </div>
+            @endif
+
             <!-- Price Breakdown -->
             <div class="flex justify-end">
                 <div class="w-full sm:w-1/2 space-y-2.5 text-sm">
