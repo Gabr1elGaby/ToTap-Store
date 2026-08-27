@@ -157,6 +157,22 @@ class GameController extends Controller
             $file->move($uploadDir, $fileName);
             $validated['cover_image'] = '/images/games/' . $fileName;
         }
+
+        // Ensure columns exist in database if migration hasn't run yet
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('games', 'target_field_1_help')) {
+            try {
+                \Illuminate\Support\Facades\Schema::table('games', function ($table) {
+                    $table->text('target_field_1_help')->nullable();
+                });
+            } catch (\Throwable $e) {}
+        }
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('games', 'description')) {
+            try {
+                \Illuminate\Support\Facades\Schema::table('games', function ($table) {
+                    $table->text('description')->nullable();
+                });
+            } catch (\Throwable $e) {}
+        }
         
         Game::create($validated);
 
@@ -224,6 +240,22 @@ class GameController extends Controller
             }
             $file->move(base_path('images/games'), $fileName);
             $validated['cover_image'] = '/images/games/' . $fileName;
+        }
+
+        // Ensure columns exist in database if migration hasn't run yet
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('games', 'target_field_1_help')) {
+            try {
+                \Illuminate\Support\Facades\Schema::table('games', function ($table) {
+                    $table->text('target_field_1_help')->nullable();
+                });
+            } catch (\Throwable $e) {}
+        }
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('games', 'description')) {
+            try {
+                \Illuminate\Support\Facades\Schema::table('games', function ($table) {
+                    $table->text('description')->nullable();
+                });
+            } catch (\Throwable $e) {}
         }
 
         $game->update($validated);
