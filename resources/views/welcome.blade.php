@@ -211,7 +211,7 @@
         </section>
 
         <!-- Section: Keamanan & Kebijakan Transaksi (Dedicated Section) -->
-        <section id="keamanan" class="py-20 bg-slate-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
+        <section id="keamanan" class="py-20 bg-slate-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="mb-14 text-center" data-aos="fade-up">
                     <h2 class="text-blue-600 dark:text-blue-400 font-bold uppercase tracking-widest text-xs mb-2">KEAMANAN & KEBIJAKAN</h2>
