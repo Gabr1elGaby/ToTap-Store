@@ -56,8 +56,10 @@ class GameProductController extends Controller
         $deleted = 0;
         $all = $game->products()->get();
         foreach ($all as $p) {
-            $n = strtoupper($p->name . ' ' . $p->product_code);
-            if (preg_match('/(PHP|MYR|INR|THB|SGD|USD|EUR|BRL|TRY|VND|TWD|AUD|SAR|AED|HKD|GLOBAL|MALAYSIA|PHILIPPINES|THAILAND|SINGAPORE)/', $n)) {
+            $name = $p->name;
+            $code = $p->product_code;
+            if (preg_match('/\b(php|myr|inr|thb|sgd|usd|eur|brl|vnd|twd|sar|hkd|brazil|malaysia|philippines|thailand|singapore|vietnam|taiwan)\b/i', $name)
+                || preg_match('/(?:^|[-_])(php|myr|inr|thb|sgd|usd|eur|brl|vnd|twd|sar|hkd)(?:$|[-_\d])/i', $code)) {
                 $p->delete();
                 $deleted++;
             }
@@ -123,9 +125,9 @@ class GameProductController extends Controller
                 continue; 
             }
 
-            // 3. FILTER MATA UANG ASING (HANYA AMBIL IDR / INDONESIA)
-            if (preg_match('/(php|myr|inr|thb|sgd|usd|eur|brl|try|vnd|twd|aud|sar|aed|hkd|brazil|malaysia|philippines|thailand|singapore|vietnam|taiwan)/i', $name) 
-                || preg_match('/(php|myr|inr|thb|sgd|usd|eur|brl|try|vnd|twd|aud|sar|aed|hkd)/i', $codeUpper)) {
+            // 3. FILTER MATA UANG ASING (HANYA AMBIL IDR / INDONESIA, DENGAN BATAS KATA AGAR TIDAK SALAH DETEKSI SEPERTI CANVAEDU)
+            if (preg_match('/\b(php|myr|inr|thb|sgd|usd|eur|brl|vnd|twd|sar|hkd|brazil|malaysia|philippines|thailand|singapore|vietnam|taiwan)\b/i', $name) 
+                || preg_match('/(?:^|[-_])(php|myr|inr|thb|sgd|usd|eur|brl|vnd|twd|sar|hkd)(?:$|[-_\d])/i', $codeUpper)) {
                 continue;
             }
 
