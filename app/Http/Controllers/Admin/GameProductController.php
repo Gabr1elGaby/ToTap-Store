@@ -30,19 +30,42 @@ class GameProductController extends Controller
 
     public function update(Request $request, Game $game, GameProduct $product)
     {
+        // Sanitize price inputs if formatted with dots/commas
+        $input = $request->all();
+        if (isset($input['price_sell'])) {
+            $input['price_sell'] = str_replace(',', '.', str_replace('.', '', (string)$input['price_sell']));
+        }
+        if (isset($input['price_normal']) && $input['price_normal'] !== '') {
+            $input['price_normal'] = str_replace(',', '.', str_replace('.', '', (string)$input['price_normal']));
+        }
+        $request->merge($input);
+
         $validated = $request->validate([
             'price_sell' => 'required|numeric|min:0',
+            'price_normal' => 'nullable|numeric|min:0',
+            'is_promo' => 'nullable',
             'status' => 'required|string|in:available,empty,error',
-            'name' => 'required|string'
+            'name' => 'nullable|string'
         ]);
 
-        $product->update($validated);
+        $updateData = [
+            'price_sell' => (float)$validated['price_sell'],
+            'price_normal' => !empty($validated['price_normal']) ? (float)$validated['price_normal'] : null,
+            'is_promo' => $request->has('is_promo') && $request->is_promo == '1' ? 1 : 0,
+            'status' => $validated['status'],
+        ];
+
+        if (!empty($validated['name'])) {
+            $updateData['name'] = $validated['name'];
+        }
+
+        $product->update($updateData);
 
         if ($validated['status'] !== 'available') {
             $product->delete();
         }
 
-        return redirect()->route('admin.games.products.index', $game)->with('success', 'Produk berhasil diperbarui.');
+        return redirect()->route('admin.games.products.index', $game)->with('success', "Harga produk '{$product->name}' berhasil diperbarui menjadi Rp " . number_format($product->price_sell, 0, ',', '.'));
     }
 
     public function destroy(Game $game, GameProduct $product)
