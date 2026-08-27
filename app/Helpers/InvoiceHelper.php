@@ -206,4 +206,60 @@ class InvoiceHelper
         $sequence = str_pad($nextNum, 3, '0', STR_PAD_LEFT);
         return "DEP/TTS/{$sequence}/{$monthRoman}/{$year}";
     }
+
+    /**
+     * Parse raw account credentials string from VIP Reseller / provider
+     * into structured email, password, and link.
+     */
+    public static function parseAccountCredentials(?string $raw): array
+    {
+        if (empty($raw)) {
+            return [
+                'is_structured' => false,
+                'email' => null,
+                'password' => null,
+                'link' => null,
+                'raw' => '',
+            ];
+        }
+
+        $result = [
+            'is_structured' => false,
+            'email' => null,
+            'password' => null,
+            'link' => null,
+            'raw' => trim($raw),
+        ];
+
+        // 1. Extract Link (URL)
+        if (preg_match('/https?:\/\/[^\s|,]+/i', $raw, $linkMatches)) {
+            $result['link'] = trim($linkMatches[0]);
+        }
+
+        // 2. Clean text without link and prefixes
+        $text = $raw;
+        if ($result['link']) {
+            $text = str_replace($result['link'], '', $text);
+        }
+        $text = trim(preg_replace('/[|;,]+$/', '', trim($text)));
+        $text = trim(preg_replace('/^[|;,]+/', '', trim($text)));
+        $text = preg_replace('/^(AKUN|ACCOUNT|DATA|LOGIN)\s*[:=]\s*/i', '', $text);
+        $text = trim($text);
+
+        // 3. Match Email & Password patterns (e.g. email---password or email--password or email - password)
+        if (preg_match('/^([^\s\-:|]+@[^\s\-:|]+)\s*(?:-{2,4}|\s+-\s+|:\s*|\/)\s*([^\s|]+)/i', $text, $matches)) {
+            $result['is_structured'] = true;
+            $result['email'] = trim($matches[1]);
+            $result['password'] = trim($matches[2]);
+        } elseif (preg_match('/^([^\s\-:|]+)\s*(?:-{2,4})\s*([^\s|]+)/i', $text, $matches)) {
+            $result['is_structured'] = true;
+            $result['email'] = trim($matches[1]);
+            $result['password'] = trim($matches[2]);
+        } elseif ($result['link']) {
+            $result['is_structured'] = true;
+            $result['email'] = $text ?: null;
+        }
+
+        return $result;
+    }
 }

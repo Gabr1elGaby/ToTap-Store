@@ -485,9 +485,36 @@
                                                     <div class="text-gray-500 text-[11px] mt-0.5 font-sans">Request: {{ $appTrx->target_field_2 }}</div>
                                                 @endif
                                                 @if(!empty($appTrx->provider_sn))
-                                                    <div class="mt-1.5 p-2 bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700/80 rounded-xl text-amber-900 dark:text-amber-200 text-[11px] font-mono break-all select-all shadow-sm">
-                                                        <span class="font-extrabold text-amber-700 dark:text-amber-400 block text-[10px] uppercase tracking-wider mb-0.5"><i class="fas fa-key"></i> DETAIL AKUN / SN:</span>
-                                                        {{ $appTrx->provider_sn }}
+                                                    @php
+                                                        $adminAcc = \App\Helpers\InvoiceHelper::parseAccountCredentials($appTrx->provider_sn);
+                                                    @endphp
+                                                    <div class="mt-2 p-2.5 bg-amber-500/10 dark:bg-amber-950/60 border border-amber-400 dark:border-amber-700 rounded-xl text-xs space-y-1 shadow-sm">
+                                                        <div class="font-black text-amber-800 dark:text-amber-300 text-[10px] uppercase tracking-wider flex items-center gap-1">
+                                                            <i class="fas fa-key"></i> DETAIL AKUN PROVIDER:
+                                                        </div>
+                                                        @if($adminAcc['is_structured'] && ($adminAcc['email'] || $adminAcc['password']))
+                                                            @if($adminAcc['email'])
+                                                                <div class="text-[11px] text-slate-800 dark:text-amber-100 font-mono select-all">
+                                                                    <span class="font-bold text-amber-700 dark:text-amber-400">Akun:</span> {{ $adminAcc['email'] }}
+                                                                </div>
+                                                            @endif
+                                                            @if($adminAcc['password'])
+                                                                <div class="text-[11px] text-slate-800 dark:text-emerald-300 font-mono select-all">
+                                                                    <span class="font-bold text-emerald-600 dark:text-emerald-400">PW:</span> {{ $adminAcc['password'] }}
+                                                                </div>
+                                                            @endif
+                                                            @if($adminAcc['link'])
+                                                                <div class="text-[11px]">
+                                                                    <a href="{{ $adminAcc['link'] }}" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline font-mono inline-flex items-center gap-1">
+                                                                        <i class="fas fa-link text-[10px]"></i> {{ $adminAcc['link'] }}
+                                                                    </a>
+                                                                </div>
+                                                            @endif
+                                                        @else
+                                                            <div class="text-[11px] font-mono text-slate-800 dark:text-amber-200 break-all select-all">
+                                                                {{ $appTrx->provider_sn }}
+                                                            </div>
+                                                        @endif
                                                     </div>
                                                 @endif
                                             </td>

@@ -112,8 +112,11 @@
                         </div>
 
                                             @if(!empty($transaction->provider_sn))
+                        @php
+                            $acc = \App\Helpers\InvoiceHelper::parseAccountCredentials($transaction->provider_sn);
+                        @endphp
                         <!-- Kotak Informasi Akun & Password Resmi dari Provider -->
-                        <div class="bg-amber-500/10 dark:bg-amber-950/40 border-2 border-amber-500 p-5 sm:p-6 rounded-2xl text-left space-y-3.5 max-w-lg mx-auto shadow-lg">
+                        <div class="bg-amber-500/10 dark:bg-amber-950/40 border-2 border-amber-500 p-5 sm:p-6 rounded-2xl text-left space-y-4 max-w-lg mx-auto shadow-lg">
                             <div class="flex items-center justify-between border-b border-amber-500/30 pb-3">
                                 <div class="flex items-center gap-2 font-black text-amber-950 dark:text-amber-300 text-sm sm:text-base">
                                     <i class="fas fa-key text-amber-500 text-base"></i> Detail Akun / Akses Langganan
@@ -123,6 +126,57 @@
                                 </span>
                             </div>
 
+                            @if($acc['is_structured'] && ($acc['email'] || $acc['password']))
+                            <div class="space-y-3">
+                                @if($acc['email'])
+                                <!-- Baris Akun / Email -->
+                                <div>
+                                    <label class="block text-[11px] font-black uppercase tracking-wider text-slate-800 dark:text-amber-200 mb-1">
+                                        Email / Akun:
+                                    </label>
+                                    <div class="p-3 bg-slate-900 dark:bg-slate-950 rounded-xl border-2 border-amber-500/40 font-mono text-xs font-bold text-amber-300 select-all flex items-center justify-between gap-3 shadow-inner">
+                                        <span class="truncate">{{ $acc['email'] }}</span>
+                                        <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($acc['email']) }}'); alert('Email/Akun berhasil disalin!');" class="px-3 py-1.5 text-xs font-black text-white bg-amber-600 hover:bg-amber-700 active:scale-95 rounded-lg shadow-md transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0">
+                                            <i class="fas fa-copy"></i> Salin
+                                        </button>
+                                    </div>
+                                </div>
+                                @endif
+
+                                @if($acc['password'])
+                                <!-- Baris Password -->
+                                <div>
+                                    <label class="block text-[11px] font-black uppercase tracking-wider text-slate-800 dark:text-amber-200 mb-1">
+                                        Password:
+                                    </label>
+                                    <div class="p-3 bg-slate-900 dark:bg-slate-950 rounded-xl border-2 border-amber-500/40 font-mono text-xs font-bold text-emerald-400 select-all flex items-center justify-between gap-3 shadow-inner">
+                                        <span class="tracking-wider">{{ $acc['password'] }}</span>
+                                        <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($acc['password']) }}'); alert('Password berhasil disalin!');" class="px-3 py-1.5 text-xs font-black text-white bg-emerald-600 hover:bg-emerald-700 active:scale-95 rounded-lg shadow-md transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0">
+                                            <i class="fas fa-copy"></i> Salin
+                                        </button>
+                                    </div>
+                                </div>
+                                @endif
+
+                                @if($acc['link'])
+                                <!-- Baris Link Panduan / Profil -->
+                                <div>
+                                    <label class="block text-[11px] font-black uppercase tracking-wider text-slate-800 dark:text-amber-200 mb-1">
+                                        Link Panduan / Aktivasi:
+                                    </label>
+                                    <div class="p-3 bg-slate-900 dark:bg-slate-950 rounded-xl border-2 border-amber-500/40 font-mono text-xs font-bold text-blue-300 select-all flex items-center justify-between gap-3 shadow-inner">
+                                        <a href="{{ $acc['link'] }}" target="_blank" class="truncate text-blue-400 hover:underline flex items-center gap-1">
+                                            {{ $acc['link'] }} <i class="fas fa-external-link-alt text-[10px]"></i>
+                                        </a>
+                                        <a href="{{ $acc['link'] }}" target="_blank" class="px-3 py-1.5 text-xs font-black text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-lg shadow-md transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0">
+                                            <i class="fas fa-external-link-alt"></i> Buka Link
+                                        </a>
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+                            @else
+                            <!-- Fallback Generic SN -->
                             <div class="space-y-2">
                                 <label class="block text-xs font-black uppercase tracking-wider text-slate-800 dark:text-amber-200">
                                     Informasi Login / Serial Number:
@@ -134,6 +188,7 @@
                                     </button>
                                 </div>
                             </div>
+                            @endif
 
                             <div class="text-xs font-medium text-slate-800 dark:text-slate-200 space-y-1.5 pt-2.5 border-t border-amber-500/30">
                                 <p class="flex items-center gap-2">
@@ -142,7 +197,7 @@
                                 </p>
                                 <p class="flex items-center gap-2">
                                     <i class="fas fa-info-circle text-blue-600 dark:text-blue-400"></i>
-                                    <span>Jika tertera link (URL), Anda dapat membuka link tersebut untuk melihat panduan / PIN profil Anda.</span>
+                                    <span>Jika tertera link (URL), klik link tersebut untuk melihat panduan / PIN profil Anda.</span>
                                 </p>
                             </div>
                         </div>
