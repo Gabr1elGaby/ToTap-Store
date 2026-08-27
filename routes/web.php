@@ -48,13 +48,25 @@ Route::get('/', function () {
         ->whereColumn('price_normal', '>', 'price_sell')
         ->selectRaw('MAX(ROUND(((price_normal - price_sell) / price_normal) * 100)) as max_discount')
         ->value('max_discount') ?? 0;
-    // GET MAX DISCOUNT FOR SOFTWARE
-    $maxSoftwareDiscount = (int) (\Illuminate\Support\Facades\DB::table('plans')
+    // GET MAX DISCOUNT FOR SOFTWARE & CV SERVICES
+    $maxPlanDiscount = (int) (\Illuminate\Support\Facades\DB::table('plans')
         ->where('is_active', true)
         ->where('price_normal', '>', 0)
         ->whereColumn('price_normal', '>', 'price')
         ->selectRaw('MAX(ROUND(((price_normal - price) / price_normal) * 100)) as max_discount')
         ->value('max_discount') ?? 0);
+
+    $maxCvDiscount = 0;
+    if (\Illuminate\Support\Facades\Schema::hasTable('cv_templates')) {
+        $maxCvDiscount = (int) (\Illuminate\Support\Facades\DB::table('cv_templates')
+            ->where('status', 'active')
+            ->where('price_normal', '>', 0)
+            ->whereColumn('price_normal', '>', 'price')
+            ->selectRaw('MAX(ROUND(((price_normal - price) / price_normal) * 100)) as max_discount')
+            ->value('max_discount') ?? 0);
+    }
+
+    $maxSoftwareDiscount = max($maxPlanDiscount, $maxCvDiscount);
 
     // CUSTOMER REVIEWS STATS (100% REAL DATA ONLY)
     $totalReviews = \App\Models\CustomerReview::count();

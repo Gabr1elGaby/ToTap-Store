@@ -41,9 +41,11 @@
             @endif
             @php
                 $gameName = strtolower($game->name);
+                $catLower = strtolower($game->category ?? '');
+                $isApp = str_contains($catLower, 'app') || str_contains($catLower, 'aplikasi') || str_contains($catLower, 'streaming') || str_contains($catLower, 'entertainment');
                 $isRequiresZone = $game->requires_zone_id || str_contains($gameName, 'magic chess') || str_contains($gameName, 'mobile legend');
-                $field1Label = $game->target_field_1 ?: 'User ID';
-                $field2Label = $game->target_field_2 ?: 'Zone ID';
+                $field1Label = $game->target_field_1 ?: ($isApp ? 'Alamat Email Aktif' : 'User ID');
+                $field2Label = $game->target_field_2 ?: ($isApp ? 'Request Profil / Server' : 'Zone ID');
             @endphp
 
             <!-- Panduan Top Up -->
@@ -61,6 +63,10 @@
                             @if(!empty($game->guide_text))
                                 <div class="text-xs text-indigo-700 dark:text-indigo-300 font-semibold mt-1 bg-indigo-50 dark:bg-indigo-950/60 p-2.5 rounded-lg border border-indigo-100 dark:border-indigo-800/40">
                                     <i class="fas fa-info-circle mr-1"></i> {{ $game->guide_text }}
+                                </div>
+                            @elseif($isApp)
+                                <div class="text-xs text-indigo-700 dark:text-indigo-300 font-semibold mt-1 bg-indigo-50 dark:bg-indigo-950/60 p-2.5 rounded-lg border border-indigo-100 dark:border-indigo-800/40">
+                                    <i class="fas fa-envelope mr-1"></i> Masukkan alamat email aktif Anda. Akun atau link invite/undangan akan dikirim melalui riwayat pesanan (invoice) atau email Anda.
                                 </div>
                             @elseif(str_contains($gameName, 'mobile legend'))
                                 <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">Contoh: <strong>12345678</strong> untuk User ID dan <strong>1234</strong> untuk Zone ID. (Klik avatar profil di pojok kiri atas).</div>
@@ -91,7 +97,7 @@
                     </li>
                     <li class="flex items-start gap-2">
                         <span class="font-bold text-blue-600 dark:text-blue-400">4.</span>
-                        <span>Klik tombol <strong>Beli Sekarang</strong> dan selesaikan pembayaran. @if($game->category == 'Voucher' || str_contains($gameName, 'voucher') || str_contains($gameName, 'wallet')) Kode voucher akan otomatis tampil di invoice dan dikirimkan ke WhatsApp Anda! @else Pesanan akan diproses otomatis! @endif</span>
+                        <span>Klik tombol <strong>Beli Sekarang</strong> dan selesaikan pembayaran. @if($isApp) Undangan / akun akan dikirimkan otomatis ke Email & Invoice Anda! @elseif($game->category == 'Voucher' || str_contains($gameName, 'voucher') || str_contains($gameName, 'wallet')) Kode voucher akan otomatis tampil di invoice dan dikirimkan ke WhatsApp Anda! @else Pesanan akan diproses otomatis! @endif</span>
                     </li>
                 </ul>
             </div>
@@ -172,45 +178,46 @@
                         <div class="flex flex-col xl:flex-row gap-6 items-start">
                             <!-- Kolom Tengah: Tujuan & Nominal -->
                             <div class="w-full xl:w-7/12 space-y-6">
-                                <!-- Step 1: Data Tujuan / Email / Player ID -->
-                                @php
-                                    $isAppCategory = str_contains(strtolower($game->category ?? ''), 'app') || 
-                                                     str_contains(strtolower($game->category ?? ''), 'aplikasi') || 
-                                                     str_contains(strtolower($game->category ?? ''), 'streaming');
-                                @endphp
+                                <!-- Step 1: Player ID / Email -->
                                 <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-lg rounded-2xl p-5">
                                     <div class="flex items-center gap-3 mb-4">
                                         <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">1</div>
                                         <h3 class="text-lg font-bold text-gray-900 dark:text-white">
-                                            {{ $isAppCategory ? 'Masukkan Data Tujuan' : 'Masukkan Tujuan' }}
+                                            @if($isApp)
+                                                Masukkan Data Tujuan (Email)
+                                            @else
+                                                Masukkan Tujuan
+                                            @endif
                                         </h3>
                                     </div>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div class="{{ $isRequiresZone ? '' : 'md:col-span-2' }}">
-                                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-                                                {{ $isAppCategory ? ($field1Label ?: 'Alamat Email') : $field1Label }}
+                                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5 flex items-center gap-1.5">
+                                                @if($isApp)
+                                                    <i class="fas fa-envelope text-indigo-500"></i>
+                                                @endif
+                                                {{ $field1Label }}
                                             </label>
-                                            <input type="{{ $isAppCategory ? 'email' : 'text' }}" name="player_id" x-model="playerId" 
-                                                placeholder="{{ $isAppCategory ? 'Masukkan Email (contoh: user@gmail.com)' : ($isRequiresZone ? 'Contoh: 12345678' : ($game->slug == 'valorant' ? 'Contoh: RiotID#1234' : 'Masukkan ' . $field1Label)) }}" required
+                                            <input type="{{ $isApp ? 'email' : 'text' }}" name="player_id" x-model="playerId" 
+                                                placeholder="{{ $isApp ? 'Masukkan alamat email aktif (contoh: nama@gmail.com)' : ($isRequiresZone ? 'Contoh: 12345678' : ($game->slug == 'valorant' ? 'Contoh: RiotID#1234' : 'Masukkan ' . $field1Label)) }}" required
                                                 class="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm p-3 font-semibold text-sm">
+                                            @if($isApp)
+                                                <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1.5 flex items-center gap-1">
+                                                    <span>📧</span> <em>Undangan resmi / akun akan dikirimkan ke email ini dan tertera pada invoice pesanan.</em>
+                                                </p>
+                                            @endif
                                         </div>
                                         @if($isRequiresZone)
                                         <div>
                                             <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-                                                {{ $isAppCategory ? ($field2Label ?: 'Request Profile / Catatan (Opsional)') : $field2Label }}
+                                                {{ $field2Label }}
                                             </label>
                                             <input type="text" name="zone_id" x-model="zoneId" 
-                                                placeholder="{{ $isAppCategory ? 'Contoh: Profil 1 (Opsional)' : 'Contoh: 1234' }}" {{ $isAppCategory ? '' : 'required' }}
+                                                placeholder="{{ $isApp ? 'Contoh: Server 1 / Profile 1' : 'Contoh: 1234' }}" required
                                                 class="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm p-3 font-semibold text-sm">
                                         </div>
                                         @endif
                                     </div>
-                                    @if($isAppCategory)
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2.5 flex items-center gap-1.5">
-                                            <i class="fas fa-info-circle text-indigo-500"></i>
-                                            <span>Masukkan alamat email aktif Anda. Akun atau link invite akan dikirim melalui email atau tercantum di invoice Anda.</span>
-                                        </p>
-                                    @endif
                                 </div>
 
                                 <!-- Step 2: Nominal -->

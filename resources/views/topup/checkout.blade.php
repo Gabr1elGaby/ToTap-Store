@@ -85,14 +85,11 @@
                     $waUrl = "https://wa.me/{$adminWa}?text=" . urlencode($waMsg);
                 @endphp
                 
+                @php
+                    $isAppService = $transaction->game && (str_contains(strtolower($transaction->game->category ?? ''), 'app') || str_contains(strtolower($transaction->game->category ?? ''), 'aplikasi') || str_contains(strtolower($transaction->game->category ?? ''), 'streaming'));
+                @endphp
                 <!-- 1. PAID SUCCESS / PROCESSING CARD (Shows directly if paid with balance or completed) -->
                 <div id="topup-paid-card" class="{{ $isPaid ? '' : 'hidden' }} bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 mb-6 text-center border-2 {{ $isSuccess ? 'border-emerald-500/30 dark:border-emerald-500/20' : 'border-blue-500/30 dark:border-blue-500/20' }} shadow-lg space-y-6">
-                    @php
-                        $gameCategory = strtolower($transaction->game->category ?? '');
-                        $isApp = str_contains($gameCategory, 'app') || str_contains($gameCategory, 'aplikasi') || str_contains($gameCategory, 'streaming');
-                        $isVoucher = str_contains($gameCategory, 'voucher') || str_contains(strtolower($transaction->game->name ?? ''), 'voucher') || str_contains(strtolower($transaction->game->name ?? ''), 'wallet');
-                    @endphp
-
                     @if($isSuccess)
                         <div class="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-3xl mx-auto shadow-inner font-bold">
                             ✓
@@ -103,42 +100,31 @@
                                 Transaksi Lunas & Berhasil
                             </span>
                             <h3 class="text-2xl font-black text-gray-900 dark:text-white mt-3">
-                                {{ $isApp ? 'Langganan Aplikasi Berhasil!' : ($isVoucher ? 'Voucher Berhasil Diterbitkan!' : 'Top Up Game Berhasil!') }}
+                                {{ $isAppService ? 'Aplikasi Premium Berhasil Diaktifkan!' : 'Top Up Game Berhasil!' }}
                             </h3>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-md mx-auto">
-                                @if($isApp)
-                                    Aktivasi / undangan langganan untuk email <strong>{{ $transaction->target_field_1 }}</strong> telah berhasil diproses.
-                                @elseif($isVoucher)
-                                    Kode voucher Anda telah aktif dan siap digunakan.
+                                @if($isAppService)
+                                    Undangan / akses akun premium telah dikirimkan ke Email: <strong>{{ $transaction->target_field_1 }}</strong>.
                                 @else
                                     Item top up game Anda telah berhasil masuk ke akun <strong>{{ $transaction->target_field_1 }}</strong>.
                                 @endif
                             </p>
                         </div>
 
-                        @if($isApp)
-                        <!-- Box Detail Undangan / Akun Aplikasi Premium -->
-                        <div class="bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-400/40 dark:border-amber-600/30 rounded-2xl p-5 text-left max-w-lg mx-auto shadow-sm">
-                            <div class="flex items-center gap-2 mb-2 text-amber-800 dark:text-amber-300 font-bold text-xs uppercase tracking-wider">
-                                <i class="fas fa-crown text-amber-500"></i>
-                                <span>Detail Aktivasi Langganan</span>
+                        @if($isAppService)
+                        <!-- Kotak Informasi Email & Undangan Aplikasi Premium -->
+                        <div class="bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 p-4 sm:p-5 rounded-2xl text-left space-y-2 max-w-lg mx-auto shadow-sm">
+                            <div class="flex items-center gap-2 font-black text-amber-800 dark:text-amber-300 text-sm">
+                                <i class="fas fa-envelope-open-text text-base"></i> Pengiriman Undangan / Akun ke Email
                             </div>
-                            <div class="space-y-2 text-xs">
-                                <div class="flex justify-between py-1 border-b border-amber-200 dark:border-amber-800/40">
-                                    <span class="text-gray-600 dark:text-gray-400">Email Tujuan:</span>
-                                    <span class="font-bold text-gray-900 dark:text-white font-mono">{{ $transaction->target_field_1 }}</span>
-                                </div>
-                                @if($transaction->target_field_2)
-                                <div class="flex justify-between py-1 border-b border-amber-200 dark:border-amber-800/40">
-                                    <span class="text-gray-600 dark:text-gray-400">Request Profile:</span>
-                                    <span class="font-bold text-gray-900 dark:text-white">{{ $transaction->target_field_2 }}</span>
-                                </div>
-                                @endif
-                                <div class="pt-2">
-                                    <p class="text-gray-600 dark:text-gray-300 text-[11px] leading-relaxed">
-                                        📧 <strong>Status:</strong> Undangan / link aktivasi telah dikirimkan ke email <strong>{{ $transaction->target_field_1 }}</strong>. Silakan buka inbox atau folder spam email Anda untuk menerima undangan keluarga/profil.
-                                    </p>
-                                </div>
+                            <p class="text-xs text-amber-900 dark:text-amber-100 leading-relaxed">
+                                Akses / link invite untuk <strong>{{ $transaction->gameProduct->name ?? 'Aplikasi Premium' }}</strong> dikirim ke: <br>
+                                <span class="inline-block mt-1 font-mono font-bold text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/60 px-2.5 py-1 rounded-lg border border-amber-300 dark:border-amber-700">📧 {{ $transaction->target_field_1 }}</span>
+                            </p>
+                            <div class="text-[11px] text-amber-700 dark:text-amber-400 space-y-1 pt-2 border-t border-amber-200 dark:border-amber-800/60">
+                                <p class="flex items-center gap-1.5"><i class="fas fa-check text-emerald-500"></i> Buka email Anda (Inbox Gmail, Outlook, atau Yahoo).</p>
+                                <p class="flex items-center gap-1.5"><i class="fas fa-check text-emerald-500"></i> Buka pesan undangan masuk dari provider dan klik <strong>Terima Undangan (Accept)</strong>.</p>
+                                <p class="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 pt-0.5">💡 <em>Jika belum masuk, periksa juga folder <strong>Spam / Promosi / Update</strong> email Anda.</em></p>
                             </div>
                         </div>
                         @endif
@@ -153,11 +139,7 @@
                             </span>
                             <h3 class="text-2xl font-black text-gray-900 dark:text-white mt-3">Pesanan Sedang Diproses!</h3>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-md mx-auto">
-                                @if($isApp)
-                                    Pembayaran diterima. Server provider sedang memproses pengiriman akun / link invite ke email <strong>{{ $transaction->target_field_1 }}</strong>.
-                                @else
-                                    Pembayaran sebesar <strong>Rp{{ number_format($transaction->amount, 0, ',', '.') }}</strong> telah diterima. Pesanan Anda saat ini sedang dalam antrean pengiriman server provider.
-                                @endif
+                                Pembayaran sebesar <strong>Rp{{ number_format($transaction->amount, 0, ',', '.') }}</strong> telah diterima. Pesanan Anda saat ini sedang dalam antrean pengiriman server provider ke email/akun Anda.
                             </p>
                         </div>
                     @endif
