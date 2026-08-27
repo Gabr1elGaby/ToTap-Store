@@ -193,7 +193,6 @@ class GameProductController extends Controller
                 ];
             }
         }
-        }
 
         try {
             $count = 0;
