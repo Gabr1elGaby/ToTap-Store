@@ -322,6 +322,11 @@ class TopUpController extends Controller
 
     public function process(Request $request, $slug)
     {
+        // Wajib Login untuk seluruh transaksi (QRIS maupun Saldo Akun)
+        if (!auth()->check()) {
+            return back()->with('error', 'Silakan masuk (login) ke akun ToTap Store Anda terlebih dahulu untuk melanjutkan pembayaran.');
+        }
+
         $game = Game::where('slug', $slug)->firstOrFail();
         $gameSlug = strtolower($game->slug);
         $playerId = trim($request->player_id);

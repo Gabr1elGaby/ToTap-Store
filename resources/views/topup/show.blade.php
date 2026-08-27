@@ -349,10 +349,26 @@
         form.addEventListener('submit', function(e) {
             e.preventDefault(); // Cegah submit langsung
             
-            // JIKA USER BELUM LOGIN: SIMPAN STATUS SUBMIT & TAMPILKAN MODAL LOGIN
+            // JIKA USER BELUM LOGIN: TAMPILKAN MODAL LOGIN SEBELUM MELANJUTKAN PEMBAYARAN
             @guest
                 sessionStorage.setItem('totap_auto_submit_{{ $game->slug }}', '1');
-                window.dispatchEvent(new CustomEvent('open-login'));
+                Swal.fire({
+                    icon: 'info',
+                    title: '<span class="text-base sm:text-lg font-black text-gray-900 dark:text-white">Silakan Masuk Terlebih Dahulu</span>',
+                    text: 'Untuk keamanan transaksi, invoice resmi, dan jaminan saldo refund, silakan Masuk atau Buat Akun terlebih dahulu.',
+                    confirmButtonText: 'Masuk / Daftar Akun 🔐',
+                    confirmButtonColor: '#4f46e5',
+                    customClass: {
+                        popup: 'rounded-3xl dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 shadow-2xl'
+                    }
+                }).then(() => {
+                    if (typeof openLoginModal === 'function') {
+                        openLoginModal();
+                    } else {
+                        const modal = document.getElementById('modal-login-backdrop');
+                        if (modal) modal.classList.remove('hidden');
+                    }
+                });
                 return;
             @endguest
             

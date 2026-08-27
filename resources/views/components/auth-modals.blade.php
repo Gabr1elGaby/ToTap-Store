@@ -258,6 +258,13 @@
             btn.innerText = 'Verifikasi OTP';
         });
     }
+
+    window.addEventListener('open-login', function() {
+        openLoginModal();
+    });
+    window.addEventListener('open-register', function() {
+        openRegisterModal();
+    });
 </script>
 
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
