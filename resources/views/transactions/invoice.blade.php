@@ -191,54 +191,40 @@
                     </span>
                 </div>
 
-                @if($acc['is_structured'] && ($acc['email'] || $acc['password']))
+                @if($acc['is_structured'] && !empty($acc['items']))
                 <div class="space-y-3">
-                    @if($acc['email'])
-                    <!-- Baris Akun / Email -->
+                    @foreach($acc['items'] as $label => $val)
                     <div>
                         <label class="block text-[11px] font-black uppercase tracking-wider text-slate-800 dark:text-amber-200 mb-1">
-                            Email / Akun:
+                            {{ $label }}:
                         </label>
-                        <div class="p-3 bg-slate-900 dark:bg-slate-950 rounded-xl border-2 border-amber-500/40 font-mono text-xs font-bold text-amber-300 select-all flex items-center justify-between gap-3 shadow-inner">
-                            <span class="truncate">{{ $acc['email'] }}</span>
-                            <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($acc['email']) }}'); alert('Email/Akun berhasil disalin!');" class="no-print px-3 py-1.5 text-xs font-black text-white bg-amber-600 hover:bg-amber-700 active:scale-95 rounded-lg shadow-md transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0">
+                        @php
+                            $isUrl = str_starts_with($val, 'http://') || str_starts_with($val, 'https://');
+                            $isPass = stripos($label, 'password') !== false || stripos($label, 'pass') !== false;
+                            $isProfile = stripos($label, 'profil') !== false || stripos($label, 'pin') !== false;
+                        @endphp
+                        <div class="p-3 bg-slate-900 dark:bg-slate-950 rounded-xl border-2 border-amber-500/40 font-mono text-xs font-bold {{ $isUrl ? 'text-blue-300' : ($isPass ? 'text-emerald-400' : ($isProfile ? 'text-purple-300' : 'text-amber-300')) }} select-all flex items-center justify-between gap-3 shadow-inner">
+                            @if($isUrl)
+                            <a href="{{ $val }}" target="_blank" class="truncate text-blue-400 hover:underline flex items-center gap-1">
+                                {{ $val }} <i class="fas fa-external-link-alt text-[10px]"></i>
+                            </a>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($val) }}'); alert('Link disalin!');" class="no-print px-2.5 py-1.5 text-xs font-black text-white bg-slate-700 hover:bg-slate-600 active:scale-95 rounded-lg shadow-md transition whitespace-nowrap cursor-pointer flex items-center gap-1">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <a href="{{ $val }}" target="_blank" class="no-print px-3 py-1.5 text-xs font-black text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-lg shadow-md transition whitespace-nowrap cursor-pointer flex items-center gap-1.5">
+                                    <i class="fas fa-external-link-alt"></i> Buka Link
+                                </a>
+                            </div>
+                            @else
+                            <span class="break-all leading-relaxed">{{ $val }}</span>
+                            <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($val) }}'); alert('{{ $label }} berhasil disalin!');" class="no-print px-3 py-1.5 text-xs font-black text-white {{ $isPass ? 'bg-emerald-600 hover:bg-emerald-700' : ($isProfile ? 'bg-purple-600 hover:bg-purple-700' : 'bg-amber-600 hover:bg-amber-700') }} active:scale-95 rounded-lg shadow-md transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0">
                                 <i class="fas fa-copy"></i> Salin
                             </button>
+                            @endif
                         </div>
                     </div>
-                    @endif
-
-                    @if($acc['password'])
-                    <!-- Baris Password -->
-                    <div>
-                        <label class="block text-[11px] font-black uppercase tracking-wider text-slate-800 dark:text-amber-200 mb-1">
-                            Password:
-                        </label>
-                        <div class="p-3 bg-slate-900 dark:bg-slate-950 rounded-xl border-2 border-amber-500/40 font-mono text-xs font-bold text-emerald-400 select-all flex items-center justify-between gap-3 shadow-inner">
-                            <span class="tracking-wider">{{ $acc['password'] }}</span>
-                            <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($acc['password']) }}'); alert('Password berhasil disalin!');" class="no-print px-3 py-1.5 text-xs font-black text-white bg-emerald-600 hover:bg-emerald-700 active:scale-95 rounded-lg shadow-md transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0">
-                                <i class="fas fa-copy"></i> Salin
-                            </button>
-                        </div>
-                    </div>
-                    @endif
-
-                    @if($acc['link'])
-                    <!-- Baris Link Panduan / Profil -->
-                    <div>
-                        <label class="block text-[11px] font-black uppercase tracking-wider text-slate-800 dark:text-amber-200 mb-1">
-                            Link Panduan / Aktivasi:
-                        </label>
-                        <div class="p-3 bg-slate-900 dark:bg-slate-950 rounded-xl border-2 border-amber-500/40 font-mono text-xs font-bold text-blue-300 select-all flex items-center justify-between gap-3 shadow-inner">
-                            <a href="{{ $acc['link'] }}" target="_blank" class="truncate text-blue-400 hover:underline flex items-center gap-1">
-                                {{ $acc['link'] }} <i class="fas fa-external-link-alt text-[10px]"></i>
-                            </a>
-                            <a href="{{ $acc['link'] }}" target="_blank" class="no-print px-3 py-1.5 text-xs font-black text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-lg shadow-md transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0">
-                                <i class="fas fa-external-link-alt"></i> Buka Link
-                            </a>
-                        </div>
-                    </div>
-                    @endif
+                    @endforeach
                 </div>
                 @else
                 <div class="space-y-2">

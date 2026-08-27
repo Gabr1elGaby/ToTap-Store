@@ -209,7 +209,7 @@ class InvoiceHelper
 
     /**
      * Parse raw account credentials string from VIP Reseller / provider
-     * into structured email, password, and link.
+     * into structured email, password, profile, pin, link, and generic key-value items.
      */
     public static function parseAccountCredentials(?string $raw): array
     {
@@ -218,48 +218,116 @@ class InvoiceHelper
                 'is_structured' => false,
                 'email' => null,
                 'password' => null,
+                'profile' => null,
                 'link' => null,
+                'items' => [],
                 'raw' => '',
             ];
         }
 
-        $result = [
-            'is_structured' => false,
-            'email' => null,
-            'password' => null,
-            'link' => null,
-            'raw' => trim($raw),
+        $raw = trim($raw);
+        $items = [];
+        $email = null;
+        $password = null;
+        $profile = null;
+        $link = null;
+
+        // 1. Cek apakah format menggunakan pemisah pipe (|), titik koma (;), atau baris baru (\n)
+        if (str_contains($raw, '|') || str_contains($raw, ';') || str_contains($raw, "\n")) {
+            $parts = preg_split('/[|;\n]+/', $raw);
+            foreach ($parts as $part) {
+                $part = trim($part);
+                if (empty($part)) continue;
+
+                if (preg_match('/^([a-zA-Z0-9_\-\s]+)\s*[:=]\s*(.+)$/u', $part, $m)) {
+                    $key = strtoupper(trim($m[1]));
+                    $val = trim($m[2]);
+
+                    if (in_array($key, ['AKUN', 'ACCOUNT', 'EMAIL', 'USER', 'USERNAME', 'ID'])) {
+                        // Cek jika nilai akun mengandung email--password
+                        if (preg_match('/^([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,10})\s*(?:[\x{2010}-\x{2015}\x{2212}—–\-]{1,6}|:\s*|\/|\s+-\s+)\s*(.+)$/u', $val, $em)) {
+                            $email = trim($em[1]);
+                            $password = trim($em[2]);
+                            $items['Email / Akun'] = $email;
+                            $items['Password'] = $password;
+                        } else {
+                            $email = $val;
+                            $items['Email / Akun'] = $val;
+                        }
+                    } elseif (in_array($key, ['PASSWORD', 'PASS', 'PW'])) {
+                        $password = $val;
+                        $items['Password'] = $val;
+                    } elseif (in_array($key, ['PROFILE', 'PROFIL', 'PIN', 'SLOT'])) {
+                        $profile = $val;
+                        $items['Profil / PIN'] = $val;
+                    } elseif (in_array($key, ['KETENTUAN', 'RULES', 'PANDUAN', 'LINK', 'URL'])) {
+                        if (preg_match('/(?:https?:\/\/|bit\.ly\/|tinyurl\.com\/)[^\s]+/i', $val, $urlMatch)) {
+                            $url = $urlMatch[0];
+                            if (!str_starts_with($url, 'http')) {
+                                $url = 'https://' . $url;
+                            }
+                            $link = $url;
+                            $items['Panduan / Rules'] = $url;
+                        } else {
+                            $items['Ketentuan'] = $val;
+                        }
+                    } else {
+                        $items[ucwords(strtolower(trim($m[1])))] = $val;
+                    }
+                }
+            }
+        }
+
+        // 2. Jika belum terurai oleh pipe/key-value, cek pola standard email--password atau email:password
+        if (empty($items)) {
+            // Ekstrak link terlebih dahulu jika ada
+            if (preg_match('/(?:https?:\/\/|bit\.ly\/|tinyurl\.com\/)[^\s|,]+/i', $raw, $linkMatches)) {
+                $linkUrl = $linkMatches[0];
+                if (!str_starts_with($linkUrl, 'http')) {
+                    $linkUrl = 'https://' . $linkUrl;
+                }
+                $link = $linkUrl;
+            }
+
+            $text = $raw;
+            if ($link) {
+                $text = str_replace([$link, 'https://' . $link, 'http://' . $link], '', $text);
+            }
+            $text = trim(preg_replace('/[|;,]+$/', '', trim($text)));
+            $text = trim(preg_replace('/^[|;,]+/', '', trim($text)));
+            $text = preg_replace('/^(AKUN|ACCOUNT|DATA|LOGIN)\s*[:=]\s*/i', '', $text);
+            $text = trim($text);
+
+            if (preg_match('/^([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,10})\s*(?:[\x{2010}-\x{2015}\x{2212}—–\-]{1,6}|:\s*|\/|\s+-\s+)\s*(.+)$/u', $text, $matches)) {
+                $email = trim($matches[1]);
+                $password = trim($matches[2]);
+                $items['Email / Akun'] = $email;
+                $items['Password'] = $password;
+            } elseif (preg_match('/^([^\s|:]+)\s*(?:[\x{2010}-\x{2015}\x{2212}—–\-]{1,6}|:\s*)\s*(.+)$/u', $text, $matches)) {
+                $email = trim($matches[1]);
+                $password = trim($matches[2]);
+                $items['Email / Akun'] = $email;
+                $items['Password'] = $password;
+            } elseif ($link) {
+                $items['Link Aktivasi'] = $link;
+                if (!empty($text)) {
+                    $items['Keterangan'] = $text;
+                }
+            }
+        }
+
+        if ($link && !isset($items['Link / Panduan']) && !isset($items['Panduan / Rules']) && !isset($items['Link Aktivasi'])) {
+            $items['Link / Panduan'] = $link;
+        }
+
+        return [
+            'is_structured' => !empty($items),
+            'email' => $email,
+            'password' => $password,
+            'profile' => $profile,
+            'link' => $link,
+            'items' => $items,
+            'raw' => $raw,
         ];
-
-        // 1. Extract Link (URL)
-        if (preg_match('/https?:\/\/[^\s|,]+/i', $raw, $linkMatches)) {
-            $result['link'] = trim($linkMatches[0]);
-        }
-
-        // 2. Clean text without link and prefixes
-        $text = $raw;
-        if ($result['link']) {
-            $text = str_replace($result['link'], '', $text);
-        }
-        $text = trim(preg_replace('/[|;,]+$/', '', trim($text)));
-        $text = trim(preg_replace('/^[|;,]+/', '', trim($text)));
-        $text = preg_replace('/^(AKUN|ACCOUNT|DATA|LOGIN)\s*[:=]\s*/i', '', $text);
-        $text = trim($text);
-
-        // 3. Match Email & Password patterns (handles unicode em-dash —, en-dash –, minus, and hyphens)
-        if (preg_match('/^([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,10})\s*(?:[\x{2010}-\x{2015}\x{2212}—–\-]{1,6}|:\s*|\/|\s+-\s+)\s*([^\s|]+)/u', $text, $matches)) {
-            $result['is_structured'] = true;
-            $result['email'] = trim($matches[1]);
-            $result['password'] = trim($matches[2]);
-        } elseif (preg_match('/^([^\s|]+)\s*(?:[\x{2010}-\x{2015}\x{2212}—–\-]{1,6}|:\s*)\s*([^\s|]+)/u', $text, $matches)) {
-            $result['is_structured'] = true;
-            $result['email'] = trim($matches[1]);
-            $result['password'] = trim($matches[2]);
-        } elseif ($result['link']) {
-            $result['is_structured'] = true;
-            $result['email'] = $text ?: null;
-        }
-
-        return $result;
     }
 }
