@@ -178,9 +178,16 @@
 
             @if($type === 'topup' && !empty($data->provider_sn))
             @php
-                $acc = \App\Helpers\InvoiceHelper::parseAccountCredentials($data->provider_sn);
+                $rawSn = trim($data->provider_sn);
+                $detectedLink = null;
+                if (preg_match('/(?:https?:\/\/|bit\.ly\/|tinyurl\.com\/)[^\s|]+/i', $rawSn, $mUrl)) {
+                    $detectedLink = $mUrl[0];
+                    if (!str_starts_with($detectedLink, 'http')) {
+                        $detectedLink = 'https://' . $detectedLink;
+                    }
+                }
             @endphp
-            <!-- Informasi Akun / Serial Number Resmi (Aplikasi Premium / Voucher) -->
+            <!-- Informasi Akun / Serial Number Resmi (Full Teks) -->
             <div class="bg-amber-500/10 dark:bg-amber-950/40 border-2 border-amber-500 rounded-2xl p-5 sm:p-6 shadow-md space-y-4">
                 <div class="flex items-center justify-between border-b border-amber-500/30 pb-3">
                     <div class="flex items-center gap-2 font-black text-amber-950 dark:text-amber-300 text-sm sm:text-base">
@@ -191,52 +198,28 @@
                     </span>
                 </div>
 
-                @if($acc['is_structured'] && !empty($acc['items']))
                 <div class="space-y-3">
-                    @foreach($acc['items'] as $label => $val)
-                    <div>
-                        <label class="block text-[11px] font-black uppercase tracking-wider text-slate-800 dark:text-amber-200 mb-1">
-                            {{ $label }}:
-                        </label>
-                        @php
-                            $isUrl = str_starts_with($val, 'http://') || str_starts_with($val, 'https://');
-                            $isPass = stripos($label, 'password') !== false || stripos($label, 'pass') !== false;
-                            $isProfile = stripos($label, 'profil') !== false || stripos($label, 'pin') !== false;
-                        @endphp
-                        <div class="p-3 bg-slate-900 dark:bg-slate-950 rounded-xl border-2 border-amber-500/40 font-mono text-xs font-bold {{ $isUrl ? 'text-blue-300' : ($isPass ? 'text-emerald-400' : ($isProfile ? 'text-purple-300' : 'text-amber-300')) }} select-all flex items-center justify-between gap-3 shadow-inner">
-                            @if($isUrl)
-                            <a href="{{ $val }}" target="_blank" class="truncate text-blue-400 hover:underline flex items-center gap-1">
-                                {{ $val }} <i class="fas fa-external-link-alt text-[10px]"></i>
-                            </a>
-                            <div class="flex items-center gap-1.5 shrink-0">
-                                <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($val) }}'); alert('Link disalin!');" class="no-print px-2.5 py-1.5 text-xs font-black text-white bg-slate-700 hover:bg-slate-600 active:scale-95 rounded-lg shadow-md transition whitespace-nowrap cursor-pointer flex items-center gap-1">
-                                    <i class="fas fa-copy"></i>
-                                </button>
-                                <a href="{{ $val }}" target="_blank" class="no-print px-3 py-1.5 text-xs font-black text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-lg shadow-md transition whitespace-nowrap cursor-pointer flex items-center gap-1.5">
-                                    <i class="fas fa-external-link-alt"></i> Buka Link
-                                </a>
-                            </div>
-                            @else
-                            <span class="break-all leading-relaxed">{{ $val }}</span>
-                            <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($val) }}'); alert('{{ $label }} berhasil disalin!');" class="no-print px-3 py-1.5 text-xs font-black text-white {{ $isPass ? 'bg-emerald-600 hover:bg-emerald-700' : ($isProfile ? 'bg-purple-600 hover:bg-purple-700' : 'bg-amber-600 hover:bg-amber-700') }} active:scale-95 rounded-lg shadow-md transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0">
-                                <i class="fas fa-copy"></i> Salin
-                            </button>
-                            @endif
-                        </div>
+                    <div class="p-4 bg-slate-900 dark:bg-slate-950 rounded-xl border-2 border-amber-500/40 font-mono text-xs sm:text-sm font-bold text-amber-300 select-all shadow-inner leading-relaxed break-words whitespace-pre-wrap">
+                        {{ $rawSn }}
                     </div>
-                    @endforeach
-                </div>
-                @else
-                <div class="space-y-2">
-                    <label class="block text-xs font-black uppercase tracking-wider text-slate-800 dark:text-amber-200">Detail Login / Serial Number:</label>
-                    <div class="p-3.5 bg-slate-900 dark:bg-slate-950 rounded-xl border-2 border-amber-500/40 font-mono text-xs font-bold text-amber-300 break-all select-all flex items-center justify-between gap-3 shadow-inner">
-                        <span class="leading-relaxed">{{ $data->provider_sn }}</span>
-                        <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($data->provider_sn) }}'); alert('Detail akun berhasil disalin ke clipboard!');" class="no-print px-3.5 py-2 text-xs font-black text-white bg-amber-600 hover:bg-amber-700 active:scale-95 rounded-lg shadow-md transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0">
-                            <i class="fas fa-copy"></i> Salin
+
+                    <div class="flex flex-wrap items-center gap-2 pt-1">
+                        <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($rawSn) }}'); alert('Semua data akun berhasil disalin ke clipboard!');" class="no-print flex-1 px-4 py-2.5 text-xs font-black text-white bg-amber-600 hover:bg-amber-700 active:scale-95 rounded-xl shadow-md transition whitespace-nowrap cursor-pointer flex items-center justify-center gap-2">
+                            <i class="fas fa-copy text-sm"></i> Salin Semua Data Akun
                         </button>
+
+                        @if($detectedLink)
+                        <a href="{{ $detectedLink }}" target="_blank" class="no-print px-4 py-2.5 text-xs font-black text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-xl shadow-md transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0">
+                            <i class="fas fa-external-link-alt"></i> Buka Link Panduan
+                        </a>
+                        @endif
                     </div>
                 </div>
-                @endif
+
+                <p class="text-xs font-medium text-slate-800 dark:text-slate-200 pt-2.5 border-t border-amber-500/30">
+                    💡 <em>Gunakan detail akun di atas untuk login ke aplikasi. Jika tertera link panduan (URL), klik link tersebut untuk panduan aktivasi profil.</em>
+                </p>
+            </div>
 
                 <p class="text-xs font-medium text-slate-800 dark:text-slate-200 pt-2.5 border-t border-amber-500/30">
                     💡 <em>Gunakan detail akun di atas untuk login ke aplikasi. Jika tertera link panduan (URL), klik link tersebut untuk panduan aktivasi profil.</em>
