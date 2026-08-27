@@ -73,16 +73,19 @@
                                     <option value="razer_gold" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Razer Gold IDR (Nomor WhatsApp)</option>
                                 </optgroup>
 
-                                <optgroup label="🎬 Aplikasi & Streaming" style="color: #111827; background: #ffffff;">
+                                <optgroup label="🎬 Apps & Streaming (VIP Reseller)" style="color: #111827; background: #ffffff;">
+                                    <option value="alight_motion" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Alight Motion (Email / No WhatsApp)</option>
                                     <option value="amazon_prime" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Amazon Prime Video (Masukan Email)</option>
-                                    <option value="spotify" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Spotify Premium (Masukan Email)</option>
-                                    <option value="netflix" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Netflix Premium (Masukan Email)</option>
-                                    <option value="youtube" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">YouTube Premium (Masukan Email Google)</option>
+                                    <option value="bstation" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Bstation Premium (Email / ID)</option>
                                     <option value="canva" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Canva Pro (Masukan Email Canva)</option>
-                                    <option value="disney" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Disney+ Hotstar (Masukan Nomor HP / Email)</option>
-                                    <option value="chatgpt" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">ChatGPT Plus (Masukan Email)</option>
-                                    <option value="wetv" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">WeTV VIP (Masukan Email / No HP)</option>
-                                    <option value="vidio" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Vidio Premier Platinum (Masukan Email / No HP)</option>
+                                    <option value="capcut" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">CapCut Pro (Masukan Email / No HP)</option>
+                                    <option value="gemini" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Gemini (Masukan Email Google)</option>
+                                    <option value="iqiyi" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">iQIYI Premium (Masukan Email / No HP)</option>
+                                    <option value="vidio" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Vidio Premier (Email / No WhatsApp)</option>
+                                    <option value="vision_plus" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Vision Plus (Masukan Email / No HP)</option>
+                                    <option value="viu" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Viu Premium (Masukan Email / No HP)</option>
+                                    <option value="wetv" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">WeTV Premium (Email / No WhatsApp)</option>
+                                    <option value="youtube" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Youtube Premium (Masukan Email Google)</option>
                                 </optgroup>
                             </select>
 
@@ -527,15 +530,15 @@
                         guide_text: 'Masukkan Nomor WhatsApp Anda untuk menerima serial kode voucher Razer Gold.'
                     },
 
-                    // Streaming & Apps
-                    spotify: {
-                        name: 'Spotify Premium',
-                        developer: 'Spotify AB',
-                        category: 'App & Entertainment',
-                        target_field_1: 'Nomor WhatsApp / Email',
+                    // Apps & Streaming (Sesuai 100% dengan Kategori Apps & Streaming di VIP Reseller)
+                    alight_motion: {
+                        name: 'Alight Motion',
+                        developer: 'Alight Creative, Inc.',
+                        category: 'Aplikasi Premium',
+                        target_field_1: 'Masukan Email / No WhatsApp',
                         target_field_2: '',
                         requires_zone_id: false,
-                        guide_text: 'Masukkan Nomor WhatsApp aktif Anda untuk konfirmasi proses aktivasi paket Spotify Premium.'
+                        guide_text: 'Masukkan Email atau Nomor WhatsApp Anda untuk aktivasi akun Alight Motion Pro.'
                     },
                     amazon_prime: {
                         name: 'Amazon Prime Video',
@@ -546,32 +549,14 @@
                         requires_zone_id: false,
                         guide_text: 'Masukkan alamat email aktif Anda. Akun atau link invite akan dikirim melalui riwayat pesanan (invoice) atau email Anda.'
                     },
-                    spotify: {
-                        name: 'Spotify Premium',
-                        developer: 'Spotify AB',
+                    bstation: {
+                        name: 'Bstation Premium',
+                        developer: 'Bilibili Pte. Ltd.',
                         category: 'Aplikasi Premium',
-                        target_field_1: 'Masukan Email',
+                        target_field_1: 'Masukan Email / User ID Bstation',
                         target_field_2: '',
                         requires_zone_id: false,
-                        guide_text: 'Masukkan alamat email aktif Anda. Akun atau link invite/undangan akan dikirim melalui riwayat pesanan (invoice) atau email Anda.'
-                    },
-                    netflix: {
-                        name: 'Netflix Premium',
-                        developer: 'Netflix Inc.',
-                        category: 'Aplikasi Premium',
-                        target_field_1: 'Masukan Email',
-                        target_field_2: 'Request Profile / PIN',
-                        requires_zone_id: false,
-                        guide_text: 'Masukkan alamat email aktif Anda. Akun atau detail profil/PIN akan dikirim melalui riwayat pesanan (invoice) atau email Anda.'
-                    },
-                    youtube: {
-                        name: 'YouTube Premium',
-                        developer: 'Google LLC',
-                        category: 'Aplikasi Premium',
-                        target_field_1: 'Email Google (Gmail)',
-                        target_field_2: '',
-                        requires_zone_id: false,
-                        guide_text: 'Masukkan alamat Email Google (Gmail) aktif Anda. Undangan YouTube Family akan dikirim langsung ke Gmail Anda.'
+                        guide_text: 'Masukkan Email atau User ID akun Bstation Anda untuk aktivasi langganan Bstation Premium.'
                     },
                     canva: {
                         name: 'Canva Pro',
@@ -582,41 +567,77 @@
                         requires_zone_id: false,
                         guide_text: 'Masukkan email akun Canva Anda. Undangan tim/organisasi Canva Pro akan dikirimkan langsung ke email Anda.'
                     },
-                    disney: {
-                        name: 'Disney+ Hotstar',
-                        developer: 'The Walt Disney Company',
+                    capcut: {
+                        name: 'CapCut Pro',
+                        developer: 'ByteDance Ltd.',
                         category: 'Aplikasi Premium',
-                        target_field_1: 'Nomor HP Akun / Email',
+                        target_field_1: 'Masukan Email / No HP Akun',
                         target_field_2: '',
                         requires_zone_id: false,
-                        guide_text: 'Masukkan nomor HP atau email aktif Anda untuk aktivasi langganan Disney+ Hotstar.'
+                        guide_text: 'Masukkan Email atau Nomor HP akun CapCut Anda untuk aktivasi langganan CapCut Pro.'
                     },
-                    chatgpt: {
-                        name: 'ChatGPT Plus',
-                        developer: 'OpenAI',
+                    gemini: {
+                        name: 'Gemini',
+                        developer: 'Google LLC',
                         category: 'Aplikasi Premium',
-                        target_field_1: 'Masukan Email',
+                        target_field_1: 'Masukan Email Google (Gmail)',
                         target_field_2: '',
                         requires_zone_id: false,
-                        guide_text: 'Masukkan alamat email aktif Anda untuk aktivasi akun/undangan ChatGPT Plus.'
+                        guide_text: 'Masukkan alamat Email Google (Gmail) aktif Anda untuk aktivasi langganan Google Gemini Advanced.'
                     },
-                    wetv: {
-                        name: 'WeTV VIP',
-                        developer: 'Image Future / Tencent',
+                    iqiyi: {
+                        name: 'iQIYI Premium',
+                        developer: 'iQIYI International',
                         category: 'Aplikasi Premium',
-                        target_field_1: 'Masukan Email / No WhatsApp',
+                        target_field_1: 'Masukan Email / No HP Akun',
                         target_field_2: '',
                         requires_zone_id: false,
-                        guide_text: 'Masukkan Email atau Nomor WhatsApp Anda untuk aktivasi akun WeTV VIP.'
+                        guide_text: 'Masukkan Email atau No HP akun iQIYI Anda untuk aktivasi akun iQIYI VIP / Premium.'
                     },
                     vidio: {
-                        name: 'Vidio Premier Platinum',
+                        name: 'Vidio Premier',
                         developer: 'PT Vidio Dot Com',
                         category: 'Aplikasi Premium',
                         target_field_1: 'Masukan Email / No WhatsApp',
                         target_field_2: '',
                         requires_zone_id: false,
                         guide_text: 'Masukkan Email atau Nomor WhatsApp Anda untuk pengiriman voucher/aktivasi paket Vidio Premier.'
+                    },
+                    vision_plus: {
+                        name: 'Vision Plus',
+                        developer: 'MNC Group / Vision+',
+                        category: 'Aplikasi Premium',
+                        target_field_1: 'Masukan Email / No HP Akun',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Email atau No HP akun Vision+ Anda untuk aktivasi langganan paket Vision Plus.'
+                    },
+                    viu: {
+                        name: 'Viu Premium',
+                        developer: 'Viu International Ltd.',
+                        category: 'Aplikasi Premium',
+                        target_field_1: 'Masukan Email / No HP Akun',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Email atau No HP akun Viu Anda untuk aktivasi langganan Viu Premium.'
+                    },
+                    wetv: {
+                        name: 'WeTV Premium',
+                        developer: 'Image Future / Tencent',
+                        category: 'Aplikasi Premium',
+                        target_field_1: 'Masukan Email / No WhatsApp',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Email atau Nomor WhatsApp Anda untuk aktivasi akun WeTV VIP / Premium.'
+                    },
+                    youtube: {
+                        name: 'Youtube Premium',
+                        developer: 'Google LLC',
+                        category: 'Aplikasi Premium',
+                        target_field_1: 'Email Google (Gmail)',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan alamat Email Google (Gmail) aktif Anda. Undangan YouTube Family akan dikirim langsung ke Gmail Anda.'
                     }
                 },
                 applyPreset() {
