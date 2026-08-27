@@ -111,49 +111,56 @@
                             </p>
                         </div>
 
-                        @if(!empty($transaction->provider_sn))
+                                            @if(!empty($transaction->provider_sn))
                         <!-- Kotak Informasi Akun & Password Resmi dari Provider -->
-                        <div class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/60 dark:to-orange-950/40 border-2 border-amber-400 dark:border-amber-500 p-5 rounded-2xl text-left space-y-3 max-w-lg mx-auto shadow-lg">
-                            <div class="flex items-center justify-between border-b border-amber-200 dark:border-amber-800/80 pb-2.5">
-                                <div class="flex items-center gap-2 font-black text-amber-900 dark:text-amber-200 text-sm">
+                        <div class="bg-amber-500/10 dark:bg-amber-950/40 border-2 border-amber-500 p-5 sm:p-6 rounded-2xl text-left space-y-3.5 max-w-lg mx-auto shadow-lg">
+                            <div class="flex items-center justify-between border-b border-amber-500/30 pb-3">
+                                <div class="flex items-center gap-2 font-black text-amber-950 dark:text-amber-300 text-sm sm:text-base">
                                     <i class="fas fa-key text-amber-500 text-base"></i> Detail Akun / Akses Langganan
                                 </div>
-                                <span class="text-[10px] font-extrabold bg-amber-200 dark:bg-amber-800 text-amber-900 dark:text-amber-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                <span class="text-xs font-black bg-amber-500 text-white dark:text-slate-900 px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
                                     Aktif & Resmi
                                 </span>
                             </div>
 
                             <div class="space-y-2">
-                                <label class="block text-[11px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300">Informasi Login / Serial Number:</label>
-                                <div class="p-3 bg-white dark:bg-gray-900 rounded-xl border border-amber-300 dark:border-amber-700 font-mono text-xs text-gray-900 dark:text-amber-100 break-all select-all flex items-center justify-between gap-3 shadow-inner">
-                                    <span class="font-bold text-indigo-900 dark:text-indigo-200">{{ $transaction->provider_sn }}</span>
-                                    <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($transaction->provider_sn) }}'); alert('Detail akun berhasil disalin ke clipboard!');" class="px-3 py-1.5 text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow transition whitespace-nowrap cursor-pointer flex items-center gap-1">
+                                <label class="block text-xs font-black uppercase tracking-wider text-slate-800 dark:text-amber-200">
+                                    Informasi Login / Serial Number:
+                                </label>
+                                <div class="p-3.5 bg-slate-900 dark:bg-slate-950 rounded-xl border-2 border-amber-500/40 font-mono text-xs font-bold text-amber-300 break-all select-all flex items-center justify-between gap-3 shadow-inner">
+                                    <span class="leading-relaxed">{{ $transaction->provider_sn }}</span>
+                                    <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($transaction->provider_sn) }}'); alert('Detail akun berhasil disalin ke clipboard!');" class="px-3.5 py-2 text-xs font-black text-white bg-amber-600 hover:bg-amber-700 active:scale-95 rounded-lg shadow-md transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0">
                                         <i class="fas fa-copy"></i> Salin
                                     </button>
                                 </div>
                             </div>
 
-                            <div class="text-[11px] text-amber-800 dark:text-amber-300 space-y-1 pt-2 border-t border-amber-200 dark:border-amber-800/60">
-                                <p class="flex items-center gap-1.5"><i class="fas fa-check-circle text-emerald-500"></i> Gunakan email dan password di atas untuk login ke aplikasi.</p>
-                                <p class="flex items-center gap-1.5"><i class="fas fa-info-circle text-blue-500"></i> Jika tertera link (URL), Anda dapat membuka link tersebut untuk melihat panduan / PIN profil Anda.</p>
+                            <div class="text-xs font-medium text-slate-800 dark:text-slate-200 space-y-1.5 pt-2.5 border-t border-amber-500/30">
+                                <p class="flex items-center gap-2">
+                                    <i class="fas fa-check-circle text-emerald-600 dark:text-emerald-400"></i>
+                                    <span>Gunakan email dan password di atas untuk login ke aplikasi.</span>
+                                </p>
+                                <p class="flex items-center gap-2">
+                                    <i class="fas fa-info-circle text-blue-600 dark:text-blue-400"></i>
+                                    <span>Jika tertera link (URL), Anda dapat membuka link tersebut untuk melihat panduan / PIN profil Anda.</span>
+                                </p>
                             </div>
                         </div>
                         @elseif($isAppService)
                         <!-- Kotak Informasi Email & Undangan Aplikasi Premium -->
-                        <div class="bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 p-4 sm:p-5 rounded-2xl text-left space-y-2 max-w-lg mx-auto shadow-sm">
-                            <div class="flex items-center gap-2 font-black text-amber-800 dark:text-amber-300 text-sm">
-                                <i class="fas fa-envelope-open-text text-base"></i> Pengiriman Undangan / Akun ke Email
+                        <div class="bg-amber-500/10 dark:bg-amber-950/40 border-2 border-amber-500/60 p-5 rounded-2xl text-left space-y-2.5 max-w-lg mx-auto shadow-md">
+                            <div class="flex items-center gap-2 font-black text-amber-950 dark:text-amber-300 text-sm">
+                                <i class="fas fa-envelope-open-text text-base text-amber-500"></i> Pengiriman Undangan / Akun ke Email
                             </div>
-                            <p class="text-xs text-amber-900 dark:text-amber-100 leading-relaxed">
+                            <p class="text-xs text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
                                 Akses / link invite untuk <strong>{{ $transaction->gameProduct->name ?? 'Aplikasi Premium' }}</strong> dikirim ke: <br>
-                                <span class="inline-block mt-1 font-mono font-bold text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/60 px-2.5 py-1 rounded-lg border border-amber-300 dark:border-amber-700">📧 {{ $transaction->target_field_1 }}</span>
+                                <span class="inline-block mt-1 font-mono font-bold text-amber-900 dark:text-amber-200 bg-amber-200/60 dark:bg-amber-900/60 px-3 py-1 rounded-lg border border-amber-400 dark:border-amber-700">📧 {{ $transaction->target_field_1 }}</span>
                             </p>
-                            <div class="text-[11px] text-amber-700 dark:text-amber-400 space-y-1 pt-2 border-t border-amber-200 dark:border-amber-800/60">
-                                <p class="flex items-center gap-1.5"><i class="fas fa-check text-emerald-500"></i> Buka email Anda (Inbox Gmail, Outlook, atau Yahoo).</p>
-                                <p class="flex items-center gap-1.5"><i class="fas fa-check text-emerald-500"></i> Buka pesan undangan masuk dari provider dan klik <strong>Terima Undangan (Accept)</strong>.</p>
-                                <p class="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 pt-0.5">💡 <em>Jika belum masuk, periksa juga folder <strong>Spam / Promosi / Update</strong> email Anda.</em></p>
+                            <div class="text-xs text-slate-700 dark:text-slate-300 space-y-1.5 pt-2.5 border-t border-amber-500/30">
+                                <p class="flex items-center gap-1.5"><i class="fas fa-check-circle text-emerald-600 dark:text-emerald-400"></i> Buka email Anda (Inbox Gmail, Outlook, atau Yahoo).</p>
+                                <p class="flex items-center gap-1.5"><i class="fas fa-check-circle text-emerald-600 dark:text-emerald-400"></i> Buka pesan undangan masuk dari provider dan klik <strong>Terima Undangan (Accept)</strong>.</p>
+                                <p class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 pt-0.5 text-[11px]">💡 <em>Jika belum masuk, periksa juga folder <strong>Spam / Promosi / Update</strong> email Anda.</em></p>
                             </div>
-                        </div>
                         @endif
                     @else
                         <div class="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-3xl mx-auto shadow-inner font-bold animate-pulse">
