@@ -230,11 +230,14 @@
                             </div>
                             <h4 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Nomor Admin Resmi</h4>
                             <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                                Hanya nomor WhatsApp resmi yang tertera di website yang digunakan untuk menghubungi customer service & admin ToTap Store.
+                                Hanya nomor WhatsApp resmi: <a href="https://wa.me/6285198503253" target="_blank" class="font-mono font-bold text-emerald-600 dark:text-emerald-400 hover:underline">0851-9850-3253</a> yang digunakan untuk menghubungi Customer Service & Admin ToTap Store.
                             </p>
                         </div>
-                        <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                            <i class="fas fa-check-circle"></i> CS Resmi 24 Jam
+                        <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center justify-between">
+                            <span class="flex items-center gap-1.5"><i class="fas fa-check-circle"></i> CS Resmi 24 Jam</span>
+                            <a href="https://wa.me/6285198503253" target="_blank" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-bold transition shadow flex items-center gap-1">
+                                <i class="fab fa-whatsapp"></i> Chat Admin
+                            </a>
                         </div>
                     </div>
 
