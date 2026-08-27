@@ -96,11 +96,22 @@ class GameProductController extends Controller
         $items = $response['data'];
         $cheapestItems = [];
 
+        // Cek apakah ada exact match nama game di data VIP Reseller (contoh: "Valorant" vs "Voucher Valorant")
+        $targetFilter = trim($request->filter_value);
+        $hasExactGameMatch = false;
+        foreach ($items as $chkItem) {
+            if (strcasecmp(trim($chkItem['game'] ?? ''), $targetFilter) === 0) {
+                $hasExactGameMatch = true;
+                break;
+            }
+        }
+
         foreach ($items as $item) {
             $name = trim($item['name']);
             $nameUpper = strtoupper($name);
             $nameLower = strtolower($name);
             $codeUpper = strtoupper($item['code'] ?? '');
+            $itemGame = trim($item['game'] ?? '');
             $modal = $item['price']['special'] ?? ($item['price']['h2h'] ?? ($item['price']['premium'] ?? ($item['price']['basic'] ?? 0)));
 
             // 1. FILTER SAMPAH & HARGA MODAL NOL
@@ -118,54 +129,70 @@ class GameProductController extends Controller
                 continue;
             }
 
-            if (stripos($item['game'], $request->filter_value) !== false) {
-                $isAppOrVoucher = in_array($game->category, ['Aplikasi Premium', 'Voucher', 'App & Entertainment']) 
-                    || str_contains(strtolower($game->category ?? ''), 'app') 
-                    || str_contains(strtolower($game->category ?? ''), 'aplikasi')
-                    || str_contains(strtolower($game->category ?? ''), 'streaming')
-                    || str_contains(strtolower($game->category ?? ''), 'voucher')
-                    || str_contains(strtolower($game->name), 'premium')
-                    || str_contains(strtolower($game->name), 'voucher');
-
-                $isPass = (str_contains($nameLower, 'pass') || str_contains($nameLower, 'weekly') || str_contains($nameLower, 'starlight') || str_contains($nameLower, 'twilight') || str_contains($nameLower, 'member') || str_contains($nameLower, 'bundle') || str_contains($nameLower, 'gsuite') || str_contains($nameLower, 'invite') || str_contains($nameLower, 'individu') || str_contains($nameLower, 'family') || str_contains($nameLower, 'private') || str_contains($nameLower, 'shared') || str_contains($nameLower, 'garansi') || str_contains($nameLower, 'bulan') || str_contains($nameLower, 'hari') || str_contains($nameLower, 'tahun'));
-                
-                $nameForMath = str_replace('.', '', $nameLower);
-                $qty = 0;
-
-                if ($isAppOrVoucher || $isPass) {
-                    // Untuk Aplikasi Premium, Streaming, Voucher, atau Variasi Paket:
-                    // Setiap varian (Family, Individu 7 Hari, Individu 28 Hari, Shared, Private) adalah produk terpisah!
-                    $uniqueKey = preg_replace('/[^a-z0-9]/', '', $nameLower);
-                } else {
-                    if (preg_match('/^(\d+)\s*\+\s*(\d+)\s*diamond/i', $nameForMath, $m)) {
-                        $qty = (int)$m[1] + (int)$m[2]; 
-                    } elseif (preg_match('/^(\d+)\s*diamond/i', $nameForMath, $m)) {
-                        $qty = (int)$m[1]; 
-                    } elseif (preg_match('/(\d+)\s*(?:diamond|dm|uc|cp|points|coin|gems|tokens)/i', $nameForMath, $m)) {
-                        $qty = (int)$m[1];
-                    } elseif (preg_match('/^(\d+)\s*\+\s*(\d+)/', $nameForMath, $m)) {
-                        $qty = (int)$m[1] + (int)$m[2];
-                    } elseif (preg_match('/^(\d+)$/', trim($nameForMath), $m)) {
-                        $qty = (int)$m[1];
-                    }
-                    if ($qty > 0) {
-                        $uniqueKey = 'qty_' . $qty; 
-                    } else {
-                        $uniqueKey = preg_replace('/[^a-z0-9]/', '', $nameLower);
-                    }
+            // 4. FILTER NAMA GAME (JANGAN CAMPUR GAME LANGSUNG DENGAN VOUCHER)
+            if ($hasExactGameMatch) {
+                // Jika ada "Valorant", jangan ambil "Voucher Valorant"
+                if (strcasecmp($itemGame, $targetFilter) !== 0) {
+                    continue;
                 }
-
-                // SIMPAN YANG PALING MURAH SAJA!
-                if (!isset($cheapestItems[$uniqueKey]) || $modal < $cheapestItems[$uniqueKey]['modal']) {
-                    $cheapestItems[$uniqueKey] = [
-                        'code' => $item['code'],
-                        'name' => $item['name'],
-                        'modal' => $modal,
-                        'status' => 'available',
-                        'unique_key' => $uniqueKey,
-                    ];
+            } else {
+                if (stripos($itemGame, $targetFilter) === false) {
+                    continue;
+                }
+                // Jika pencarian BUKAN mencari voucher, buang kategori yang berawalan "Voucher "
+                if (!str_contains(strtolower($targetFilter), 'voucher') && str_contains(strtolower($itemGame), 'voucher')) {
+                    continue;
                 }
             }
+
+            $isAppOrVoucher = in_array($game->category, ['Aplikasi Premium', 'Voucher', 'App & Entertainment']) 
+                || str_contains(strtolower($game->category ?? ''), 'app') 
+                || str_contains(strtolower($game->category ?? ''), 'aplikasi')
+                || str_contains(strtolower($game->category ?? ''), 'streaming')
+                || str_contains(strtolower($game->category ?? ''), 'voucher')
+                || str_contains(strtolower($game->name), 'premium')
+                || str_contains(strtolower($game->name), 'voucher');
+
+            $isPass = (str_contains($nameLower, 'pass') || str_contains($nameLower, 'weekly') || str_contains($nameLower, 'starlight') || str_contains($nameLower, 'twilight') || str_contains($nameLower, 'member') || str_contains($nameLower, 'bundle') || str_contains($nameLower, 'gsuite') || str_contains($nameLower, 'invite') || str_contains($nameLower, 'individu') || str_contains($nameLower, 'family') || str_contains($nameLower, 'private') || str_contains($nameLower, 'shared') || str_contains($nameLower, 'garansi') || str_contains($nameLower, 'bulan') || str_contains($nameLower, 'hari') || str_contains($nameLower, 'tahun'));
+            
+            $nameForMath = str_replace('.', '', $nameLower);
+            $qty = 0;
+
+            if ($isAppOrVoucher || $isPass) {
+                // Untuk Aplikasi Premium, Streaming, Voucher, atau Variasi Paket:
+                // Setiap varian adalah produk unik
+                $uniqueKey = preg_replace('/[^a-z0-9]/', '', $nameLower);
+            } else {
+                if (preg_match('/^(\d+)\s*\+\s*(\d+)\s*(?:diamond|points|point|vp|uc|cp|dm)/i', $nameForMath, $m)) {
+                    $qty = (int)$m[1] + (int)$m[2]; 
+                } elseif (preg_match('/^(\d+)\s*(?:diamond|points|point|vp|uc|cp|dm|gems|tokens|coin|coins)/i', $nameForMath, $m)) {
+                    $qty = (int)$m[1]; 
+                } elseif (preg_match('/(\d+)\s*(?:diamond|points|point|vp|uc|cp|dm|gems|tokens|coin|coins)/i', $nameForMath, $m)) {
+                    $qty = (int)$m[1];
+                } elseif (preg_match('/^(\d+)\s*\+\s*(\d+)/', $nameForMath, $m)) {
+                    $qty = (int)$m[1] + (int)$m[2];
+                } elseif (preg_match('/^(\d+)$/', trim($nameForMath), $m)) {
+                    $qty = (int)$m[1];
+                }
+
+                if ($qty > 0) {
+                    $uniqueKey = 'qty_' . $qty; 
+                } else {
+                    $uniqueKey = preg_replace('/[^a-z0-9]/', '', $nameLower);
+                }
+            }
+
+            // SIMPAN YANG PALING MURAH SAJA!
+            if (!isset($cheapestItems[$uniqueKey]) || $modal < $cheapestItems[$uniqueKey]['modal']) {
+                $cheapestItems[$uniqueKey] = [
+                    'code' => $item['code'],
+                    'name' => $item['name'],
+                    'modal' => $modal,
+                    'status' => 'available',
+                    'unique_key' => $uniqueKey,
+                ];
+            }
+        }
         }
 
         try {
