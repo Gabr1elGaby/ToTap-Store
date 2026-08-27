@@ -110,28 +110,37 @@ class TopUpController extends Controller
             // Hilangkan titik (.) yang digunakan sebagai pemisah ribuan agar 1.446 terbaca 1446
             $nameForMath = str_replace('.', '', $name);
 
-            // 2. CEK KATEGORI PASS / MEMBER / BUNDLE
-            $isPass = (str_contains($name, 'pass') || str_contains($name, 'weekly') || str_contains($name, 'starlight') || str_contains($name, 'twilight') || str_contains($name, 'member') || str_contains($name, 'bundle'));
+            $isAppOrVoucher = in_array($game->category, ['Aplikasi Premium', 'Voucher', 'App & Entertainment']) 
+                || str_contains(strtolower($game->category ?? ''), 'app') 
+                || str_contains(strtolower($game->category ?? ''), 'aplikasi')
+                || str_contains(strtolower($game->category ?? ''), 'streaming')
+                || str_contains(strtolower($game->category ?? ''), 'voucher')
+                || str_contains(strtolower($game->name), 'premium')
+                || str_contains(strtolower($game->name), 'voucher');
+
+            $isPass = (str_contains($name, 'pass') || str_contains($name, 'weekly') || str_contains($name, 'starlight') || str_contains($name, 'twilight') || str_contains($name, 'member') || str_contains($name, 'bundle') || str_contains($name, 'gsuite') || str_contains($name, 'invite') || str_contains($name, 'individu') || str_contains($name, 'family') || str_contains($name, 'private') || str_contains($name, 'shared') || str_contains($name, 'garansi') || str_contains($name, 'bulan') || str_contains($name, 'hari') || str_contains($name, 'tahun'));
             
             $uniqueKey = $name;
             $qty = 0;
 
-            if ($isPass) {
+            if ($isAppOrVoucher || $isPass) {
+                // Untuk Aplikasi Premium, Streaming, Voucher, atau Variasi Paket:
+                // Setiap varian adalah produk unik
                 $uniqueKey = preg_replace('/[^a-z0-9]/', '', $name);
-                if (preg_match('/^(\d+)/', $nameForMath, $m)) {
-                    $qty = (int)$m[1];
-                }
             } else {
-                if (preg_match('/^(\d+)\s*\+\s*(\d+)\s*diamond/i', $nameForMath, $m)) {
+                if (preg_match('/^(\d+)\s*\+\s*(\d+)\s*(?:diamond|points|point|vp|uc|cp|dm)/i', $nameForMath, $m)) {
                     $qty = (int)$m[1] + (int)$m[2]; 
                 } 
-                elseif (preg_match('/^(\d+)\s*diamond/i', $nameForMath, $m)) {
+                elseif (preg_match('/^(\d+)\s*(?:diamond|points|point|vp|uc|cp|dm|gems|tokens|coin|coins)/i', $nameForMath, $m)) {
                     $qty = (int)$m[1]; 
                 }
-                elseif (preg_match('/(\d+)\s*\+\s*(\d+)/', $nameForMath, $m)) {
+                elseif (preg_match('/(\d+)\s*(?:diamond|points|point|vp|uc|cp|dm|gems|tokens|coin|coins)/i', $nameForMath, $m)) {
+                    $qty = (int)$m[1];
+                }
+                elseif (preg_match('/^(\d+)\s*\+\s*(\d+)/', $nameForMath, $m)) {
                     $qty = (int)$m[1] + (int)$m[2];
                 }
-                elseif (preg_match('/(\d+)/', $nameForMath, $m)) {
+                elseif (preg_match('/^(\d+)$/', trim($nameForMath), $m)) {
                     $qty = (int)$m[1];
                 }
 
@@ -146,14 +155,16 @@ class TopUpController extends Controller
             
             // Buat nama pendek yang rapi
             $shortName = $product->name;
-            $shortName = preg_replace('/\(.*?\)/', '', $shortName);
-            $shortName = str_ireplace('Diamonds', 'DM', $shortName);
-            $shortName = str_ireplace('Diamond', 'DM', $shortName);
-            $shortName = str_ireplace('Bonus', '', $shortName);
-            $shortName = str_ireplace('First Top Up', '', $shortName);
-            $shortName = preg_replace('/\s+\+\s+/', ' ', $shortName);
-            if (trim($shortName) == '' || trim($shortName) == 'DM' || trim($shortName) == '+') {
-                $shortName = $qty . ' DM';
+            if (!$isAppOrVoucher) {
+                $shortName = preg_replace('/\(.*?\)/', '', $shortName);
+                $shortName = str_ireplace('Diamonds', 'DM', $shortName);
+                $shortName = str_ireplace('Diamond', 'DM', $shortName);
+                $shortName = str_ireplace('Bonus', '', $shortName);
+                $shortName = str_ireplace('First Top Up', '', $shortName);
+                $shortName = preg_replace('/\s+\+\s+/', ' ', $shortName);
+                if (trim($shortName) == '' || trim($shortName) == 'DM' || trim($shortName) == '+') {
+                    $shortName = $qty . ' DM';
+                }
             }
             $product->_short_name = trim($shortName);
 
@@ -165,35 +176,44 @@ class TopUpController extends Controller
         }
 
         // 4. PENGELOMPOKAN KE KATEGORI
-        $categories = [
-            'Pass & Member' => collect(),
-            'Mata Uang Game' => collect(),
-            'Item & Lainnya' => collect(),
-        ];
+        if ($isAppOrVoucher) {
+            $categories = [
+                'Pilihan Paket Langganan' => collect(),
+            ];
+            foreach ($uniqueProducts as $product) {
+                $categories['Pilihan Paket Langganan']->push($product);
+            }
+        } else {
+            $categories = [
+                'Pass & Member' => collect(),
+                'Mata Uang Game' => collect(),
+                'Item & Lainnya' => collect(),
+            ];
 
-        foreach ($uniqueProducts as $product) {
-            $name = strtolower($product->name);
-            
-            if (
-                str_contains($name, 'weekly') || 
-                str_contains($name, 'monthly') || 
-                str_contains($name, 'bundle') || 
-                str_contains($name, 'pass') || 
-                str_contains($name, 'twilight') || 
-                str_contains($name, 'starlight') || 
-                str_contains($name, 'member') || 
-                str_contains($name, 'battle') || 
-                str_contains($name, 'subscription')
-            ) {
-                $categories['Pass & Member']->push($product);
-            } elseif (str_contains($name, 'name') || str_contains($name, 'nama') || str_contains($name, 'squad') || str_contains($name, 'crystal') || str_contains($name, 'ticket') || str_contains($name, 'token') || str_contains($name, 'gift card')) {
-                $categories['Item & Lainnya']->push($product);
-            } else {
-                $categories['Mata Uang Game']->push($product);
+            foreach ($uniqueProducts as $product) {
+                $name = strtolower($product->name);
+                
+                if (
+                    str_contains($name, 'weekly') || 
+                    str_contains($name, 'monthly') || 
+                    str_contains($name, 'bundle') || 
+                    str_contains($name, 'pass') || 
+                    str_contains($name, 'twilight') || 
+                    str_contains($name, 'starlight') || 
+                    str_contains($name, 'member') || 
+                    str_contains($name, 'battle') || 
+                    str_contains($name, 'subscription')
+                ) {
+                    $categories['Pass & Member']->push($product);
+                } elseif (str_contains($name, 'name') || str_contains($name, 'nama') || str_contains($name, 'squad') || str_contains($name, 'crystal') || str_contains($name, 'ticket') || str_contains($name, 'token') || str_contains($name, 'gift card')) {
+                    $categories['Item & Lainnya']->push($product);
+                } else {
+                    $categories['Mata Uang Game']->push($product);
+                }
             }
         }
 
-        // Urutkan produk di dalam kategori berdasarkan jumlah (_qty) terkecil ke terbesar!
+        // Urutkan produk di dalam kategori berdasarkan harga jual terendah ke tertinggi
         $finalCategories = [];
         foreach ($categories as $catName => $items) {
             if ($items->isNotEmpty()) {
@@ -201,7 +221,7 @@ class TopUpController extends Controller
                     if ($a->_qty == $b->_qty) {
                         return $a->price_sell <=> $b->price_sell;
                     }
-                    return $a->_qty <=> $b->_qty;
+                    return ($a->_qty > 0 && $b->_qty > 0) ? ($a->_qty <=> $b->_qty) : ($a->price_sell <=> $b->price_sell);
                 })->values();
             }
         }
