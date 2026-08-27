@@ -98,6 +98,109 @@ class GameController extends Controller
         }
     }
 
+    public function syncProductStatus(Request $request)
+    {
+        set_time_limit(300);
+        ini_set('max_execution_time', '300');
+
+        try {
+            $vip = new \App\Services\VipResellerService();
+            $response = $vip->getGameProducts('');
+
+            if (!isset($response['result']) || !$response['result'] || empty($response['data'])) {
+                return back()->with('error', 'Gagal mengecek status ke VIP Reseller: ' . ($response['message'] ?? 'Tidak ada data respon'));
+            }
+
+            // Map code to status
+            $statusMap = [];
+            foreach ($response['data'] as $item) {
+                if (isset($item['code']) && isset($item['status'])) {
+                    $statusMap[$item['code']] = strtolower(trim($item['status']));
+                }
+            }
+
+            // ONLY check status of existing products in database.
+            // NEVER add new items, NEVER overwrite custom sell prices, NEVER change custom names!
+            $allProducts = \App\Models\GameProduct::all();
+            $availCount = 0;
+            $emptyCount = 0;
+            $updatedCount = 0;
+
+            foreach ($allProducts as $product) {
+                $code = $product->product_code;
+                if (isset($statusMap[$code])) {
+                    $remoteStatus = ($statusMap[$code] === 'available') ? 'available' : 'empty';
+                    if ($product->status !== $remoteStatus) {
+                        $product->update(['status' => $remoteStatus]);
+                        $updatedCount++;
+                    }
+                    if ($remoteStatus === 'available') {
+                        $availCount++;
+                    } else {
+                        $emptyCount++;
+                    }
+                }
+            }
+
+            $msg = "Pengecekan Status VIP Selesai! {$availCount} produk Tersedia, {$emptyCount} produk Kosong/Gangguan di VIP Reseller.";
+            if ($updatedCount > 0) {
+                $msg .= " (Terdapat {$updatedCount} produk yang statusnya otomatis diselaraskan).";
+            } else {
+                $msg .= " (Seluruh status produk sudah sesuai).";
+            }
+            $msg .= " Semua harga jual dan nama produk editan Anda tetap aman 100%.";
+
+            return back()->with('success', $msg);
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Terjadi kesalahan saat mengecek status: ' . $e->getMessage());
+        }
+    }
+
+    public function syncProductStatusForGame(Request $request, Game $game)
+    {
+        set_time_limit(180);
+        ini_set('max_execution_time', '180');
+
+        try {
+            $vip = new \App\Services\VipResellerService();
+            $response = $vip->getGameProducts('');
+
+            if (!isset($response['result']) || !$response['result'] || empty($response['data'])) {
+                return back()->with('error', 'Gagal memuat status dari VIP Reseller: ' . ($response['message'] ?? ''));
+            }
+
+            $statusMap = [];
+            foreach ($response['data'] as $item) {
+                if (isset($item['code']) && isset($item['status'])) {
+                    $statusMap[$item['code']] = strtolower(trim($item['status']));
+                }
+            }
+
+            $gameProducts = $game->products()->get();
+            $availCount = 0;
+            $emptyCount = 0;
+
+            foreach ($gameProducts as $product) {
+                $code = $product->product_code;
+                if (isset($statusMap[$code])) {
+                    $remoteStatus = ($statusMap[$code] === 'available') ? 'available' : 'empty';
+                    if ($product->status !== $remoteStatus) {
+                        $product->update(['status' => $remoteStatus]);
+                    }
+                    if ($remoteStatus === 'available') {
+                        $availCount++;
+                    } else {
+                        $emptyCount++;
+                    }
+                }
+            }
+
+            return back()->with('success', "Status stok untuk {$game->name} berhasil dicek! {$availCount} Tersedia, {$emptyCount} Kosong di VIP. (Harga & nama Anda tetap aman).");
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
     public function updateBalance(Request $request)
     {
         $request->validate([

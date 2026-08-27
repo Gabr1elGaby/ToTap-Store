@@ -18,6 +18,12 @@
                     <p class="text-xs text-gray-500 dark:text-gray-400">Produk yang tampil hanya yang berstatus valid dan tersedia dari provider.</p>
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
+                    <form action="{{ route('admin.games.sync-single-status', $game) }}" method="POST" onsubmit="this.querySelector('button').disabled=true; this.querySelector('button').innerText='Mengecek...';">
+                        @csrf
+                        <button type="submit" class="bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer shadow-sm" title="Cek status ketersediaan/stok produk {{ $game->name }} di VIP Reseller tanpa mengubah harga editan Anda">
+                            <i class="fas fa-check-double"></i> Cek Status VIP
+                        </button>
+                    </form>
                     <form action="{{ route('admin.games.products.cleanup-non-idr', $game) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus seluruh produk nominal selain mata uang Rupiah/IDR (seperti PHP, MYR, THB, INR, USD, dll)?');">
                         @csrf
                         <button type="submit" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer shadow-sm">

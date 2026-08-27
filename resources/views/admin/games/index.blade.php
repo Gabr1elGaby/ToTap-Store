@@ -41,19 +41,27 @@
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 pt-3 md:pt-0 border-gray-100 dark:border-gray-700">
-                    <div class="text-left md:text-right">
-                        <div class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Saldo Terkini di VIP Reseller</div>
-                        <div class="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 font-mono tracking-tight">
+                <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 pt-3 md:pt-0 border-gray-100 dark:border-gray-700">
+                    <div class="text-left md:text-right mr-2">
+                        <div class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Saldo Terkini di VIP</div>
+                        <div class="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono tracking-tight">
                             Rp{{ number_format($vipBalance ?? 0, 0, ',', '.') }}
                         </div>
                     </div>
-                    <form action="{{ route('admin.games.sync-balance') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="px-4 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition flex items-center gap-2 cursor-pointer whitespace-nowrap" title="Sinkronkan Saldo Terbaru dari VIP Reseller">
-                            <i class="fas fa-sync-alt"></i> Refresh Saldo
-                        </button>
-                    </form>
+                    <div class="flex items-center gap-2">
+                        <form action="{{ route('admin.games.sync-balance') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-sm" title="Sinkronkan Saldo Terbaru dari VIP Reseller">
+                                <i class="fas fa-wallet text-emerald-500"></i> Refresh Saldo
+                            </button>
+                        </form>
+                        <form action="{{ route('admin.games.sync-product-status') }}" method="POST" onsubmit="this.querySelector('button').disabled=true; this.querySelector('button').innerText='Mengecek...';">
+                            @csrf
+                            <button type="submit" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition flex items-center gap-2 cursor-pointer whitespace-nowrap" title="Cek status ketersediaan/stok produk dari VIP Reseller tanpa mengubah harga editan Anda">
+                                <i class="fas fa-sync-alt"></i> Cek Status Stok VIP
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
 

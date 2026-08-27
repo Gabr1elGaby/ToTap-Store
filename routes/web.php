@@ -179,6 +179,8 @@ Route::middleware(['auth', 'verified', 'role:superadmin'])->prefix('admin')->nam
 
     // Game Top-Up Management
     Route::post('games/sync-balance', [\App\Http\Controllers\Admin\GameController::class, 'syncBalance'])->name('games.sync-balance');
+    Route::post('games/sync-product-status', [\App\Http\Controllers\Admin\GameController::class, 'syncProductStatus'])->name('games.sync-product-status');
+    Route::post('games/{game}/sync-product-status', [\App\Http\Controllers\Admin\GameController::class, 'syncProductStatusForGame'])->name('games.sync-single-status');
     Route::post('games/update-balance', [\App\Http\Controllers\Admin\GameController::class, 'updateBalance'])->name('games.update-balance');
     Route::resource('games', \App\Http\Controllers\Admin\GameController::class);
     Route::get('games/{game}/products/sync', [\App\Http\Controllers\Admin\GameProductController::class, 'syncForm'])->name('games.products.sync');
