@@ -126,8 +126,8 @@
                         <div class="p-5">
                             <h3 class="font-black text-xl text-gray-900 dark:text-white">{{ $game->name }}</h3>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ $game->developer ?? 'Moonton' }}</p>
-                            <p class="text-xs text-gray-600 dark:text-gray-300 mt-4 leading-relaxed">
-                                {{ $game->description ?? 'Top up ' . $game->name . ' proses cepat dan otomatis. Silakan masukkan User ID & Zone ID akun Anda, pilih nominal, dan selesaikan pembayaran.' }}
+                            <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                                {{ $game->description ?? ($isApp ? 'Langganan ' . $game->name . ' proses cepat dan otomatis. Masukkan alamat email Anda, pilih paket langganan, dan selesaikan pembayaran.' : 'Top up ' . $game->name . ' proses cepat dan otomatis. Silakan masukkan User ID akun Anda, pilih nominal, dan selesaikan pembayaran.') }}
                             </p>
                         </div>
                     </div>
