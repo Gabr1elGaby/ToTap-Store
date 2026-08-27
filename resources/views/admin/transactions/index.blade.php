@@ -18,9 +18,12 @@
                         <i class="fas fa-gamepad mr-1.5"></i> Top Up: {{ $transactions->total() }}
                     </span>
                     <span class="px-4 py-2.5 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/80 text-sm font-bold text-amber-600 dark:text-amber-300 shadow-sm">
+                        <i class="fas fa-crown mr-1.5"></i> App Premium: {{ $appTransactions->total() }}
+                    </span>
+                    <span class="px-4 py-2.5 rounded-2xl bg-orange-50 dark:bg-orange-950/60 border border-orange-200 dark:border-orange-800/80 text-sm font-bold text-orange-600 dark:text-orange-300 shadow-sm">
                         <i class="fas fa-file-alt mr-1.5"></i> CV Builder: {{ $cvOrders->total() }}
                     </span>
-                    <span class="px-4 py-2.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 text-sm font-bold text-emerald-600 dark:text-emerald-300 shadow-sm">
+                    <span class="px-4 py-2.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-sm font-bold text-emerald-600 dark:text-emerald-300 shadow-sm">
                         <i class="fas fa-wallet mr-1.5"></i> Isi Saldo: {{ $deposits->total() }}
                     </span>
 
@@ -85,11 +88,17 @@
                         class="admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white flex items-center gap-2 cursor-pointer">
                     <i class="fas fa-gamepad text-purple-500"></i> Transaksi Top Up Game ({{ $transactions->total() }})
                 </button>
+                <button id="admin-tab-app" 
+                        type="button"
+                        onclick="filterAdminTrxTab('app')" 
+                        class="admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white flex items-center gap-2 cursor-pointer">
+                    <i class="fas fa-crown text-amber-500"></i> Transaksi Aplikasi Premium ({{ $appTransactions->total() }})
+                </button>
                 <button id="admin-tab-cv" 
                         type="button"
                         onclick="filterAdminTrxTab('cv')" 
                         class="admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white flex items-center gap-2 cursor-pointer">
-                    <i class="fas fa-file-alt text-amber-500"></i> Pesanan CV & Resume ({{ $cvOrders->total() }})
+                    <i class="fas fa-file-alt text-orange-500"></i> Pesanan CV & Resume ({{ $cvOrders->total() }})
                 </button>
                 <button id="admin-tab-deposit" 
                         type="button"
@@ -416,7 +425,172 @@
                 </div>
             </div>
 
-            <!-- TAB 3: Pesanan CV & Resume Builder -->
+            <!-- TAB 3: Transaksi Aplikasi Premium -->
+            <div id="admin-section-app" class="admin-trx-section space-y-6">
+                <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-2xl overflow-hidden transition-colors duration-200">
+                    <div class="px-6 py-4.5 border-b border-gray-200 dark:border-gray-700/80 flex items-center justify-between bg-slate-50 dark:bg-gray-800/80">
+                        <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
+                            <i class="fas fa-crown text-amber-500"></i> Transaksi Aplikasi Premium
+                        </h2>
+                        <span class="text-xs text-amber-600 dark:text-amber-400 font-bold bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
+                            Total: {{ $appTransactions->total() }} Transaksi
+                        </span>
+                    </div>
+
+                    @if($appTransactions->isEmpty())
+                        <div class="p-12 text-center text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-crown text-5xl mb-3 text-gray-300 dark:text-gray-600"></i>
+                            <p class="text-base font-semibold text-gray-700 dark:text-gray-300">Belum ada transaksi aplikasi premium.</p>
+                        </div>
+                    @else
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 dark:bg-gray-900/60 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider border-b border-gray-200 dark:border-gray-700">
+                                        <th class="py-3.5 px-6">No. Invoice</th>
+                                        <th class="py-3.5 px-6">Customer</th>
+                                        <th class="py-3.5 px-6">Aplikasi & Paket</th>
+                                        <th class="py-3.5 px-6">Email / Tujuan</th>
+                                        <th class="py-3.5 px-6">Total</th>
+                                        <th class="py-3.5 px-6">Status Bayar</th>
+                                        <th class="py-3.5 px-6">Tanggal</th>
+                                        <th class="py-3.5 px-6 text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+                                    @foreach($appTransactions as $appTrx)
+                                        <tr class="hover:bg-slate-50 dark:hover:bg-gray-700/50 transition">
+                                            <td class="py-4 px-6 font-mono text-xs text-amber-600 dark:text-amber-400 font-bold whitespace-nowrap">
+                                                {{ $appTrx->invoice_number ?? $appTrx->id }}
+                                            </td>
+                                            <td class="py-4 px-6">
+                                                @if($appTrx->user)
+                                                    <div class="font-bold text-gray-900 dark:text-white">{{ $appTrx->user->name }}</div>
+                                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $appTrx->user->email }}</div>
+                                                @else
+                                                    <div class="font-semibold text-gray-500 dark:text-gray-400 italic">Guest</div>
+                                                @endif
+                                            </td>
+                                            <td class="py-4 px-6">
+                                                <div class="font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
+                                                    <i class="fas fa-crown text-amber-500 text-xs"></i> {{ $appTrx->game->name ?? 'Aplikasi Premium' }}
+                                                </div>
+                                                <div class="text-xs text-amber-600 dark:text-amber-400 font-medium">{{ $appTrx->gameProduct->name ?? '-' }}</div>
+                                            </td>
+                                            <td class="py-4 px-6 font-mono text-xs text-gray-700 dark:text-gray-300">
+                                                <div class="flex items-center gap-1 text-indigo-600 dark:text-indigo-400 font-semibold">
+                                                    <i class="fas fa-envelope text-xs"></i> {{ $appTrx->target_field_1 }}
+                                                </div>
+                                                @if($appTrx->target_field_2)
+                                                    <div class="text-gray-500 text-[11px] mt-0.5 font-sans">Request: {{ $appTrx->target_field_2 }}</div>
+                                                @endif
+                                            </td>
+                                            <td class="py-4 px-6 font-bold text-gray-900 dark:text-white whitespace-nowrap">
+                                                Rp{{ number_format($appTrx->amount, 0, ',', '.') }}
+                                            </td>
+                                            <td class="py-4 px-6 whitespace-nowrap">
+                                                @if($appTrx->status === 'success')
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">
+                                                        <i class="fas fa-check-circle text-[10px]"></i> Sukses
+                                                    </span>
+                                                @elseif($appTrx->status === 'processing' || $appTrx->status === 'waiting')
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                                                        <i class="fas fa-spinner animate-spin text-[10px]"></i> Diproses Provider
+                                                    </span>
+                                                @elseif($appTrx->status === 'refunded')
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+                                                        <i class="fas fa-undo text-[10px]"></i> Refunded
+                                                    </span>
+                                                @elseif($appTrx->status === 'pending' || $appTrx->status === 'paid')
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                                                        <i class="fas fa-clock text-[10px]"></i> Pending
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
+                                                        <i class="fas fa-times-circle text-[10px]"></i> {{ ucfirst($appTrx->status) }}
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td class="py-4 px-6 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                                                {{ $appTrx->created_at->format('d M Y, H:i') }}
+                                            </td>
+                                            <td class="py-4 px-6 text-center whitespace-nowrap">
+                                                <div class="flex items-center justify-center gap-1.5 flex-wrap">
+                                                    @if($appTrx->status === 'pending' || $appTrx->status === 'paid')
+                                                        <!-- ACC & Auto Fulfillment via API -->
+                                                        <form action="{{ route('admin.transactions.approve', $appTrx->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin ACC dan proses otomatis via API VIP Reseller?');" class="inline">
+                                                            @csrf
+                                                            <button type="submit" title="ACC & Kirim Otomatis via API VIP Reseller" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition cursor-pointer">
+                                                                <i class="fas fa-bolt"></i> ACC (API)
+                                                            </button>
+                                                        </form>
+
+                                                        <!-- Manual Success -->
+                                                        <form action="{{ route('admin.transactions.manual-success', $appTrx->id) }}" method="POST" onsubmit="return confirm('Tandai pesanan aplikasi ini Sukses Manual?');" class="inline">
+                                                            @csrf
+                                                            <button type="submit" title="Tandai Sukses Manual" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 transition cursor-pointer">
+                                                                <i class="fas fa-check"></i> Manual
+                                                            </button>
+                                                        </form>
+                                                    @elseif($appTrx->status === 'processing')
+                                                        <!-- Manual Success if finished -->
+                                                        <form action="{{ route('admin.transactions.manual-success', $appTrx->id) }}" method="POST" onsubmit="return confirm('Tandai pesanan ini Sukses Manual?');" class="inline">
+                                                            @csrf
+                                                            <button type="submit" title="Tandai Sukses Manual" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition cursor-pointer">
+                                                                <i class="fas fa-check-double"></i> Selesai
+                                                            </button>
+                                                        </form>
+                                                    @endif
+
+                                                    @if($appTrx->user_id && $appTrx->status !== 'refunded')
+                                                        <!-- Refund ke Saldo Akun -->
+                                                        <form action="{{ route('admin.transactions.refund', $appTrx->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin me-REFUND dana sebesar Rp{{ number_format($appTrx->amount, 0, ',', '.') }} ke Saldo Akun {{ $appTrx->user ? $appTrx->user->name : 'User' }}?');" class="inline">
+                                                            @csrf
+                                                            <button type="submit" title="Refund ke Saldo Akun User" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/80 hover:bg-amber-200 dark:hover:bg-amber-900 border border-amber-300 dark:border-amber-700 transition cursor-pointer">
+                                                                <i class="fas fa-undo"></i> Refund Saldo
+                                                            </button>
+                                                        </form>
+                                                    @endif
+
+                                                    @if($appTrx->status !== 'refunded' && $appTrx->status !== 'failed')
+                                                        <!-- Reject / Batalkan -->
+                                                        <form action="{{ route('admin.transactions.reject', $appTrx->id) }}" method="POST" onsubmit="return confirm('Tolak/Batalkan pesanan ini?');" class="inline">
+                                                            @csrf
+                                                            <button type="submit" title="Tolak Pesanan" class="inline-flex items-center gap-1 px-2 py-1.5 rounded-xl text-xs font-bold text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 transition cursor-pointer">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </form>
+                                                    @endif
+
+                                                    <a href="{{ route('admin.transactions.invoice', $appTrx->id) }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition shadow-sm" title="Lihat Invoice">
+                                                        <i class="fas fa-file-invoice"></i> Invoice
+                                                    </a>
+
+                                                    <!-- Delete Row -->
+                                                    <form action="{{ route('admin.transactions.destroy', $appTrx->id) }}" method="POST" onsubmit="return confirm('Hapus permanen riwayat transaksi ini?');" class="inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" title="Hapus Transaksi" class="inline-flex items-center p-1.5 rounded-xl text-xs text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 transition cursor-pointer">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        @if($appTransactions->hasPages())
+                            <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+                                {{ $appTransactions->links() }}
+                            </div>
+                        @endif
+                    @endif
+                </div>
+            </div>
+
+            <!-- TAB 4: Pesanan CV & Resume Builder -->
             <div id="admin-section-cv" class="admin-trx-section bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-2xl overflow-hidden transition-colors duration-200">
                 <div class="px-6 py-4.5 border-b border-gray-200 dark:border-gray-700/80 flex items-center justify-between bg-slate-50 dark:bg-gray-800/80">
                     <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
@@ -656,6 +830,7 @@
 
             const secSoft = document.getElementById('admin-section-software');
             const secTop = document.getElementById('admin-section-topup');
+            const secApp = document.getElementById('admin-section-app');
             const secCv = document.getElementById('admin-section-cv');
             const secDep = document.getElementById('admin-section-deposit');
 
@@ -666,6 +841,7 @@
             } else if (tabName === 'software') {
                 if (secSoft) secSoft.classList.remove('hidden');
                 if (secTop) secTop.classList.add('hidden');
+                if (secApp) secApp.classList.add('hidden');
                 if (secCv) secCv.classList.add('hidden');
                 if (secDep) secDep.classList.add('hidden');
                 const b = document.getElementById('admin-tab-software');
@@ -673,20 +849,31 @@
             } else if (tabName === 'topup') {
                 if (secSoft) secSoft.classList.add('hidden');
                 if (secTop) secTop.classList.remove('hidden');
+                if (secApp) secApp.classList.add('hidden');
                 if (secCv) secCv.classList.add('hidden');
                 if (secDep) secDep.classList.add('hidden');
                 const b = document.getElementById('admin-tab-topup');
                 if (b) b.className = 'admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-purple-600 text-white shadow-md flex items-center gap-2 cursor-pointer';
+            } else if (tabName === 'app') {
+                if (secSoft) secSoft.classList.add('hidden');
+                if (secTop) secTop.classList.add('hidden');
+                if (secApp) secApp.classList.remove('hidden');
+                if (secCv) secCv.classList.add('hidden');
+                if (secDep) secDep.classList.add('hidden');
+                const b = document.getElementById('admin-tab-app');
+                if (b) b.className = 'admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-amber-600 text-white shadow-md flex items-center gap-2 cursor-pointer';
             } else if (tabName === 'cv') {
                 if (secSoft) secSoft.classList.add('hidden');
                 if (secTop) secTop.classList.add('hidden');
+                if (secApp) secApp.classList.add('hidden');
                 if (secCv) secCv.classList.remove('hidden');
                 if (secDep) secDep.classList.add('hidden');
                 const b = document.getElementById('admin-tab-cv');
-                if (b) b.className = 'admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-amber-600 text-white shadow-md flex items-center gap-2 cursor-pointer';
+                if (b) b.className = 'admin-tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-orange-600 text-white shadow-md flex items-center gap-2 cursor-pointer';
             } else if (tabName === 'deposit') {
                 if (secSoft) secSoft.classList.add('hidden');
                 if (secTop) secTop.classList.add('hidden');
+                if (secApp) secApp.classList.add('hidden');
                 if (secCv) secCv.classList.add('hidden');
                 if (secDep) secDep.classList.remove('hidden');
                 const b = document.getElementById('admin-tab-deposit');

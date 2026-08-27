@@ -14,10 +14,26 @@ class AdminTransactionController extends Controller
         $search = $request->query('search');
         $status = $request->query('status');
 
-        $query = Transaction::with(['game', 'gameProduct', 'user'])->latest();
+        // Top Up Game Query (Hanya game biasa, pisahkan dari aplikasi premium)
+        $gameQuery = Transaction::with(['game', 'gameProduct', 'user'])
+            ->where(function ($q) {
+                $q->whereDoesntHave('game', function ($gq) {
+                    $gq->whereIn('category', ['Aplikasi Premium', 'App & Entertainment', 'streaming']);
+                })->where('id', 'not like', 'INV/APKPRE/%');
+            })
+            ->latest();
+
+        // Aplikasi Premium Query
+        $appQuery = Transaction::with(['game', 'gameProduct', 'user'])
+            ->where(function ($q) {
+                $q->whereHas('game', function ($gq) {
+                    $gq->whereIn('category', ['Aplikasi Premium', 'App & Entertainment', 'streaming']);
+                })->orWhere('id', 'like', 'INV/APKPRE/%');
+            })
+            ->latest();
 
         if ($search) {
-            $query->where(function ($q) use ($search) {
+            $filterClosure = function ($q) use ($search) {
                 $q->where('id', 'like', "%{$search}%")
                   ->orWhere('target_field_1', 'like', "%{$search}%")
                   ->orWhere('target_field_2', 'like', "%{$search}%")
@@ -29,14 +45,18 @@ class AdminTransactionController extends Controller
                   ->orWhereHas('game', function ($gq) use ($search) {
                       $gq->where('name', 'like', "%{$search}%");
                   });
-            });
+            };
+            $gameQuery->where($filterClosure);
+            $appQuery->where($filterClosure);
         }
 
         if ($status) {
-            $query->where('status', $status);
+            $gameQuery->where('status', $status);
+            $appQuery->where('status', $status);
         }
 
-        $transactions = $query->paginate(20)->withQueryString();
+        $transactions = $gameQuery->paginate(20, ['*'], 'topup_page')->withQueryString();
+        $appTransactions = $appQuery->paginate(20, ['*'], 'app_page')->withQueryString();
 
         // Software / License Orders
         $orders = Order::with(['product', 'plan', 'user'])->latest()->paginate(20);
@@ -78,7 +98,7 @@ class AdminTransactionController extends Controller
         }
         $deposits = $depositsQuery->paginate(20, ['*'], 'dep_page')->withQueryString();
 
-        return view('admin.transactions.index', compact('transactions', 'orders', 'cvOrders', 'deposits', 'search', 'status'));
+        return view('admin.transactions.index', compact('transactions', 'appTransactions', 'orders', 'cvOrders', 'deposits', 'search', 'status'));
     }
 
     public function invoice(string $id)
