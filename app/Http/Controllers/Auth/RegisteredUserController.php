@@ -33,11 +33,28 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->has('phone') && !$request->has('phone_number')) {
+            $request->merge(['phone_number' => $request->phone]);
+        }
+
+        $rawPhone = preg_replace('/[^0-9]/', '', (string)$request->input('phone_number', ''));
+        $request->merge(['phone_number' => $rawPhone]);
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'phone_number' => ['required', 'string', 'max:20', 'unique:'.User::class],
+            'phone_number' => ['required', 'string', 'min:9', 'max:20', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'email.required' => 'Alamat email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email ini sudah terdaftar. Silakan gunakan menu Masuk.',
+            'phone_number.required' => 'Nomor WhatsApp wajib diisi.',
+            'phone_number.min' => 'Nomor WhatsApp minimal 9 digit angka.',
+            'phone_number.unique' => 'Nomor WhatsApp ini sudah terdaftar. Silakan gunakan menu Masuk.',
+            'password.required' => 'Password wajib diisi.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
         ]);
 
         $phone = $request->phone_number;
@@ -56,7 +73,7 @@ class RegisteredUserController extends Controller
 
         // Panggil WhatsApp Gateway (Fonnte) untuk mengirim pesan OTP
         try {
-            $fonnteToken = config('services.fonnte.token', env('FONNTE_TOKEN', 'gdHv7cHH3YfhUA7E5iCM'));
+            $fonnteToken = \App\Models\Setting::get('fonnte_token') ?: (config('services.fonnte.token') ?: env('FONNTE_TOKEN', 'gdHv7cHH3YfhUA7E5iCM'));
             $message = "*[ ToTap Store - Verifikasi WhatsApp ]*\n\nKode OTP pendaftaran akun Anda adalah:\n\n👉 *{$otp}*\n\nKode ini berlaku selama 10 menit. Jangan berikan kode ini kepada siapa pun demi keamanan akun Anda.\n\nTerima kasih telah bergabung di ToTap Store.";
             
             $waResponse = \Illuminate\Support\Facades\Http::timeout(15)->withHeaders([
@@ -71,12 +88,12 @@ class RegisteredUserController extends Controller
             if (!$waResponse->successful() || (isset($resData['status']) && $resData['status'] === false)) {
                 $errorReason = $resData['reason'] ?? ($resData['message'] ?? 'Gagal mengirim pesan WhatsApp. Pastikan nomor HP aktif dan terdaftar di WhatsApp.');
                 return response()->json([
-                    'errors' => ['phone_number' => [$errorReason]]
+                    'errors' => ['phone_number' => [$errorReason], 'phone' => [$errorReason]]
                 ], 422);
             }
         } catch (\Exception $e) {
             return response()->json([
-                'errors' => ['phone_number' => ['Gangguan pengiriman WhatsApp: ' . $e->getMessage()]]
+                'errors' => ['phone_number' => ['Gangguan pengiriman WhatsApp: ' . $e->getMessage()], 'phone' => ['Gangguan pengiriman WhatsApp: ' . $e->getMessage()]]
             ], 422);
         }
 

@@ -55,7 +55,8 @@
             </div>
             <div>
                 <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Nomor WhatsApp Aktif</label>
-                <input class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm" type="text" name="phone" placeholder="08xxxxxxxxxx" required>
+                <input class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm" type="text" name="phone_number" placeholder="08xxxxxxxxxx" required>
+                <span id="reg-error-phone_number" class="text-red-500 text-xs mt-1 block font-medium hidden"></span>
                 <span id="reg-error-phone" class="text-red-500 text-xs mt-1 block font-medium hidden"></span>
             </div>
             <div>
@@ -197,11 +198,19 @@
                 const data = await res.json();
                 if (data.errors) {
                     for (let [field, msgs] of Object.entries(data.errors)) {
-                        const el = document.getElementById('reg-error-' + field);
+                        let el = document.getElementById('reg-error-' + field);
+                        if (!el && field === 'phone_number') el = document.getElementById('reg-error-phone');
+                        if (!el && field === 'phone') el = document.getElementById('reg-error-phone_number');
                         if (el) {
                             el.innerText = msgs[0];
                             el.classList.remove('hidden');
                         }
+                    }
+                } else if (data.message) {
+                    const el = document.getElementById('reg-error-email');
+                    if (el) {
+                        el.innerText = data.message;
+                        el.classList.remove('hidden');
                     }
                 }
             }
