@@ -23,7 +23,7 @@
                     <p class="text-gray-500 dark:text-gray-400">Aplikasi premium sedang disiapkan. Segera hadir!</p>
                 </div>
             @else
-                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                <div class="flex flex-wrap justify-center gap-6">
                     @foreach($apps as $app)
                     @php
                         $promoProduct = $app->products()->where('is_promo', true)->where('status', 'available')->where('price_normal', '>', 0)->orderByRaw('((price_normal - price_sell) / price_normal) DESC')->first();
@@ -32,13 +32,13 @@
                             $maxDiscount = floor((($promoProduct->price_normal - $promoProduct->price_sell) / $promoProduct->price_normal) * 100);
                         }
                     @endphp
-                    <a href="{{ route('topup.show', $app->slug) }}" class="relative block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group">
+                    <a href="{{ route('topup.show', $app->slug) }}" class="w-[calc(50%-12px)] sm:w-56 md:w-60 lg:w-64 shrink-0 relative block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group">
                         @if($maxDiscount > 0)
                             <div class="absolute top-5 -right-10 w-40 transform rotate-45 bg-gradient-to-r from-red-600 to-rose-500 text-white text-[10px] font-extrabold py-1 text-center shadow-md z-20 animate-pulse tracking-wider">
                                 DISKON {{ $maxDiscount }}%
                             </div>
                         @endif
-                        <div class="w-full h-48 relative overflow-hidden bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                        <div class="w-full h-48 sm:h-52 relative overflow-hidden bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                             @if(!empty($app->thumbnail))
                                 <img src="{{ $app->thumbnail }}" alt="{{ $app->name }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" onerror="this.classList.add('hidden')">
                             @endif
