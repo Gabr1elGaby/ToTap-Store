@@ -119,21 +119,33 @@ class GameProductController extends Controller
             }
 
             if (stripos($item['game'], $request->filter_value) !== false) {
-                $isPass = (str_contains($nameLower, 'pass') || str_contains($nameLower, 'weekly') || str_contains($nameLower, 'starlight') || str_contains($nameLower, 'twilight') || str_contains($nameLower, 'member') || str_contains($nameLower, 'bundle'));
+                $isAppOrVoucher = in_array($game->category, ['Aplikasi Premium', 'Voucher', 'App & Entertainment']) 
+                    || str_contains(strtolower($game->category ?? ''), 'app') 
+                    || str_contains(strtolower($game->category ?? ''), 'aplikasi')
+                    || str_contains(strtolower($game->category ?? ''), 'streaming')
+                    || str_contains(strtolower($game->category ?? ''), 'voucher')
+                    || str_contains(strtolower($game->name), 'premium')
+                    || str_contains(strtolower($game->name), 'voucher');
+
+                $isPass = (str_contains($nameLower, 'pass') || str_contains($nameLower, 'weekly') || str_contains($nameLower, 'starlight') || str_contains($nameLower, 'twilight') || str_contains($nameLower, 'member') || str_contains($nameLower, 'bundle') || str_contains($nameLower, 'gsuite') || str_contains($nameLower, 'invite') || str_contains($nameLower, 'individu') || str_contains($nameLower, 'family') || str_contains($nameLower, 'private') || str_contains($nameLower, 'shared') || str_contains($nameLower, 'garansi') || str_contains($nameLower, 'bulan') || str_contains($nameLower, 'hari') || str_contains($nameLower, 'tahun'));
                 
                 $nameForMath = str_replace('.', '', $nameLower);
                 $qty = 0;
 
-                if ($isPass) {
+                if ($isAppOrVoucher || $isPass) {
+                    // Untuk Aplikasi Premium, Streaming, Voucher, atau Variasi Paket:
+                    // Setiap varian (Family, Individu 7 Hari, Individu 28 Hari, Shared, Private) adalah produk terpisah!
                     $uniqueKey = preg_replace('/[^a-z0-9]/', '', $nameLower);
                 } else {
                     if (preg_match('/^(\d+)\s*\+\s*(\d+)\s*diamond/i', $nameForMath, $m)) {
                         $qty = (int)$m[1] + (int)$m[2]; 
                     } elseif (preg_match('/^(\d+)\s*diamond/i', $nameForMath, $m)) {
                         $qty = (int)$m[1]; 
-                    } elseif (preg_match('/(\d+)\s*\+\s*(\d+)/', $nameForMath, $m)) {
+                    } elseif (preg_match('/(\d+)\s*(?:diamond|dm|uc|cp|points|coin|gems|tokens)/i', $nameForMath, $m)) {
+                        $qty = (int)$m[1];
+                    } elseif (preg_match('/^(\d+)\s*\+\s*(\d+)/', $nameForMath, $m)) {
                         $qty = (int)$m[1] + (int)$m[2];
-                    } elseif (preg_match('/(\d+)/', $nameForMath, $m)) {
+                    } elseif (preg_match('/^(\d+)$/', trim($nameForMath), $m)) {
                         $qty = (int)$m[1];
                     }
                     if ($qty > 0) {
