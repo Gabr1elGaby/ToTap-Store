@@ -114,7 +114,7 @@ class GameProductController extends Controller
             $nameLower = strtolower($name);
             $codeUpper = strtoupper($item['code'] ?? '');
             $itemGame = trim($item['game'] ?? '');
-            $modal = $item['price']['special'] ?? ($item['price']['h2h'] ?? ($item['price']['premium'] ?? ($item['price']['basic'] ?? 0)));
+            $modal = VipResellerService::getAccountPrice($item['price'] ?? 0);
 
             // 1. FILTER SAMPAH & HARGA MODAL NOL
             if ($modal <= 0) continue; 
@@ -277,7 +277,7 @@ class GameProductController extends Controller
                         if ($apiItems->has($lp->product_code)) {
                             $aItem = $apiItems->get($lp->product_code);
                             $aStatus = strtolower($aItem['status']) === 'available' ? 'available' : 'empty';
-                            $latestModal = (float)($aItem['price']['special'] ?? ($aItem['price']['h2h'] ?? ($aItem['price']['premium'] ?? ($aItem['price']['basic'] ?? $lp->price_modal))));
+                            $latestModal = VipResellerService::getAccountPrice($aItem['price'] ?? $lp->price_modal);
                             
                             $margin = $lp->price_sell > $lp->price_modal ? ($lp->price_sell - $lp->price_modal) : ceil($latestModal * 0.05);
                             $newSell = $latestModal + $margin;

@@ -30,7 +30,33 @@ class VipResellerService
             'sign' => $this->generateSign()
         ]);
 
-        return $response->json();
+        $data = $response->json();
+        if (isset($data['result']) && $data['result'] === true && isset($data['data']['level'])) {
+            \App\Models\Setting::set('vip_account_level', (string)$data['data']['level']);
+        }
+
+        return $data;
+    }
+
+    public static function getAccountPrice($priceArray)
+    {
+        if (!is_array($priceArray)) {
+            return (float)$priceArray;
+        }
+
+        // Cek level akun yang tersimpan atau default ke Basic
+        $level = strtolower(\App\Models\Setting::get('vip_account_level', 'basic'));
+
+        if ($level === 'h2h' || $level === 'special') {
+            return (float)($priceArray['special'] ?? ($priceArray['h2h'] ?? ($priceArray['premium'] ?? ($priceArray['basic'] ?? 0))));
+        }
+
+        if ($level === 'premium' || $level === 'reseller') {
+            return (float)($priceArray['premium'] ?? ($priceArray['reseller'] ?? ($priceArray['basic'] ?? 0)));
+        }
+
+        // Default: Level Basic (Member) - Sesuai level akun saat ini agar tidak nombok
+        return (float)($priceArray['basic'] ?? ($priceArray['member'] ?? ($priceArray['premium'] ?? ($priceArray['special'] ?? 0))));
     }
 
     public function getGameProducts($filterValue = '')

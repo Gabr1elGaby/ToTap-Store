@@ -55,7 +55,7 @@ class TopUpController extends Controller
                         if ($apiItems->has($lp->product_code)) {
                             $aItem = $apiItems->get($lp->product_code);
                             $aStatus = strtolower($aItem['status']) === 'available' ? 'available' : 'empty';
-                            $latestModal = (float)($aItem['price']['special'] ?? ($aItem['price']['h2h'] ?? ($aItem['price']['premium'] ?? ($aItem['price']['basic'] ?? $lp->price_modal))));
+                            $latestModal = \App\Services\VipResellerService::getAccountPrice($aItem['price'] ?? $lp->price_modal);
                             
                             $margin = $lp->price_sell > $lp->price_modal ? ($lp->price_sell - $lp->price_modal) : ceil($latestModal * 0.05);
                             $newSell = $latestModal + $margin;
@@ -285,7 +285,7 @@ class TopUpController extends Controller
                         if ($apiItems->has($lp->product_code)) {
                             $aItem = $apiItems->get($lp->product_code);
                             $aStatus = strtolower($aItem['status']) === 'available' ? 'available' : 'empty';
-                            $latestModal = (float)($aItem['price']['special'] ?? ($aItem['price']['h2h'] ?? ($aItem['price']['premium'] ?? ($aItem['price']['basic'] ?? $lp->price_modal))));
+                            $latestModal = \App\Services\VipResellerService::getAccountPrice($aItem['price'] ?? $lp->price_modal);
                             
                             $margin = $lp->price_sell > $lp->price_modal ? ($lp->price_sell - $lp->price_modal) : ceil($latestModal * 0.05);
                             $newSell = $latestModal + $margin;
