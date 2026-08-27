@@ -207,6 +207,93 @@
                         <p class="text-gray-600 dark:text-gray-400 text-base leading-relaxed">Layanan langsung aktif dan pesanan otomatis masuk ke akun Anda dalam hitungan detik!</p>
                     </div>
                 </div>
+
+                <!-- Kotak Informasi Keamanan & Ketentuan Resmi Transaksi -->
+                <div class="mt-14 max-w-5xl mx-auto" data-aos="fade-up" data-aos-delay="400">
+                    <div class="bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-slate-900/95 dark:from-slate-950 dark:via-gray-900 dark:to-slate-950 border border-blue-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+                        <!-- Decorative top accent bar -->
+                        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500"></div>
+
+                        <!-- Header Box -->
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-700/60 pb-5 mb-6">
+                            <div class="flex items-center gap-3 text-center sm:text-left">
+                                <div class="w-10 h-10 rounded-2xl bg-blue-500/20 border border-blue-400/40 flex items-center justify-center text-blue-400 shadow-inner shrink-0">
+                                    <i class="fas fa-shield-alt text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-base sm:text-lg font-black text-white tracking-wide">Pemberitahuan & Jaminan Keamanan Transaksi</h4>
+                                    <p class="text-xs text-slate-400">Harap perhatikan panduan keamanan resmi dari ToTap Store demi kenyamanan Anda.</p>
+                                </div>
+                            </div>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0">
+                                <i class="fas fa-check-circle text-xs"></i> 100% Aman & Terpercaya
+                            </span>
+                        </div>
+
+                        <!-- 4 Poin Penting Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                            <!-- Poin 1: Nomor Admin Resmi -->
+                            <div class="p-4 sm:p-5 rounded-2xl bg-slate-800/60 dark:bg-slate-900/80 border border-slate-700/60 hover:border-blue-500/40 transition-colors flex items-start gap-3.5">
+                                <div class="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0 mt-0.5">
+                                    <i class="fab fa-whatsapp text-lg"></i>
+                                </div>
+                                <div class="space-y-1">
+                                    <h5 class="text-sm font-bold text-white flex items-center gap-2">
+                                        Nomor Admin Resmi
+                                    </h5>
+                                    <p class="text-xs text-slate-300 leading-relaxed">
+                                        Hanya nomor WhatsApp resmi yang tertera di website yang digunakan untuk menghubungi Customer Service & Admin ToTap Store.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Poin 2: Pembayaran Resmi -->
+                            <div class="p-4 sm:p-5 rounded-2xl bg-slate-800/60 dark:bg-slate-900/80 border border-slate-700/60 hover:border-blue-500/40 transition-colors flex items-start gap-3.5">
+                                <div class="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0 mt-0.5">
+                                    <i class="fas fa-qrcode text-base"></i>
+                                </div>
+                                <div class="space-y-1">
+                                    <h5 class="text-sm font-bold text-white flex items-center gap-2">
+                                        Pembayaran Resmi
+                                    </h5>
+                                    <p class="text-xs text-slate-300 leading-relaxed">
+                                        Semua pembayaran transaksi hanya melalui metode yang resmi tersedia di website (QRIS & Saldo Akun).
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Poin 3: Peringatan Penipuan -->
+                            <div class="p-4 sm:p-5 rounded-2xl bg-slate-800/60 dark:bg-slate-900/80 border border-slate-700/60 hover:border-amber-500/40 transition-colors flex items-start gap-3.5">
+                                <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0 mt-0.5">
+                                    <i class="fas fa-user-shield text-base"></i>
+                                </div>
+                                <div class="space-y-1">
+                                    <h5 class="text-sm font-bold text-white flex items-center gap-2">
+                                        Peringatan Penipuan
+                                    </h5>
+                                    <p class="text-xs text-slate-300 leading-relaxed">
+                                        Admin ToTap Store <strong class="text-amber-300">TIDAK PERNAH</strong> meminta kode OTP, PIN, atau Password akun pribadi pelanggan dalam kondisi apapun.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Poin 4: Kebijakan Refund -->
+                            <div class="p-4 sm:p-5 rounded-2xl bg-slate-800/60 dark:bg-slate-900/80 border border-slate-700/60 hover:border-emerald-500/40 transition-colors flex items-start gap-3.5">
+                                <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+                                    <i class="fas fa-undo-alt text-base"></i>
+                                </div>
+                                <div class="space-y-1">
+                                    <h5 class="text-sm font-bold text-white flex items-center gap-2">
+                                        Kebijakan Refund
+                                    </h5>
+                                    <p class="text-xs text-slate-300 leading-relaxed">
+                                        Ketentuan pengembalian dana sesuai jenis transaksi, dana refund akan dikembalikan utuh langsung ke <strong class="text-emerald-300">Saldo Akun ToTap Store</strong> Anda.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
