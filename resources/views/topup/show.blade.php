@@ -172,32 +172,45 @@
                         <div class="flex flex-col xl:flex-row gap-6 items-start">
                             <!-- Kolom Tengah: Tujuan & Nominal -->
                             <div class="w-full xl:w-7/12 space-y-6">
-                                <!-- Step 1: Player ID -->
+                                <!-- Step 1: Data Tujuan / Email / Player ID -->
+                                @php
+                                    $isAppCategory = str_contains(strtolower($game->category ?? ''), 'app') || 
+                                                     str_contains(strtolower($game->category ?? ''), 'aplikasi') || 
+                                                     str_contains(strtolower($game->category ?? ''), 'streaming');
+                                @endphp
                                 <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-lg rounded-2xl p-5">
                                     <div class="flex items-center gap-3 mb-4">
                                         <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">1</div>
-                                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Masukkan Tujuan</h3>
+                                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+                                            {{ $isAppCategory ? 'Masukkan Data Tujuan' : 'Masukkan Tujuan' }}
+                                        </h3>
                                     </div>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div class="{{ $isRequiresZone ? '' : 'md:col-span-2' }}">
                                             <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-                                                {{ $field1Label }}
+                                                {{ $isAppCategory ? ($field1Label ?: 'Alamat Email') : $field1Label }}
                                             </label>
-                                            <input type="text" name="player_id" x-model="playerId" 
-                                                placeholder="{{ $isRequiresZone ? 'Contoh: 12345678' : ($game->slug == 'valorant' ? 'Contoh: RiotID#1234' : 'Masukkan ' . $field1Label) }}" required
+                                            <input type="{{ $isAppCategory ? 'email' : 'text' }}" name="player_id" x-model="playerId" 
+                                                placeholder="{{ $isAppCategory ? 'Masukkan Email (contoh: user@gmail.com)' : ($isRequiresZone ? 'Contoh: 12345678' : ($game->slug == 'valorant' ? 'Contoh: RiotID#1234' : 'Masukkan ' . $field1Label)) }}" required
                                                 class="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm p-3 font-semibold text-sm">
                                         </div>
                                         @if($isRequiresZone)
                                         <div>
                                             <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-                                                {{ $field2Label }}
+                                                {{ $isAppCategory ? ($field2Label ?: 'Request Profile / Catatan (Opsional)') : $field2Label }}
                                             </label>
                                             <input type="text" name="zone_id" x-model="zoneId" 
-                                                placeholder="Contoh: 1234" required
+                                                placeholder="{{ $isAppCategory ? 'Contoh: Profil 1 (Opsional)' : 'Contoh: 1234' }}" {{ $isAppCategory ? '' : 'required' }}
                                                 class="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm p-3 font-semibold text-sm">
                                         </div>
                                         @endif
                                     </div>
+                                    @if($isAppCategory)
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2.5 flex items-center gap-1.5">
+                                            <i class="fas fa-info-circle text-indigo-500"></i>
+                                            <span>Masukkan alamat email aktif Anda. Akun atau link invite akan dikirim melalui email atau tercantum di invoice Anda.</span>
+                                        </p>
+                                    @endif
                                 </div>
 
                                 <!-- Step 2: Nominal -->
