@@ -73,7 +73,7 @@ class ProfileController extends Controller
 
         // Send via Fonnte WhatsApp API
         try {
-            $fonnteToken = config('services.fonnte.token', env('FONNTE_TOKEN', 'gdHv7cHH3YfhUA7E5iCM'));
+            $fonnteToken = \App\Models\Setting::get('fonnte_token') ?: (config('services.fonnte.token') ?: env('FONNTE_TOKEN', '7rYeC3EsZAxizJDTFPin'));
             $userName = $user->name ?? 'Pengguna';
             $message = "*[ ToTap Store - Verifikasi Ubah Nomor WhatsApp ]*\n\nHalo {$userName},\n\nKode OTP untuk memverifikasi perubahan nomor WhatsApp akun Anda adalah:\n\n👉 *{$otp}*\n\nKode ini berlaku selama 10 menit. Jangan berikan kode ini kepada siapa pun demi keamanan akun Anda.\n\nTerima kasih,\nTim ToTap Store";
 

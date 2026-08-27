@@ -381,7 +381,7 @@ class AdminTransactionController extends Controller
                 if (str_starts_with($targetPhone, '0')) {
                     $targetPhone = '62' . substr($targetPhone, 1);
                 }
-                $token = \App\Models\Setting::get('fonnte_token', 'mEa7Y6Lq5u@U8b2Q8J1#');
+                $token = \App\Models\Setting::get('fonnte_token') ?: (config('services.fonnte.token') ?: env('FONNTE_TOKEN', '7rYeC3EsZAxizJDTFPin'));
                 $gameName = $transaction->game->name ?? 'Game';
                 $waMsg = "Halo *{$user->name}*,\n\n"
                        . "Pesanan Top Up Anda *#{$transaction->id}* ({$gameName}) telah dibatalkan oleh Admin.\n\n"

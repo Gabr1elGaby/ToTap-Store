@@ -62,7 +62,7 @@ return [
     ],
 
     'fonnte' => [
-        'token' => env('FONNTE_TOKEN', 'gdHv7cHH3YfhUA7E5iCM'),
+        'token' => env('FONNTE_TOKEN', '7rYeC3EsZAxizJDTFPin'),
     ],
 
 ];
