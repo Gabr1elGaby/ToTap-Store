@@ -39,7 +39,7 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Nama Game <span class="text-red-500">*</span></label>
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Nama Game / Layanan <span class="text-red-500">*</span></label>
                             <input type="text" name="name" x-model="name" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-bold" required>
                         </div>
 
@@ -47,6 +47,11 @@
                             <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Developer / Publisher</label>
                             <input type="text" name="developer" x-model="developer" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white">
                         </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Deskripsi Singkat Layanan (Tampil di Bawah Thumbnail)</label>
+                        <textarea name="description" x-model="description" rows="2" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white text-sm font-medium" placeholder="Tuliskan deskripsi singkat mengenai layanan atau game ini..."></textarea>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -111,6 +116,11 @@
                             </div>
                         </div>
 
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300">Teks Keterangan di Bawah Input (Opsional)</label>
+                            <input type="text" name="target_field_1_help" x-model="target_field_1_help" placeholder="Contoh: Data akun & password akan otomatis muncul di layar dan invoice Anda" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white text-sm font-medium">
+                        </div>
+
                         <div class="flex items-center gap-3 pt-2">
                             <input type="checkbox" name="requires_zone_id" id="requires_zone_id" x-model="requires_zone_id" value="1" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500 border-gray-300 cursor-pointer">
                             <label for="requires_zone_id" class="text-xs font-bold text-gray-700 dark:text-gray-300 cursor-pointer">
@@ -120,7 +130,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Panduan / Cara Cek ID Akun</label>
+                        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Panduan / Cara Cek ID Akun (Kotak Biru di Atas)</label>
                         <textarea name="guide_text" x-model="guide_text" rows="3" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white text-sm font-medium" placeholder="Tuliskan petunjuk cara melihat ID game..."></textarea>
                     </div>
 
@@ -154,9 +164,11 @@
             return {
                 name: @json($game->name),
                 developer: @json($game->developer ?? ''),
+                description: @json($game->description ?? ''),
                 category: @json($game->category ?? 'Mobile Game'),
                 target_field_1: @json($game->target_field_1 ?? 'User ID'),
                 target_field_2: @json($game->target_field_2 ?? ''),
+                target_field_1_help: @json($game->target_field_1_help ?? ''),
                 requires_zone_id: @json((bool)$game->requires_zone_id),
                 guide_text: @json($game->guide_text ?? '')
             };

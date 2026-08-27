@@ -114,6 +114,11 @@
                         </div>
                     </div>
 
+                    <div>
+                        <label class="block text-sm font-bold text-gray-900 dark:text-gray-100">Deskripsi Singkat Layanan (Tampil di Bawah Thumbnail)</label>
+                        <textarea name="description" x-model="description" rows="2" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white text-sm" placeholder="Tuliskan deskripsi singkat mengenai layanan atau game ini..."></textarea>
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-bold text-gray-900 dark:text-gray-100">Kategori</label>
@@ -165,6 +170,11 @@
                             </div>
                         </div>
 
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300">Teks Keterangan di Bawah Input (Opsional)</label>
+                            <input type="text" name="target_field_1_help" x-model="target_field_1_help" placeholder="Contoh: Data akun & password akan otomatis muncul di layar dan invoice Anda" class="w-full mt-1 p-2.5 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white text-sm font-medium">
+                        </div>
+
                         <div class="pt-2">
                             <label class="inline-flex items-center gap-2 cursor-pointer">
                                 <input type="checkbox" name="requires_zone_id" x-model="requires_zone_id" value="1" class="rounded border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500">
@@ -203,9 +213,11 @@
                 selectedPreset: '',
                 name: '',
                 developer: '',
+                description: '',
                 category: defaultCategory,
                 target_field_1: defaultField1,
                 target_field_2: '',
+                target_field_1_help: '',
                 requires_zone_id: false,
                 guide_text: '',
                 presets: {

@@ -196,34 +196,56 @@
                                             @endif
                                         </h3>
                                     </div>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div class="{{ $isRequiresZone ? '' : 'md:col-span-2' }}">
+
+                                    @if($isRequiresZone)
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5 flex items-center gap-1.5">
+                                                    @if($isApp)
+                                                        <i class="fas fa-envelope text-indigo-500"></i>
+                                                    @endif
+                                                    {{ $field1Label }}
+                                                </label>
+                                                <input type="{{ $isApp ? 'email' : 'text' }}" name="player_id" x-model="playerId" 
+                                                    placeholder="{{ $isApp ? 'Masukkan alamat email aktif' : 'Contoh: 12345678' }}" required
+                                                    class="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm p-3 font-semibold text-sm">
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
+                                                    {{ $field2Label }}
+                                                </label>
+                                                <input type="text" name="zone_id" x-model="zoneId" 
+                                                    placeholder="Contoh: 1234" required
+                                                    class="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm p-3 font-semibold text-sm">
+                                            </div>
+                                        </div>
+                                    @else
+                                        <!-- Full Width Single Input (Memanjang Sampai Kanan Penuh) -->
+                                        <div class="w-full">
                                             <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5 flex items-center gap-1.5">
                                                 @if($isApp)
                                                     <i class="fas fa-envelope text-indigo-500"></i>
+                                                @else
+                                                    <i class="fas fa-user text-indigo-500"></i>
                                                 @endif
                                                 {{ $field1Label }}
                                             </label>
                                             <input type="{{ $isApp ? 'email' : 'text' }}" name="player_id" x-model="playerId" 
-                                                placeholder="{{ $isApp ? 'Masukkan alamat email aktif (contoh: nama@gmail.com)' : ($isRequiresZone ? 'Contoh: 12345678' : ($game->slug == 'valorant' ? 'Contoh: RiotID#1234' : 'Masukkan ' . $field1Label)) }}" required
-                                                class="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm p-3 font-semibold text-sm">
-                                            @if($isApp)
-                                                <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1.5 flex items-center gap-1">
-                                                    <span>📧</span> <em>Undangan resmi / akun akan dikirimkan ke email ini dan tertera pada invoice pesanan.</em>
-                                                </p>
-                                            @endif
+                                                placeholder="{{ $isApp ? 'Masukkan alamat email aktif (contoh: nama@gmail.com)' : ($game->slug == 'valorant' ? 'Contoh: RiotID#1234' : 'Masukkan ' . $field1Label) }}" required
+                                                class="w-full block rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm p-3 font-semibold text-sm">
                                         </div>
-                                        @if($isRequiresZone)
-                                        <div>
-                                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-                                                {{ $field2Label }}
-                                            </label>
-                                            <input type="text" name="zone_id" x-model="zoneId" 
-                                                placeholder="{{ $isApp ? 'Contoh: Server 1 / Profile 1' : 'Contoh: 1234' }}" required
-                                                class="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm p-3 font-semibold text-sm">
-                                        </div>
+                                    @endif
+
+                                    <!-- Keterangan Tambahan di Bawah Input -->
+                                    <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-2 flex items-center gap-1.5">
+                                        @if(!empty($game->target_field_1_help))
+                                            <span>💡</span> <em>{{ $game->target_field_1_help }}</em>
+                                        @elseif($isApp)
+                                            <span>📧</span> <em>Data akun / link undangan resmi akan otomatis tampil di layar dan tertera pada invoice pesanan.</em>
+                                        @else
+                                            <span>💡</span> <em>Pastikan data yang Anda masukkan valid agar pesanan langsung masuk otomatis.</em>
                                         @endif
-                                    </div>
+                                    </p>
                                 </div>
 
                                 <!-- Step 2: Nominal -->

@@ -125,12 +125,14 @@ class GameController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'developer' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
             'category' => 'nullable|string|max:255',
             'thumbnail' => 'nullable|mimes:jpeg,png,jpg,gif,webp,svg,avif|max:5120',
             'cover_image' => 'nullable|mimes:jpeg,png,jpg,gif,webp,svg,avif|max:5120',
             'guide_text' => 'nullable|string',
             'target_field_1' => 'nullable|string',
             'target_field_2' => 'nullable|string',
+            'target_field_1_help' => 'nullable|string',
         ]);
 
         $validated['is_active'] = $request->input('is_active') == '1' || $request->input('is_active') === true || $request->has('is_active');
@@ -171,12 +173,14 @@ class GameController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'developer' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
             'category' => 'nullable|string|max:255',
             'thumbnail' => 'nullable|file|max:20480',
             'cover_image' => 'nullable|file|max:20480',
             'guide_text' => 'nullable|string',
             'target_field_1' => 'nullable|string',
             'target_field_2' => 'nullable|string',
+            'target_field_1_help' => 'nullable|string',
             'is_active' => 'nullable',
             'requires_zone_id' => 'nullable',
         ]);
