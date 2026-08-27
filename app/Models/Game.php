@@ -13,6 +13,7 @@ class Game extends Model
         'name',
         'slug',
         'developer',
+        'description',
         'category',
         'thumbnail',
         'cover_image',
@@ -21,6 +22,7 @@ class Game extends Model
         'requires_zone_id',
         'target_field_1',
         'target_field_2',
+        'target_field_1_help',
     ];
 
     public function products()
