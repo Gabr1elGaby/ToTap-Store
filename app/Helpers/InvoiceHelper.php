@@ -246,12 +246,12 @@ class InvoiceHelper
         $text = preg_replace('/^(AKUN|ACCOUNT|DATA|LOGIN)\s*[:=]\s*/i', '', $text);
         $text = trim($text);
 
-        // 3. Match Email & Password patterns (e.g. email---password or email--password or email - password)
-        if (preg_match('/^([^\s\-:|]+@[^\s\-:|]+)\s*(?:-{2,4}|\s+-\s+|:\s*|\/)\s*([^\s|]+)/i', $text, $matches)) {
+        // 3. Match Email & Password patterns (handles unicode em-dash —, en-dash –, minus, and hyphens)
+        if (preg_match('/^([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,10})\s*(?:[\x{2010}-\x{2015}\x{2212}—–\-]{1,6}|:\s*|\/|\s+-\s+)\s*([^\s|]+)/u', $text, $matches)) {
             $result['is_structured'] = true;
             $result['email'] = trim($matches[1]);
             $result['password'] = trim($matches[2]);
-        } elseif (preg_match('/^([^\s\-:|]+)\s*(?:-{2,4})\s*([^\s|]+)/i', $text, $matches)) {
+        } elseif (preg_match('/^([^\s|]+)\s*(?:[\x{2010}-\x{2015}\x{2212}—–\-]{1,6}|:\s*)\s*([^\s|]+)/u', $text, $matches)) {
             $result['is_structured'] = true;
             $result['email'] = trim($matches[1]);
             $result['password'] = trim($matches[2]);
