@@ -10,13 +10,10 @@
             </div>
 
             <div class="text-center mb-12">
-                <div class="flex items-center justify-center gap-3 mb-4">
-                    <img src="{{ asset('images/aplikasi-premium-logo.png') }}?v={{ time() }}" alt="Aplikasi Premium" class="w-16 h-16 object-contain" onerror="this.onerror=null; this.src='{{ asset('images/aplikasi-premium-logo.jpg') }}?v={{ time() }}';">
-                    <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white" style="font-family: 'Righteous', cursive; letter-spacing: 2px;">
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-600 dark:from-amber-400 dark:to-orange-500">APLIKASI</span> PREMIUM
-                    </h1>
-                </div>
-                <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Langganan aplikasi premium terpercaya — Spotify, Netflix, YouTube, dan lainnya. Proses instan 24 jam via WhatsApp.</p>
+                <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white mb-4" style="font-family: 'Righteous', cursive; letter-spacing: 2px;">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">APLIKASI</span> PREMIUM
+                </h1>
+                <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Aplikasi premium otomatis 24 jam untuk berbagai aplikasi favorit Anda. Pilih aplikasi di bawah ini untuk melihat paket yang tersedia.</p>
             </div>
 
             @if($apps->isEmpty())
