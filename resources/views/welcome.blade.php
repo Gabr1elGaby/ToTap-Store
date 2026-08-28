@@ -164,9 +164,9 @@
         @endphp
 
         @if($promoCount > 0)
-        <!-- Promo Banner Section -->
-        <section id="promo-spesial" class="py-6 sm:py-8 bg-slate-100 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 transition-colors duration-200">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Promo Banner Section (Full Width Edge-to-Edge) -->
+        <section id="promo-spesial" class="w-full bg-slate-900 border-b border-gray-200 dark:border-gray-800 transition-colors duration-200 overflow-hidden">
+            <div class="w-full">
                 
                 <div x-data="{
                     currentSlide: 0,
@@ -194,13 +194,13 @@
                 }" 
                 @mouseenter="stopAutoPlay()" 
                 @mouseleave="if(totalSlides > 1) startAutoPlay()"
-                class="relative w-full overflow-hidden rounded-2xl sm:rounded-3xl shadow-2xl">
+                class="relative w-full overflow-hidden shadow-2xl">
 
                     <!-- Slides Wrapper -->
                     <div class="relative w-full">
                         @php $slideIndex = 0; @endphp
 
-                        <!-- SLIDE: PROMO PENGGUNA PERTAMA (Custom Banner Image) -->
+                        <!-- SLIDE: PROMO PENGGUNA PERTAMA (Custom Banner Image Full Width) -->
                         @if($showFirstUserPromo)
                         @php $firstIdx = $slideIndex++; @endphp
                         <div x-show="currentSlide === {{ $firstIdx }}" 
@@ -210,12 +210,12 @@
                              x-transition:leave="transition ease-in duration-200 absolute inset-0"
                              x-transition:leave-start="opacity-100 scale-100"
                              x-transition:leave-end="opacity-0 scale-98"
-                             class="w-full relative group overflow-hidden rounded-2xl sm:rounded-3xl">
-                            <a href="#kategori" class="block relative w-full overflow-hidden rounded-2xl sm:rounded-3xl cursor-pointer">
+                             class="w-full relative group overflow-hidden">
+                            <a href="#kategori" class="block relative w-full overflow-hidden cursor-pointer">
                                 <img src="{{ asset('images/banner-promo-pengguna-baru.jpg') }}" 
                                      alt="Promo Spesial Pengguna Pertama - ToTap Store" 
-                                     class="w-full h-auto object-cover rounded-2xl sm:rounded-3xl transition-transform duration-500 group-hover:scale-[1.01] shadow-2xl border border-indigo-500/30">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-2xl sm:rounded-3xl"></div>
+                                     class="w-full h-auto object-cover max-h-[380px] sm:max-h-[460px] md:max-h-[520px] transition-transform duration-500 group-hover:scale-[1.008]">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                             </a>
                         </div>
                         @endif
