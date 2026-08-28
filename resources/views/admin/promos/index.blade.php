@@ -103,7 +103,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                     <!-- CARD 1: Diskon Khusus Pengguna Pertama -->
-                    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 border-2 border-indigo-200 dark:border-indigo-900/60 shadow-lg space-y-5 flex flex-col justify-between"
+                    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 border-2 border-indigo-300 dark:border-indigo-900/80 shadow-lg space-y-5 flex flex-col justify-between"
                          x-data="{
                             firstActive: {{ $settings['first_user_active'] ? 'true' : 'false' }},
                             firstType: '{{ $settings['first_user_type'] }}'
@@ -111,7 +111,7 @@
                         
                         <div class="space-y-5">
                             <!-- Header Card 1 -->
-                            <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4">
+                            <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-lg font-bold">
                                         🎁
@@ -122,38 +122,42 @@
                                     </div>
                                 </div>
 
-                                <!-- Toggle Switch -->
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" name="promo_first_user_active" value="1" class="sr-only peer" x-model="firstActive" {{ $settings['first_user_active'] ? 'checked' : '' }}>
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
-                                </label>
+                                <!-- Toggle Switch & Button -->
+                                <div class="flex items-center gap-2">
+                                    <button type="button" @click="firstActive = !firstActive"
+                                            class="px-3 py-1.5 rounded-xl font-black text-xs transition shadow-sm cursor-pointer"
+                                            :class="firstActive ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'">
+                                        <span x-text="firstActive ? '✓ AKTIF' : '✕ NONAKTIF'"></span>
+                                    </button>
+                                    <input type="checkbox" name="promo_first_user_active" value="1" x-model="firstActive" class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer">
+                                </div>
                             </div>
 
-                            <div class="space-y-4" :class="firstActive ? 'opacity-100' : 'opacity-50 pointer-events-none'">
+                            <div class="space-y-4">
                                 <!-- Judul Promo -->
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-1">
                                         Label / Nama Promo
                                     </label>
                                     <input type="text" name="promo_first_user_title" value="{{ old('promo_first_user_title', $settings['first_user_title']) }}" 
                                            placeholder="Contoh: Diskon Spesial Pengguna Baru"
-                                           class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl text-sm font-semibold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                           class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-semibold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                                     <span class="text-[11px] text-gray-500 dark:text-gray-400 mt-1 block">Teks ini akan muncul di rincian tagihan pembeli dan invoice.</span>
                                 </div>
 
                                 <!-- Tipe Potongan (Persentase vs Tetap) -->
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-2">
                                         Bentuk Potongan
                                     </label>
                                     <div class="grid grid-cols-2 gap-3">
                                         <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer transition text-xs font-bold"
-                                               :class="firstType === 'percent' ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-500 text-indigo-700 dark:text-indigo-300 shadow-sm' : 'bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-400'">
+                                               :class="firstType === 'percent' ? 'bg-indigo-50 dark:bg-indigo-950/80 border-indigo-500 text-indigo-700 dark:text-indigo-300 shadow-sm' : 'bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-400'">
                                             <input type="radio" name="promo_first_user_type" value="percent" x-model="firstType" class="text-indigo-600">
                                             <span>Persentase (%)</span>
                                         </label>
                                         <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer transition text-xs font-bold"
-                                               :class="firstType === 'fixed' ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-500 text-indigo-700 dark:text-indigo-300 shadow-sm' : 'bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-400'">
+                                               :class="firstType === 'fixed' ? 'bg-indigo-50 dark:bg-indigo-950/80 border-indigo-500 text-indigo-700 dark:text-indigo-300 shadow-sm' : 'bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-400'">
                                             <input type="radio" name="promo_first_user_type" value="fixed" x-model="firstType" class="text-indigo-600">
                                             <span>Nominal Tetap (Rp)</span>
                                         </label>
@@ -163,47 +167,47 @@
                                 <!-- Nilai Potongan -->
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
-                                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-1">
                                             <span x-text="firstType === 'percent' ? 'Besar Diskon (%)' : 'Besar Potongan (Rp)'"></span>
                                         </label>
                                         <div class="relative">
                                             <input type="number" step="any" min="0" name="promo_first_user_value" value="{{ old('promo_first_user_value', $settings['first_user_value']) }}" 
-                                                   class="w-full pl-3.5 pr-10 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl text-sm font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono">
+                                                   class="w-full pl-3.5 pr-10 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono">
                                             <span class="absolute right-3.5 top-2.5 text-xs font-black text-gray-400" x-text="firstType === 'percent' ? '%' : 'Rp'"></span>
                                         </div>
                                     </div>
 
                                     <div x-show="firstType === 'percent'">
-                                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-1">
                                             Maksimal Potongan (Rp)
                                         </label>
                                         <input type="number" min="0" name="promo_first_user_max_discount" value="{{ old('promo_first_user_max_discount', $settings['first_user_max_discount']) }}" 
                                                placeholder="0 = Tanpa batas"
-                                               class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl text-sm font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono">
+                                               class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono">
                                         <span class="text-[10px] text-gray-400 block mt-0.5">Isi 0 jika tidak dibatasi</span>
                                     </div>
                                 </div>
 
                                 <!-- Minimal Belanja -->
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-1">
                                         Minimal Transaksi (Rp)
                                     </label>
                                     <input type="number" min="0" name="promo_first_user_min_spend" value="{{ old('promo_first_user_min_spend', $settings['first_user_min_spend']) }}" 
                                            placeholder="0 = Tanpa minimal"
-                                           class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl text-sm font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono">
+                                           class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono">
                                     <span class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 block">Diskon hanya aktif jika pesanan mencapai nominal ini.</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="pt-4 border-t border-gray-100 dark:border-gray-700/60 text-xs font-medium text-gray-500 dark:text-gray-400">
+                        <div class="pt-4 border-t border-gray-200 dark:border-gray-700/60 text-xs font-medium text-gray-500 dark:text-gray-400">
                             💡 <em>Sistem otomatis mendeteksi apakah akun user pernah memiliki pesanan sukses sebelumnya.</em>
                         </div>
                     </div>
 
                     <!-- CARD 2: Diskon Hari Tertentu Otomatis (Day-of-Week Promo) -->
-                    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 border-2 border-emerald-200 dark:border-emerald-900/60 shadow-lg space-y-5 flex flex-col justify-between"
+                    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 border-2 border-emerald-300 dark:border-emerald-900/80 shadow-lg space-y-5 flex flex-col justify-between"
                          x-data="{
                             dayActive: {{ $settings['day_promo_active'] ? 'true' : 'false' }},
                             dayType: '{{ $settings['day_promo_type'] }}'
@@ -211,7 +215,7 @@
                         
                         <div class="space-y-5">
                             <!-- Header Card 2 -->
-                            <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4">
+                            <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-lg font-bold">
                                         📅
@@ -222,27 +226,31 @@
                                     </div>
                                 </div>
 
-                                <!-- Toggle Switch -->
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" name="promo_day_active" value="1" class="sr-only peer" x-model="dayActive" {{ $settings['day_promo_active'] ? 'checked' : '' }}>
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-600"></div>
-                                </label>
+                                <!-- Toggle Switch & Button -->
+                                <div class="flex items-center gap-2">
+                                    <button type="button" @click="dayActive = !dayActive"
+                                            class="px-3 py-1.5 rounded-xl font-black text-xs transition shadow-sm cursor-pointer"
+                                            :class="dayActive ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'">
+                                        <span x-text="dayActive ? '✓ AKTIF' : '✕ NONAKTIF'"></span>
+                                    </button>
+                                    <input type="checkbox" name="promo_day_active" value="1" x-model="dayActive" class="w-5 h-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500 cursor-pointer">
+                                </div>
                             </div>
 
-                            <div class="space-y-4" :class="dayActive ? 'opacity-100' : 'opacity-50 pointer-events-none'">
+                            <div class="space-y-4">
                                 <!-- Judul Promo -->
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-1">
                                         Label / Nama Promo Hari
                                     </label>
                                     <input type="text" name="promo_day_title" value="{{ old('promo_day_title', $settings['promo_day_title']) }}" 
                                            placeholder="Contoh: Promo Jumat Berkah / Weekend Seru"
-                                           class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl text-sm font-semibold focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
+                                           class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-semibold focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
                                 </div>
 
                                 <!-- Pilihan Hari Aktif -->
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-2">
                                         Pilih Hari Promo Aktif (Otomatis Berulang)
                                     </label>
                                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -251,7 +259,7 @@
                                                 $isSelected = in_array((int)$dayNum, $settings['day_promo_days'], true);
                                                 $isToday = ((int)\Carbon\Carbon::now('Asia/Jakarta')->dayOfWeek === (int)$dayNum);
                                             @endphp
-                                            <label class="flex items-center gap-2 p-2.5 rounded-xl border cursor-pointer text-xs font-bold transition hover:border-emerald-500 bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                                            <label class="flex items-center gap-2 p-2.5 rounded-xl border cursor-pointer text-xs font-bold transition hover:border-emerald-500 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700">
                                                 <input type="checkbox" name="promo_day_days[]" value="{{ $dayNum }}" {{ $isSelected ? 'checked' : '' }} class="rounded text-emerald-600 focus:ring-emerald-500">
                                                 <span>{{ $dayName }}</span>
                                                 @if($isToday)
@@ -264,17 +272,17 @@
 
                                 <!-- Tipe Potongan (Persentase vs Tetap) -->
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-2">
                                         Bentuk Potongan
                                     </label>
                                     <div class="grid grid-cols-2 gap-3">
                                         <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer transition text-xs font-bold"
-                                               :class="dayType === 'percent' ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-500 text-emerald-700 dark:text-emerald-300 shadow-sm' : 'bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-400'">
+                                               :class="dayType === 'percent' ? 'bg-emerald-50 dark:bg-emerald-950/80 border-emerald-500 text-emerald-700 dark:text-emerald-300 shadow-sm' : 'bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-400'">
                                             <input type="radio" name="promo_day_type" value="percent" x-model="dayType" class="text-emerald-600">
                                             <span>Persentase (%)</span>
                                         </label>
                                         <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer transition text-xs font-bold"
-                                               :class="dayType === 'fixed' ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-500 text-emerald-700 dark:text-emerald-300 shadow-sm' : 'bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-400'">
+                                               :class="dayType === 'fixed' ? 'bg-emerald-50 dark:bg-emerald-950/80 border-emerald-500 text-emerald-700 dark:text-emerald-300 shadow-sm' : 'bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-400'">
                                             <input type="radio" name="promo_day_type" value="fixed" x-model="dayType" class="text-emerald-600">
                                             <span>Nominal Tetap (Rp)</span>
                                         </label>
@@ -284,40 +292,40 @@
                                 <!-- Nilai Potongan -->
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
-                                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-1">
                                             <span x-text="dayType === 'percent' ? 'Besar Diskon (%)' : 'Besar Potongan (Rp)'"></span>
                                         </label>
                                         <div class="relative">
                                             <input type="number" step="any" min="0" name="promo_day_value" value="{{ old('promo_day_value', $settings['day_promo_value']) }}" 
-                                                   class="w-full pl-3.5 pr-10 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl text-sm font-bold focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-mono">
+                                                   class="w-full pl-3.5 pr-10 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-bold focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-mono">
                                             <span class="absolute right-3.5 top-2.5 text-xs font-black text-gray-400" x-text="dayType === 'percent' ? '%' : 'Rp'"></span>
                                         </div>
                                     </div>
 
                                     <div x-show="dayType === 'percent'">
-                                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-1">
                                             Maksimal Potongan (Rp)
                                         </label>
                                         <input type="number" min="0" name="promo_day_max_discount" value="{{ old('promo_day_max_discount', $settings['day_promo_max_discount']) }}" 
                                                placeholder="0 = Tanpa batas"
-                                               class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl text-sm font-bold focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-mono">
+                                               class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-bold focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-mono">
                                         <span class="text-[10px] text-gray-400 block mt-0.5">Isi 0 jika tidak dibatasi</span>
                                     </div>
                                 </div>
 
                                 <!-- Minimal Belanja -->
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-1">
                                         Minimal Transaksi (Rp)
                                     </label>
                                     <input type="number" min="0" name="promo_day_min_spend" value="{{ old('promo_day_min_spend', $settings['day_promo_min_spend']) }}" 
                                            placeholder="0 = Tanpa minimal"
-                                           class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl text-sm font-bold focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-mono">
+                                           class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-bold focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-mono">
                                 </div>
                             </div>
                         </div>
 
-                        <div class="pt-4 border-t border-gray-100 dark:border-gray-700/60 text-xs font-medium text-gray-500 dark:text-gray-400">
+                        <div class="pt-4 border-t border-gray-200 dark:border-gray-700/60 text-xs font-medium text-gray-500 dark:text-gray-400">
                             💡 <em>Promo otomatis aktif pada pukul 00:00 WIB dan berakhir pada 23:59 WIB pada hari yang Anda pilih.</em>
                         </div>
                     </div>
