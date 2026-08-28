@@ -214,6 +214,9 @@ Route::middleware(['auth', 'verified', 'role:superadmin'])->prefix('admin')->nam
     Route::post('/deposits/{id}/cancel', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'cancelDeposit'])->name('deposits.cancel')->where('id', '.*');
     Route::delete('/deposits/{id}', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'destroyDeposit'])->name('deposits.destroy')->where('id', '.*');
 
+    // Customer Reviews & Feedback Management
+    Route::resource('reviews', \App\Http\Controllers\Admin\ReviewController::class)->only(['index', 'destroy']);
+
     // Discount & Promo Settings
     Route::get('/promos', [\App\Http\Controllers\Admin\PromoSettingController::class, 'index'])->name('promos.index');
     Route::post('/promos', [\App\Http\Controllers\Admin\PromoSettingController::class, 'update'])->name('promos.update');
