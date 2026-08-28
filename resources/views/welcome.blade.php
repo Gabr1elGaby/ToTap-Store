@@ -483,39 +483,6 @@
         </section>
         @endif
 
-                    </div>
-
-                    <!-- Navigation Controls if multiple slides -->
-                    @if($promoCount > 1)
-                    <!-- Prev Button -->
-                    <button type="button" @click="prev()" aria-label="Promo Sebelumnya"
-                            class="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md flex items-center justify-center transition border border-white/30 shadow-2xl z-20 cursor-pointer hover:scale-110">
-                        <i class="fas fa-chevron-left text-base"></i>
-                    </button>
-                    
-                    <!-- Next Button -->
-                    <button type="button" @click="next()" aria-label="Promo Berikutnya"
-                            class="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md flex items-center justify-center transition border border-white/30 shadow-2xl z-20 cursor-pointer hover:scale-110">
-                        <i class="fas fa-chevron-right text-base"></i>
-                    </button>
-
-                    <!-- Indicator Dots -->
-                    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-20 bg-black/50 px-4 py-2 rounded-full backdrop-blur-md border border-white/20">
-                        @for($i = 0; $i < $promoCount; $i++)
-                        <button type="button" @click="currentSlide = {{ $i }}"
-                                :class="currentSlide === {{ $i }} ? 'w-8 bg-pink-500 ring-2 ring-pink-300' : 'w-2.5 bg-white/50 hover:bg-white/90'"
-                                class="h-2.5 rounded-full transition-all cursor-pointer"
-                                aria-label="Ke Slide {{ $i + 1 }}"></button>
-                        @endfor
-                    </div>
-                    @endif
-
-                </div>
-
-            </div>
-        </section>
-        @endif
-
         <!-- Kenapa ToTap Store Section -->
         <section id="keunggulan" class="py-20 bg-slate-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
