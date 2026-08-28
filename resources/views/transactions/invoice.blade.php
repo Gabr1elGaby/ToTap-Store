@@ -220,26 +220,40 @@
                     💡 <em>Gunakan detail akun di atas untuk login ke aplikasi. Jika tertera link panduan (URL), klik link tersebut untuk panduan aktivasi profil.</em>
                 </p>
             </div>
-
-                <p class="text-xs font-medium text-slate-800 dark:text-slate-200 pt-2.5 border-t border-amber-500/30">
-                    💡 <em>Gunakan detail akun di atas untuk login ke aplikasi. Jika tertera link panduan (URL), klik link tersebut untuk panduan aktivasi profil.</em>
-                </p>
-            </div>
             @endif
 
             <!-- Price Breakdown -->
             <div class="flex justify-end">
                 <div class="w-full sm:w-1/2 space-y-2.5 text-sm">
+                    @php
+                        $hasDiscount = !empty($data->discount_amount) && $data->discount_amount > 0;
+                        $originalPrice = $data->original_amount ?? ($data->amount + ($data->discount_amount ?? 0));
+                    @endphp
+
+                    @if($hasDiscount)
+                    <div class="flex justify-between text-slate-500 dark:text-slate-400">
+                        <span>Harga Asli (Subtotal):</span>
+                        <span class="font-bold text-slate-800 dark:text-slate-200">Rp{{ number_format($originalPrice, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="flex justify-between text-emerald-600 dark:text-emerald-400">
+                        <span class="font-bold flex items-center gap-1">
+                            🎁 {{ $data->promo_title ?: 'Potongan Diskon Promo' }}:
+                        </span>
+                        <span class="font-black font-mono">- Rp{{ number_format($data->discount_amount, 0, ',', '.') }}</span>
+                    </div>
+                    @else
                     <div class="flex justify-between text-slate-500 dark:text-slate-400">
                         <span>Subtotal:</span>
                         <span class="font-bold text-slate-800 dark:text-slate-200">Rp{{ number_format($data->amount, 0, ',', '.') }}</span>
                     </div>
+                    @endif
+
                     <div class="flex justify-between text-slate-500 dark:text-slate-400">
-                        <span>Biaya Layanan:</span>
+                        <span>Biaya Layanan / Gateway:</span>
                         <span class="font-bold text-emerald-600 dark:text-emerald-400">Gratis (Rp0)</span>
                     </div>
                     <div class="border-t border-slate-200 dark:border-slate-800 pt-3 flex justify-between items-center">
-                        <span class="text-base font-bold text-slate-900 dark:text-white">Total Tagihan:</span>
+                        <span class="text-base font-bold text-slate-900 dark:text-white">Total Pembayaran:</span>
                         <span class="text-xl font-black text-indigo-600 dark:text-indigo-400">Rp{{ number_format($data->amount, 0, ',', '.') }}</span>
                     </div>
                 </div>

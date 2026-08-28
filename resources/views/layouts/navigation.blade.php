@@ -43,6 +43,9 @@
                     <x-nav-link :href="route('admin.transactions.index')" :active="request()->routeIs('admin.transactions.*')">
                         {{ __('Transaksi') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('admin.promos.index')" :active="request()->routeIs('admin.promos.*')">
+                        <span class="mr-1 text-pink-500">🎁</span> {{ __('Diskon & Promo') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">
                         <span class="mr-1 text-amber-400">⭐</span> {{ __('Ulasan') }}
                     </x-nav-link>
@@ -230,6 +233,9 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.transactions.index')" :active="request()->routeIs('admin.transactions.*')">
                     <i class="fas fa-receipt mr-2 text-yellow-500"></i> {{ __('Kelola Transaksi') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.promos.index')" :active="request()->routeIs('admin.promos.*')">
+                    <i class="fas fa-gift mr-2 text-pink-500"></i> {{ __('Diskon & Promo') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">
                     <i class="fas fa-star mr-2 text-amber-500"></i> {{ __('Ulasan') }}

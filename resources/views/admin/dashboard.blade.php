@@ -205,6 +205,48 @@
                 </div>
             </div>
 
+            @php
+                $promoSettings = \App\Helpers\PromoHelper::getSettings();
+                $promoToday = \App\Helpers\PromoHelper::isDayPromoActiveToday();
+            @endphp
+            <!-- PROMO & DISKON OTOMATIS STATUS BAR -->
+            <div class="bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-indigo-500/10 dark:from-pink-950/30 dark:via-purple-950/30 dark:to-indigo-950/30 border border-pink-500/20 dark:border-pink-800/30 rounded-3xl p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-pink-500 text-white flex items-center justify-center text-xl font-bold shadow-lg shadow-pink-500/30 shrink-0">
+                        🎁
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-base font-black text-gray-900 dark:text-white">Diskon Pengguna Baru & Promo Hari</h3>
+                            @if($promoSettings['first_user_active'] || $promoSettings['day_promo_active'])
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                                    Aktif
+                                </span>
+                            @else
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                                    Nonaktif
+                                </span>
+                            @endif
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+                            @if($promoSettings['first_user_active'])
+                                • Diskon Pengguna Baru: <strong>{{ $promoSettings['first_user_type'] === 'percent' ? $promoSettings['first_user_value'].'%' : 'Rp'.number_format($promoSettings['first_user_value'],0,',','.') }}</strong>
+                            @endif
+                            @if($promoSettings['day_promo_active'])
+                                • Promo Hari: <strong>{{ $promoSettings['day_promo_type'] === 'percent' ? $promoSettings['day_promo_value'].'%' : 'Rp'.number_format($promoSettings['day_promo_value'],0,',','.') }}</strong> ({{ $promoToday['active'] ? 'Hari Ini Aktif: '.$promoToday['day_name'] : 'Hari Ini: Nonaktif' }})
+                            @endif
+                            @if(!$promoSettings['first_user_active'] && !$promoSettings['day_promo_active'])
+                                Atur diskon pengguna baru dan potongan harga otomatis setiap hari tertentu.
+                            @endif
+                        </p>
+                    </div>
+                </div>
+
+                <a href="{{ route('admin.promos.index') }}" class="px-5 py-2.5 rounded-xl font-black text-xs text-white bg-gradient-to-r from-pink-600 to-indigo-600 hover:opacity-90 shadow-md shadow-pink-500/20 transition flex items-center justify-center gap-1.5 whitespace-nowrap">
+                    <i class="fas fa-sliders-h"></i> Atur Diskon & Promo →
+                </a>
+            </div>
+
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-2xl p-5 border border-gray-100 dark:border-gray-700">
                     <h3 class="text-gray-500 dark:text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">Total Customer</h3>

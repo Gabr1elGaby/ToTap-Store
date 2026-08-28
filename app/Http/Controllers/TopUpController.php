@@ -227,16 +227,19 @@ class TopUpController extends Controller
         }
 
         $stockMap = [];
-        foreach ($uniqueProducts as $p) {
-            $modal = (float) $p->price_modal;
-            $stockMap[(string)$p->id] = ($vipBalance <= 0 || $modal > $vipBalance);
-        }
+        $user = auth()->user();
+        $promoSettings = \App\Helpers\PromoHelper::getSettings();
+        $dayCheck = \App\Helpers\PromoHelper::isDayPromoActiveToday();
+        $isFirstTime = \App\Helpers\PromoHelper::isFirstTimeUser($user);
 
         $response = response()->view('topup.show', [
             'game' => $game,
             'categories' => $finalCategories,
             'vipBalance' => $vipBalance,
             'stockMap' => $stockMap,
+            'promoSettings' => $promoSettings,
+            'dayCheck' => $dayCheck,
+            'isFirstTime' => $isFirstTime,
         ]);
 
         $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0');
@@ -385,19 +388,27 @@ class TopUpController extends Controller
             : \App\Helpers\InvoiceHelper::generateTopUpInvoice();
             
         $paymentMethod = $request->payment_method === 'balance' ? 'balance' : 'qris';
+        $user = auth()->user();
+        $originalPrice = (float) $product->price_sell;
+
+        // HITUNG DISKON PROMO (PENGGUNA BARU / HARI SPESIAL OTOMATIS)
+        \App\Helpers\PromoHelper::ensureSchema();
+        $discountInfo = \App\Helpers\PromoHelper::calculateDiscount($user, $originalPrice);
+        $finalAmount = (float) $discountInfo['final_amount'];
+        $discountAmount = (float) $discountInfo['discount_amount'];
+        $promoTitle = $discountInfo['promo_title'];
         
         // JIKA MEMILIH PEMBAYARAN MENGGUNAKAN SALDO AKUN
         if ($paymentMethod === 'balance') {
             if (!auth()->check()) {
                 return back()->with('error', 'Silakan login terlebih dahulu untuk menggunakan pembayaran Saldo Akun.');
             }
-            $user = auth()->user();
-            if ((float)$user->balance < (float)$product->price_sell) {
-                return back()->with('error', 'Saldo Akun Anda (Rp' . number_format($user->balance, 0, ',', '.') . ') tidak mencukupi untuk pembayaran ini.');
+            if ((float)$user->balance < $finalAmount) {
+                return back()->with('error', 'Saldo Akun Anda (Rp' . number_format($user->balance, 0, ',', '.') . ') tidak mencukupi untuk pembayaran ini (Total Tagihan: Rp' . number_format($finalAmount, 0, ',', '.') . ').');
             }
 
-            // 1. Potong Saldo User
-            $user->decrement('balance', $product->price_sell);
+            // 1. Potong Saldo User sebesar tagihan setelah diskon
+            $user->decrement('balance', $finalAmount);
 
             // 2. Simpan Transaksi Berstatus Processing
             $transaction = \App\Models\Transaction::create([
@@ -407,10 +418,13 @@ class TopUpController extends Controller
                 'game_product_id' => $product->id,
                 'target_field_1' => $playerId,
                 'target_field_2' => $isZoneRequired ? $zoneId : null,
-                'amount' => $product->price_sell,
+                'amount' => $finalAmount,
+                'discount_amount' => $discountAmount,
+                'original_amount' => $originalPrice,
+                'promo_title' => $promoTitle,
                 'payment_method' => 'balance',
                 'status' => 'processing',
-                'snap_token' => json_encode(['type' => 'balance', 'gateway' => 'wallet', 'amount' => (int) $product->price_sell]),
+                'snap_token' => json_encode(['type' => 'balance', 'gateway' => 'wallet', 'amount' => (int) $finalAmount]),
             ]);
 
             // 3. Coba kirim otomatis ke Provider (VIP Reseller)
@@ -450,11 +464,11 @@ class TopUpController extends Controller
                 } else {
                     // JIKA PROVIDER GAGAL/MENOLAK: OTOMATIS REFUND DANA KE SALDO AKUN USER!
                     $errMsg = $orderRes['message'] ?? 'Provider gagal memproses pesanan.';
-                    $user->increment('balance', $product->price_sell);
+                    $user->increment('balance', $finalAmount);
                     $transaction->update([
                         'status' => 'refunded',
                     ]);
-                    return redirect()->route('topup.checkout.show', $transaction->id)->with('warning', 'Pesanan gagal diproses: ' . $errMsg . '. Dana sebesar Rp' . number_format($product->price_sell, 0, ',', '.') . ' telah OTOMATIS dikembalikan ke Saldo Akun Anda.');
+                    return redirect()->route('topup.checkout.show', $transaction->id)->with('warning', 'Pesanan gagal diproses: ' . $errMsg . '. Dana sebesar Rp' . number_format($finalAmount, 0, ',', '.') . ' telah OTOMATIS dikembalikan ke Saldo Akun Anda.');
                 }
             } catch (\Exception $e) {
                 return redirect()->route('topup.checkout.show', $transaction->id)->with('info', 'Pembayaran via Saldo Akun berhasil diterima! Pesanan Anda sedang diproses.');
@@ -469,7 +483,10 @@ class TopUpController extends Controller
             'game_product_id' => $product->id,
             'target_field_1' => $playerId,
             'target_field_2' => $isZoneRequired ? $zoneId : null,
-            'amount' => $product->price_sell,
+            'amount' => $finalAmount,
+            'discount_amount' => $discountAmount,
+            'original_amount' => $originalPrice,
+            'promo_title' => $promoTitle,
             'payment_method' => 'qris',
             'status' => 'pending',
         ]);
@@ -479,7 +496,7 @@ class TopUpController extends Controller
             'type'      => 'manual_qris',
             'gateway'   => 'manual',
             'method'    => 'qris',
-            'amount'    => (int) $product->price_sell,
+            'amount'    => (int) $finalAmount,
         ]);
 
         $transaction->update([
@@ -498,6 +515,10 @@ class TopUpController extends Controller
             $target1 = trim($request->player_id);
             $target2 = trim($request->zone_id ?? '');
             $gameSlug = strtolower($game->slug);
+
+            $product = GameProduct::find($request->product_id);
+            $originalPrice = $product ? (float)$product->price_sell : 0;
+            $discountInfo = \App\Helpers\PromoHelper::calculateDiscount(auth()->user(), $originalPrice);
 
             // 1. VALIDASI KHUSUS VALORANT: HANYA Valorant yang boleh dan wajib memakai tanda '#' (Riot ID: Username#TAG)
             if ($gameSlug === 'valorant') {
@@ -521,6 +542,7 @@ class TopUpController extends Controller
                     'result' => true,
                     'is_checked' => true,
                     'nickname' => $uName . '#' . $tag,
+                    'discount_info' => $discountInfo,
                 ]);
             }
 
@@ -567,6 +589,7 @@ class TopUpController extends Controller
                             'result' => true,
                             'is_checked' => true,
                             'nickname' => $rNick,
+                            'discount_info' => $discountInfo,
                         ]);
                     } else {
                         return response()->json([
@@ -596,6 +619,7 @@ class TopUpController extends Controller
                     'result' => true,
                     'is_checked' => false,
                     'nickname' => $target1 . ($target2 ? ' (' . $target2 . ')' : ''),
+                    'discount_info' => $discountInfo,
                 ]);
             }
 
@@ -606,6 +630,7 @@ class TopUpController extends Controller
                     'result' => true,
                     'is_checked' => true,
                     'nickname' => $res['data'],
+                    'discount_info' => $discountInfo,
                 ]);
             }
 
@@ -627,6 +652,7 @@ class TopUpController extends Controller
                     'result' => true,
                     'is_checked' => false,
                     'nickname' => $target1 . ($target2 ? ' (' . $target2 . ')' : ''),
+                    'discount_info' => $discountInfo,
                 ]);
             }
 

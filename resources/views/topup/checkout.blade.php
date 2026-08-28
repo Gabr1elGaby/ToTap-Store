@@ -64,12 +64,29 @@
                 </div>
                 
                 <!-- Total Amount Banner -->
-                <div class="flex justify-between items-center bg-indigo-50 dark:bg-gray-900 p-5 rounded-2xl border border-indigo-200 dark:border-gray-700 mb-8">
-                    <div>
-                        <span class="text-xs font-black text-indigo-600 dark:text-indigo-300 uppercase tracking-wider block">Metode: {{ $isBalance ? 'Saldo Akun' : 'QRIS All Payment' }}</span>
-                        <span class="text-xs text-gray-600 dark:text-gray-300 font-medium">Bebas biaya admin gateway (Rp0)</span>
+                <div class="bg-indigo-50 dark:bg-gray-900 p-5 rounded-2xl border border-indigo-200 dark:border-gray-700 mb-8 space-y-2.5">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-xs font-black text-indigo-600 dark:text-indigo-300 uppercase tracking-wider block">Metode: {{ $isBalance ? 'Saldo Akun' : 'QRIS All Payment' }}</span>
+                            <span class="text-xs text-gray-600 dark:text-gray-300 font-medium">Bebas biaya admin gateway (Rp0)</span>
+                        </div>
+                        <div class="text-right">
+                            @if(!empty($transaction->discount_amount) && $transaction->discount_amount > 0)
+                                <div class="text-xs font-bold text-gray-400 line-through">Rp{{ number_format($transaction->original_amount ?? ($transaction->amount + $transaction->discount_amount), 0, ',', '.') }}</div>
+                            @endif
+                            <span class="text-3xl font-black text-indigo-600 dark:text-emerald-400 font-mono">Rp{{ number_format($transaction->amount, 0, ',', '.') }}</span>
+                        </div>
                     </div>
-                    <span class="text-3xl font-black text-indigo-600 dark:text-emerald-400 font-mono">Rp{{ number_format($transaction->amount, 0, ',', '.') }}</span>
+                    @if(!empty($transaction->discount_amount) && $transaction->discount_amount > 0)
+                        <div class="pt-2 border-t border-indigo-100 dark:border-gray-800 flex justify-between items-center text-xs">
+                            <span class="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                                🎁 {{ $transaction->promo_title ?: 'Potongan Diskon Promo' }}
+                            </span>
+                            <span class="font-black text-emerald-600 dark:text-emerald-400 font-mono">
+                                - Rp{{ number_format($transaction->discount_amount, 0, ',', '.') }}
+                            </span>
+                        </div>
+                    @endif
                 </div>
                 
                 @php
