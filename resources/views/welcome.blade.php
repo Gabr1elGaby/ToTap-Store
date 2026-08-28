@@ -129,147 +129,245 @@
             $dayPromoCheck = \App\Helpers\PromoHelper::isDayPromoActiveToday();
             $showFirstUserPromo = !empty($promoSettings['first_user_active']);
             $showDayPromo = !empty($promoSettings['day_promo_active']) && !empty($dayPromoCheck['active']);
+            $promoCount = ($showFirstUserPromo ? 1 : 0) + ($showDayPromo ? 1 : 0);
         @endphp
 
-        @if($showFirstUserPromo || $showDayPromo)
-        <!-- Promo & Event Spesial Section -->
-        <section id="promo-spesial" class="py-12 bg-slate-50 dark:bg-gray-900/90 border-b border-gray-200 dark:border-gray-800 transition-colors duration-200">
+        @if($promoCount > 0)
+        <!-- Promo Banner Section (Full Width Slider) -->
+        <section id="promo-spesial" class="py-10 bg-slate-200/70 dark:bg-gray-950 border-b border-gray-300 dark:border-gray-800 transition-colors duration-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="mb-8 text-center" data-aos="fade-up">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300 font-extrabold text-xs uppercase tracking-widest rounded-full border border-pink-200 dark:border-pink-800/60 mb-2 shadow-sm">
-                        <i class="fas fa-bullhorn text-pink-500"></i> Event Promo Aktif Hari Ini
-                    </span>
-                    <h3 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Klaim Promo & Diskon Spesial</h3>
-                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400 max-w-xl mx-auto">Gunakan kesempatan promo untuk top up game dan langganan aplikasi dengan harga paling hemat!</p>
-                </div>
+                
+                <div x-data="{
+                    currentSlide: 0,
+                    totalSlides: {{ $promoCount }},
+                    timer: null,
+                    init() {
+                        if (this.totalSlides > 1) {
+                            this.startAutoPlay();
+                        }
+                    },
+                    startAutoPlay() {
+                        this.timer = setInterval(() => {
+                            this.next();
+                        }, 6000);
+                    },
+                    stopAutoPlay() {
+                        if (this.timer) clearInterval(this.timer);
+                    },
+                    next() {
+                        this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+                    },
+                    prev() {
+                        this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+                    }
+                }" 
+                @mouseenter="stopAutoPlay()" 
+                @mouseleave="if(totalSlides > 1) startAutoPlay()"
+                class="relative w-full overflow-hidden rounded-3xl shadow-2xl">
 
-                <div class="grid grid-cols-1 {{ ($showFirstUserPromo && $showDayPromo) ? 'lg:grid-cols-2' : 'max-w-3xl mx-auto' }} gap-6">
+                    <!-- Slides Wrapper -->
+                    <div class="relative w-full">
+                        @php $slideIndex = 0; @endphp
 
-                    <!-- BANNER 1: Diskon Khusus Pengguna Pertama -->
-                    @if($showFirstUserPromo)
-                    <div class="relative overflow-hidden rounded-3xl p-6 sm:p-8 bg-gradient-to-br from-indigo-900 via-indigo-950 to-slate-900 text-white border-2 border-indigo-500/40 shadow-xl shadow-indigo-900/20 flex flex-col justify-between" data-aos="fade-up" data-aos-delay="100">
-                        <!-- Decorative background glow -->
-                        <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
-                        <div class="absolute -left-10 -top-10 w-48 h-48 bg-pink-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                        <!-- SLIDE 1: PENGGUNA BARU -->
+                        @if($showFirstUserPromo)
+                        @php $firstIdx = $slideIndex++; @endphp
+                        <div x-show="currentSlide === {{ $firstIdx }}" 
+                             x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 translate-x-12"
+                             x-transition:enter-end="opacity-100 translate-x-0"
+                             x-transition:leave="transition ease-in duration-200 absolute inset-0"
+                             x-transition:leave-start="opacity-100 translate-x-0"
+                             x-transition:leave-end="opacity-0 -translate-x-12"
+                             style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4c1d95 80%, #0f172a 100%);"
+                             class="w-full text-white p-6 sm:p-10 rounded-3xl border-2 border-indigo-500 shadow-2xl relative overflow-hidden">
+                            
+                            <!-- Decorative Background Glow -->
+                            <div class="absolute -right-16 -top-16 w-80 h-80 bg-pink-500/25 rounded-full blur-3xl pointer-events-none"></div>
+                            <div class="absolute right-1/3 -bottom-16 w-80 h-80 bg-indigo-500/30 rounded-full blur-3xl pointer-events-none"></div>
 
-                        <div class="relative z-10 space-y-4">
-                            <div class="flex items-center justify-between gap-3">
-                                <span class="px-3 py-1 bg-pink-500 text-white font-black text-[10px] sm:text-xs rounded-full uppercase tracking-wider shadow-md">
-                                    🎁 Pengguna Baru
-                                </span>
-                                <span class="text-xs font-black text-indigo-300 flex items-center gap-1">
-                                    <i class="fas fa-check-circle text-emerald-400"></i> Otomatis di Checkout
-                                </span>
-                            </div>
+                            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                                
+                                <!-- Left Info Section -->
+                                <div class="lg:col-span-7 space-y-4">
+                                    <div class="flex flex-wrap items-center gap-2.5">
+                                        <span class="px-4 py-1.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white font-black text-xs sm:text-sm rounded-full uppercase tracking-wider shadow-lg flex items-center gap-2">
+                                            <span>🎁</span> PROMO PENGGUNA BARU
+                                        </span>
+                                        <span class="px-3.5 py-1 bg-black/40 text-emerald-300 border border-emerald-500/40 text-xs font-bold rounded-full flex items-center gap-1.5 backdrop-blur-sm">
+                                            <i class="fas fa-check-circle text-emerald-400"></i> Otomatis Potong di Checkout
+                                        </span>
+                                    </div>
 
-                            <div>
-                                <h4 class="text-xl sm:text-2xl font-black text-white leading-snug">
-                                    {{ $promoSettings['first_user_title'] ?: 'Diskon Spesial Pengguna Baru' }}
-                                </h4>
-                                <div class="mt-2 flex items-baseline gap-2">
-                                    <span class="text-3xl sm:text-4xl font-black text-amber-300 font-mono">
-                                        {{ $promoSettings['first_user_type'] === 'percent' ? $promoSettings['first_user_value'].'%' : 'Rp'.number_format($promoSettings['first_user_value'],0,',','.') }}
-                                    </span>
-                                    <span class="text-xs font-bold text-slate-300">Potongan Harga</span>
-                                </div>
-                            </div>
+                                    <div>
+                                        <h3 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+                                            {{ $promoSettings['first_user_title'] ?: 'Diskon Spesial Pengguna Baru' }}
+                                        </h3>
+                                        <p class="mt-3 text-sm sm:text-base text-indigo-100 leading-relaxed font-medium">
+                                            Daftar akun gratis dan nikmati potongan sebesar <strong class="text-amber-300 font-black text-xl sm:text-2xl font-mono">{{ $promoSettings['first_user_type'] === 'percent' ? $promoSettings['first_user_value'].'%' : 'Rp'.number_format($promoSettings['first_user_value'],0,',','.') }}</strong> untuk transaksi pertama Anda di ToTap Store!
+                                        </p>
+                                    </div>
 
-                            <!-- Syarat & Ketentuan -->
-                            <div class="p-4 rounded-2xl bg-slate-900/80 border border-indigo-500/30 text-xs space-y-2 text-slate-200">
-                                <div class="font-bold text-indigo-300 flex items-center gap-1.5 border-b border-indigo-500/20 pb-1.5">
-                                    <i class="fas fa-info-circle text-indigo-400"></i> Syarat & Ketentuan:
+                                    <div class="pt-2">
+                                        <a href="#kategori" class="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-pink-500 via-rose-500 to-indigo-600 hover:from-pink-600 hover:to-indigo-700 text-white font-black text-sm rounded-2xl shadow-xl shadow-pink-600/50 hover:scale-105 active:scale-95 transition-all cursor-pointer">
+                                            <span>Klaim Diskon & Mulai Belanja</span>
+                                            <i class="fas fa-arrow-right"></i>
+                                        </a>
+                                    </div>
                                 </div>
-                                <div class="flex justify-between">
-                                    <span class="text-slate-400">• Minimal Pembelian:</span>
-                                    <span class="font-black text-white">
-                                        {{ $promoSettings['first_user_min_spend'] > 0 ? 'Rp'.number_format($promoSettings['first_user_min_spend'],0,',','.') : 'Tanpa Minimal Belanja' }}
-                                    </span>
+
+                                <!-- Right Syarat & Ketentuan Card -->
+                                <div class="lg:col-span-5">
+                                    <div class="bg-black/60 backdrop-blur-md rounded-2xl p-6 border border-white/20 text-xs sm:text-sm text-white space-y-3.5 shadow-2xl">
+                                        <div class="flex items-center gap-2 text-pink-300 font-black text-sm sm:text-base border-b border-white/15 pb-2.5">
+                                            <i class="fas fa-clipboard-list text-pink-400 text-base"></i>
+                                            <span>Syarat & Ketentuan Promo</span>
+                                        </div>
+                                        <div class="space-y-3 font-medium">
+                                            <div class="flex justify-between items-center py-1 border-b border-white/10">
+                                                <span class="text-slate-300">Besar Potongan:</span>
+                                                <span class="font-black text-amber-300 text-base font-mono">
+                                                    {{ $promoSettings['first_user_type'] === 'percent' ? $promoSettings['first_user_value'].'%' : 'Rp'.number_format($promoSettings['first_user_value'],0,',','.') }}
+                                                </span>
+                                            </div>
+                                            <div class="flex justify-between items-center py-1 border-b border-white/10">
+                                                <span class="text-slate-300">Minimal Pembelian:</span>
+                                                <span class="font-black text-white font-mono">
+                                                    {{ $promoSettings['first_user_min_spend'] > 0 ? 'Rp'.number_format($promoSettings['first_user_min_spend'],0,',','.') : 'Tanpa Minimal Belanja' }}
+                                                </span>
+                                            </div>
+                                            @if($promoSettings['first_user_type'] === 'percent' && $promoSettings['first_user_max_discount'] > 0)
+                                            <div class="flex justify-between items-center py-1 border-b border-white/10">
+                                                <span class="text-slate-300">Maksimal Potongan:</span>
+                                                <span class="font-black text-emerald-400 font-mono">s.d. Rp{{ number_format($promoSettings['first_user_max_discount'],0,',','.') }}</span>
+                                            </div>
+                                            @endif
+                                            <div class="flex justify-between items-center py-1">
+                                                <span class="text-slate-300">Target Pengguna:</span>
+                                                <span class="font-bold text-pink-300">Khusus Transaksi Pertama Akun Baru</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                @if($promoSettings['first_user_type'] === 'percent' && $promoSettings['first_user_max_discount'] > 0)
-                                <div class="flex justify-between">
-                                    <span class="text-slate-400">• Maksimal Potongan:</span>
-                                    <span class="font-black text-emerald-400">s.d. Rp{{ number_format($promoSettings['first_user_max_discount'],0,',','.') }}</span>
-                                </div>
-                                @endif
-                                <div class="flex justify-between">
-                                    <span class="text-slate-400">• Berlaku Untuk:</span>
-                                    <span class="font-bold text-white">Transaksi Pertama Akun Baru</span>
-                                </div>
+
                             </div>
                         </div>
+                        @endif
 
-                        <div class="relative z-10 pt-5 mt-4 border-t border-indigo-500/20">
-                            <a href="#kategori" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-white font-black text-xs sm:text-sm text-center shadow-lg shadow-pink-600/30 transition flex items-center justify-center gap-2">
-                                <span>Beli Sekarang & Dapatkan Diskon</span>
-                                <i class="fas fa-arrow-right"></i>
-                            </a>
+                        <!-- SLIDE 2: PROMO HARI SPESIAL -->
+                        @if($showDayPromo)
+                        @php $dayIdx = $slideIndex++; @endphp
+                        <div x-show="currentSlide === {{ $dayIdx }}" 
+                             x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 translate-x-12"
+                             x-transition:enter-end="opacity-100 translate-x-0"
+                             x-transition:leave="transition ease-in duration-200 absolute inset-0"
+                             x-transition:leave-start="opacity-100 translate-x-0"
+                             x-transition:leave-end="opacity-0 -translate-x-12"
+                             style="background: linear-gradient(135deg, #064e3b 0%, #065f46 40%, #115e59 80%, #0f172a 100%);"
+                             class="w-full text-white p-6 sm:p-10 rounded-3xl border-2 border-emerald-500 shadow-2xl relative overflow-hidden">
+                            
+                            <!-- Decorative Background Glow -->
+                            <div class="absolute -right-16 -top-16 w-80 h-80 bg-emerald-500/25 rounded-full blur-3xl pointer-events-none"></div>
+                            <div class="absolute right-1/3 -bottom-16 w-80 h-80 bg-teal-500/30 rounded-full blur-3xl pointer-events-none"></div>
+
+                            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                                
+                                <!-- Left Info Section -->
+                                <div class="lg:col-span-7 space-y-4">
+                                    <div class="flex flex-wrap items-center gap-2.5">
+                                        <span class="px-4 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black text-xs sm:text-sm rounded-full uppercase tracking-wider shadow-lg flex items-center gap-2 animate-pulse">
+                                            <span>🔥</span> PROMO HARI {{ strtoupper($dayPromoCheck['day_name']) }}
+                                        </span>
+                                        <span class="px-3.5 py-1 bg-black/40 text-amber-300 border border-amber-500/40 text-xs font-bold rounded-full flex items-center gap-1.5 backdrop-blur-sm">
+                                            <i class="fas fa-clock text-amber-400"></i> Aktif Hari Ini (s.d. 23:59 WIB)
+                                        </span>
+                                    </div>
+
+                                    <div>
+                                        <h3 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+                                            {{ $promoSettings['promo_day_title'] ?: 'Promo Hari '.$dayPromoCheck['day_name'] }}
+                                        </h3>
+                                        <p class="mt-3 text-sm sm:text-base text-emerald-100 leading-relaxed font-medium">
+                                            Spesial hari {{ $dayPromoCheck['day_name'] }}, nikmati potongan otomatis sebesar <strong class="text-amber-300 font-black text-xl sm:text-2xl font-mono">{{ $promoSettings['day_promo_type'] === 'percent' ? $promoSettings['day_promo_value'].'%' : 'Rp'.number_format($promoSettings['day_promo_value'],0,',','.') }}</strong> untuk seluruh pesanan Anda!
+                                        </p>
+                                    </div>
+
+                                    <div class="pt-2">
+                                        <a href="#kategori" class="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-600 hover:from-emerald-600 hover:to-cyan-700 text-white font-black text-sm rounded-2xl shadow-xl shadow-emerald-600/50 hover:scale-105 active:scale-95 transition-all cursor-pointer">
+                                            <span>Pilih Produk & Klaim Promo</span>
+                                            <i class="fas fa-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <!-- Right Syarat & Ketentuan Card -->
+                                <div class="lg:col-span-5">
+                                    <div class="bg-black/60 backdrop-blur-md rounded-2xl p-6 border border-white/20 text-xs sm:text-sm text-white space-y-3.5 shadow-2xl">
+                                        <div class="flex items-center gap-2 text-emerald-300 font-black text-sm sm:text-base border-b border-white/15 pb-2.5">
+                                            <i class="fas fa-clipboard-list text-emerald-400 text-base"></i>
+                                            <span>Syarat & Ketentuan Promo</span>
+                                        </div>
+                                        <div class="space-y-3 font-medium">
+                                            <div class="flex justify-between items-center py-1 border-b border-white/10">
+                                                <span class="text-slate-300">Besar Potongan:</span>
+                                                <span class="font-black text-amber-300 text-base font-mono">
+                                                    {{ $promoSettings['day_promo_type'] === 'percent' ? $promoSettings['day_promo_value'].'%' : 'Rp'.number_format($promoSettings['day_promo_value'],0,',','.') }}
+                                                </span>
+                                            </div>
+                                            <div class="flex justify-between items-center py-1 border-b border-white/10">
+                                                <span class="text-slate-300">Minimal Pembelian:</span>
+                                                <span class="font-black text-white font-mono">
+                                                    {{ $promoSettings['day_promo_min_spend'] > 0 ? 'Rp'.number_format($promoSettings['day_promo_min_spend'],0,',','.') : 'Tanpa Minimal Belanja' }}
+                                                </span>
+                                            </div>
+                                            @if($promoSettings['day_promo_type'] === 'percent' && $promoSettings['day_promo_max_discount'] > 0)
+                                            <div class="flex justify-between items-center py-1 border-b border-white/10">
+                                                <span class="text-slate-300">Maksimal Potongan:</span>
+                                                <span class="font-black text-emerald-400 font-mono">s.d. Rp{{ number_format($promoSettings['day_promo_max_discount'],0,',','.') }}</span>
+                                            </div>
+                                            @endif
+                                            <div class="flex justify-between items-center py-1">
+                                                <span class="text-slate-300">Periode Promo:</span>
+                                                <span class="font-bold text-emerald-300">Setiap Hari {{ $dayPromoCheck['day_name'] }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
+                        @endif
+
+                    </div>
+
+                    <!-- Navigation Controls if multiple slides -->
+                    @if($promoCount > 1)
+                    <!-- Prev Button -->
+                    <button type="button" @click="prev()" aria-label="Promo Sebelumnya"
+                            class="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md flex items-center justify-center transition border border-white/30 shadow-2xl z-20 cursor-pointer hover:scale-110">
+                        <i class="fas fa-chevron-left text-base"></i>
+                    </button>
+                    
+                    <!-- Next Button -->
+                    <button type="button" @click="next()" aria-label="Promo Berikutnya"
+                            class="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md flex items-center justify-center transition border border-white/30 shadow-2xl z-20 cursor-pointer hover:scale-110">
+                        <i class="fas fa-chevron-right text-base"></i>
+                    </button>
+
+                    <!-- Indicator Dots -->
+                    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-20 bg-black/50 px-4 py-2 rounded-full backdrop-blur-md border border-white/20">
+                        @for($i = 0; $i < $promoCount; $i++)
+                        <button type="button" @click="currentSlide = {{ $i }}"
+                                :class="currentSlide === {{ $i }} ? 'w-8 bg-pink-500 ring-2 ring-pink-300' : 'w-2.5 bg-white/50 hover:bg-white/90'"
+                                class="h-2.5 rounded-full transition-all cursor-pointer"
+                                aria-label="Ke Slide {{ $i + 1 }}"></button>
+                        @endfor
                     </div>
                     @endif
 
-                    <!-- BANNER 2: Diskon Hari Tertentu Otomatis -->
-                    @if($showDayPromo)
-                    <div class="relative overflow-hidden rounded-3xl p-6 sm:p-8 bg-gradient-to-br from-emerald-950 via-teal-950 to-slate-900 text-white border-2 border-emerald-500/40 shadow-xl shadow-emerald-900/20 flex flex-col justify-between" data-aos="fade-up" data-aos-delay="200">
-                        <!-- Decorative background glow -->
-                        <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
-                        <div class="absolute -left-10 -top-10 w-48 h-48 bg-teal-500/15 rounded-full blur-3xl pointer-events-none"></div>
-
-                        <div class="relative z-10 space-y-4">
-                            <div class="flex items-center justify-between gap-3">
-                                <span class="px-3 py-1 bg-emerald-500 text-white font-black text-[10px] sm:text-xs rounded-full uppercase tracking-wider shadow-md">
-                                    🔥 Promo Spesial {{ $dayPromoCheck['day_name'] }}
-                                </span>
-                                <span class="text-xs font-black text-emerald-300 flex items-center gap-1 animate-pulse">
-                                    <i class="fas fa-clock text-amber-400"></i> Aktif Hari Ini (s.d. 23:59 WIB)
-                                </span>
-                            </div>
-
-                            <div>
-                                <h4 class="text-xl sm:text-2xl font-black text-white leading-snug">
-                                    {{ $promoSettings['promo_day_title'] ?: 'Promo Hari '.$dayPromoCheck['day_name'] }}
-                                </h4>
-                                <div class="mt-2 flex items-baseline gap-2">
-                                    <span class="text-3xl sm:text-4xl font-black text-amber-300 font-mono">
-                                        {{ $promoSettings['day_promo_type'] === 'percent' ? $promoSettings['day_promo_value'].'%' : 'Rp'.number_format($promoSettings['day_promo_value'],0,',','.') }}
-                                    </span>
-                                    <span class="text-xs font-bold text-slate-300">Potongan Otomatis</span>
-                                </div>
-                            </div>
-
-                            <!-- Syarat & Ketentuan -->
-                            <div class="p-4 rounded-2xl bg-slate-900/80 border border-emerald-500/30 text-xs space-y-2 text-slate-200">
-                                <div class="font-bold text-emerald-300 flex items-center gap-1.5 border-b border-emerald-500/20 pb-1.5">
-                                    <i class="fas fa-info-circle text-emerald-400"></i> Syarat & Ketentuan:
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-slate-400">• Minimal Pembelian:</span>
-                                    <span class="font-black text-white">
-                                        {{ $promoSettings['day_promo_min_spend'] > 0 ? 'Rp'.number_format($promoSettings['day_promo_min_spend'],0,',','.') : 'Tanpa Minimal Belanja' }}
-                                    </span>
-                                </div>
-                                @if($promoSettings['day_promo_type'] === 'percent' && $promoSettings['day_promo_max_discount'] > 0)
-                                <div class="flex justify-between">
-                                    <span class="text-slate-400">• Maksimal Potongan:</span>
-                                    <span class="font-black text-emerald-400">s.d. Rp{{ number_format($promoSettings['day_promo_max_discount'],0,',','.') }}</span>
-                                </div>
-                                @endif
-                                <div class="flex justify-between">
-                                    <span class="text-slate-400">• Periode Promo:</span>
-                                    <span class="font-bold text-amber-300">Setiap Hari {{ $dayPromoCheck['day_name'] }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="relative z-10 pt-5 mt-4 border-t border-emerald-500/20">
-                            <a href="#kategori" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs sm:text-sm text-center shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2">
-                                <span>Pilih Produk & Klaim Promo</span>
-                                <i class="fas fa-arrow-right"></i>
-                            </a>
-                        </div>
-                    </div>
-                    @endif
-
                 </div>
+
             </div>
         </section>
         @endif
