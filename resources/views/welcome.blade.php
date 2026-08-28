@@ -168,14 +168,158 @@
         <section id="promo-spesial" class="py-6 sm:py-8 bg-slate-100 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 transition-colors duration-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
-                <div class="relative w-full overflow-hidden rounded-2xl sm:rounded-3xl shadow-2xl group">
-                    <a href="#kategori" class="block relative w-full overflow-hidden rounded-2xl sm:rounded-3xl cursor-pointer">
-                        <img src="{{ asset('images/banner-promo-pengguna-baru.jpg') }}" 
-                             alt="Promo Spesial Pengguna Pertama - ToTap Store" 
-                             class="w-full h-auto object-cover rounded-2xl sm:rounded-3xl transition-transform duration-500 group-hover:scale-[1.01] shadow-2xl border border-indigo-500/30">
-                        <!-- Subtle Glow Overlay on Hover -->
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-2xl sm:rounded-3xl"></div>
-                    </a>
+                <div x-data="{
+                    currentSlide: 0,
+                    totalSlides: {{ $promoCount }},
+                    timer: null,
+                    init() {
+                        if (this.totalSlides > 1) {
+                            this.startAutoPlay();
+                        }
+                    },
+                    startAutoPlay() {
+                        this.timer = setInterval(() => {
+                            this.next();
+                        }, 5000);
+                    },
+                    stopAutoPlay() {
+                        if (this.timer) clearInterval(this.timer);
+                    },
+                    next() {
+                        this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+                    },
+                    prev() {
+                        this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+                    }
+                }" 
+                @mouseenter="stopAutoPlay()" 
+                @mouseleave="if(totalSlides > 1) startAutoPlay()"
+                class="relative w-full overflow-hidden rounded-2xl sm:rounded-3xl shadow-2xl">
+
+                    <!-- Slides Wrapper -->
+                    <div class="relative w-full">
+                        @php $slideIndex = 0; @endphp
+
+                        <!-- SLIDE: PROMO PENGGUNA PERTAMA (Custom Banner Image) -->
+                        @if($showFirstUserPromo)
+                        @php $firstIdx = $slideIndex++; @endphp
+                        <div x-show="currentSlide === {{ $firstIdx }}" 
+                             x-transition:enter="transition ease-out duration-400"
+                             x-transition:enter-start="opacity-0 scale-98"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-200 absolute inset-0"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-98"
+                             class="w-full relative group overflow-hidden rounded-2xl sm:rounded-3xl">
+                            <a href="#kategori" class="block relative w-full overflow-hidden rounded-2xl sm:rounded-3xl cursor-pointer">
+                                <img src="{{ asset('images/banner-promo-pengguna-baru.jpg') }}" 
+                                     alt="Promo Spesial Pengguna Pertama - ToTap Store" 
+                                     class="w-full h-auto object-cover rounded-2xl sm:rounded-3xl transition-transform duration-500 group-hover:scale-[1.01] shadow-2xl border border-indigo-500/30">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-2xl sm:rounded-3xl"></div>
+                            </a>
+                        </div>
+                        @endif
+
+                        <!-- SLIDE: PROMO HARI SPESIAL -->
+                        @if($showDayPromo)
+                        @php $dayIdx = $slideIndex++; @endphp
+                        <div x-show="currentSlide === {{ $dayIdx }}" 
+                             x-transition:enter="transition ease-out duration-400"
+                             x-transition:enter-start="opacity-0 scale-98"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-200 absolute inset-0"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-98"
+                             style="background: linear-gradient(135deg, #eab308 0%, #f59e0b 30%, #7c3aed 70%, #4c1d95 100%);"
+                             class="w-full text-white p-6 sm:p-10 md:p-12 rounded-2xl sm:rounded-3xl relative overflow-hidden">
+                            
+                            <div class="absolute -right-10 -top-10 w-72 h-72 bg-purple-500/30 rounded-full blur-2xl pointer-events-none"></div>
+                            <div class="absolute -left-10 -bottom-10 w-72 h-72 bg-amber-400/30 rounded-full blur-2xl pointer-events-none"></div>
+
+                            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                                <div class="lg:col-span-7 space-y-4 text-left">
+                                    <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-slate-950 text-amber-300 font-black text-xs sm:text-sm rounded-lg uppercase tracking-wider shadow-md transform -rotate-1">
+                                        <span>🔥</span> FLASH SALE HARI {{ strtoupper($dayPromoCheck['day_name']) }} <span>⚡</span>
+                                    </div>
+
+                                    <div>
+                                        <h3 class="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-950 leading-none tracking-tight drop-shadow-[0_2px_4px_rgba(255,255,255,0.4)] uppercase" style="font-family: 'Orbitron', 'Impact', sans-serif;">
+                                            FLASH SALE
+                                        </h3>
+                                        <h4 class="text-xl sm:text-3xl font-black text-white tracking-wide mt-1 drop-shadow-md uppercase">
+                                            {{ $promoSettings['promo_day_title'] ?: 'PROMO SPESIAL HARI INI' }}
+                                        </h4>
+                                        <p class="mt-2 text-xs sm:text-sm text-slate-900 font-bold max-w-xl leading-relaxed">
+                                            Diskon otomatis spesial hari {{ $dayPromoCheck['day_name'] }}! Berlaku untuk seluruh produk sampai pukul 23:59 WIB.
+                                        </p>
+                                    </div>
+
+                                    <div class="flex flex-wrap items-center gap-2 pt-1">
+                                        <span class="px-3 py-1.5 bg-slate-950/80 border border-white/20 text-white font-bold text-xs rounded-xl backdrop-blur-md shadow-sm">
+                                            🏷️ Min. Belanja: <strong class="text-amber-300">{{ $promoSettings['day_promo_min_spend'] > 0 ? 'Rp'.number_format($promoSettings['day_promo_min_spend'],0,',','.') : 'Tanpa Minimal' }}</strong>
+                                        </span>
+                                        @if($promoSettings['day_promo_type'] === 'percent' && $promoSettings['day_promo_max_discount'] > 0)
+                                        <span class="px-3 py-1.5 bg-slate-950/80 border border-white/20 text-white font-bold text-xs rounded-xl backdrop-blur-md shadow-sm">
+                                            ⚡ Maks. Diskon: <strong class="text-emerald-300">s.d. Rp{{ number_format($promoSettings['day_promo_max_discount'],0,',','.') }}</strong>
+                                        </span>
+                                        @endif
+                                        <span class="px-3 py-1.5 bg-slate-950/80 border border-white/20 text-white font-bold text-xs rounded-xl backdrop-blur-md shadow-sm">
+                                            ⏰ Waktu: <strong class="text-amber-300">s.d. 23:59 WIB</strong>
+                                        </span>
+                                    </div>
+
+                                    <div class="pt-2">
+                                        <a href="#kategori" class="inline-flex items-center gap-2 px-8 py-3.5 bg-slate-950 hover:bg-black active:scale-95 text-amber-300 font-black text-sm sm:text-base uppercase tracking-wider rounded-2xl shadow-xl shadow-black/40 transition-all hover:scale-105 cursor-pointer">
+                                            <span>AMBIL PROMO SEKARANG</span>
+                                            <i class="fas fa-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="lg:col-span-5 flex items-center justify-center relative">
+                                    <div class="relative flex items-center justify-center">
+                                        <div class="text-7xl sm:text-8xl select-none animate-promo-float pointer-events-none drop-shadow-[0_15px_25px_rgba(0,0,0,0.5)] transform rotate-6">
+                                            🛒
+                                        </div>
+                                        <div class="ml-2 sm:ml-4 bg-red-600 text-white p-6 sm:p-8 rounded-3xl shadow-2xl border-4 border-white transform -rotate-3 flex flex-col items-center justify-center text-center scale-105 hover:scale-110 transition-transform">
+                                            <span class="text-xs sm:text-sm font-black uppercase tracking-widest text-amber-200">UP TO</span>
+                                            <div class="text-4xl sm:text-6xl font-black leading-none font-mono my-1 text-white">
+                                                {{ $promoSettings['day_promo_type'] === 'percent' ? $promoSettings['day_promo_value'].'%' : 'Rp'.number_format($promoSettings['day_promo_value'],0,',','.') }}
+                                            </div>
+                                            <span class="px-3 py-1 bg-amber-300 text-slate-950 font-black text-[11px] sm:text-xs rounded-full uppercase tracking-wider shadow-md">
+                                                OFF TODAY
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
+                    </div>
+
+                    <!-- Navigation Controls if multiple slides -->
+                    @if($promoCount > 1)
+                    <button type="button" @click="prev()" aria-label="Promo Sebelumnya"
+                            class="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md flex items-center justify-center transition border border-white/30 shadow-2xl z-20 cursor-pointer hover:scale-110">
+                        <i class="fas fa-chevron-left text-base"></i>
+                    </button>
+                    
+                    <button type="button" @click="next()" aria-label="Promo Berikutnya"
+                            class="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md flex items-center justify-center transition border border-white/30 shadow-2xl z-20 cursor-pointer hover:scale-110">
+                        <i class="fas fa-chevron-right text-base"></i>
+                    </button>
+
+                    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-20 bg-black/50 px-4 py-2 rounded-full backdrop-blur-md border border-white/20">
+                        @for($i = 0; $i < $promoCount; $i++)
+                        <button type="button" @click="currentSlide = {{ $i }}"
+                                :class="currentSlide === {{ $i }} ? 'w-8 bg-amber-300 ring-2 ring-amber-200' : 'w-2.5 bg-white/50 hover:bg-white/90'"
+                                class="h-2.5 rounded-full transition-all cursor-pointer"
+                                aria-label="Ke Slide {{ $i + 1 }}"></button>
+                        @endfor
+                    </div>
+                    @endif
+
                 </div>
 
             </div>
