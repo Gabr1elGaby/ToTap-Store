@@ -163,8 +163,16 @@
             $promoCount = ($showFirstUserPromo ? 1 : 0) + ($showDayPromo ? 1 : 0);
         @endphp
 
+        @php
+            $promoSettings = \App\Helpers\PromoHelper::getSettings();
+            $dayPromoCheck = \App\Helpers\PromoHelper::isDayPromoActiveToday();
+            $showFirstUserPromo = !empty($promoSettings['first_user_active']);
+            $showDayPromo = !empty($promoSettings['day_promo_active']) && !empty($dayPromoCheck['active']);
+            $promoCount = ($showFirstUserPromo ? 1 : 0) + ($showDayPromo ? 1 : 0);
+        @endphp
+
         @if($promoCount > 0)
-        <!-- Promo Banner Section (Gaming & E-Commerce Styled Slider) -->
+        <!-- Promo Banner Section (Vibrant E-Commerce / Flash Sale Styled Slider) -->
         <section id="promo-spesial" class="py-8 bg-slate-100 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 transition-colors duration-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
@@ -194,126 +202,102 @@
                 }" 
                 @mouseenter="stopAutoPlay()" 
                 @mouseleave="if(totalSlides > 1) startAutoPlay()"
-                class="relative w-full overflow-hidden rounded-3xl shadow-2xl">
+                class="relative w-full overflow-hidden rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700">
 
                     <!-- Slides Wrapper -->
                     <div class="relative w-full">
                         @php $slideIndex = 0; @endphp
 
-                        <!-- SLIDE 1: PENGGUNA BARU -->
+                        <!-- SLIDE 1: PROMO PENGGUNA BARU (Vibrant Magenta & Yellow Flash Sale Banner) -->
                         @if($showFirstUserPromo)
                         @php $firstIdx = $slideIndex++; @endphp
                         <div x-show="currentSlide === {{ $firstIdx }}" 
-                             x-transition:enter="transition ease-out duration-300"
-                             x-transition:enter-start="opacity-0 translate-x-12"
-                             x-transition:enter-end="opacity-100 translate-x-0"
+                             x-transition:enter="transition ease-out duration-400"
+                             x-transition:enter-start="opacity-0 scale-98"
+                             x-transition:enter-end="opacity-100 scale-100"
                              x-transition:leave="transition ease-in duration-200 absolute inset-0"
-                             x-transition:leave-start="opacity-100 translate-x-0"
-                             x-transition:leave-end="opacity-0 -translate-x-12"
-                             style="background: radial-gradient(circle at 80% 20%, rgba(236,72,153,0.3) 0%, transparent 40%), radial-gradient(circle at 20% 80%, rgba(99,102,241,0.35) 0%, transparent 40%), linear-gradient(135deg, #090a1a 0%, #17153b 45%, #2e1065 100%);"
-                             class="w-full text-white p-6 sm:p-10 rounded-3xl border-2 border-indigo-500/60 shadow-2xl relative overflow-hidden">
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-98"
+                             style="background: linear-gradient(135deg, #c026d3 0%, #9333ea 35%, #4f46e5 100%);"
+                             class="w-full text-white p-6 sm:p-10 md:p-12 relative overflow-hidden">
                             
-                            <!-- Laser grid line & decorative ambient glows -->
-                            <div class="absolute inset-0 bg-grid-pattern opacity-15 pointer-events-none"></div>
-                            <div class="absolute top-0 right-0 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl pointer-events-none"></div>
-                            <div class="absolute bottom-0 left-10 w-96 h-96 bg-indigo-500/25 rounded-full blur-3xl pointer-events-none"></div>
+                            <!-- Dynamic Graphic Accents (Geometric Cutouts & Dots) -->
+                            <div class="absolute -right-10 -bottom-10 w-80 h-80 bg-amber-400/20 rounded-full blur-2xl pointer-events-none"></div>
+                            <div class="absolute -left-10 -top-10 w-60 h-60 bg-pink-400/25 rounded-full blur-2xl pointer-events-none"></div>
+                            
+                            <!-- Geometric Decorative Grid Lines -->
+                            <div class="absolute top-4 right-1/3 opacity-30 pointer-events-none hidden md:block">
+                                <div class="grid grid-cols-6 gap-2">
+                                    @for($d=0;$d<18;$d++) <div class="w-1.5 h-1.5 bg-white rounded-full"></div> @endfor
+                                </div>
+                            </div>
 
                             <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                                 
-                                <!-- Left Content: Typography & Quick Chips -->
-                                <div class="lg:col-span-7 space-y-4">
+                                <!-- Left Content -->
+                                <div class="lg:col-span-7 space-y-4 text-left">
                                     
-                                    <!-- Neon Tag Header -->
-                                    <div class="flex flex-wrap items-center gap-2">
-                                        <span class="px-3.5 py-1 bg-gradient-to-r from-pink-500 to-rose-500 text-white font-black text-xs rounded-full uppercase tracking-wider shadow-lg shadow-pink-500/30 flex items-center gap-1.5 animate-pulse">
-                                            <span>🎁</span> SPECIAL WELCOME DEAL
-                                        </span>
-                                        <span class="px-3 py-1 bg-black/60 border border-indigo-400/40 text-indigo-300 text-xs font-bold rounded-full flex items-center gap-1.5 backdrop-blur-md">
-                                            <i class="fas fa-bolt text-amber-400"></i> Auto-Apply Saat Checkout
-                                        </span>
+                                    <!-- Header Yellow Bar Badge -->
+                                    <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-amber-300 text-slate-950 font-black text-xs sm:text-sm rounded-lg uppercase tracking-wider shadow-md transform -rotate-1">
+                                        <span>⚡</span> ONLY FOR NEW MEMBERS <span>🎁</span>
                                     </div>
 
-                                    <!-- Headline & Subtitle -->
+                                    <!-- Giant Headline -->
                                     <div>
-                                        <h3 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white leading-tight tracking-tight drop-shadow-lg" style="font-family: 'Orbitron', sans-serif;">
-                                            <span class="bg-gradient-to-r from-white via-pink-100 to-amber-300 bg-clip-text text-transparent">
-                                                {{ $promoSettings['first_user_title'] ?: 'Diskon Spesial Pengguna Baru' }}
-                                            </span>
+                                        <h3 class="text-3xl sm:text-5xl lg:text-6xl font-black text-white leading-none tracking-tight drop-shadow-[0_4px_8px_rgba(0,0,0,0.4)] uppercase" style="font-family: 'Orbitron', 'Impact', sans-serif;">
+                                            BIG PROMO
                                         </h3>
-                                        <p class="mt-2.5 text-sm sm:text-base text-slate-200 leading-relaxed font-medium">
-                                            Nikmati diskon eksklusif <span class="text-amber-300 font-extrabold">{{ $promoSettings['first_user_type'] === 'percent' ? $promoSettings['first_user_value'].'%' : 'Rp'.number_format($promoSettings['first_user_value'],0,',','.') }}</span> untuk pembelian pertamamu di ToTap Store!
+                                        <h4 class="text-xl sm:text-3xl font-black text-amber-300 tracking-wide mt-1 drop-shadow-md uppercase">
+                                            {{ $promoSettings['first_user_title'] ?: 'DISKON PENGGUNA BARU' }}
+                                        </h4>
+                                        <p class="mt-2 text-xs sm:text-sm text-pink-100 max-w-xl font-medium leading-relaxed">
+                                            Daftar & beli pertama kali di ToTap Store! Potongan otomatis langsung aktif di checkout tanpa ribet.
                                         </p>
                                     </div>
 
-                                    <!-- Syarat & Ketentuan sebagai Sleek Modern Chips (Pills) -->
-                                    <div class="flex flex-wrap gap-2 pt-1">
-                                        <div class="px-3 py-1.5 rounded-xl bg-slate-900/80 border border-white/15 text-xs text-slate-200 flex items-center gap-1.5 shadow-sm">
-                                            <span class="text-pink-400">🏷️</span>
-                                            <span>Min. Belanja: <strong class="text-white">{{ $promoSettings['first_user_min_spend'] > 0 ? 'Rp'.number_format($promoSettings['first_user_min_spend'],0,',','.') : 'Tanpa Minimal' }}</strong></span>
-                                        </div>
+                                    <!-- Syarat & Ketentuan Pills -->
+                                    <div class="flex flex-wrap items-center gap-2 pt-1">
+                                        <span class="px-3 py-1.5 bg-black/40 border border-white/20 text-white font-bold text-xs rounded-xl backdrop-blur-md shadow-sm">
+                                            🏷️ Min. Belanja: <strong class="text-amber-300">{{ $promoSettings['first_user_min_spend'] > 0 ? 'Rp'.number_format($promoSettings['first_user_min_spend'],0,',','.') : 'Tanpa Minimal' }}</strong>
+                                        </span>
                                         @if($promoSettings['first_user_type'] === 'percent' && $promoSettings['first_user_max_discount'] > 0)
-                                        <div class="px-3 py-1.5 rounded-xl bg-slate-900/80 border border-white/15 text-xs text-slate-200 flex items-center gap-1.5 shadow-sm">
-                                            <span class="text-amber-400">⚡</span>
-                                            <span>Maks. Potongan: <strong class="text-emerald-400">s.d. Rp{{ number_format($promoSettings['first_user_max_discount'],0,',','.') }}</strong></span>
-                                        </div>
+                                        <span class="px-3 py-1.5 bg-black/40 border border-white/20 text-white font-bold text-xs rounded-xl backdrop-blur-md shadow-sm">
+                                            ⚡ Maks. Diskon: <strong class="text-emerald-300">s.d. Rp{{ number_format($promoSettings['first_user_max_discount'],0,',','.') }}</strong>
+                                        </span>
                                         @endif
-                                        <div class="px-3 py-1.5 rounded-xl bg-slate-900/80 border border-white/15 text-xs text-slate-200 flex items-center gap-1.5 shadow-sm">
-                                            <span class="text-indigo-400">🎯</span>
-                                            <span>Khusus: <strong class="text-pink-300">Transaksi Pertama</strong></span>
-                                        </div>
+                                        <span class="px-3 py-1.5 bg-black/40 border border-white/20 text-white font-bold text-xs rounded-xl backdrop-blur-md shadow-sm">
+                                            🎯 Khusus: <strong class="text-pink-300">Transaksi Pertama</strong>
+                                        </span>
                                     </div>
 
-                                    <!-- Action Button -->
-                                    <div class="pt-3">
-                                        <a href="#kategori" class="inline-flex items-center gap-2.5 px-8 py-3.5 bg-gradient-to-r from-pink-500 via-rose-500 to-indigo-600 hover:from-pink-600 hover:to-indigo-700 text-white font-black text-sm uppercase tracking-wider rounded-2xl shadow-xl shadow-pink-600/40 hover:scale-105 active:scale-95 transition-all cursor-pointer">
-                                            <span>Klaim & Belanja Sekarang</span>
+                                    <!-- CTA Button -->
+                                    <div class="pt-2">
+                                        <a href="#kategori" class="inline-flex items-center gap-2 px-8 py-3.5 bg-amber-300 hover:bg-amber-400 active:scale-95 text-slate-950 font-black text-sm sm:text-base uppercase tracking-wider rounded-2xl shadow-xl shadow-amber-400/40 transition-all hover:scale-105 cursor-pointer">
+                                            <span>KLAIM & BELANJA SEKARANG</span>
                                             <i class="fas fa-arrow-right"></i>
                                         </a>
                                     </div>
                                 </div>
 
-                                <!-- Right Content: 3D-Styled Glowing Voucher Ticket -->
-                                <div class="lg:col-span-5 flex justify-center relative">
+                                <!-- Right Graphic: Megaphone & Giant Sale Badge -->
+                                <div class="lg:col-span-5 flex items-center justify-center relative">
                                     
-                                    <!-- Floating 3D Emojis / Game Gems -->
-                                    <div class="absolute -top-6 -left-4 text-3xl animate-promo-float select-none z-20 pointer-events-none" style="filter: drop-shadow(0 4px 10px rgba(236,72,153,0.6));">
-                                        💎
-                                    </div>
-                                    <div class="absolute -bottom-4 -right-2 text-3xl animate-promo-float-rev select-none z-20 pointer-events-none" style="filter: drop-shadow(0 4px 10px rgba(245,158,11,0.6));">
-                                        🪙
-                                    </div>
-                                    <div class="absolute top-1/2 -right-6 text-2xl animate-pulse-glow select-none z-20 pointer-events-none">
-                                        ✨
-                                    </div>
-
-                                    <!-- Ticket Body -->
-                                    <div class="w-full max-w-sm rounded-3xl p-6 bg-gradient-to-b from-slate-900/90 via-indigo-950/90 to-slate-900/95 border-2 border-amber-400/80 shadow-2xl text-center space-y-4 relative overflow-hidden backdrop-blur-xl" style="box-shadow: 0 0 35px rgba(251,191,36,0.25);">
+                                    <!-- Main Giant Discount Stamp / Badge -->
+                                    <div class="relative flex items-center justify-center">
                                         
-                                        <!-- Voucher Header -->
-                                        <div class="flex items-center justify-between border-b border-dashed border-white/20 pb-3">
-                                            <div class="flex items-center gap-1.5">
-                                                <span class="text-base">👑</span>
-                                                <span class="text-xs font-black tracking-widest text-amber-300 uppercase" style="font-family: 'Orbitron', sans-serif;">TOTAP VOUCHER</span>
-                                            </div>
-                                            <span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-black rounded-md uppercase">
-                                                VERIFIED ✓
-                                            </span>
+                                        <!-- Megaphone Graphic Background -->
+                                        <div class="text-7xl sm:text-8xl select-none animate-promo-float pointer-events-none drop-shadow-[0_15px_25px_rgba(0,0,0,0.5)] transform -rotate-12">
+                                            📢
                                         </div>
 
-                                        <!-- Giant Discount Value -->
-                                        <div class="py-2">
-                                            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">BESAR POTONGAN</span>
-                                            <div class="text-4xl sm:text-5xl font-black text-transparent bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 bg-clip-text font-mono my-1 tracking-tight drop-shadow-md">
-                                                {{ $promoSettings['first_user_type'] === 'percent' ? $promoSettings['first_user_value'].'%' : 'Rp'.number_format($promoSettings['first_user_value'],0,',','.') }} <span class="text-2xl text-amber-400 font-sans">OFF</span>
+                                        <!-- Giant Sunburst / Jagged Discount Sticker -->
+                                        <div class="ml-2 sm:ml-4 bg-amber-300 text-slate-950 p-6 sm:p-8 rounded-3xl shadow-2xl border-4 border-white transform rotate-3 flex flex-col items-center justify-center text-center scale-105 hover:scale-110 transition-transform">
+                                            <span class="text-xs sm:text-sm font-black uppercase tracking-widest text-slate-800">DISCOUNT</span>
+                                            <div class="text-4xl sm:text-6xl font-black leading-none font-mono my-1 text-slate-950">
+                                                {{ $promoSettings['first_user_type'] === 'percent' ? $promoSettings['first_user_value'].'%' : 'Rp'.number_format($promoSettings['first_user_value'],0,',','.') }}
                                             </div>
-                                            <span class="text-xs font-semibold text-pink-300">Potongan Langsung di Keranjang</span>
-                                        </div>
-
-                                        <!-- Perforated Line with Coupon Code Display -->
-                                        <div class="pt-3 border-t-2 border-dashed border-white/20 flex items-center justify-between text-xs">
-                                            <span class="text-slate-400 font-mono">CODE: <strong class="text-white">FIRST-USER</strong></span>
-                                            <span class="px-2.5 py-1 bg-amber-400 text-slate-900 font-black rounded-lg text-[10px] tracking-wider uppercase shadow-md">
-                                                AUTO CLAIM
+                                            <span class="px-3 py-1 bg-red-600 text-white font-black text-[11px] sm:text-xs rounded-full uppercase tracking-wider shadow-md">
+                                                SPECIAL DEAL
                                             </span>
                                         </div>
 
@@ -325,120 +309,88 @@
                         </div>
                         @endif
 
-                        <!-- SLIDE 2: PROMO HARI SPESIAL -->
+                        <!-- SLIDE 2: FLASH SALE HARI TERTENTU (Vibrant Yellow & Deep Purple Split Banner) -->
                         @if($showDayPromo)
                         @php $dayIdx = $slideIndex++; @endphp
                         <div x-show="currentSlide === {{ $dayIdx }}" 
-                             x-transition:enter="transition ease-out duration-300"
-                             x-transition:enter-start="opacity-0 translate-x-12"
-                             x-transition:enter-end="opacity-100 translate-x-0"
+                             x-transition:enter="transition ease-out duration-400"
+                             x-transition:enter-start="opacity-0 scale-98"
+                             x-transition:enter-end="opacity-100 scale-100"
                              x-transition:leave="transition ease-in duration-200 absolute inset-0"
-                             x-transition:leave-start="opacity-100 translate-x-0"
-                             x-transition:leave-end="opacity-0 -translate-x-12"
-                             style="background: radial-gradient(circle at 80% 20%, rgba(16,185,129,0.3) 0%, transparent 40%), radial-gradient(circle at 20% 80%, rgba(6,182,212,0.35) 0%, transparent 40%), linear-gradient(135deg, #022017 0%, #064e3b 45%, #083344 100%);"
-                             class="w-full text-white p-6 sm:p-10 rounded-3xl border-2 border-emerald-500/60 shadow-2xl relative overflow-hidden">
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-98"
+                             style="background: linear-gradient(135deg, #eab308 0%, #f59e0b 30%, #7c3aed 70%, #4c1d95 100%);"
+                             class="w-full text-white p-6 sm:p-10 md:p-12 relative overflow-hidden">
                             
-                            <!-- Laser grid line & decorative ambient glows -->
-                            <div class="absolute inset-0 bg-grid-pattern opacity-15 pointer-events-none"></div>
-                            <div class="absolute top-0 right-0 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
-                            <div class="absolute bottom-0 left-10 w-96 h-96 bg-teal-500/25 rounded-full blur-3xl pointer-events-none"></div>
+                            <!-- Dynamic Lightning & Speed Lines -->
+                            <div class="absolute -right-10 -top-10 w-72 h-72 bg-purple-500/30 rounded-full blur-2xl pointer-events-none"></div>
+                            <div class="absolute -left-10 -bottom-10 w-72 h-72 bg-amber-400/30 rounded-full blur-2xl pointer-events-none"></div>
 
                             <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                                 
-                                <!-- Left Content: Typography & Quick Chips -->
-                                <div class="lg:col-span-7 space-y-4">
+                                <!-- Left Content -->
+                                <div class="lg:col-span-7 space-y-4 text-left">
                                     
-                                    <!-- Neon Tag Header -->
-                                    <div class="flex flex-wrap items-center gap-2">
-                                        <span class="px-3.5 py-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black text-xs rounded-full uppercase tracking-wider shadow-lg shadow-emerald-500/30 flex items-center gap-1.5 animate-pulse">
-                                            <span>🔥</span> PROMO HARI {{ strtoupper($dayPromoCheck['day_name']) }}
-                                        </span>
-                                        <span class="px-3 py-1 bg-black/60 border border-emerald-400/40 text-amber-300 text-xs font-bold rounded-full flex items-center gap-1.5 backdrop-blur-md">
-                                            <i class="fas fa-clock text-amber-400"></i> Aktif Hari Ini (s.d. 23:59 WIB)
-                                        </span>
+                                    <!-- Header Badge -->
+                                    <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-slate-950 text-amber-300 font-black text-xs sm:text-sm rounded-lg uppercase tracking-wider shadow-md transform -rotate-1">
+                                        <span>🔥</span> FLASH SALE HARI {{ strtoupper($dayPromoCheck['day_name']) }} <span>⚡</span>
                                     </div>
 
-                                    <!-- Headline & Subtitle -->
+                                    <!-- Giant Headline -->
                                     <div>
-                                        <h3 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white leading-tight tracking-tight drop-shadow-lg" style="font-family: 'Orbitron', sans-serif;">
-                                            <span class="bg-gradient-to-r from-white via-emerald-100 to-amber-300 bg-clip-text text-transparent">
-                                                {{ $promoSettings['promo_day_title'] ?: 'Promo Hari '.$dayPromoCheck['day_name'] }}
-                                            </span>
+                                        <h3 class="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-950 leading-none tracking-tight drop-shadow-[0_2px_4px_rgba(255,255,255,0.4)] uppercase" style="font-family: 'Orbitron', 'Impact', sans-serif;">
+                                            FLASH SALE
                                         </h3>
-                                        <p class="mt-2.5 text-sm sm:text-base text-emerald-100 leading-relaxed font-medium">
-                                            Spesial hari {{ $dayPromoCheck['day_name'] }}, nikmati diskon otomatis <span class="text-amber-300 font-extrabold">{{ $promoSettings['day_promo_type'] === 'percent' ? $promoSettings['day_promo_value'].'%' : 'Rp'.number_format($promoSettings['day_promo_value'],0,',','.') }}</span> untuk seluruh pembelian produk!
+                                        <h4 class="text-xl sm:text-3xl font-black text-white tracking-wide mt-1 drop-shadow-md uppercase">
+                                            {{ $promoSettings['promo_day_title'] ?: 'PROMO SPESIAL HARI INI' }}
+                                        </h4>
+                                        <p class="mt-2 text-xs sm:text-sm text-slate-900 font-bold max-w-xl leading-relaxed">
+                                            Diskon otomatis spesial hari {{ $dayPromoCheck['day_name'] }}! Berlaku untuk seluruh produk sampai pukul 23:59 WIB.
                                         </p>
                                     </div>
 
-                                    <!-- Syarat & Ketentuan sebagai Sleek Modern Chips (Pills) -->
-                                    <div class="flex flex-wrap gap-2 pt-1">
-                                        <div class="px-3 py-1.5 rounded-xl bg-slate-900/80 border border-white/15 text-xs text-slate-200 flex items-center gap-1.5 shadow-sm">
-                                            <span class="text-emerald-400">🏷️</span>
-                                            <span>Min. Belanja: <strong class="text-white">{{ $promoSettings['day_promo_min_spend'] > 0 ? 'Rp'.number_format($promoSettings['day_promo_min_spend'],0,',','.') : 'Tanpa Minimal' }}</strong></span>
-                                        </div>
+                                    <!-- Syarat & Ketentuan Pills -->
+                                    <div class="flex flex-wrap items-center gap-2 pt-1">
+                                        <span class="px-3 py-1.5 bg-slate-950/80 border border-white/20 text-white font-bold text-xs rounded-xl backdrop-blur-md shadow-sm">
+                                            🏷️ Min. Belanja: <strong class="text-amber-300">{{ $promoSettings['day_promo_min_spend'] > 0 ? 'Rp'.number_format($promoSettings['day_promo_min_spend'],0,',','.') : 'Tanpa Minimal' }}</strong>
+                                        </span>
                                         @if($promoSettings['day_promo_type'] === 'percent' && $promoSettings['day_promo_max_discount'] > 0)
-                                        <div class="px-3 py-1.5 rounded-xl bg-slate-900/80 border border-white/15 text-xs text-slate-200 flex items-center gap-1.5 shadow-sm">
-                                            <span class="text-amber-400">⚡</span>
-                                            <span>Maks. Potongan: <strong class="text-emerald-400">s.d. Rp{{ number_format($promoSettings['day_promo_max_discount'],0,',','.') }}</strong></span>
-                                        </div>
+                                        <span class="px-3 py-1.5 bg-slate-950/80 border border-white/20 text-white font-bold text-xs rounded-xl backdrop-blur-md shadow-sm">
+                                            ⚡ Maks. Diskon: <strong class="text-emerald-300">s.d. Rp{{ number_format($promoSettings['day_promo_max_discount'],0,',','.') }}</strong>
+                                        </span>
                                         @endif
-                                        <div class="px-3 py-1.5 rounded-xl bg-slate-900/80 border border-white/15 text-xs text-slate-200 flex items-center gap-1.5 shadow-sm">
-                                            <span class="text-teal-400">⏰</span>
-                                            <span>Periode: <strong class="text-emerald-300">Hari {{ $dayPromoCheck['day_name'] }}</strong></span>
-                                        </div>
+                                        <span class="px-3 py-1.5 bg-slate-950/80 border border-white/20 text-white font-bold text-xs rounded-xl backdrop-blur-md shadow-sm">
+                                            ⏰ Waktu: <strong class="text-amber-300">s.d. 23:59 WIB</strong>
+                                        </span>
                                     </div>
 
-                                    <!-- Action Button -->
-                                    <div class="pt-3">
-                                        <a href="#kategori" class="inline-flex items-center gap-2.5 px-8 py-3.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-600 hover:from-emerald-600 hover:to-cyan-700 text-white font-black text-sm uppercase tracking-wider rounded-2xl shadow-xl shadow-emerald-600/40 hover:scale-105 active:scale-95 transition-all cursor-pointer">
-                                            <span>Pilih Produk & Klaim Diskon</span>
+                                    <!-- CTA Button -->
+                                    <div class="pt-2">
+                                        <a href="#kategori" class="inline-flex items-center gap-2 px-8 py-3.5 bg-slate-950 hover:bg-black active:scale-95 text-amber-300 font-black text-sm sm:text-base uppercase tracking-wider rounded-2xl shadow-xl shadow-black/40 transition-all hover:scale-105 cursor-pointer">
+                                            <span>AMBIL PROMO SEKARANG</span>
                                             <i class="fas fa-arrow-right"></i>
                                         </a>
                                     </div>
                                 </div>
 
-                                <!-- Right Content: 3D-Styled Glowing Voucher Ticket -->
-                                <div class="lg:col-span-5 flex justify-center relative">
+                                <!-- Right Graphic: Shopping Cart & Sunburst Badge -->
+                                <div class="lg:col-span-5 flex items-center justify-center relative">
                                     
-                                    <!-- Floating 3D Emojis / Game Gems -->
-                                    <div class="absolute -top-6 -left-4 text-3xl animate-promo-float select-none z-20 pointer-events-none" style="filter: drop-shadow(0 4px 10px rgba(16,185,129,0.6));">
-                                        🎮
-                                    </div>
-                                    <div class="absolute -bottom-4 -right-2 text-3xl animate-promo-float-rev select-none z-20 pointer-events-none" style="filter: drop-shadow(0 4px 10px rgba(245,158,11,0.6));">
-                                        🔥
-                                    </div>
-                                    <div class="absolute top-1/2 -right-6 text-2xl animate-pulse-glow select-none z-20 pointer-events-none">
-                                        ⚡
-                                    </div>
-
-                                    <!-- Ticket Body -->
-                                    <div class="w-full max-w-sm rounded-3xl p-6 bg-gradient-to-b from-slate-900/90 via-emerald-950/90 to-slate-900/95 border-2 border-emerald-400/80 shadow-2xl text-center space-y-4 relative overflow-hidden backdrop-blur-xl" style="box-shadow: 0 0 35px rgba(16,185,129,0.25);">
+                                    <div class="relative flex items-center justify-center">
                                         
-                                        <!-- Voucher Header -->
-                                        <div class="flex items-center justify-between border-b border-dashed border-white/20 pb-3">
-                                            <div class="flex items-center gap-1.5">
-                                                <span class="text-base">⚡</span>
-                                                <span class="text-xs font-black tracking-widest text-emerald-300 uppercase" style="font-family: 'Orbitron', sans-serif;">FLASH VOUCHER</span>
-                                            </div>
-                                            <span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-black rounded-md uppercase">
-                                                HARI {{ strtoupper($dayPromoCheck['day_name']) }} ✓
-                                            </span>
+                                        <!-- Lightning / Cart Graphic -->
+                                        <div class="text-7xl sm:text-8xl select-none animate-promo-float pointer-events-none drop-shadow-[0_15px_25px_rgba(0,0,0,0.5)] transform rotate-6">
+                                            🛒
                                         </div>
 
-                                        <!-- Giant Discount Value -->
-                                        <div class="py-2">
-                                            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">BESAR POTONGAN</span>
-                                            <div class="text-4xl sm:text-5xl font-black text-transparent bg-gradient-to-r from-emerald-300 via-teal-200 to-amber-300 bg-clip-text font-mono my-1 tracking-tight drop-shadow-md">
-                                                {{ $promoSettings['day_promo_type'] === 'percent' ? $promoSettings['day_promo_value'].'%' : 'Rp'.number_format($promoSettings['day_promo_value'],0,',','.') }} <span class="text-2xl text-emerald-400 font-sans">OFF</span>
+                                        <!-- Giant Discount Badge -->
+                                        <div class="ml-2 sm:ml-4 bg-red-600 text-white p-6 sm:p-8 rounded-3xl shadow-2xl border-4 border-white transform -rotate-3 flex flex-col items-center justify-center text-center scale-105 hover:scale-110 transition-transform">
+                                            <span class="text-xs sm:text-sm font-black uppercase tracking-widest text-amber-200">UP TO</span>
+                                            <div class="text-4xl sm:text-6xl font-black leading-none font-mono my-1 text-white">
+                                                {{ $promoSettings['day_promo_type'] === 'percent' ? $promoSettings['day_promo_value'].'%' : 'Rp'.number_format($promoSettings['day_promo_value'],0,',','.') }}
                                             </div>
-                                            <span class="text-xs font-semibold text-emerald-300">Potongan Langsung Otomatis</span>
-                                        </div>
-
-                                        <!-- Perforated Line with Coupon Code Display -->
-                                        <div class="pt-3 border-t-2 border-dashed border-white/20 flex items-center justify-between text-xs">
-                                            <span class="text-slate-400 font-mono">STATUS: <strong class="text-white">AUTO DISCOUNT</strong></span>
-                                            <span class="px-2.5 py-1 bg-emerald-400 text-slate-900 font-black rounded-lg text-[10px] tracking-wider uppercase shadow-md">
-                                                READY TO USE
+                                            <span class="px-3 py-1 bg-amber-300 text-slate-950 font-black text-[11px] sm:text-xs rounded-full uppercase tracking-wider shadow-md">
+                                                OFF TODAY
                                             </span>
                                         </div>
 
@@ -470,7 +422,7 @@
                     <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-20 bg-black/50 px-4 py-2 rounded-full backdrop-blur-md border border-white/20">
                         @for($i = 0; $i < $promoCount; $i++)
                         <button type="button" @click="currentSlide = {{ $i }}"
-                                :class="currentSlide === {{ $i }} ? 'w-8 bg-pink-500 ring-2 ring-pink-300' : 'w-2.5 bg-white/50 hover:bg-white/90'"
+                                :class="currentSlide === {{ $i }} ? 'w-8 bg-amber-300 ring-2 ring-amber-200' : 'w-2.5 bg-white/50 hover:bg-white/90'"
                                 class="h-2.5 rounded-full transition-all cursor-pointer"
                                 aria-label="Ke Slide {{ $i + 1 }}"></button>
                         @endfor
