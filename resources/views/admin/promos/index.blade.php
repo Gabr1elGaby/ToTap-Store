@@ -14,6 +14,7 @@
         // Simulator Alpine State
         simAmount: 50000,
         simEmail: '',
+        simCategory: 'all',
         simResult: null,
         simLoading: false,
         async testDiscount() {
@@ -26,7 +27,7 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ amount: this.simAmount, email: this.simEmail })
+                    body: JSON.stringify({ amount: this.simAmount, email: this.simEmail, category: this.simCategory })
                 });
                 this.simResult = await res.json();
             } catch (e) {
@@ -198,6 +199,25 @@
                                            class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono">
                                     <span class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 block">Diskon hanya aktif jika pesanan mencapai nominal ini.</span>
                                 </div>
+
+                                <!-- Kategori Produk yang Berlaku -->
+                                <div class="pt-2 border-t border-gray-100 dark:border-gray-700">
+                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-2">
+                                        🎯 Kategori yang Mendapat Diskon
+                                    </label>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        @foreach($availableCategories as $catCode => $catLabel)
+                                            @php
+                                                $isCatChecked = in_array($catCode, $settings['first_user_categories'], true);
+                                            @endphp
+                                            <label class="flex items-center gap-2 p-2.5 rounded-xl border cursor-pointer text-xs font-bold transition hover:border-indigo-500 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700">
+                                                <input type="checkbox" name="promo_first_user_categories[]" value="{{ $catCode }}" {{ $isCatChecked ? 'checked' : '' }} class="rounded text-indigo-600 focus:ring-indigo-500">
+                                                <span>{{ $catLabel }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                    <span class="text-[11px] text-gray-500 dark:text-gray-400 mt-1 block">Centang "Semua Kategori" atau pilih kategori spesifik (Game, Aplikasi Premium, dll).</span>
+                                </div>
                             </div>
                         </div>
 
@@ -322,6 +342,25 @@
                                            placeholder="0 = Tanpa minimal"
                                            class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-bold focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-mono">
                                 </div>
+
+                                <!-- Kategori Produk yang Berlaku -->
+                                <div class="pt-2 border-t border-gray-100 dark:border-gray-700">
+                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-2">
+                                        🎯 Kategori yang Mendapat Diskon
+                                    </label>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        @foreach($availableCategories as $catCode => $catLabel)
+                                            @php
+                                                $isCatChecked = in_array($catCode, $settings['day_promo_categories'], true);
+                                            @endphp
+                                            <label class="flex items-center gap-2 p-2.5 rounded-xl border cursor-pointer text-xs font-bold transition hover:border-emerald-500 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700">
+                                                <input type="checkbox" name="promo_day_categories[]" value="{{ $catCode }}" {{ $isCatChecked ? 'checked' : '' }} class="rounded text-emerald-600 focus:ring-emerald-500">
+                                                <span>{{ $catLabel }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                    <span class="text-[11px] text-gray-500 dark:text-gray-400 mt-1 block">Centang "Semua Kategori" atau pilih kategori spesifik.</span>
+                                </div>
                             </div>
                         </div>
 
@@ -352,13 +391,21 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end">
-                    <div class="sm:col-span-5">
-                        <label class="block text-xs font-bold text-slate-300 mb-1">Nominal Belanja Simulasi (Rp)</label>
+                    <div class="sm:col-span-4">
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Nominal Belanja (Rp)</label>
                         <input type="number" x-model="simAmount" class="w-full px-3.5 py-2.5 bg-slate-800 text-white border border-slate-700 rounded-xl text-sm font-mono font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                     </div>
-                    <div class="sm:col-span-5">
-                        <label class="block text-xs font-bold text-slate-300 mb-1">Email / No WA User (Opsional)</label>
-                        <input type="text" x-model="simEmail" placeholder="Kosongkan untuk simulasi user baru" class="w-full px-3.5 py-2.5 bg-slate-800 text-white border border-slate-700 rounded-xl text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                    <div class="sm:col-span-3">
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Kategori Produk</label>
+                        <select x-model="simCategory" class="w-full px-3.5 py-2.5 bg-slate-800 text-white border border-slate-700 rounded-xl text-xs font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            @foreach($availableCategories as $cCode => $cLabel)
+                                <option value="{{ $cCode }}">{{ $cLabel }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Email / No WA (Opsional)</label>
+                        <input type="text" x-model="simEmail" placeholder="Kosongkan = Akun Baru" class="w-full px-3.5 py-2.5 bg-slate-800 text-white border border-slate-700 rounded-xl text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                     </div>
                     <div class="sm:col-span-2">
                         <button type="button" @click="testDiscount()" :disabled="simLoading" class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-bold text-xs shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">

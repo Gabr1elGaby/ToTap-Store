@@ -250,40 +250,77 @@
 
                                  <!-- Step 2: Nominal -->
                                  <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-lg rounded-2xl p-5">
+                                     @php
+                                         $isFirstUserEligible = !empty($isFirstTime) && !empty($promoSettings['first_user_active']) && \App\Helpers\PromoHelper::isCategoryEligible($game, $promoSettings['first_user_categories']);
+                                         $isDayPromoEligible = !empty($dayCheck['active']) && \App\Helpers\PromoHelper::isCategoryEligible($game, $promoSettings['day_promo_categories']);
+                                     @endphp
+
                                      <div class="flex items-center justify-between mb-4">
                                          <div class="flex items-center gap-3">
                                              <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">2</div>
                                              <h3 class="text-lg font-bold text-gray-900 dark:text-white">Pilih Nominal</h3>
                                          </div>
-                                         @if(!empty($dayCheck['active']))
-                                             <span class="px-3 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-[11px] font-black rounded-full shadow-sm animate-pulse flex items-center gap-1">
-                                                 🔥 Promo Hari {{ $dayCheck['day_name'] }}
+                                         @if($isDayPromoEligible)
+                                             <span class="px-3.5 py-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-black rounded-full shadow-md animate-pulse flex items-center gap-1.5">
+                                                 <span>🔥</span> Promo Hari {{ $dayCheck['day_name'] }}
                                              </span>
-                                         @elseif(!empty($isFirstTime) && !empty($promoSettings['first_user_active']))
-                                             <span class="px-3 py-1 bg-gradient-to-r from-pink-600 to-indigo-600 text-white text-[11px] font-black rounded-full shadow-sm flex items-center gap-1">
-                                                 🎁 Diskon Akun Baru
+                                         @elseif($isFirstUserEligible)
+                                             <span class="px-3.5 py-1 bg-gradient-to-r from-pink-500 to-indigo-600 text-white text-xs font-black rounded-full shadow-md flex items-center gap-1.5">
+                                                 <span>🎁</span> Diskon Akun Baru
                                              </span>
                                          @endif
                                      </div>
 
-                                     @if(!empty($dayCheck['active']))
-                                         <div class="mb-4 p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 rounded-xl text-xs text-emerald-800 dark:text-emerald-300 font-semibold flex items-center gap-2">
-                                             <span class="text-base">🎉</span>
-                                             <span><strong>{{ $promoSettings['promo_day_title'] ?: 'Promo Hari '.$dayCheck['day_name'] }}:</strong> Dapatkan diskon {{ $promoSettings['day_promo_type'] === 'percent' ? $promoSettings['day_promo_value'].'%' : 'Rp'.number_format($promoSettings['day_promo_value'], 0, ',', '.') }} otomatis saat checkout!</span>
+                                     <!-- Promo Alert Box (High Contrast & Glowing) -->
+                                     @if($isDayPromoEligible)
+                                         <div class="mb-5 p-4 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-emerald-500/15 dark:from-emerald-950/70 dark:via-teal-950/70 dark:to-emerald-950/70 border-2 border-emerald-500/50 shadow-md">
+                                             <div class="flex items-start gap-3">
+                                                 <div class="w-9 h-9 rounded-xl bg-emerald-500/20 flex items-center justify-center text-xl shrink-0">
+                                                     🔥
+                                                 </div>
+                                                 <div class="flex-1">
+                                                     <h5 class="font-black text-xs sm:text-sm text-emerald-700 dark:text-emerald-300 uppercase tracking-wide">
+                                                         {{ $promoSettings['promo_day_title'] ?: 'Promo Spesial Hari '.$dayCheck['day_name'] }}
+                                                     </h5>
+                                                     <p class="text-xs text-gray-700 dark:text-gray-200 font-medium mt-0.5 leading-relaxed">
+                                                         Nikmati potongan <strong class="text-amber-500 dark:text-amber-300 font-black text-sm">{{ $promoSettings['day_promo_type'] === 'percent' ? $promoSettings['day_promo_value'].'%' : 'Rp'.number_format($promoSettings['day_promo_value'], 0, ',', '.') }}</strong> otomatis saat checkout!
+                                                         @if($promoSettings['day_promo_min_spend'] > 0)
+                                                             <span class="text-gray-500 dark:text-gray-400 text-[11px] font-normal">(*Min. belanja Rp{{ number_format($promoSettings['day_promo_min_spend'], 0, ',', '.') }})</span>
+                                                         @endif
+                                                     </p>
+                                                 </div>
+                                             </div>
                                          </div>
-                                     @elseif(!empty($isFirstTime) && !empty($promoSettings['first_user_active']))
-                                         <div class="mb-4 p-3 bg-pink-50 dark:bg-pink-950/40 border border-pink-300 dark:border-pink-800 rounded-xl text-xs text-pink-800 dark:text-pink-300 font-semibold flex items-center gap-2">
-                                             <span class="text-base">🎁</span>
-                                             <span><strong>Spesial Pengguna Baru:</strong> Dapatkan potongan {{ $promoSettings['first_user_type'] === 'percent' ? $promoSettings['first_user_value'].'%' : 'Rp'.number_format($promoSettings['first_user_value'], 0, ',', '.') }} untuk transaksi pertama Anda!</span>
+                                     @elseif($isFirstUserEligible)
+                                         <div class="mb-5 p-4 rounded-2xl bg-gradient-to-r from-pink-500/15 via-purple-500/10 to-indigo-500/15 dark:from-pink-950/70 dark:via-purple-950/70 dark:to-indigo-950/70 border-2 border-pink-500/50 shadow-md">
+                                             <div class="flex items-start gap-3">
+                                                 <div class="w-9 h-9 rounded-xl bg-pink-500/20 flex items-center justify-center text-xl shrink-0">
+                                                     🎁
+                                                 </div>
+                                                 <div class="flex-1">
+                                                     <h5 class="font-black text-xs sm:text-sm text-pink-600 dark:text-pink-300 uppercase tracking-wide">
+                                                         {{ $promoSettings['first_user_title'] ?: 'Diskon Spesial Pengguna Baru' }}
+                                                     </h5>
+                                                     <p class="text-xs text-gray-700 dark:text-gray-200 font-medium mt-0.5 leading-relaxed">
+                                                         Dapatkan diskon <strong class="text-amber-500 dark:text-amber-300 font-black text-sm">{{ $promoSettings['first_user_type'] === 'percent' ? $promoSettings['first_user_value'].'%' : 'Rp'.number_format($promoSettings['first_user_value'], 0, ',', '.') }}</strong> khusus transaksi pertama akun Anda!
+                                                         @if($promoSettings['first_user_min_spend'] > 0)
+                                                             <span class="text-gray-500 dark:text-gray-400 text-[11px] font-normal">(*Min. belanja Rp{{ number_format($promoSettings['first_user_min_spend'], 0, ',', '.') }})</span>
+                                                         @endif
+                                                     </p>
+                                                 </div>
+                                             </div>
                                          </div>
                                      @endif
                                      
                                      @foreach($categories as $cat => $catProducts)
-                                         <h4 class="font-bold text-gray-800 dark:text-gray-200 mb-3 mt-6 border-b border-gray-200 dark:border-gray-700 pb-2">{{ $cat }}</h4>
-                                          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                         <h4 class="font-black text-gray-900 dark:text-white mb-3 mt-6 border-b border-gray-200 dark:border-gray-700 pb-2 text-sm sm:text-base flex items-center gap-2">
+                                             <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                                             <span>{{ $cat }}</span>
+                                         </h4>
+                                          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
                                              @foreach($catProducts as $product)
                                                  @php
-                                                     $prodCalc = \App\Helpers\PromoHelper::calculateDiscount(auth()->user(), (float)$product->price_sell);
+                                                     $prodCalc = \App\Helpers\PromoHelper::calculateDiscount(auth()->user(), (float)$product->price_sell, $game);
                                                  @endphp
                                                  <div @click="if(!stockMap['{{ $product->id }}']) selectedProduct = '{{ $product->id }}'"
                                                       data-product-id="{{ $product->id }}"
@@ -292,27 +329,42 @@
                                                       data-product-original-price="Rp{{ number_format($product->price_sell, 0, ',', '.') }}"
                                                       :class="{
                                                           'border-2 border-dashed border-gray-200 dark:border-gray-700/80 bg-gray-50/80 dark:bg-gray-800/30 opacity-50 cursor-not-allowed select-none': stockMap['{{ $product->id }}'],
-                                                          'border-2 border-indigo-600 bg-indigo-50/90 dark:bg-indigo-900/50 shadow-md ring-2 ring-indigo-500/20 scale-[1.02] cursor-pointer': !stockMap['{{ $product->id }}'] && selectedProduct == '{{ $product->id }}',
-                                                          'border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 hover:bg-gray-50 dark:hover:bg-gray-700/40 shadow-sm hover:scale-[1.02] cursor-pointer': !stockMap['{{ $product->id }}'] && selectedProduct != '{{ $product->id }}'
+                                                          'border-2 border-indigo-600 dark:border-indigo-400 bg-indigo-50/90 dark:bg-indigo-950/70 shadow-lg ring-2 ring-indigo-500/30 scale-[1.02] cursor-pointer': !stockMap['{{ $product->id }}'] && selectedProduct == '{{ $product->id }}',
+                                                          'border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-gray-50 dark:hover:bg-gray-700/50 shadow-sm hover:scale-[1.02] cursor-pointer': !stockMap['{{ $product->id }}'] && selectedProduct != '{{ $product->id }}'
                                                       }"
-                                                      class="relative rounded-xl p-3.5 transition-all text-center">
-                                                     <div :class="stockMap['{{ $product->id }}'] ? 'text-gray-500 dark:text-gray-400 line-through' : 'text-gray-900 dark:text-white'" class="text-sm font-bold leading-tight mb-1.5">{{ $product->name }}</div>
+                                                      class="relative rounded-2xl p-4 transition-all text-center flex flex-col justify-between min-h-[110px]">
                                                      
-                                                     @if($prodCalc['has_discount'])
-                                                         <div class="flex items-center justify-center gap-1.5 flex-wrap">
-                                                             <span class="text-[11px] text-gray-400 line-through">Rp{{ number_format($product->price_sell, 0, ',', '.') }}</span>
-                                                             <span class="text-xs font-black text-emerald-600 dark:text-emerald-400">Rp{{ number_format($prodCalc['final_amount'], 0, ',', '.') }}</span>
-                                                         </div>
-                                                         <span class="inline-block text-[9px] font-black text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950 px-2 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-800 mt-1">
-                                                             {{ $prodCalc['savings_text'] }}
-                                                         </span>
-                                                     @else
-                                                         <div :class="stockMap['{{ $product->id }}'] ? 'text-gray-400' : 'text-indigo-600 dark:text-indigo-400'" class="text-xs font-black">Rp{{ number_format($product->price_sell, 0, ',', '.') }}</div>
-                                                     @endif
+                                                     <div :class="stockMap['{{ $product->id }}'] ? 'text-gray-400 dark:text-gray-500 line-through' : 'text-gray-900 dark:text-white'" class="text-xs sm:text-sm font-bold leading-snug mb-2">
+                                                         {{ $product->name }}
+                                                     </div>
+                                                     
+                                                     <div class="space-y-1 mt-auto">
+                                                         @if($prodCalc['has_discount'])
+                                                             <!-- Coretan Harga Asli -->
+                                                             <div class="text-[11px] text-gray-400 dark:text-gray-400 font-semibold line-through font-mono">
+                                                                 Rp{{ number_format($product->price_sell, 0, ',', '.') }}
+                                                             </div>
+                                                             <!-- Harga Promo Menonjol & Jelas -->
+                                                             <div class="text-sm sm:text-base font-black text-amber-500 dark:text-amber-300 font-mono tracking-tight">
+                                                                 Rp{{ number_format($prodCalc['final_amount'], 0, ',', '.') }}
+                                                             </div>
+                                                             <!-- Badge Hemat -->
+                                                             <div>
+                                                                 <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-pink-500 to-rose-600 text-white shadow-sm">
+                                                                     ⚡ {{ $prodCalc['savings_text'] }}
+                                                                 </span>
+                                                             </div>
+                                                         @else
+                                                             <!-- Harga Normal -->
+                                                             <div :class="stockMap['{{ $product->id }}'] ? 'text-gray-400' : 'text-indigo-600 dark:text-indigo-400'" class="text-xs sm:text-sm font-black font-mono">
+                                                                 Rp{{ number_format($product->price_sell, 0, ',', '.') }}
+                                                             </div>
+                                                         @endif
 
-                                                     <template x-if="stockMap['{{ $product->id }}']">
-                                                         <span class="inline-block text-[10px] font-black text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-950/80 px-2 py-0.5 rounded-md border border-red-200 dark:border-red-800/60 mt-1">Stok Habis</span>
-                                                     </template>
+                                                         <template x-if="stockMap['{{ $product->id }}']">
+                                                             <span class="inline-block text-[10px] font-black text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-950/80 px-2 py-0.5 rounded-md border border-red-200 dark:border-red-800/60 mt-1">Stok Habis</span>
+                                                         </template>
+                                                     </div>
                                                  </div>
                                              @endforeach
                                           </div>

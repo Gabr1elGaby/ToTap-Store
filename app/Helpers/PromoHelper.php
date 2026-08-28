@@ -21,6 +21,14 @@ class PromoHelper
         6 => 'Sabtu',
     ];
 
+    public static $availableCategories = [
+        'all'      => '✨ Semua Kategori Produk',
+        'games'    => '🎮 Top Up Game (MLBB, FF, Valorant, Roblox, dll.)',
+        'apps'     => '🎬 Aplikasi Premium (Bstation, Netflix, Spotify, Canva, dll.)',
+        'software' => '💻 Software & Source Code',
+        'voucher'  => '🎟️ Voucher Game & Digital',
+    ];
+
     /**
      * Get all promo settings with clean defaults
      */
@@ -32,6 +40,18 @@ class PromoHelper
             $dayPromoDays = [5];
         }
 
+        $firstUserCatsRaw = Setting::get('promo_first_user_categories', json_encode(['all']));
+        $firstUserCats = is_string($firstUserCatsRaw) ? json_decode($firstUserCatsRaw, true) : $firstUserCatsRaw;
+        if (!is_array($firstUserCats) || empty($firstUserCats)) {
+            $firstUserCats = ['all'];
+        }
+
+        $dayPromoCatsRaw = Setting::get('promo_day_categories', json_encode(['all']));
+        $dayPromoCats = is_string($dayPromoCatsRaw) ? json_decode($dayPromoCatsRaw, true) : $dayPromoCatsRaw;
+        if (!is_array($dayPromoCats) || empty($dayPromoCats)) {
+            $dayPromoCats = ['all'];
+        }
+
         return [
             // 1. Pengguna Pertama (First Time User)
             'first_user_active'       => (bool) Setting::get('promo_first_user_active', false),
@@ -40,6 +60,7 @@ class PromoHelper
             'first_user_value'        => (float) Setting::get('promo_first_user_value', 10), // e.g. 10% or Rp5.000
             'first_user_max_discount' => (float) Setting::get('promo_first_user_max_discount', 10000), // Max cap Rp
             'first_user_min_spend'    => (float) Setting::get('promo_first_user_min_spend', 10000), // Min belanja Rp
+            'first_user_categories'   => array_values($firstUserCats), // e.g. ['all'] or ['games', 'apps']
 
             // 2. Diskon Hari Tertentu (Recurring Day Promo)
             'day_promo_active'        => (bool) Setting::get('promo_day_active', false),
@@ -49,7 +70,74 @@ class PromoHelper
             'day_promo_value'         => (float) Setting::get('promo_day_value', 5), // e.g. 5% or Rp2.000
             'day_promo_max_discount'  => (float) Setting::get('promo_day_max_discount', 5000), // Max cap Rp
             'day_promo_min_spend'     => (float) Setting::get('promo_day_min_spend', 15000), // Min belanja Rp
+            'day_promo_categories'    => array_values($dayPromoCats), // e.g. ['all'] or ['games', 'apps']
         ];
+    }
+
+    /**
+     * Resolve category code ('games', 'apps', 'software', 'voucher') from any input model or string
+     */
+    public static function resolveCategoryCode($context): string
+    {
+        if (!$context) {
+            return 'games';
+        }
+
+        if (is_string($context)) {
+            $c = strtolower(trim($context));
+            if (str_contains($c, 'soft') || str_contains($c, 'source') || str_contains($c, 'template') || str_contains($c, 'cv') || str_contains($c, 'pos')) {
+                return 'software';
+            }
+            if (str_contains($c, 'app') || str_contains($c, 'aplikasi') || str_contains($c, 'stream') || str_contains($c, 'premium') || str_contains($c, 'bstation') || str_contains($c, 'netflix') || str_contains($c, 'spotify') || str_contains($c, 'canva') || str_contains($c, 'youtube')) {
+                return 'apps';
+            }
+            if (str_contains($c, 'voucher') || str_contains($c, 'google play') || str_contains($c, 'steam')) {
+                return 'voucher';
+            }
+            return 'games';
+        }
+
+        if ($context instanceof \App\Models\Game) {
+            $cat = strtolower($context->category ?? '');
+            $name = strtolower($context->name ?? '');
+            $slug = strtolower($context->slug ?? '');
+
+            if (
+                str_contains($cat, 'app') || str_contains($cat, 'aplikasi') || str_contains($cat, 'stream') ||
+                str_contains($name, 'premium') || str_contains($name, 'app') || str_contains($slug, 'bstation') ||
+                str_contains($slug, 'netflix') || str_contains($slug, 'spotify') || str_contains($slug, 'canva') ||
+                str_contains($slug, 'youtube') || str_contains($slug, 'vidio') || str_contains($slug, 'iqiyi') ||
+                str_contains($slug, 'vision') || str_contains($slug, 'viu') || str_contains($slug, 'wetv') ||
+                str_contains($slug, 'capcut') || str_contains($slug, 'alight')
+            ) {
+                return 'apps';
+            }
+
+            if (str_contains($cat, 'voucher') || str_contains($name, 'voucher') || str_contains($slug, 'voucher') || str_contains($slug, 'gplay') || str_contains($slug, 'steam')) {
+                return 'voucher';
+            }
+
+            return 'games';
+        }
+
+        if ($context instanceof \App\Models\Product || $context instanceof \App\Models\Plan) {
+            return 'software';
+        }
+
+        return 'games';
+    }
+
+    /**
+     * Check if a product category is eligible under promo allowed categories
+     */
+    public static function isCategoryEligible($context, array $allowedCategories): bool
+    {
+        if (empty($allowedCategories) || in_array('all', $allowedCategories, true)) {
+            return true;
+        }
+
+        $code = self::resolveCategoryCode($context);
+        return in_array($code, $allowedCategories, true);
     }
 
     /**
@@ -104,9 +192,9 @@ class PromoHelper
     }
 
     /**
-     * Calculate discount for a user & transaction amount
+     * Calculate discount for a user & transaction amount with category check
      */
-    public static function calculateDiscount($user, float $originalAmount): array
+    public static function calculateDiscount($user, float $originalAmount, $context = null): array
     {
         $settings = self::getSettings();
         $originalAmount = max(0, $originalAmount);
@@ -115,25 +203,28 @@ class PromoHelper
 
         // 1. Check First-Time User Discount
         if ($settings['first_user_active'] && self::isFirstTimeUser($user)) {
-            if ($originalAmount >= $settings['first_user_min_spend']) {
-                $discount = 0;
-                if ($settings['first_user_type'] === 'percent') {
-                    $discount = ($originalAmount * $settings['first_user_value']) / 100;
-                    if ($settings['first_user_max_discount'] > 0 && $discount > $settings['first_user_max_discount']) {
-                        $discount = $settings['first_user_max_discount'];
+            // Check Category Eligibility
+            if (self::isCategoryEligible($context, $settings['first_user_categories'])) {
+                if ($originalAmount >= $settings['first_user_min_spend']) {
+                    $discount = 0;
+                    if ($settings['first_user_type'] === 'percent') {
+                        $discount = ($originalAmount * $settings['first_user_value']) / 100;
+                        if ($settings['first_user_max_discount'] > 0 && $discount > $settings['first_user_max_discount']) {
+                            $discount = $settings['first_user_max_discount'];
+                        }
+                    } else {
+                        $discount = min($settings['first_user_value'], $originalAmount);
                     }
-                } else {
-                    $discount = min($settings['first_user_value'], $originalAmount);
-                }
 
-                $discount = ceil($discount);
-                if ($discount > 0) {
-                    $eligiblePromos[] = [
-                        'type'            => 'first_user',
-                        'title'           => $settings['first_user_title'] . ($settings['first_user_type'] === 'percent' ? " ({$settings['first_user_value']}%)" : ""),
-                        'discount_amount' => $discount,
-                        'badge'           => 'Diskon Pengguna Baru',
-                    ];
+                    $discount = ceil($discount);
+                    if ($discount > 0) {
+                        $eligiblePromos[] = [
+                            'type'            => 'first_user',
+                            'title'           => $settings['first_user_title'] . ($settings['first_user_type'] === 'percent' ? " ({$settings['first_user_value']}%)" : ""),
+                            'discount_amount' => $discount,
+                            'badge'           => 'Diskon Pengguna Baru',
+                        ];
+                    }
                 }
             }
         }
@@ -141,26 +232,29 @@ class PromoHelper
         // 2. Check Recurring Day Promo
         $dayCheck = self::isDayPromoActiveToday();
         if ($dayCheck['active']) {
-            if ($originalAmount >= $settings['day_promo_min_spend']) {
-                $discount = 0;
-                if ($settings['day_promo_type'] === 'percent') {
-                    $discount = ($originalAmount * $settings['day_promo_value']) / 100;
-                    if ($settings['day_promo_max_discount'] > 0 && $discount > $settings['day_promo_max_discount']) {
-                        $discount = $settings['day_promo_max_discount'];
+            // Check Category Eligibility
+            if (self::isCategoryEligible($context, $settings['day_promo_categories'])) {
+                if ($originalAmount >= $settings['day_promo_min_spend']) {
+                    $discount = 0;
+                    if ($settings['day_promo_type'] === 'percent') {
+                        $discount = ($originalAmount * $settings['day_promo_value']) / 100;
+                        if ($settings['day_promo_max_discount'] > 0 && $discount > $settings['day_promo_max_discount']) {
+                            $discount = $settings['day_promo_max_discount'];
+                        }
+                    } else {
+                        $discount = min($settings['day_promo_value'], $originalAmount);
                     }
-                } else {
-                    $discount = min($settings['day_promo_value'], $originalAmount);
-                }
 
-                $discount = ceil($discount);
-                if ($discount > 0) {
-                    $promoName = $settings['promo_day_title'];
-                    $eligiblePromos[] = [
-                        'type'            => 'day_promo',
-                        'title'           => $promoName . ($settings['day_promo_type'] === 'percent' ? " ({$settings['day_promo_value']}%)" : ""),
-                        'discount_amount' => $discount,
-                        'badge'           => "Promo Hari {$dayCheck['day_name']}",
-                    ];
+                    $discount = ceil($discount);
+                    if ($discount > 0) {
+                        $promoName = $settings['promo_day_title'];
+                        $eligiblePromos[] = [
+                            'type'            => 'day_promo',
+                            'title'           => $promoName . ($settings['day_promo_type'] === 'percent' ? " ({$settings['day_promo_value']}%)" : ""),
+                            'discount_amount' => $discount,
+                            'badge'           => "Promo Hari {$dayCheck['day_name']}",
+                        ];
+                    }
                 }
             }
         }

@@ -26,7 +26,9 @@ class PromoSettingController extends Controller
             $totalDiscountGiven = (float) Transaction::where('discount_amount', '>', 0)->sum('discount_amount');
         }
 
-        return view('admin.promos.index', compact('settings', 'todayCheck', 'dayNames', 'totalDiscountOrders', 'totalDiscountGiven'));
+        $availableCategories = PromoHelper::$availableCategories;
+
+        return view('admin.promos.index', compact('settings', 'todayCheck', 'dayNames', 'availableCategories', 'totalDiscountOrders', 'totalDiscountGiven'));
     }
 
     public function update(Request $request)
@@ -39,6 +41,7 @@ class PromoSettingController extends Controller
             'promo_first_user_value'        => 'required|numeric|min:0',
             'promo_first_user_max_discount' => 'nullable|numeric|min:0',
             'promo_first_user_min_spend'    => 'nullable|numeric|min:0',
+            'promo_first_user_categories'   => 'nullable|array',
 
             'promo_day_title'               => 'nullable|string|max:100',
             'promo_day_days'                => 'nullable|array',
@@ -47,6 +50,7 @@ class PromoSettingController extends Controller
             'promo_day_value'               => 'required|numeric|min:0',
             'promo_day_max_discount'        => 'nullable|numeric|min:0',
             'promo_day_min_spend'           => 'nullable|numeric|min:0',
+            'promo_day_categories'          => 'nullable|array',
         ]);
 
         // 1. First Time User Discount
@@ -56,6 +60,10 @@ class PromoSettingController extends Controller
         Setting::set('promo_first_user_value', (string)(float)$request->input('promo_first_user_value', 10));
         Setting::set('promo_first_user_max_discount', (string)(float)$request->input('promo_first_user_max_discount', 0));
         Setting::set('promo_first_user_min_spend', (string)(float)$request->input('promo_first_user_min_spend', 0));
+
+        $firstCats = $request->input('promo_first_user_categories', ['all']);
+        if (empty($firstCats)) $firstCats = ['all'];
+        Setting::set('promo_first_user_categories', json_encode(array_values((array)$firstCats)));
 
         // 2. Day-of-Week Recurring Promo
         Setting::set('promo_day_active', $request->has('promo_day_active') ? '1' : '0');
@@ -70,6 +78,10 @@ class PromoSettingController extends Controller
         Setting::set('promo_day_max_discount', (string)(float)$request->input('promo_day_max_discount', 0));
         Setting::set('promo_day_min_spend', (string)(float)$request->input('promo_day_min_spend', 0));
 
+        $dayCats = $request->input('promo_day_categories', ['all']);
+        if (empty($dayCats)) $dayCats = ['all'];
+        Setting::set('promo_day_categories', json_encode(array_values((array)$dayCats)));
+
         return back()->with('success', 'Pengaturan Diskon Pengguna Baru & Promo Hari Spesial berhasil diperbarui dan aktif otomatis!');
     }
 
@@ -77,13 +89,14 @@ class PromoSettingController extends Controller
     {
         $amount = (float) $request->input('amount', 50000);
         $email = trim($request->input('email', ''));
+        $category = trim($request->input('category', 'all'));
 
         $user = null;
         if (!empty($email)) {
             $user = User::where('email', $email)->orWhere('phone_number', $email)->first();
         }
 
-        $result = PromoHelper::calculateDiscount($user, $amount);
+        $result = PromoHelper::calculateDiscount($user, $amount, $category);
         $isFirstTime = $user ? PromoHelper::isFirstTimeUser($user) : null;
         $dayCheck = PromoHelper::isDayPromoActiveToday();
 
@@ -94,6 +107,7 @@ class PromoSettingController extends Controller
             'is_first_time' => $isFirstTime,
             'today_day'     => $dayCheck['day_name'],
             'day_active'    => $dayCheck['active'],
+            'category'      => $category,
             'calculation'   => $result,
         ]);
     }
