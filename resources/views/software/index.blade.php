@@ -51,21 +51,22 @@
                         $minPrice = null;
                         $minPriceNormal = null;
 
+                        $promoSettings = \App\Helpers\PromoHelper::getSettings();
+                        $activePromoPct = 0;
+                        if (!empty($promoSettings['first_user_active']) && $promoSettings['first_user_type'] === 'percent') {
+                            $activePromoPct = max($activePromoPct, (int)$promoSettings['first_user_value']);
+                        }
+                        if (!empty($promoSettings['day_promo_active']) && $promoSettings['day_promo_type'] === 'percent') {
+                            $activePromoPct = max($activePromoPct, (int)$promoSettings['day_promo_value']);
+                        }
+
                         if (str_contains(strtolower($product->name), 'cv') || str_contains(strtolower($product->slug ?? ''), 'cv')) {
                             $minTpl = \Illuminate\Support\Facades\DB::table('cv_templates')->where('status', 'active')->orderBy('price')->first();
                             if ($minTpl) {
                                 $minPrice = $minTpl->price;
                                 $minPriceNormal = $minTpl->price_normal;
                             }
-                            $maxCvDiscount = \Illuminate\Support\Facades\DB::table('cv_templates')
-                                ->where('status', 'active')
-                                ->where('price_normal', '>', 0)
-                                ->whereColumn('price_normal', '>', 'price')
-                                ->selectRaw('MAX(ROUND(((price_normal - price) / price_normal) * 100)) as max_discount')
-                                ->value('max_discount');
-                            if ($maxCvDiscount > 0) {
-                                $discountPercent = (int) $maxCvDiscount;
-                            }
+                            $discountPercent = $activePromoPct;
                         } else {
                             $bestPlan = $product->plans->first();
                             if ($bestPlan) {
@@ -73,7 +74,11 @@
                                 $minPriceNormal = $bestPlan->price_normal;
                                 if ($bestPlan->price_normal > 0 && $bestPlan->price_normal > $bestPlan->price) {
                                     $discountPercent = round((($bestPlan->price_normal - $bestPlan->price) / $bestPlan->price_normal) * 100);
+                                } else {
+                                    $discountPercent = $activePromoPct;
                                 }
+                            } else {
+                                $discountPercent = $activePromoPct;
                             }
                         }
                     @endphp

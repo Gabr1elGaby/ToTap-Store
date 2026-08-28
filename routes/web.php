@@ -48,7 +48,7 @@ Route::get('/', function () {
         ->whereColumn('price_normal', '>', 'price_sell')
         ->selectRaw('MAX(ROUND(((price_normal - price_sell) / price_normal) * 100)) as max_discount')
         ->value('max_discount') ?? 0;
-    // GET MAX DISCOUNT FOR SOFTWARE & CV SERVICES
+    // GET MAX DISCOUNT FOR SOFTWARE
     $maxPlanDiscount = (int) (\Illuminate\Support\Facades\DB::table('plans')
         ->where('is_active', true)
         ->where('price_normal', '>', 0)
@@ -56,17 +56,17 @@ Route::get('/', function () {
         ->selectRaw('MAX(ROUND(((price_normal - price) / price_normal) * 100)) as max_discount')
         ->value('max_discount') ?? 0);
 
-    $maxCvDiscount = 0;
-    if (\Illuminate\Support\Facades\Schema::hasTable('cv_templates')) {
-        $maxCvDiscount = (int) (\Illuminate\Support\Facades\DB::table('cv_templates')
-            ->where('status', 'active')
-            ->where('price_normal', '>', 0)
-            ->whereColumn('price_normal', '>', 'price')
-            ->selectRaw('MAX(ROUND(((price_normal - price) / price_normal) * 100)) as max_discount')
-            ->value('max_discount') ?? 0);
+    // Check active Super Admin Promo settings
+    $promoSettings = \App\Helpers\PromoHelper::getSettings();
+    $activePromoPct = 0;
+    if (!empty($promoSettings['first_user_active']) && $promoSettings['first_user_type'] === 'percent') {
+        $activePromoPct = max($activePromoPct, (int)$promoSettings['first_user_value']);
+    }
+    if (!empty($promoSettings['day_promo_active']) && $promoSettings['day_promo_type'] === 'percent') {
+        $activePromoPct = max($activePromoPct, (int)$promoSettings['day_promo_value']);
     }
 
-    $maxSoftwareDiscount = max($maxPlanDiscount, $maxCvDiscount);
+    $maxSoftwareDiscount = max($maxPlanDiscount, $activePromoPct);
 
     // CUSTOMER REVIEWS STATS (100% REAL DATA ONLY)
     $totalReviews = \App\Models\CustomerReview::count();
