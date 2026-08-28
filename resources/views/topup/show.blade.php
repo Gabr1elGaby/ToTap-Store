@@ -328,13 +328,21 @@
                                                       data-product-price="Rp{{ number_format($prodCalc['final_amount'], 0, ',', '.') }}"
                                                       data-product-original-price="Rp{{ number_format($product->price_sell, 0, ',', '.') }}"
                                                       :class="{
-                                                          'border-2 border-dashed border-gray-200 dark:border-gray-700/80 bg-gray-50/80 dark:bg-gray-800/30 opacity-50 cursor-not-allowed select-none': stockMap['{{ $product->id }}'],
-                                                          'border-2 border-indigo-600 dark:border-indigo-400 bg-indigo-50/90 dark:bg-indigo-950/70 shadow-lg ring-2 ring-indigo-500/30 scale-[1.02] cursor-pointer': !stockMap['{{ $product->id }}'] && selectedProduct == '{{ $product->id }}',
-                                                          'border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-gray-50 dark:hover:bg-gray-700/50 shadow-sm hover:scale-[1.02] cursor-pointer': !stockMap['{{ $product->id }}'] && selectedProduct != '{{ $product->id }}'
+                                                          'border-2 border-dashed border-gray-300 dark:border-gray-700 bg-gray-100/50 dark:bg-gray-800/40 opacity-40 cursor-not-allowed select-none': stockMap['{{ $product->id }}'],
+                                                          'border-2 border-indigo-500 bg-indigo-50/60 dark:bg-gray-900 shadow-lg shadow-indigo-500/20 ring-2 ring-indigo-500/50 scale-[1.02] cursor-pointer': !stockMap['{{ $product->id }}'] && selectedProduct == '{{ $product->id }}',
+                                                          'border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50/30 dark:hover:bg-gray-700/60 shadow-sm hover:shadow-md hover:scale-[1.01] cursor-pointer': !stockMap['{{ $product->id }}'] && selectedProduct != '{{ $product->id }}'
                                                       }"
-                                                      class="relative rounded-2xl p-4 transition-all text-center flex flex-col justify-between min-h-[110px]">
+                                                      class="relative rounded-2xl p-4 transition-all duration-200 text-center flex flex-col justify-between min-h-[115px] overflow-hidden group">
                                                      
-                                                     <div :class="stockMap['{{ $product->id }}'] ? 'text-gray-400 dark:text-gray-500 line-through' : 'text-gray-900 dark:text-white'" class="text-xs sm:text-sm font-bold leading-snug mb-2">
+                                                     <!-- Active Indicator Checkmark -->
+                                                     <template x-if="selectedProduct == '{{ $product->id }}'">
+                                                         <div class="absolute top-2 right-2 w-5 h-5 bg-indigo-600 text-white rounded-full flex items-center justify-center text-[10px] font-black shadow-sm">
+                                                             <i class="fas fa-check"></i>
+                                                         </div>
+                                                     </template>
+
+                                                     <div :class="stockMap['{{ $product->id }}'] ? 'text-gray-400 dark:text-gray-500 line-through' : 'text-gray-900 dark:text-white'" 
+                                                          class="text-xs sm:text-sm font-bold leading-snug mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">
                                                          {{ $product->name }}
                                                      </div>
                                                      
@@ -349,7 +357,7 @@
                                                                  Rp{{ number_format($prodCalc['final_amount'], 0, ',', '.') }}
                                                              </div>
                                                              <!-- Badge Hemat -->
-                                                             <div>
+                                                             <div class="pt-0.5">
                                                                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-pink-500 to-rose-600 text-white shadow-sm">
                                                                      ⚡ {{ $prodCalc['savings_text'] }}
                                                                  </span>
