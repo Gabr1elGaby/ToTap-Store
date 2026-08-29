@@ -200,7 +200,7 @@
                     <div class="relative w-full">
                         @php $slideIndex = 0; @endphp
 
-                        <!-- SLIDE: PROMO PENGGUNA PERTAMA (Custom Banner Image Full Width) -->
+                        <!-- SLIDE: PROMO PENGGUNA PERTAMA (Custom Banner Image Full Width Slim) -->
                         @if($showFirstUserPromo)
                         @php $firstIdx = $slideIndex++; @endphp
                         <div x-show="currentSlide === {{ $firstIdx }}" 
@@ -210,11 +210,11 @@
                              x-transition:leave="transition ease-in duration-200 absolute inset-0"
                              x-transition:leave-start="opacity-100 scale-100"
                              x-transition:leave-end="opacity-0 scale-98"
-                             class="w-full relative group overflow-hidden">
+                             class="w-full relative group overflow-hidden bg-slate-950 flex items-center justify-center">
                             <a href="#kategori" class="block relative w-full overflow-hidden cursor-pointer">
                                 <img src="{{ asset('images/banner-promo-pengguna-baru.jpg') }}" 
                                      alt="Promo Spesial Pengguna Pertama - ToTap Store" 
-                                     class="w-full h-auto object-cover max-h-[380px] sm:max-h-[460px] md:max-h-[520px] transition-transform duration-500 group-hover:scale-[1.008]">
+                                     class="w-full h-auto object-cover object-center max-h-[160px] sm:max-h-[220px] md:max-h-[270px] lg:max-h-[300px] transition-transform duration-500 group-hover:scale-[1.008]">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                             </a>
                         </div>
@@ -231,7 +231,7 @@
                              x-transition:leave-start="opacity-100 scale-100"
                              x-transition:leave-end="opacity-0 scale-98"
                              style="background: linear-gradient(135deg, #eab308 0%, #f59e0b 30%, #7c3aed 70%, #4c1d95 100%);"
-                             class="w-full text-white p-6 sm:p-10 md:p-12 rounded-2xl sm:rounded-3xl relative overflow-hidden">
+                             class="w-full text-white p-5 sm:p-8 md:p-10 relative overflow-hidden min-h-[160px] sm:min-h-[220px] md:min-h-[270px] lg:min-h-[300px] flex items-center">
                             
                             <div class="absolute -right-10 -top-10 w-72 h-72 bg-purple-500/30 rounded-full blur-2xl pointer-events-none"></div>
                             <div class="absolute -left-10 -bottom-10 w-72 h-72 bg-amber-400/30 rounded-full blur-2xl pointer-events-none"></div>
