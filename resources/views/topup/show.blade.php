@@ -107,7 +107,25 @@
                     </li>
                 </ul>
             </div>
+        @php
+            $productPromoMap = [];
+            foreach ($game->products as $p) {
+                $calc = \App\Helpers\PromoHelper::calculateDiscount(auth()->user(), (float)$p->price_sell, $game, (float)$p->price_modal);
+                $productPromoMap[$p->id] = [
+                    'original_price' => (float)$p->price_sell,
+                    'original_formatted' => 'Rp' . number_format($p->price_sell, 0, ',', '.'),
+                    'modal_price' => (float)$p->price_modal,
+                    'has_discount' => $calc['has_discount'],
+                    'default_promo_type' => $calc['promo_type'],
+                    'default_final_amount' => $calc['final_amount'],
+                    'default_final_formatted' => 'Rp' . number_format($calc['final_amount'], 0, ',', '.'),
+                    'default_savings' => $calc['savings_text'],
+                    'eligible_promos' => $calc['eligible_promos'] ?? [],
+                ];
+            }
+        @endphp
 
+        <div class="container mx-auto px-4 py-8">
             <div class="flex flex-col lg:flex-row gap-6">
                 <!-- Kiri: Info Game -->
                 <div class="w-full lg:w-1/4">
@@ -118,17 +136,34 @@
                             @elseif($game->thumbnail)
                                 <img src="{{ $game->thumbnail }}" alt="{{ $game->name }}" class="w-full h-full object-cover">
                             @else
-                                <div class="w-20 h-20 bg-indigo-600/20 text-indigo-400 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-gamepad text-3xl"></i>
-                                </div>
+                                <div class="text-4xl text-indigo-500"><i class="fas fa-gamepad"></i></div>
                             @endif
+                            <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-80"></div>
+                            <div class="absolute bottom-3 left-4 right-4">
+                                <span class="px-2.5 py-1 bg-indigo-600 text-white font-bold text-xs rounded-lg shadow-md uppercase tracking-wider">{{ $game->category ?? 'Game' }}</span>
+                            </div>
                         </div>
+                        
                         <div class="p-5">
-                            <h3 class="font-black text-xl text-gray-900 dark:text-white">{{ $game->name }}</h3>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ $game->developer ?? 'Moonton' }}</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                                {{ $game->description ?? ($isApp ? 'Langganan ' . $game->name . ' proses cepat dan otomatis. Masukkan alamat email Anda, pilih paket langganan, dan selesaikan pembayaran.' : 'Top up ' . $game->name . ' proses cepat dan otomatis. Silakan masukkan User ID akun Anda, pilih nominal, dan selesaikan pembayaran.') }}
-                            </p>
+                            <h1 class="text-xl font-black text-gray-900 dark:text-white leading-tight">{{ $game->name }}</h1>
+                            <p class="text-xs text-indigo-600 dark:text-indigo-400 font-bold mt-0.5">{{ $game->developer ?? 'Official Publisher' }}</p>
+                            
+                            <hr class="my-4 border-gray-100 dark:border-gray-700">
+                            
+                            <div class="space-y-2.5 text-xs">
+                                <div class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                                    <i class="fas fa-bolt text-amber-500 w-4 text-center"></i>
+                                    <span>Proses Otomatis & Cepat</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                                    <i class="fas fa-shield-alt text-emerald-500 w-4 text-center"></i>
+                                    <span>Layanan 100% Legal & Aman</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                                    <i class="fas fa-headset text-indigo-500 w-4 text-center"></i>
+                                    <span>Bantuan CS 24/7 Siaga</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -137,9 +172,24 @@
                 <div class="w-full lg:w-3/4" x-data="{
                     selectedProduct: sessionStorage.getItem('totap_product_{{ $game->slug }}') || null,
                     selectedPayment: sessionStorage.getItem('totap_payment_{{ $game->slug }}') || 'qris',
+                    selectedPromo: sessionStorage.getItem('totap_promo_{{ $game->slug }}') || 'auto',
                     playerId: sessionStorage.getItem('totap_player_id_{{ $game->slug }}') || '',
                     zoneId: sessionStorage.getItem('totap_zone_id_{{ $game->slug }}') || '',
                     stockMap: {{ json_encode($stockMap ?? []) }},
+                    productPromoMap: {{ json_encode($productPromoMap) }},
+                    getAvailablePromos() {
+                        if (!this.selectedProduct || !this.productPromoMap[this.selectedProduct]) return [];
+                        return this.productPromoMap[this.selectedProduct].eligible_promos || [];
+                    },
+                    getCurrentPrice() {
+                        if (!this.selectedProduct || !this.productPromoMap[this.selectedProduct]) return 0;
+                        const item = this.productPromoMap[this.selectedProduct];
+                        if (this.selectedPromo === 'none' || !item.eligible_promos || item.eligible_promos.length === 0) {
+                            return item.original_price;
+                        }
+                        const chosen = item.eligible_promos.find(ep => ep.type === this.selectedPromo);
+                        return chosen ? chosen.final_amount : item.default_final_amount;
+                    },
                     fetchStock() {
                         fetch('{{ route('topup.stock-status', $game->slug) }}', { headers: { 'Accept': 'application/json' } })
                             .then(res => res.json())
@@ -154,8 +204,22 @@
                             .catch(() => {});
                     },
                     init() {
-                        this.$watch('selectedProduct', v => sessionStorage.setItem('totap_product_{{ $game->slug }}', v || ''));
+                        this.$watch('selectedProduct', v => {
+                            sessionStorage.setItem('totap_product_{{ $game->slug }}', v || '');
+                            if (v && this.productPromoMap[v]) {
+                                const item = this.productPromoMap[v];
+                                if (item.eligible_promos && item.eligible_promos.length > 0) {
+                                    const hasPromo = item.eligible_promos.some(ep => ep.type === this.selectedPromo);
+                                    if (!hasPromo && this.selectedPromo !== 'none') {
+                                        this.selectedPromo = item.default_promo_type;
+                                    }
+                                } else {
+                                    this.selectedPromo = 'none';
+                                }
+                            }
+                        });
                         this.$watch('selectedPayment', v => sessionStorage.setItem('totap_payment_{{ $game->slug }}', v || ''));
+                        this.$watch('selectedPromo', v => sessionStorage.setItem('totap_promo_{{ $game->slug }}', v || 'auto'));
                         this.$watch('playerId', v => sessionStorage.setItem('totap_player_id_{{ $game->slug }}', v || ''));
                         this.$watch('zoneId', v => sessionStorage.setItem('totap_zone_id_{{ $game->slug }}', v || ''));
                         
@@ -180,6 +244,7 @@
                     <form action="{{ route('topup.process', $game->slug) }}" method="POST" id="topup-form">
                         @csrf
                         <input type="hidden" name="product_id" x-model="selectedProduct">
+                        <input type="hidden" name="selected_promo" x-model="selectedPromo">
                         
                         <div class="flex flex-col xl:flex-row gap-6 items-start">
                             <!-- Kolom Tengah: Tujuan & Nominal -->
@@ -380,8 +445,65 @@
                                   </div>
                               </div>
 
-                            <!-- Kolom Kanan: Metode Pembayaran -->
+                            <!-- Kolom Kanan: Promo & Metode Pembayaran -->
                             <div class="w-full xl:w-5/12 space-y-6" style="position: sticky; top: 6rem; align-self: flex-start;">
+                                
+                                <!-- Box Pilihan Promo Pelanggan (Muncul jika ada promo yang memenuhi syarat) -->
+                                <div x-show="selectedProduct && getAvailablePromos().length > 0"
+                                     x-transition:enter="transition ease-out duration-300"
+                                     x-transition:enter-start="opacity-0 -translate-y-2"
+                                     x-transition:enter-end="opacity-100 translate-y-0"
+                                     class="bg-gradient-to-br from-indigo-50/90 via-purple-50/90 to-amber-50/70 dark:from-gray-900 dark:via-indigo-950/70 dark:to-gray-900 border-2 border-indigo-200 dark:border-indigo-800/80 rounded-2xl p-5 space-y-3 shadow-md">
+                                    <div class="flex items-center justify-between border-b border-indigo-100 dark:border-indigo-900/60 pb-2.5">
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-6 h-6 rounded-full bg-amber-400 text-gray-950 flex items-center justify-center text-xs font-black shadow-sm">
+                                                <i class="fas fa-gift"></i>
+                                            </span>
+                                            <h4 class="text-xs sm:text-sm font-black text-indigo-900 dark:text-indigo-200 uppercase tracking-wider">
+                                                Pilih Promo Diskon
+                                            </h4>
+                                        </div>
+                                        <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300">
+                                            Pilih 1 promo
+                                        </span>
+                                    </div>
+
+                                    <div class="space-y-2.5 pt-1">
+                                        <!-- Loop Tiap Promo yang Memenuhi Syarat -->
+                                        <template x-for="promo in getAvailablePromos()" :key="promo.type">
+                                            <label class="flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition"
+                                                   :class="(selectedPromo === promo.type || (selectedPromo === 'auto' && promo.type === productPromoMap[selectedProduct]?.default_promo_type)) ? 'border-indigo-600 dark:border-indigo-500 bg-white dark:bg-gray-800 text-indigo-900 dark:text-white shadow-md ring-2 ring-indigo-500/20' : 'border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/60 text-gray-700 dark:text-gray-300 hover:border-indigo-300'">
+                                                <div class="flex items-center gap-3">
+                                                    <input type="radio" name="promo_choice" :value="promo.type"
+                                                           :checked="selectedPromo === promo.type || (selectedPromo === 'auto' && promo.type === productPromoMap[selectedProduct]?.default_promo_type)"
+                                                           @change="selectedPromo = promo.type"
+                                                           class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                                    <div>
+                                                        <div class="font-black text-xs sm:text-sm" x-text="promo.title"></div>
+                                                        <div class="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold" x-text="promo.savings_text"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="text-right">
+                                                    <span class="px-2.5 py-1 rounded-lg text-xs font-black bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 font-mono shadow-sm" x-text="'Rp' + Number(promo.final_amount).toLocaleString('id-ID')"></span>
+                                                </div>
+                                            </label>
+                                        </template>
+
+                                        <!-- Opsi Tidak Memakai Promo (Simpan Promo) -->
+                                        <label class="flex items-center justify-between p-2.5 rounded-xl border cursor-pointer transition text-xs"
+                                               :class="selectedPromo === 'none' ? 'border-gray-400 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-bold' : 'border-transparent text-gray-500 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-gray-800/40'">
+                                            <div class="flex items-center gap-2.5">
+                                                <input type="radio" name="promo_choice" value="none"
+                                                       :checked="selectedPromo === 'none'"
+                                                       @change="selectedPromo = 'none'"
+                                                       class="w-4 h-4 text-gray-400 focus:ring-gray-400 cursor-pointer">
+                                                <span class="text-[11px]">Jangan gunakan promo (simpan untuk nanti)</span>
+                                            </div>
+                                            <span class="text-[11px] font-mono text-gray-400" x-text="selectedProduct && productPromoMap[selectedProduct] ? productPromoMap[selectedProduct].original_formatted : ''"></span>
+                                        </label>
+                                    </div>
+                                </div>
+
                                 <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-xl rounded-2xl p-5">
                                     <div class="flex items-center gap-3 mb-4">
                                         <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold shadow-md shadow-indigo-500/20">3</div>
@@ -426,10 +548,24 @@
                                     </div>
                                 </div>
                                 
-                                <button type="submit" class="w-full py-3.5 rounded-xl font-bold text-white shadow-lg transition-all transform hover:scale-[1.02]"
+                                <!-- Ringkasan Total Tagihan Dinamis -->
+                                <div x-show="selectedProduct" x-transition class="p-4 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                                    <div>
+                                        <span class="text-gray-500 dark:text-gray-400 block text-xs font-semibold">Total Pembayaran:</span>
+                                        <span class="text-lg font-black font-mono text-indigo-600 dark:text-indigo-400" x-text="getCurrentPriceFormatted()"></span>
+                                    </div>
+                                    <template x-if="selectedPromo !== 'none' && selectedProduct && productPromoMap[selectedProduct]?.has_discount">
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                                            <i class="fas fa-check-circle mr-1"></i> Promo Terpasang
+                                        </span>
+                                    </template>
+                                </div>
+                                
+                                <button type="submit" class="w-full py-3.5 rounded-xl font-bold text-white shadow-lg transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
                                         :class="selectedProduct ? 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/30 cursor-pointer' : 'bg-gray-400 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed opacity-75'"
                                         :disabled="!selectedProduct">
-                                    Beli Sekarang
+                                    <span>Beli Sekarang</span>
+                                    <i class="fas fa-arrow-right text-xs"></i>
                                 </button>
                             </div>
                         </div>

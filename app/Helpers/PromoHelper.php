@@ -199,9 +199,9 @@ class PromoHelper
     }
 
     /**
-     * Calculate discount for a user & transaction amount with category check and minimum profit protection
+     * Calculate discount for a user & transaction amount with category check, minimum profit protection, and customer promo selection
      */
-    public static function calculateDiscount($user, float $originalAmount, $context = null, float $priceModal = 0): array
+    public static function calculateDiscount($user, float $originalAmount, $context = null, float $priceModal = 0, ?string $selectedPromoType = null): array
     {
         $settings = self::getSettings();
         $originalAmount = max(0, $originalAmount);
@@ -241,8 +241,10 @@ class PromoHelper
                         $eligiblePromos[] = [
                             'type'            => 'first_user',
                             'title'           => $settings['first_user_title'] . ($settings['first_user_type'] === 'percent' ? " ({$settings['first_user_value']}%)" : ""),
-                            'discount_amount' => $discount,
+                            'discount_amount' => (int) $discount,
+                            'final_amount'    => max(0, (int) $originalAmount - (int) $discount),
                             'badge'           => 'Diskon Pengguna Baru',
+                            'savings_text'    => 'Hemat Rp' . number_format($discount, 0, ',', '.'),
                         ];
                     }
                 }
@@ -279,16 +281,18 @@ class PromoHelper
                         $eligiblePromos[] = [
                             'type'            => 'day_promo',
                             'title'           => $promoName . ($settings['day_promo_type'] === 'percent' ? " ({$settings['day_promo_value']}%)" : ""),
-                            'discount_amount' => $discount,
+                            'discount_amount' => (int) $discount,
+                            'final_amount'    => max(0, (int) $originalAmount - (int) $discount),
                             'badge'           => "Promo Hari {$dayCheck['day_name']}",
+                            'savings_text'    => 'Hemat Rp' . number_format($discount, 0, ',', '.'),
                         ];
                     }
                 }
             }
         }
 
-        // 3. Choose the Best Promo (Highest Discount for Customer)
-        if (empty($eligiblePromos)) {
+        // 3. Selection Logic (Customer Chosen Promo or Best Automatic Default)
+        if (empty($eligiblePromos) || $selectedPromoType === 'none') {
             return [
                 'has_discount'    => false,
                 'original_amount' => (int) $originalAmount,
@@ -298,16 +302,32 @@ class PromoHelper
                 'promo_title'     => null,
                 'promo_badge'     => null,
                 'savings_text'    => null,
+                'eligible_promos' => $eligiblePromos,
             ];
         }
 
-        // Sort descending by discount_amount
+        // Sort descending by discount_amount for best default
         usort($eligiblePromos, function ($a, $b) {
             return $b['discount_amount'] <=> $a['discount_amount'];
         });
 
-        $best = $eligiblePromos[0];
-        $discountAmount = min($best['discount_amount'], (int) $originalAmount);
+        // Find customer's chosen promo if specified
+        $chosen = null;
+        if (!empty($selectedPromoType)) {
+            foreach ($eligiblePromos as $ep) {
+                if ($ep['type'] === $selectedPromoType) {
+                    $chosen = $ep;
+                    break;
+                }
+            }
+        }
+
+        // Fallback to highest discount if not chosen or invalid
+        if (!$chosen) {
+            $chosen = $eligiblePromos[0];
+        }
+
+        $discountAmount = min($chosen['discount_amount'], (int) $originalAmount);
         $finalAmount = max(0, (int) $originalAmount - $discountAmount);
 
         return [
@@ -315,10 +335,11 @@ class PromoHelper
             'original_amount' => (int) $originalAmount,
             'discount_amount' => (int) $discountAmount,
             'final_amount'    => (int) $finalAmount,
-            'promo_type'      => $best['type'],
-            'promo_title'     => $best['title'],
-            'promo_badge'     => $best['badge'],
+            'promo_type'      => $chosen['type'],
+            'promo_title'     => $chosen['title'],
+            'promo_badge'     => $chosen['badge'],
             'savings_text'    => 'Hemat Rp' . number_format($discountAmount, 0, ',', '.'),
+            'eligible_promos' => $eligiblePromos,
         ];
     }
 

@@ -392,9 +392,10 @@ class TopUpController extends Controller
         $user = auth()->user();
         $originalPrice = (float) $product->price_sell;
 
-        // HITUNG DISKON PROMO (PENGGUNA BARU / HARI SPESIAL OTOMATIS SESUAI KATEGORI & PROTEKSI MIN. PROFIT)
+        // HITUNG DISKON PROMO (PENGGUNA BARU / HARI SPESIAL SESUAI PILIHAN PELANGGAN, KATEGORI & PROTEKSI MIN. PROFIT)
         \App\Helpers\PromoHelper::ensureSchema();
-        $discountInfo = \App\Helpers\PromoHelper::calculateDiscount($user, $originalPrice, $game, (float)$product->price_modal);
+        $selectedPromoType = $request->input('selected_promo');
+        $discountInfo = \App\Helpers\PromoHelper::calculateDiscount($user, $originalPrice, $game, (float)$product->price_modal, $selectedPromoType);
         $finalAmount = (float) $discountInfo['final_amount'];
         $discountAmount = (float) $discountInfo['discount_amount'];
         $promoTitle = $discountInfo['promo_title'];
@@ -519,7 +520,8 @@ class TopUpController extends Controller
 
             $product = GameProduct::find($request->product_id);
             $originalPrice = $product ? (float)$product->price_sell : 0;
-            $discountInfo = \App\Helpers\PromoHelper::calculateDiscount(auth()->user(), $originalPrice);
+            $selectedPromoType = $request->input('selected_promo');
+            $discountInfo = \App\Helpers\PromoHelper::calculateDiscount(auth()->user(), $originalPrice, $game, (float)($product ? $product->price_modal : 0), $selectedPromoType);
 
             // 1. VALIDASI KHUSUS VALORANT: HANYA Valorant yang boleh dan wajib memakai tanda '#' (Riot ID: Username#TAG)
             if ($gameSlug === 'valorant') {
