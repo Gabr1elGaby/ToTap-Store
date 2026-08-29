@@ -59,6 +59,7 @@
                                 </optgroup>
 
                                 <optgroup label="💻 Game PC" style="color: #111827; background: #ffffff;">
+                                    <option value="marvel_rivals" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Marvel Rivals (UID / Player ID)</option>
                                     <option value="valorant" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Valorant (Riot ID + Tagline)</option>
                                     <option value="point_blank" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Point Blank Zepetto (User ID)</option>
                                     <option value="steam" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Steam Wallet IDR (Nomor WhatsApp / Voucher)</option>
@@ -459,6 +460,15 @@
                     },
 
                     // PC Games
+                    marvel_rivals: {
+                        name: 'Marvel Rivals',
+                        developer: 'NetEase Games',
+                        category: 'PC Game',
+                        target_field_1: 'UID Marvel Rivals (Player ID)',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Buka profil avatar Marvel Rivals in-game Anda di pojok kiri atas dan salin deretan angka UID / Player ID akun Anda.'
+                    },
                     valorant: {
                         name: 'Valorant',
                         developer: 'Riot Games',

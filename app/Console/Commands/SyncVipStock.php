@@ -24,6 +24,7 @@ class SyncVipStock extends Command
             'valorant' => 'Valorant',
             'free-fire' => 'Free Fire',
             'pubg' => 'PUBG',
+            'marvel-rivals' => 'Marvel Rivals',
         ];
 
         $totalChecked = 0;

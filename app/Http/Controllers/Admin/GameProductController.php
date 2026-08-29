@@ -287,6 +287,7 @@ class GameProductController extends Controller
             'roblox' => 'Roblox',
             'pubg' => 'PUBG',
             'pubg-mobile' => 'PUBG',
+            'marvel-rivals' => 'Marvel Rivals',
         ];
 
         foreach ($games as $game) {

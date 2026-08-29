@@ -278,6 +278,7 @@ class TopUpController extends Controller
                     'roblox' => 'Roblox',
                     'pubg' => 'PUBG',
                     'pubg-mobile' => 'PUBG',
+                    'marvel-rivals' => 'Marvel Rivals',
                 ];
                 $keyword = $filterMap[$game->slug] ?? $game->name;
                 $apiRes = $vipApi->getGameProducts($keyword);
