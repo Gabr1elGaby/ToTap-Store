@@ -446,79 +446,83 @@
                               </div>
 
                             <!-- Kolom Kanan: Promo & Metode Pembayaran -->
-                            <div class="w-full xl:w-5/12 space-y-6" style="position: sticky; top: 6rem; align-self: flex-start;">
+                            <div class="w-full xl:w-5/12 space-y-4" style="position: sticky; top: 5rem; align-self: flex-start; max-height: calc(100vh - 5.5rem); overflow-y: auto;">
                                 
                                 <!-- Box Pilihan Promo Pelanggan (Muncul jika ada promo yang memenuhi syarat) -->
                                 <div x-show="selectedProduct && getAvailablePromos().length > 0"
                                      x-transition:enter="transition ease-out duration-300"
                                      x-transition:enter-start="opacity-0 -translate-y-2"
                                      x-transition:enter-end="opacity-100 translate-y-0"
-                                     class="bg-gradient-to-br from-indigo-50/90 via-purple-50/90 to-amber-50/70 dark:from-gray-900 dark:via-indigo-950/70 dark:to-gray-900 border-2 border-indigo-200 dark:border-indigo-800/80 rounded-2xl p-5 space-y-3 shadow-md">
-                                    <div class="flex items-center justify-between border-b border-indigo-100 dark:border-indigo-900/60 pb-2.5">
+                                     class="bg-white dark:bg-slate-900 border-2 border-indigo-200 dark:border-indigo-500/40 rounded-2xl p-4 space-y-2.5 shadow-lg">
+                                    <div class="flex items-center justify-between border-b border-gray-100 dark:border-slate-800 pb-2">
                                         <div class="flex items-center gap-2">
                                             <span class="w-6 h-6 rounded-full bg-amber-400 text-gray-950 flex items-center justify-center text-xs font-black shadow-sm">
                                                 <i class="fas fa-gift"></i>
                                             </span>
-                                            <h4 class="text-xs sm:text-sm font-black text-indigo-900 dark:text-indigo-200 uppercase tracking-wider">
+                                            <h4 class="text-xs sm:text-sm font-black text-indigo-600 dark:text-indigo-300 uppercase tracking-wider">
                                                 Pilih Promo Diskon
                                             </h4>
                                         </div>
-                                        <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300">
+                                        <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
                                             Pilih 1 promo
                                         </span>
                                     </div>
 
-                                    <div class="space-y-2.5 pt-1">
+                                    <div class="space-y-2 pt-0.5">
                                         <!-- Loop Tiap Promo yang Memenuhi Syarat -->
                                         <template x-for="promo in getAvailablePromos()" :key="promo.type">
-                                            <label class="flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition"
-                                                   :class="(selectedPromo === promo.type || (selectedPromo === 'auto' && promo.type === productPromoMap[selectedProduct]?.default_promo_type)) ? 'border-indigo-600 dark:border-indigo-500 bg-white dark:bg-gray-800 text-indigo-900 dark:text-white shadow-md ring-2 ring-indigo-500/20' : 'border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/60 text-gray-700 dark:text-gray-300 hover:border-indigo-300'">
+                                            <label class="flex items-center justify-between p-2.5 sm:p-3 rounded-xl border-2 cursor-pointer transition"
+                                                   :class="(selectedPromo === promo.type || (selectedPromo === 'auto' && promo.type === productPromoMap[selectedProduct]?.default_promo_type)) 
+                                                       ? 'border-indigo-600 dark:border-indigo-400 bg-indigo-50/90 dark:bg-indigo-950/70 text-gray-900 dark:text-white shadow-md ring-2 ring-indigo-500/30' 
+                                                       : 'border-gray-200 dark:border-slate-800 bg-gray-50/60 dark:bg-slate-800/60 text-gray-900 dark:text-gray-200 hover:border-indigo-400 dark:hover:border-indigo-500'">
                                                 <div class="flex items-center gap-3">
                                                     <input type="radio" name="promo_choice" :value="promo.type"
                                                            :checked="selectedPromo === promo.type || (selectedPromo === 'auto' && promo.type === productPromoMap[selectedProduct]?.default_promo_type)"
                                                            @change="selectedPromo = promo.type"
                                                            class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
                                                     <div>
-                                                        <div class="font-black text-xs sm:text-sm" x-text="promo.title"></div>
-                                                        <div class="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold" x-text="promo.savings_text"></div>
+                                                        <div class="font-black text-xs sm:text-sm text-gray-900 dark:text-white" x-text="promo.title"></div>
+                                                        <div class="text-[11px] text-emerald-600 dark:text-emerald-400 font-extrabold" x-text="promo.savings_text"></div>
                                                     </div>
                                                 </div>
                                                 <div class="text-right">
-                                                    <span class="px-2.5 py-1 rounded-lg text-xs font-black bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 font-mono shadow-sm" x-text="'Rp' + Number(promo.final_amount).toLocaleString('id-ID')"></span>
+                                                    <span class="px-2.5 py-1 rounded-lg text-xs font-black bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-600/50 font-mono shadow-sm" x-text="'Rp' + Number(promo.final_amount).toLocaleString('id-ID')"></span>
                                                 </div>
                                             </label>
                                         </template>
 
                                         <!-- Opsi Tidak Memakai Promo (Simpan Promo) -->
-                                        <label class="flex items-center justify-between p-2.5 rounded-xl border cursor-pointer transition text-xs"
-                                               :class="selectedPromo === 'none' ? 'border-gray-400 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-bold' : 'border-transparent text-gray-500 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-gray-800/40'">
+                                        <label class="flex items-center justify-between p-2 rounded-xl border cursor-pointer transition text-xs"
+                                               :class="selectedPromo === 'none' 
+                                                   ? 'border-gray-400 dark:border-slate-600 bg-gray-100 dark:bg-slate-800 text-gray-900 dark:text-white font-bold' 
+                                                   : 'border-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-slate-800/50'">
                                             <div class="flex items-center gap-2.5">
                                                 <input type="radio" name="promo_choice" value="none"
                                                        :checked="selectedPromo === 'none'"
                                                        @change="selectedPromo = 'none'"
                                                        class="w-4 h-4 text-gray-400 focus:ring-gray-400 cursor-pointer">
-                                                <span class="text-[11px]">Jangan gunakan promo (simpan untuk nanti)</span>
+                                                <span class="text-[11px] text-gray-700 dark:text-gray-300">Jangan gunakan promo (simpan untuk nanti)</span>
                                             </div>
-                                            <span class="text-[11px] font-mono text-gray-400" x-text="selectedProduct && productPromoMap[selectedProduct] ? productPromoMap[selectedProduct].original_formatted : ''"></span>
+                                            <span class="text-[11px] font-mono text-gray-500 dark:text-gray-400 font-bold" x-text="selectedProduct && productPromoMap[selectedProduct] ? productPromoMap[selectedProduct].original_formatted : ''"></span>
                                         </label>
                                     </div>
                                 </div>
 
-                                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-xl rounded-2xl p-5">
-                                    <div class="flex items-center gap-3 mb-4">
-                                        <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold shadow-md shadow-indigo-500/20">3</div>
-                                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Metode Pembayaran</h3>
+                                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-xl rounded-2xl p-4">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div class="w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-md shadow-indigo-500/20">3</div>
+                                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Metode Pembayaran</h3>
                                     </div>
-                                    <div class="space-y-3">
+                                    <div class="space-y-2.5">
                                         <!-- QRIS (Default) -->
-                                        <label class="relative flex items-center justify-between p-4 sm:p-4.5 border-2 rounded-2xl cursor-pointer shadow-sm transition"
+                                        <label class="relative flex items-center justify-between p-3 border-2 rounded-xl cursor-pointer shadow-sm transition"
                                                :class="selectedPayment === 'qris' ? 'border-indigo-600 dark:border-indigo-500 bg-indigo-50/80 dark:bg-gray-900 ring-2 ring-indigo-500/20' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 hover:border-gray-300 dark:hover:border-gray-600'">
-                                            <div class="flex items-center gap-4">
-                                                <input type="radio" name="payment_method" x-model="selectedPayment" value="qris" class="w-5 h-5 text-indigo-600 border-gray-300 focus:ring-indigo-500 cursor-pointer shrink-0">
-                                                <span class="font-bold text-sm sm:text-base text-gray-900 dark:text-white tracking-wide">QRIS All Payment</span>
+                                            <div class="flex items-center gap-3">
+                                                <input type="radio" name="payment_method" x-model="selectedPayment" value="qris" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500 cursor-pointer shrink-0">
+                                                <span class="font-bold text-xs sm:text-sm text-gray-900 dark:text-white tracking-wide">QRIS All Payment</span>
                                             </div>
-                                            <div class="bg-white p-1.5 rounded-xl shadow-sm border border-gray-200 shrink-0 ml-3">
-                                                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" alt="QRIS" class="h-6 object-contain">
+                                            <div class="bg-white p-1 rounded-lg shadow-sm border border-gray-200 shrink-0 ml-3">
+                                                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" alt="QRIS" class="h-5 object-contain">
                                             </div>
                                         </label>
 
@@ -526,21 +530,21 @@
                                         @php
                                             $userBalance = auth()->check() ? (float)auth()->user()->balance : 0;
                                         @endphp
-                                        <label class="relative flex items-center justify-between p-4 sm:p-4.5 border-2 rounded-2xl cursor-pointer shadow-sm transition"
+                                        <label class="relative flex items-center justify-between p-3 border-2 rounded-xl cursor-pointer shadow-sm transition"
                                                :class="selectedPayment === 'balance' ? 'border-emerald-600 dark:border-emerald-500 bg-emerald-50/80 dark:bg-gray-900 ring-2 ring-emerald-500/20' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 hover:border-gray-300 dark:hover:border-gray-600'">
-                                            <div class="flex items-center gap-4">
-                                                <input type="radio" name="payment_method" x-model="selectedPayment" value="balance" class="w-5 h-5 text-emerald-600 border-gray-300 focus:ring-emerald-500 cursor-pointer shrink-0">
-                                                <div class="flex items-center gap-2.5">
-                                                    <span class="font-bold text-sm sm:text-base text-gray-900 dark:text-white tracking-wide">Saldo Akun</span>
+                                            <div class="flex items-center gap-3">
+                                                <input type="radio" name="payment_method" x-model="selectedPayment" value="balance" class="w-4 h-4 text-emerald-600 border-gray-300 focus:ring-emerald-500 cursor-pointer shrink-0">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="font-bold text-xs sm:text-sm text-gray-900 dark:text-white tracking-wide">Saldo Akun</span>
                                                     @auth
-                                                        <span class="px-2.5 py-0.5 bg-emerald-400 text-gray-950 font-black text-xs rounded-full shadow-sm tracking-wide">Rp{{ number_format($userBalance, 0, ',', '.') }}</span>
+                                                        <span class="px-2 py-0.5 bg-emerald-400 text-gray-950 font-black text-[10px] rounded-full shadow-sm tracking-wide">Rp{{ number_format($userBalance, 0, ',', '.') }}</span>
                                                     @else
-                                                        <span class="px-2.5 py-0.5 bg-amber-400 text-gray-950 font-bold text-xs rounded-full shadow-sm">Perlu Login</span>
+                                                        <span class="px-2 py-0.5 bg-amber-400 text-gray-950 font-bold text-[10px] rounded-full shadow-sm">Perlu Login</span>
                                                     @endauth
                                                 </div>
                                             </div>
-                                            <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-base shadow-sm border border-emerald-200 dark:border-emerald-700 shrink-0 ml-3">
-                                                <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <div class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-sm shadow-sm border border-emerald-200 dark:border-emerald-700 shrink-0 ml-3">
+                                                <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                                 </svg>
                                             </div>
@@ -549,20 +553,20 @@
                                 </div>
                                 
                                 <!-- Ringkasan Total Tagihan Dinamis -->
-                                <div x-show="selectedProduct" x-transition class="p-4 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                                <div x-show="selectedProduct" x-transition class="p-3.5 rounded-xl bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 flex justify-between items-center shadow-sm">
                                     <div>
-                                        <span class="text-gray-500 dark:text-gray-400 block text-xs font-semibold">Total Pembayaran:</span>
-                                        <span class="text-lg font-black font-mono text-indigo-600 dark:text-indigo-400" x-text="getCurrentPriceFormatted()"></span>
+                                        <span class="text-gray-500 dark:text-gray-400 block text-[11px] font-semibold">Total Pembayaran:</span>
+                                        <span class="text-base sm:text-lg font-black font-mono text-indigo-600 dark:text-indigo-400" x-text="getCurrentPriceFormatted()"></span>
                                     </div>
                                     <template x-if="selectedPromo !== 'none' && selectedProduct && productPromoMap[selectedProduct]?.has_discount">
                                         <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-                                            <i class="fas fa-check-circle mr-1"></i> Promo Terpasang
+                                            <i class="fas fa-check-circle mr-1"></i> Promo Aktif
                                         </span>
                                     </template>
                                 </div>
                                 
-                                <button type="submit" class="w-full py-3.5 rounded-xl font-bold text-white shadow-lg transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
-                                        :class="selectedProduct ? 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/30 cursor-pointer' : 'bg-gray-400 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed opacity-75'"
+                                <button type="submit" class="w-full py-3.5 rounded-xl font-black text-white text-sm shadow-xl transition-all transform hover:scale-[1.01] active:scale-98 flex items-center justify-center gap-2"
+                                        :class="selectedProduct ? 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/40 cursor-pointer' : 'bg-gray-400 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed opacity-75'"
                                         :disabled="!selectedProduct">
                                     <span>Beli Sekarang</span>
                                     <i class="fas fa-arrow-right text-xs"></i>
