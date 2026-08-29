@@ -13,6 +13,7 @@
     <div class="py-8" x-data="{
         // Simulator Alpine State
         simAmount: 50000,
+        simModal: 45000,
         simEmail: '',
         simCategory: 'all',
         simResult: null,
@@ -27,7 +28,7 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ amount: this.simAmount, email: this.simEmail, category: this.simCategory })
+                    body: JSON.stringify({ amount: this.simAmount, modal: this.simModal, email: this.simEmail, category: this.simCategory })
                 });
                 this.simResult = await res.json();
             } catch (e) {
@@ -189,15 +190,31 @@
                                     </div>
                                 </div>
 
-                                <!-- Minimal Belanja -->
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-1">
-                                        Minimal Transaksi (Rp)
-                                    </label>
-                                    <input type="number" min="0" name="promo_first_user_min_spend" value="{{ old('promo_first_user_min_spend', $settings['first_user_min_spend']) }}" 
-                                           placeholder="0 = Tanpa minimal"
-                                           class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono">
-                                    <span class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 block">Diskon hanya aktif jika pesanan mencapai nominal ini.</span>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <!-- Minimal Belanja -->
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-1">
+                                            Minimal Transaksi (Rp)
+                                        </label>
+                                        <input type="number" min="0" name="promo_first_user_min_spend" value="{{ old('promo_first_user_min_spend', $settings['first_user_min_spend']) }}" 
+                                               placeholder="0 = Tanpa minimal"
+                                               class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono">
+                                        <span class="text-[10px] text-gray-400 mt-0.5 block">Minimal total belanja pembeli</span>
+                                    </div>
+
+                                    <!-- Target Keuntungan Minimal (Proteksi Anti-Rugi) -->
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-1 flex items-center justify-between">
+                                            <span>🛡️ Min. Keuntungan Toko (%)</span>
+                                        </label>
+                                        <div class="relative">
+                                            <input type="number" step="any" min="0" max="100" name="promo_first_user_min_profit" value="{{ old('promo_first_user_min_profit', $settings['first_user_min_profit'] ?? 2) }}" 
+                                                   placeholder="Contoh: 2"
+                                                   class="w-full pl-3.5 pr-10 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono">
+                                            <span class="absolute right-3.5 top-2.5 text-xs font-black text-gray-400">%</span>
+                                        </div>
+                                        <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5 block">Diskon tidak akan memotong laba di bawah persentase modal ini.</span>
+                                    </div>
                                 </div>
 
                                 <!-- Kategori Produk yang Berlaku -->
@@ -333,14 +350,31 @@
                                     </div>
                                 </div>
 
-                                <!-- Minimal Belanja -->
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-1">
-                                        Minimal Transaksi (Rp)
-                                    </label>
-                                    <input type="number" min="0" name="promo_day_min_spend" value="{{ old('promo_day_min_spend', $settings['day_promo_min_spend']) }}" 
-                                           placeholder="0 = Tanpa minimal"
-                                           class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-bold focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-mono">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <!-- Minimal Belanja -->
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-1">
+                                            Minimal Transaksi (Rp)
+                                        </label>
+                                        <input type="number" min="0" name="promo_day_min_spend" value="{{ old('promo_day_min_spend', $settings['day_promo_min_spend']) }}" 
+                                               placeholder="0 = Tanpa minimal"
+                                               class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-bold focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-mono">
+                                        <span class="text-[10px] text-gray-400 mt-0.5 block">Minimal total belanja pembeli</span>
+                                    </div>
+
+                                    <!-- Target Keuntungan Minimal (Proteksi Anti-Rugi) -->
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-1 flex items-center justify-between">
+                                            <span>🛡️ Min. Keuntungan Toko (%)</span>
+                                        </label>
+                                        <div class="relative">
+                                            <input type="number" step="any" min="0" max="100" name="promo_day_min_profit" value="{{ old('promo_day_min_profit', $settings['day_promo_min_profit'] ?? 2) }}" 
+                                                   placeholder="Contoh: 2"
+                                                   class="w-full pl-3.5 pr-10 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-bold focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-mono">
+                                            <span class="absolute right-3.5 top-2.5 text-xs font-black text-gray-400">%</span>
+                                        </div>
+                                        <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5 block">Diskon tidak akan memotong laba di bawah persentase modal ini.</span>
+                                    </div>
                                 </div>
 
                                 <!-- Kategori Produk yang Berlaku -->
@@ -390,26 +424,30 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end">
-                    <div class="sm:col-span-4">
-                        <label class="block text-xs font-bold text-slate-300 mb-1">Nominal Belanja (Rp)</label>
-                        <input type="number" x-model="simAmount" class="w-full px-3.5 py-2.5 bg-slate-800 text-white border border-slate-700 rounded-xl text-sm font-mono font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3.5 items-end">
+                    <div class="sm:col-span-3">
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Harga Jual Normal (Rp)</label>
+                        <input type="number" x-model="simAmount" class="w-full px-3.5 py-2 bg-slate-800 text-white border border-slate-700 rounded-xl text-xs font-mono font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Harga Modal (Rp)</label>
+                        <input type="number" x-model="simModal" placeholder="0" class="w-full px-3.5 py-2 bg-slate-800 text-white border border-slate-700 rounded-xl text-xs font-mono font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                     </div>
                     <div class="sm:col-span-3">
                         <label class="block text-xs font-bold text-slate-300 mb-1">Kategori Produk</label>
-                        <select x-model="simCategory" class="w-full px-3.5 py-2.5 bg-slate-800 text-white border border-slate-700 rounded-xl text-xs font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                        <select x-model="simCategory" class="w-full px-3.5 py-2 bg-slate-800 text-white border border-slate-700 rounded-xl text-xs font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                             @foreach($availableCategories as $cCode => $cLabel)
                                 <option value="{{ $cCode }}">{{ $cLabel }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="sm:col-span-3">
-                        <label class="block text-xs font-bold text-slate-300 mb-1">Email / No WA (Opsional)</label>
-                        <input type="text" x-model="simEmail" placeholder="Kosongkan = Akun Baru" class="w-full px-3.5 py-2.5 bg-slate-800 text-white border border-slate-700 rounded-xl text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Email / WA (Opsional)</label>
+                        <input type="text" x-model="simEmail" placeholder="Akun Baru" class="w-full px-3.5 py-2 bg-slate-800 text-white border border-slate-700 rounded-xl text-xs focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                     </div>
                     <div class="sm:col-span-2">
-                        <button type="button" @click="testDiscount()" :disabled="simLoading" class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-bold text-xs shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
-                            <span x-show="!simLoading"><i class="fas fa-play mr-1"></i> Hitung</span>
+                        <button type="button" @click="testDiscount()" :disabled="simLoading" class="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-bold text-xs shadow-lg transition flex items-center justify-center gap-1.5 cursor-pointer">
+                            <span x-show="!simLoading"><i class="fas fa-play mr-1"></i> Uji Coba</span>
                             <span x-show="simLoading"><i class="fas fa-spinner fa-spin"></i></span>
                         </button>
                     </div>

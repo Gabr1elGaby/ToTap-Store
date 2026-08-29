@@ -320,7 +320,7 @@
                                           <div class="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
                                              @foreach($catProducts as $product)
                                                  @php
-                                                     $prodCalc = \App\Helpers\PromoHelper::calculateDiscount(auth()->user(), (float)$product->price_sell, $game);
+                                                     $prodCalc = \App\Helpers\PromoHelper::calculateDiscount(auth()->user(), (float)$product->price_sell, $game, (float)$product->price_modal);
                                                  @endphp
                                                  <div @click="if(!stockMap['{{ $product->id }}']) selectedProduct = '{{ $product->id }}'"
                                                       data-product-id="{{ $product->id }}"

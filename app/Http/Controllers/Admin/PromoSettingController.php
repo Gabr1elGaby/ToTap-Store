@@ -41,6 +41,7 @@ class PromoSettingController extends Controller
             'promo_first_user_value'        => 'required|numeric|min:0',
             'promo_first_user_max_discount' => 'nullable|numeric|min:0',
             'promo_first_user_min_spend'    => 'nullable|numeric|min:0',
+            'promo_first_user_min_profit'   => 'nullable|numeric|min:0|max:100',
             'promo_first_user_categories'   => 'nullable|array',
 
             'promo_day_title'               => 'nullable|string|max:100',
@@ -50,6 +51,7 @@ class PromoSettingController extends Controller
             'promo_day_value'               => 'required|numeric|min:0',
             'promo_day_max_discount'        => 'nullable|numeric|min:0',
             'promo_day_min_spend'           => 'nullable|numeric|min:0',
+            'promo_day_min_profit'          => 'nullable|numeric|min:0|max:100',
             'promo_day_categories'          => 'nullable|array',
         ]);
 
@@ -60,6 +62,7 @@ class PromoSettingController extends Controller
         Setting::set('promo_first_user_value', (string)(float)$request->input('promo_first_user_value', 10));
         Setting::set('promo_first_user_max_discount', (string)(float)$request->input('promo_first_user_max_discount', 0));
         Setting::set('promo_first_user_min_spend', (string)(float)$request->input('promo_first_user_min_spend', 0));
+        Setting::set('promo_first_user_min_profit', (string)(float)$request->input('promo_first_user_min_profit', 2));
 
         $firstCats = $request->input('promo_first_user_categories', ['all']);
         if (empty($firstCats)) $firstCats = ['all'];
@@ -77,6 +80,7 @@ class PromoSettingController extends Controller
         Setting::set('promo_day_value', (string)(float)$request->input('promo_day_value', 5));
         Setting::set('promo_day_max_discount', (string)(float)$request->input('promo_day_max_discount', 0));
         Setting::set('promo_day_min_spend', (string)(float)$request->input('promo_day_min_spend', 0));
+        Setting::set('promo_day_min_profit', (string)(float)$request->input('promo_day_min_profit', 2));
 
         $dayCats = $request->input('promo_day_categories', ['all']);
         if (empty($dayCats)) $dayCats = ['all'];
@@ -88,6 +92,7 @@ class PromoSettingController extends Controller
     public function simulate(Request $request)
     {
         $amount = (float) $request->input('amount', 50000);
+        $modal = (float) $request->input('modal', 0);
         $email = trim($request->input('email', ''));
         $category = trim($request->input('category', 'all'));
 
@@ -96,7 +101,7 @@ class PromoSettingController extends Controller
             $user = User::where('email', $email)->orWhere('phone_number', $email)->first();
         }
 
-        $result = PromoHelper::calculateDiscount($user, $amount, $category);
+        $result = PromoHelper::calculateDiscount($user, $amount, $category, $modal);
         $isFirstTime = $user ? PromoHelper::isFirstTimeUser($user) : null;
         $dayCheck = PromoHelper::isDayPromoActiveToday();
 
@@ -108,6 +113,7 @@ class PromoSettingController extends Controller
             'today_day'     => $dayCheck['day_name'],
             'day_active'    => $dayCheck['active'],
             'category'      => $category,
+            'modal'         => $modal,
             'calculation'   => $result,
         ]);
     }

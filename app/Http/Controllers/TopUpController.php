@@ -391,9 +391,9 @@ class TopUpController extends Controller
         $user = auth()->user();
         $originalPrice = (float) $product->price_sell;
 
-        // HITUNG DISKON PROMO (PENGGUNA BARU / HARI SPESIAL OTOMATIS SESUAI KATEGORI)
+        // HITUNG DISKON PROMO (PENGGUNA BARU / HARI SPESIAL OTOMATIS SESUAI KATEGORI & PROTEKSI MIN. PROFIT)
         \App\Helpers\PromoHelper::ensureSchema();
-        $discountInfo = \App\Helpers\PromoHelper::calculateDiscount($user, $originalPrice, $game);
+        $discountInfo = \App\Helpers\PromoHelper::calculateDiscount($user, $originalPrice, $game, (float)$product->price_modal);
         $finalAmount = (float) $discountInfo['final_amount'];
         $discountAmount = (float) $discountInfo['discount_amount'];
         $promoTitle = $discountInfo['promo_title'];

@@ -60,6 +60,7 @@ class PromoHelper
             'first_user_value'        => (float) Setting::get('promo_first_user_value', 10), // e.g. 10% or Rp5.000
             'first_user_max_discount' => (float) Setting::get('promo_first_user_max_discount', 10000), // Max cap Rp
             'first_user_min_spend'    => (float) Setting::get('promo_first_user_min_spend', 10000), // Min belanja Rp
+            'first_user_min_profit'   => (float) Setting::get('promo_first_user_min_profit', 2), // Target profit minimal toko %
             'first_user_categories'   => array_values($firstUserCats), // e.g. ['all'] or ['games', 'apps']
 
             // 2. Diskon Hari Tertentu (Recurring Day Promo)
@@ -70,6 +71,7 @@ class PromoHelper
             'day_promo_value'         => (float) Setting::get('promo_day_value', 5), // e.g. 5% or Rp2.000
             'day_promo_max_discount'  => (float) Setting::get('promo_day_max_discount', 5000), // Max cap Rp
             'day_promo_min_spend'     => (float) Setting::get('promo_day_min_spend', 15000), // Min belanja Rp
+            'day_promo_min_profit'    => (float) Setting::get('promo_day_min_profit', 2), // Target profit minimal toko %
             'day_promo_categories'    => array_values($dayPromoCats), // e.g. ['all'] or ['games', 'apps']
         ];
     }
@@ -192,12 +194,17 @@ class PromoHelper
     }
 
     /**
-     * Calculate discount for a user & transaction amount with category check
+     * Calculate discount for a user & transaction amount with category check and minimum profit protection
      */
-    public static function calculateDiscount($user, float $originalAmount, $context = null): array
+    public static function calculateDiscount($user, float $originalAmount, $context = null, float $priceModal = 0): array
     {
         $settings = self::getSettings();
         $originalAmount = max(0, $originalAmount);
+
+        // Auto-detect modal price if context is a GameProduct
+        if ($priceModal <= 0 && $context instanceof \App\Models\GameProduct) {
+            $priceModal = (float) $context->price_modal;
+        }
 
         $eligiblePromos = [];
 
@@ -214,6 +221,14 @@ class PromoHelper
                         }
                     } else {
                         $discount = min($settings['first_user_value'], $originalAmount);
+                    }
+
+                    // Proteksi Keuntungan Minimal Toko (Anti-Rugi)
+                    if ($priceModal > 0) {
+                        $minProfitPercent = max(0, $settings['first_user_min_profit']);
+                        $floorPrice = ceil($priceModal * (1 + ($minProfitPercent / 100)));
+                        $maxAllowedDiscount = max(0, (int)$originalAmount - (int)$floorPrice);
+                        $discount = min($discount, $maxAllowedDiscount);
                     }
 
                     $discount = ceil($discount);
@@ -243,6 +258,14 @@ class PromoHelper
                         }
                     } else {
                         $discount = min($settings['day_promo_value'], $originalAmount);
+                    }
+
+                    // Proteksi Keuntungan Minimal Toko (Anti-Rugi)
+                    if ($priceModal > 0) {
+                        $minProfitPercent = max(0, $settings['day_promo_min_profit']);
+                        $floorPrice = ceil($priceModal * (1 + ($minProfitPercent / 100)));
+                        $maxAllowedDiscount = max(0, (int)$originalAmount - (int)$floorPrice);
+                        $discount = min($discount, $maxAllowedDiscount);
                     }
 
                     $discount = ceil($discount);
