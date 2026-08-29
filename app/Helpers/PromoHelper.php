@@ -147,8 +147,13 @@ class PromoHelper
      */
     public static function isFirstTimeUser($user): bool
     {
+        if ($user === 'simulate_first_time' || $user === true) {
+            return true;
+        }
+
         if (!$user) {
-            return false;
+            // Pengunjung guest / belum login diperlakukan sebagai calon pengguna baru (preview promo)
+            return true;
         }
 
         $userId = is_object($user) ? $user->id : $user;
