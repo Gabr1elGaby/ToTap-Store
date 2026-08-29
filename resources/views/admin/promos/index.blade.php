@@ -205,15 +205,15 @@
                                     <!-- Target Keuntungan Minimal (Proteksi Anti-Rugi) -->
                                     <div>
                                         <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-1 flex items-center justify-between">
-                                            <span>🛡️ Min. Keuntungan Toko (%)</span>
+                                            <span>🛡️ Target Keuntungan Toko Setelah Diskon (%)</span>
                                         </label>
                                         <div class="relative">
-                                            <input type="number" step="any" min="0" max="100" name="promo_first_user_min_profit" value="{{ old('promo_first_user_min_profit', $settings['first_user_min_profit'] ?? 2) }}" 
-                                                   placeholder="Contoh: 2"
+                                            <input type="number" step="any" min="0" max="100" name="promo_first_user_min_profit" value="{{ old('promo_first_user_min_profit', $settings['first_user_min_profit'] ?? 1) }}" 
+                                                   placeholder="Contoh: 1"
                                                    class="w-full pl-3.5 pr-10 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono">
                                             <span class="absolute right-3.5 top-2.5 text-xs font-black text-gray-400">%</span>
                                         </div>
-                                        <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5 block">Diskon tidak akan memotong laba di bawah persentase modal ini.</span>
+                                        <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5 block">Khusus transaksi pengguna baru, harga promo otomatis diatur agar toko Anda tetap untung minimal X% di atas modal provider.</span>
                                     </div>
                                 </div>
 
