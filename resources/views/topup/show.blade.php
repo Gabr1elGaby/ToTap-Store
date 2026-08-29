@@ -453,17 +453,17 @@
                                      x-transition:enter="transition ease-out duration-300"
                                      x-transition:enter-start="opacity-0 -translate-y-2"
                                      x-transition:enter-end="opacity-100 translate-y-0"
-                                     class="bg-white dark:bg-slate-900 border-2 border-indigo-200 dark:border-indigo-500/40 rounded-2xl p-4 space-y-2.5 shadow-lg">
-                                    <div class="flex items-center justify-between border-b border-gray-100 dark:border-slate-800 pb-2">
+                                     class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-xl rounded-2xl p-4 space-y-2.5">
+                                    <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-2">
                                         <div class="flex items-center gap-2">
                                             <span class="w-6 h-6 rounded-full bg-amber-400 text-gray-950 flex items-center justify-center text-xs font-black shadow-sm">
                                                 <i class="fas fa-gift"></i>
                                             </span>
-                                            <h4 class="text-xs sm:text-sm font-black text-indigo-600 dark:text-indigo-300 uppercase tracking-wider">
+                                            <h4 class="text-xs sm:text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">
                                                 Pilih Promo Diskon
                                             </h4>
                                         </div>
-                                        <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
                                             Pilih 1 promo
                                         </span>
                                     </div>
@@ -471,22 +471,22 @@
                                     <div class="space-y-2 pt-0.5">
                                         <!-- Loop Tiap Promo yang Memenuhi Syarat -->
                                         <template x-for="promo in getAvailablePromos()" :key="promo.type">
-                                            <label class="flex items-center justify-between p-2.5 sm:p-3 rounded-xl border-2 cursor-pointer transition"
+                                            <label class="flex items-center justify-between p-2.5 sm:p-3 border-2 rounded-xl cursor-pointer shadow-sm transition"
                                                    :class="(selectedPromo === promo.type || (selectedPromo === 'auto' && promo.type === productPromoMap[selectedProduct]?.default_promo_type)) 
-                                                       ? 'border-indigo-600 dark:border-indigo-400 bg-indigo-50/90 dark:bg-indigo-950/70 text-gray-900 dark:text-white shadow-md ring-2 ring-indigo-500/30' 
-                                                       : 'border-gray-200 dark:border-slate-800 bg-gray-50/60 dark:bg-slate-800/60 text-gray-900 dark:text-gray-200 hover:border-indigo-400 dark:hover:border-indigo-500'">
+                                                       ? 'border-indigo-600 dark:border-indigo-500 bg-indigo-50/80 dark:bg-gray-900 ring-2 ring-indigo-500/20 text-gray-900 dark:text-white' 
+                                                       : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 hover:border-gray-300 dark:hover:border-gray-600 text-gray-900 dark:text-gray-200'">
                                                 <div class="flex items-center gap-3">
                                                     <input type="radio" name="promo_choice" :value="promo.type"
                                                            :checked="selectedPromo === promo.type || (selectedPromo === 'auto' && promo.type === productPromoMap[selectedProduct]?.default_promo_type)"
                                                            @change="selectedPromo = promo.type"
                                                            class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
                                                     <div>
-                                                        <div class="font-black text-xs sm:text-sm text-gray-900 dark:text-white" x-text="promo.title"></div>
-                                                        <div class="text-[11px] text-emerald-600 dark:text-emerald-400 font-extrabold" x-text="promo.savings_text"></div>
+                                                        <div class="font-bold text-xs sm:text-sm text-gray-900 dark:text-white" x-text="promo.title"></div>
+                                                        <div class="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold" x-text="promo.savings_text"></div>
                                                     </div>
                                                 </div>
                                                 <div class="text-right">
-                                                    <span class="px-2.5 py-1 rounded-lg text-xs font-black bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-600/50 font-mono shadow-sm" x-text="'Rp' + Number(promo.final_amount).toLocaleString('id-ID')"></span>
+                                                    <span class="px-2.5 py-1 rounded-lg text-xs font-black bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-amber-300 border border-gray-200 dark:border-gray-600 font-mono shadow-sm" x-text="'Rp' + Number(promo.final_amount).toLocaleString('id-ID')"></span>
                                                 </div>
                                             </label>
                                         </template>
@@ -494,8 +494,8 @@
                                         <!-- Opsi Tidak Memakai Promo (Simpan Promo) -->
                                         <label class="flex items-center justify-between p-2 rounded-xl border cursor-pointer transition text-xs"
                                                :class="selectedPromo === 'none' 
-                                                   ? 'border-gray-400 dark:border-slate-600 bg-gray-100 dark:bg-slate-800 text-gray-900 dark:text-white font-bold' 
-                                                   : 'border-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-slate-800/50'">
+                                                   ? 'border-gray-400 dark:border-gray-600 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white font-bold' 
+                                                   : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50'">
                                             <div class="flex items-center gap-2.5">
                                                 <input type="radio" name="promo_choice" value="none"
                                                        :checked="selectedPromo === 'none'"
@@ -503,7 +503,7 @@
                                                        class="w-4 h-4 text-gray-400 focus:ring-gray-400 cursor-pointer">
                                                 <span class="text-[11px] text-gray-700 dark:text-gray-300">Jangan gunakan promo (simpan untuk nanti)</span>
                                             </div>
-                                            <span class="text-[11px] font-mono text-gray-500 dark:text-gray-400 font-bold" x-text="selectedProduct && productPromoMap[selectedProduct] ? productPromoMap[selectedProduct].original_formatted : ''"></span>
+                                            <span class="text-[11px] font-mono font-bold text-gray-500 dark:text-gray-400" x-text="selectedProduct && productPromoMap[selectedProduct] ? productPromoMap[selectedProduct].original_formatted : ''"></span>
                                         </label>
                                     </div>
                                 </div>
@@ -553,7 +553,7 @@
                                 </div>
                                 
                                 <!-- Ringkasan Total Tagihan Dinamis -->
-                                <div x-show="selectedProduct" x-transition class="p-3.5 rounded-xl bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 flex justify-between items-center shadow-sm">
+                                <div x-show="selectedProduct" x-transition class="p-3.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex justify-between items-center shadow-sm">
                                     <div>
                                         <span class="text-gray-500 dark:text-gray-400 block text-[11px] font-semibold">Total Pembayaran:</span>
                                         <span class="text-base sm:text-lg font-black font-mono text-indigo-600 dark:text-indigo-400" x-text="getCurrentPriceFormatted()"></span>
