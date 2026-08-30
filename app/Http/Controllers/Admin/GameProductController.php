@@ -153,13 +153,32 @@ class GameProductController extends Controller
                 continue; 
             }
 
-            // 3. FILTER MATA UANG ASING (HANYA AMBIL IDR / INDONESIA, DENGAN BATAS KATA AGAR TIDAK SALAH DETEKSI SEPERTI CANVAEDU)
+            // 3. FILTER FIRST TOP UP & JOKI / GACHA SKIN
+            if (
+                str_contains($nameLower, 'first top') ||
+                str_contains($nameLower, 'first-top') ||
+                str_contains($nameLower, 'first topup') ||
+                str_contains($nameLower, 'first_top') ||
+                str_contains($nameLower, 'first') ||
+                str_contains($nameLower, 'skin') ||
+                str_contains($nameLower, 'charisma') ||
+                str_contains($nameLower, 'p.ace') ||
+                str_contains($nameLower, 'champion') ||
+                str_contains($nameLower, 'lightborn') ||
+                str_contains($nameLower, 'epic')
+            ) {
+                if (preg_match('/\b(first|skin|charisma|p\.ace|champion|lightborn|epic)\b/i', $nameLower)) {
+                    continue;
+                }
+            }
+
+            // 4. FILTER MATA UANG ASING (HANYA AMBIL IDR / INDONESIA, DENGAN BATAS KATA AGAR TIDAK SALAH DETEKSI SEPERTI CANVAEDU)
             if (preg_match('/\b(php|myr|inr|thb|sgd|usd|eur|brl|vnd|twd|sar|hkd|brazil|malaysia|philippines|thailand|singapore|vietnam|taiwan)\b/i', $name) 
                 || preg_match('/(?:^|[-_])(php|myr|inr|thb|sgd|usd|eur|brl|vnd|twd|sar|hkd)(?:$|[-_\d])/i', $codeUpper)) {
                 continue;
             }
 
-            // 4. FILTER NAMA GAME (JANGAN CAMPUR GAME LANGSUNG DENGAN VOUCHER)
+            // 5. FILTER NAMA GAME (JANGAN CAMPUR GAME LANGSUNG DENGAN VOUCHER)
             if ($hasExactGameMatch) {
                 // Jika ada "Valorant", jangan ambil "Voucher Valorant"
                 if (strcasecmp($itemGame, $targetFilter) !== 0) {
@@ -214,9 +233,23 @@ class GameProductController extends Controller
 
             // SIMPAN YANG PALING MURAH SAJA!
             if (!isset($cheapestItems[$uniqueKey]) || $modal < $cheapestItems[$uniqueKey]['modal']) {
+                $cleanName = $item['name'];
+                $cleanName = preg_replace('/\s*\(\s*\d+\s*(?:\+\s*\d+)?\s*(?:Bonus|bonus)?\s*\)/i', '', $cleanName);
+                if (preg_match('/(?:Mobile Legends|Free Fire)\s*-\s*(\d+)\s*Diamonds?\s*\+\s*(\d+)\s*Bonus/i', $cleanName, $m)) {
+                    $cleanName = ((int)$m[1] + (int)$m[2]) . " Diamonds";
+                } elseif (preg_match('/(?:Mobile Legends|Free Fire)\s*-\s*(\d+)\s*\+\s*(\d+)\s*Diamonds?/i', $cleanName, $m)) {
+                    $cleanName = ((int)$m[1] + (int)$m[2]) . " Diamonds";
+                } elseif (preg_match('/(?:Mobile Legends|Free Fire)\s*-\s*([^#]+?)(?:\s*\(#\d+\))?$/i', $cleanName, $m)) {
+                    $cleanName = trim($m[1]);
+                }
+                $cleanName = preg_replace('/\s*\(#\d+\)/', '', $cleanName);
+                $cleanName = preg_replace('/\s+Tested$/i', '', $cleanName);
+                $cleanName = preg_replace('/\s+2x Bonus$/i', '', $cleanName);
+                $cleanName = trim($cleanName);
+
                 $cheapestItems[$uniqueKey] = [
                     'code' => $item['code'],
-                    'name' => $item['name'],
+                    'name' => $cleanName,
                     'modal' => $modal,
                     'status' => 'available',
                     'unique_key' => $uniqueKey,
