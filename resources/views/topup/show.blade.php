@@ -386,10 +386,23 @@
                                              @foreach($catProducts as $product)
                                                  @php
                                                      $prodCalc = \App\Helpers\PromoHelper::calculateDiscount(auth()->user(), (float)$product->price_sell, $game, (float)$product->price_modal);
+                                                     $displayName = $product->name;
+                                                     $displayName = preg_replace('/\s*\(\s*\d+\s*(?:\+\s*\d+)?\s*(?:Bonus|bonus)?\s*\)/i', '', $displayName);
+                                                     if (preg_match('/(?:Mobile Legends|Free Fire)\s*-\s*(\d+)\s*Diamonds?\s*\+\s*(\d+)\s*Bonus/i', $displayName, $m)) {
+                                                         $displayName = ((int)$m[1] + (int)$m[2]) . " Diamonds";
+                                                     } elseif (preg_match('/(?:Mobile Legends|Free Fire)\s*-\s*(\d+)\s*\+\s*(\d+)\s*Diamonds?/i', $displayName, $m)) {
+                                                         $displayName = ((int)$m[1] + (int)$m[2]) . " Diamonds";
+                                                     } elseif (preg_match('/(?:Mobile Legends|Free Fire)\s*-\s*([^#]+?)(?:\s*\(#\d+\))?$/i', $displayName, $m)) {
+                                                         $displayName = trim($m[1]);
+                                                     }
+                                                     $displayName = preg_replace('/\s*\(#\d+\)/', '', $displayName);
+                                                     $displayName = preg_replace('/\s+Tested$/i', '', $displayName);
+                                                     $displayName = preg_replace('/\s+2x Bonus$/i', '', $displayName);
+                                                     $displayName = trim($displayName);
                                                  @endphp
                                                  <div @click="if(!stockMap['{{ $product->id }}']) selectedProduct = '{{ $product->id }}'"
                                                       data-product-id="{{ $product->id }}"
-                                                      data-product-name="{{ $product->name }}"
+                                                      data-product-name="{{ $displayName }}"
                                                       data-product-price="Rp{{ number_format($prodCalc['final_amount'], 0, ',', '.') }}"
                                                       data-product-original-price="Rp{{ number_format($product->price_sell, 0, ',', '.') }}"
                                                       :class="{
@@ -408,7 +421,7 @@
 
                                                      <div :class="stockMap['{{ $product->id }}'] ? 'text-gray-400 dark:text-gray-500 line-through' : 'text-gray-900 dark:text-white'" 
                                                           class="text-xs sm:text-sm font-bold leading-snug mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">
-                                                         {{ $product->name }}
+                                                         {{ $displayName }}
                                                      </div>
                                                      
                                                      <div class="space-y-1 mt-auto">

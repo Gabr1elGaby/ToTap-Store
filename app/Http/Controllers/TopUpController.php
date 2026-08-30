@@ -86,8 +86,13 @@ class TopUpController extends Controller
             $product->is_out_of_stock = ($vipBalance <= 0 || (float)$product->price_modal > $vipBalance);
             $name = strtolower(trim($product->name));
             
-            // 1. FILTERING STRICT: Hapus produk Skin, Charisma, dan NON-IDN (Global/Luar Negeri)
+            // 1. FILTERING STRICT: Hapus produk Skin, First Top Up, Charisma, dan NON-IDN (Global/Luar Negeri)
             if (
+                str_contains($name, 'first top') ||
+                str_contains($name, 'first-top') ||
+                str_contains($name, 'first topup') ||
+                str_contains($name, 'first_top') ||
+                str_contains($name, 'first') ||
                 str_contains($name, 'skin') || 
                 str_contains($name, 'charisma') || 
                 str_contains($name, 'p.ace') || 
@@ -102,7 +107,7 @@ class TopUpController extends Controller
                 str_contains($name, 'ph') ||
                 str_contains($name, 'philippines')
             ) {
-                if (preg_match('/\b(global|brazil|br|my|malaysia|ph|philippines|skin|charisma|p\.ace|champion|lightborn|epic)\b/i', $name)) {
+                if (preg_match('/\b(first|skin|global|brazil|br|my|malaysia|ph|philippines|charisma|p\.ace|champion|lightborn|epic)\b/i', $name)) {
                     continue;
                 }
             }
