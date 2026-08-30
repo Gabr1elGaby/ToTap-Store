@@ -61,7 +61,25 @@
                                 @foreach($products as $prod)
                                 <tr class="hover:bg-slate-100 dark:hover:bg-gray-700/60 transition">
                                     <td class="py-3.5 px-4 font-mono text-xs text-indigo-600 dark:text-indigo-400 font-bold">{{ $prod->product_code }}</td>
-                                    <td class="py-3.5 px-4 font-bold text-gray-900 dark:text-white">{{ $prod->name }}</td>
+                                    @php
+                                        $displayName = $prod->name;
+                                        // Hapus rincian bonus dalam kurung (misal: "5 Diamonds ( 5 + 0 Bonus )" -> "5 Diamonds")
+                                        $displayName = preg_replace('/\s*\(\s*\d+\s*(?:\+\s*\d+)?\s*(?:Bonus|bonus)?\s*\)/i', '', $displayName);
+                                        
+                                        if (preg_match('/(?:Mobile Legends|Free Fire)\s*-\s*(\d+)\s*Diamonds?\s*\+\s*(\d+)\s*Bonus/i', $displayName, $m)) {
+                                            $displayName = ((int)$m[1] + (int)$m[2]) . " Diamonds";
+                                        } elseif (preg_match('/(?:Mobile Legends|Free Fire)\s*-\s*(\d+)\s*\+\s*(\d+)\s*Diamonds?/i', $displayName, $m)) {
+                                            $displayName = ((int)$m[1] + (int)$m[2]) . " Diamonds";
+                                        } elseif (preg_match('/(?:Mobile Legends|Free Fire)\s*-\s*([^#]+?)(?:\s*\(#\d+\))?$/i', $displayName, $m)) {
+                                            $displayName = trim($m[1]);
+                                        }
+                                        
+                                        $displayName = preg_replace('/\s*\(#\d+\)/', '', $displayName);
+                                        $displayName = preg_replace('/\s+Tested$/i', '', $displayName);
+                                        $displayName = preg_replace('/\s+2x Bonus$/i', '', $displayName);
+                                        $displayName = trim($displayName);
+                                    @endphp
+                                    <td class="py-3.5 px-4 font-bold text-gray-900 dark:text-white">{{ $displayName }}</td>
                                     <td class="py-3.5 px-4 text-gray-600 dark:text-gray-300">Rp{{ number_format($prod->price_modal, 0, ',', '.') }}</td>
                                     <td class="py-3.5 px-4 font-bold text-green-600 dark:text-green-400">Rp{{ number_format($prod->price_sell, 0, ',', '.') }}</td>
                                     <td class="py-3.5 px-4 text-xs font-semibold text-indigo-600 dark:text-indigo-400">Rp{{ number_format($prod->price_sell - $prod->price_modal, 0, ',', '.') }}</td>
