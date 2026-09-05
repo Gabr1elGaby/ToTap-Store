@@ -81,6 +81,9 @@ class GameController extends Controller
         return view('admin.games.index', compact('games', 'vipBalance', 'vipProfileData', 'categoryFilter', 'totalAll', 'totalGame', 'totalApp'));
     }
 
+    /**
+     * Refresh live VIP Reseller account balance directly from API.
+     */
     public function syncBalance()
     {
         try {
