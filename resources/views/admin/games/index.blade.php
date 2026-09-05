@@ -57,12 +57,9 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <form action="{{ route('admin.games.sync-balance') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-sm" title="Sinkronkan Saldo Terbaru dari VIP Reseller">
-                                <i class="fas fa-wallet text-emerald-500"></i> Refresh Saldo
-                            </button>
-                        </form>
+                        <a href="{{ route('admin.games.index', request()->query()) }}" class="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-sm" title="Sinkronkan Saldo Terbaru dari VIP Reseller">
+                            <i class="fas fa-sync-alt text-emerald-500"></i> Refresh Saldo
+                        </a>
                         <form action="{{ route('admin.games.sync-product-status') }}" method="POST" onsubmit="this.querySelector('button').disabled=true; this.querySelector('button').innerText='Mengecek...';">
                             @csrf
                             <button type="submit" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition flex items-center gap-2 cursor-pointer whitespace-nowrap" title="Cek status ketersediaan/stok produk dari VIP Reseller tanpa mengubah harga editan Anda">
