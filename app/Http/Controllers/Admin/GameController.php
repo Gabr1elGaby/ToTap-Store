@@ -64,6 +64,7 @@ class GameController extends Controller
         $vipProfileData = null;
 
         // Auto-fetch real-time VIP Reseller Balance from API
+        $vipApiError = null;
         try {
             $vip = new \App\Services\VipResellerService();
             $profile = $vip->getProfile();
@@ -73,12 +74,14 @@ class GameController extends Controller
                 Setting::set('vip_reseller_balance', (string) $liveBal);
                 $vipBalance = $liveBal;
                 $vipProfileData = $profile['data'];
+            } elseif (isset($profile['message'])) {
+                $vipApiError = $profile['message'];
             }
         } catch (\Throwable $e) {
-            // Keep existing balance from setting on network error
+            $vipApiError = $e->getMessage();
         }
 
-        return view('admin.games.index', compact('games', 'vipBalance', 'vipProfileData', 'categoryFilter', 'totalAll', 'totalGame', 'totalApp'));
+        return view('admin.games.index', compact('games', 'vipBalance', 'vipProfileData', 'categoryFilter', 'totalAll', 'totalGame', 'totalApp', 'vipApiError'));
     }
 
     /**

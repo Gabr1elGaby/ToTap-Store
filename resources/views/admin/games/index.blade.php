@@ -28,6 +28,18 @@
                 </div>
             @endif
 
+            @if(isset($vipApiError) && $vipApiError)
+                <div class="bg-amber-500/10 border border-amber-500 text-amber-700 dark:text-amber-300 p-4 rounded-2xl flex items-start gap-3 shadow-sm font-semibold text-xs sm:text-sm">
+                    <i class="fas fa-exclamation-triangle text-amber-500 text-base mt-0.5 shrink-0"></i>
+                    <div>
+                        <strong class="font-bold">Koneksi API VIP Reseller:</strong> {{ $vipApiError }}
+                        <div class="mt-1 text-xs font-normal text-amber-800 dark:text-amber-300/90">
+                            Buka <strong>vip-reseller.co.id</strong> &rarr; <strong>Dokumentasi API / Pengaturan API</strong> &rarr; Tambahkan IP yang tertera pada pesan di atas ke daftar <strong>Whitelist IP</strong> agar saldo dan cek stok otomatis terbaca.
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <!-- VIP Reseller Live Balance Card -->
             <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-colors duration-200">
                 <div class="space-y-1">
