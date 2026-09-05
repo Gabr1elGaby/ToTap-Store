@@ -13,8 +13,8 @@ class VipResellerService
 
     public function __construct()
     {
-        $this->apiId = config('services.vip_reseller.api_id', env('NEW_API_ID', 'UEsJ21pX'));
-        $this->apiKey = config('services.vip_reseller.api_key', env('NEW_API_KEY', 'wTpFb8UKOona2Hm56HODEruuB7F2aAE0MQU2dXgjjRy1Q2lCUUfL7Un9mcgxtLRy'));
+        $this->apiId = config('services.vip_reseller.api_id', env('NEW_API_ID', env('VIP_RESELLER_API_ID', env('VIP_API_ID', 'UEsJ21pX'))));
+        $this->apiKey = config('services.vip_reseller.api_key', env('NEW_API_KEY', env('VIP_RESELLER_API_KEY', env('VIP_API_KEY', 'wTpFb8UKOona2Hm56HODEruuB7F2aAE0MQU2dXgjjRy1Q2lCUUfL7Un9mcgxtLRy'))));
         $this->baseUrl = config('services.vip_reseller.base_url', 'https://vip-reseller.co.id/api');
     }
 
