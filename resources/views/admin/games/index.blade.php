@@ -1,4 +1,12 @@
 <x-app-layout>
+    @php
+        $categoryFilter = $categoryFilter ?? request('category', 'all');
+        $totalAll = $totalAll ?? \App\Models\Game::count();
+        $totalGame = $totalGame ?? \App\Models\Game::whereNull('category')->orWhere('category', 'Mobile Game')->orWhere('category', 'PC Game')->count();
+        $totalApp = $totalApp ?? \App\Models\Game::where('category', 'LIKE', '%aplikasi%')->orWhere('category', 'LIKE', '%app%')->count();
+        $vipBalance = $vipBalance ?? 0;
+        $vipProfileData = $vipProfileData ?? null;
+    @endphp
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             {{ __('Kelola Game & Top Up') }}
