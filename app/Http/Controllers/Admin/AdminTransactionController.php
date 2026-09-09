@@ -103,21 +103,35 @@ class AdminTransactionController extends Controller
 
     public function invoice(string $id)
     {
-        $transaction = Transaction::with(['game', 'gameProduct', 'user'])->where('id', $id)->first();
+        $transaction = Transaction::with(['game', 'gameProduct', 'user'])
+            ->where(function ($q) use ($id) {
+                $q->where('id', $id)->orWhere('invoice_number', $id);
+            })
+            ->first();
 
         if ($transaction) {
-            if (empty($transaction->provider_sn) && !empty($transaction->provider_trx_id)) {
+            if ((empty($transaction->provider_sn) || $transaction->status === 'processing') && !empty($transaction->provider_trx_id)) {
                 try {
                     $vipService = app(\App\Services\VipResellerService::class);
                     $statusRes = $vipService->checkOrderStatus($transaction->provider_trx_id);
                     if (isset($statusRes['result']) && $statusRes['result'] === true && !empty($statusRes['data'])) {
                         $pData = is_array($statusRes['data']) && isset($statusRes['data'][0]) ? $statusRes['data'][0] : $statusRes['data'];
-                        $sn = $pData['sn'] ?? ($pData['note'] ?? null);
+                        $sn = $pData['sn'] ?? ($pData['note'] ?? ($pData['info'] ?? ($pData['informasi'] ?? ($pData['message'] ?? null))));
+                        $pStatus = strtolower($pData['status'] ?? '');
+
+                        $updateData = [];
                         if (!empty($sn)) {
-                            $transaction->update([
-                                'provider_sn' => $sn,
-                                'status' => 'success',
-                            ]);
+                            $updateData['provider_sn'] = $sn;
+                        }
+                        if ($pStatus === 'success') {
+                            $updateData['status'] = 'success';
+                        } elseif ($pStatus === 'error' || $pStatus === 'failed') {
+                            $updateData['status'] = 'failed';
+                        }
+
+                        if (!empty($updateData)) {
+                            $transaction->update($updateData);
+                            $transaction->refresh();
                         }
                     }
                 } catch (\Throwable $e) {}

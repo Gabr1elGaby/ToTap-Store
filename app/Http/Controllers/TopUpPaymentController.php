@@ -13,7 +13,11 @@ class TopUpPaymentController extends Controller
 {
     public function show($id)
     {
-        $transaction = Transaction::with(['game', 'gameProduct'])->findOrFail($id);
+        $transaction = Transaction::with(['game', 'gameProduct'])
+            ->where(function ($q) use ($id) {
+                $q->where('id', $id)->orWhere('invoice_number', $id);
+            })
+            ->firstOrFail();
 
         // Jika transaksi memiliki provider_trx_id tapi provider_sn nya masih kosong,
         // otomatis tarik data akun / SN terbaru dari VIP Reseller secara real-time!
@@ -23,12 +27,21 @@ class TopUpPaymentController extends Controller
                 $statusRes = $vipService->checkOrderStatus($transaction->provider_trx_id);
                 if (isset($statusRes['result']) && $statusRes['result'] === true && !empty($statusRes['data'])) {
                     $pData = is_array($statusRes['data']) && isset($statusRes['data'][0]) ? $statusRes['data'][0] : $statusRes['data'];
-                    $sn = $pData['sn'] ?? ($pData['note'] ?? null);
+                    $sn = $pData['sn'] ?? ($pData['note'] ?? ($pData['info'] ?? ($pData['informasi'] ?? ($pData['message'] ?? null))));
+                    $pStatus = strtolower($pData['status'] ?? '');
+                    
+                    $updateData = [];
                     if (!empty($sn)) {
-                        $transaction->update([
-                            'provider_sn' => $sn,
-                            'status' => 'success',
-                        ]);
+                        $updateData['provider_sn'] = $sn;
+                    }
+                    if ($pStatus === 'success') {
+                        $updateData['status'] = 'success';
+                    } elseif ($pStatus === 'error' || $pStatus === 'failed') {
+                        $updateData['status'] = 'failed';
+                    }
+
+                    if (!empty($updateData)) {
+                        $transaction->update($updateData);
                     }
                 }
             } catch (\Throwable $e) {
@@ -41,7 +54,11 @@ class TopUpPaymentController extends Controller
 
     public function verify($id)
     {
-        $transaction = Transaction::with(['game', 'gameProduct'])->findOrFail($id);
+        $transaction = Transaction::with(['game', 'gameProduct'])
+            ->where(function ($q) use ($id) {
+                $q->where('id', $id)->orWhere('invoice_number', $id);
+            })
+            ->firstOrFail();
         $paymentData = json_decode($transaction->snap_token, true);
 
         if ($transaction->status === 'success' || $transaction->status === 'paid') {
@@ -80,10 +97,11 @@ class TopUpPaymentController extends Controller
                         }
 
                         if (isset($orderRes['result']) && $orderRes['result'] === true) {
-                            $sn = $orderRes['data']['sn'] ?? ($orderRes['data']['note'] ?? null);
+                            $pData = $orderRes['data'] ?? [];
+                            $sn = $pData['sn'] ?? ($pData['note'] ?? ($pData['info'] ?? ($pData['informasi'] ?? ($pData['message'] ?? null))));
                             $transaction->update([
                                 'status' => 'success',
-                                'provider_trx_id' => $orderRes['data']['trxid'] ?? null,
+                                'provider_trx_id' => $pData['trxid'] ?? null,
                                 'provider_sn' => $sn,
                             ]);
                         }
@@ -129,10 +147,11 @@ class TopUpPaymentController extends Controller
                             }
 
                             if (isset($orderRes['result']) && $orderRes['result'] === true) {
-                                $sn = $orderRes['data']['sn'] ?? ($orderRes['data']['note'] ?? null);
+                                $pData = $orderRes['data'] ?? [];
+                                $sn = $pData['sn'] ?? ($pData['note'] ?? ($pData['info'] ?? ($pData['informasi'] ?? ($pData['message'] ?? null))));
                                 $transaction->update([
                                     'status' => 'success',
-                                    'provider_trx_id' => $orderRes['data']['trxid'] ?? null,
+                                    'provider_trx_id' => $pData['trxid'] ?? null,
                                     'provider_sn' => $sn,
                                 ]);
                             }

@@ -34,7 +34,9 @@ class TransactionHistoryController extends Controller
 
         // Cari di Top Up Transactions
         $transaction = Transaction::with(['game', 'gameProduct', 'user'])
-            ->where('id', $id)
+            ->where(function ($q) use ($id) {
+                $q->where('id', $id)->orWhere('invoice_number', $id);
+            })
             ->where(function ($q) use ($user) {
                 if ($user->role !== 'superadmin') {
                     $q->where('user_id', $user->id);
@@ -64,6 +66,7 @@ class TransactionHistoryController extends Controller
 
                         if (!empty($updateData)) {
                             $transaction->update($updateData);
+                            $transaction->refresh();
                         }
                     }
                 } catch (\Throwable $e) {}

@@ -73,10 +73,11 @@ class DuitkuCallbackController extends Controller
                         }
 
                         if (isset($orderRes['result']) && $orderRes['result'] === true) {
-                            $sn = $orderRes['data']['sn'] ?? ($orderRes['data']['note'] ?? null);
+                            $pData = $orderRes['data'] ?? [];
+                            $sn = $pData['sn'] ?? ($pData['note'] ?? ($pData['info'] ?? ($pData['informasi'] ?? ($pData['message'] ?? null))));
                             $transaction->update([
                                 'status' => 'success',
-                                'provider_trx_id' => $orderRes['data']['trxid'] ?? null,
+                                'provider_trx_id' => $pData['trxid'] ?? null,
                                 'provider_sn' => $sn,
                             ]);
                         }
