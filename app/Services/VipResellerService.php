@@ -122,10 +122,89 @@ class VipResellerService
         if (!empty($trxId)) {
             $payload['trxid'] = trim($trxId);
         } else {
-            $payload['limit'] = 10;
+            $payload['limit'] = 50;
         }
 
         $response = Http::connectTimeout(30)->asForm()->post("{$this->baseUrl}/game-feature", $payload);
         return $response->json();
+    }
+
+    public function syncTransaction(\App\Models\Transaction $transaction)
+    {
+        try {
+            // 1. Jika ada provider_trx_id, cek langsung berdasarkan trxid
+            if (!empty($transaction->provider_trx_id)) {
+                $statusRes = $this->checkOrderStatus($transaction->provider_trx_id);
+                if (isset($statusRes['result']) && $statusRes['result'] === true && !empty($statusRes['data'])) {
+                    $pData = $statusRes['data'];
+                    if (is_array($pData) && isset($pData[0]) && is_array($pData[0])) {
+                        $pData = $pData[0];
+                    }
+
+                    $sn = !empty($pData['sn']) ? $pData['sn'] : (!empty($pData['note']) ? $pData['note'] : (!empty($pData['info']) ? $pData['info'] : (!empty($pData['informasi']) ? $pData['informasi'] : (!empty($pData['message']) ? $pData['message'] : null))));
+                    $pStatus = strtolower($pData['status'] ?? '');
+
+                    $updateData = [];
+                    if (!empty($sn)) {
+                        $updateData['provider_sn'] = $sn;
+                    }
+                    if ($pStatus === 'success') {
+                        $updateData['status'] = 'success';
+                    } elseif ($pStatus === 'error' || $pStatus === 'failed') {
+                        $updateData['status'] = 'failed';
+                    }
+
+                    if (!empty($updateData)) {
+                        $transaction->update($updateData);
+                        $transaction->refresh();
+                    }
+                    return true;
+                }
+            }
+
+            // 2. Jika provider_trx_id kosong atau provider_sn masih kosong, tarik riwayat order terbaru dari VIP
+            $recentRes = $this->checkOrderStatus('');
+            if (isset($recentRes['result']) && $recentRes['result'] === true && !empty($recentRes['data']) && is_array($recentRes['data'])) {
+                $target1 = trim($transaction->target_field_1 ?? '');
+                $productCode = $transaction->gameProduct ? trim($transaction->gameProduct->product_code ?? '') : '';
+
+                foreach ($recentRes['data'] as $item) {
+                    $itemTarget = trim($item['data_no'] ?? ($item['target'] ?? ($item['user_id'] ?? '')));
+                    $itemService = trim($item['service'] ?? ($item['code'] ?? ''));
+
+                    $match = false;
+                    if (!empty($target1) && strcasecmp($itemTarget, $target1) === 0) {
+                        $match = true;
+                    } elseif (!empty($productCode) && strcasecmp($itemService, $productCode) === 0 && !empty($target1) && str_contains(strtolower($itemTarget), strtolower($target1))) {
+                        $match = true;
+                    }
+
+                    if ($match) {
+                        $sn = !empty($item['sn']) ? $item['sn'] : (!empty($item['note']) ? $item['note'] : (!empty($item['info']) ? $item['info'] : (!empty($item['informasi']) ? $item['informasi'] : (!empty($item['message']) ? $item['message'] : null))));
+                        $pStatus = strtolower($item['status'] ?? '');
+
+                        $updateData = [
+                            'provider_trx_id' => $item['trxid'] ?? $transaction->provider_trx_id,
+                        ];
+                        if (!empty($sn)) {
+                            $updateData['provider_sn'] = $sn;
+                        }
+                        if ($pStatus === 'success') {
+                            $updateData['status'] = 'success';
+                        } elseif ($pStatus === 'error' || $pStatus === 'failed') {
+                            $updateData['status'] = 'failed';
+                        }
+
+                        $transaction->update($updateData);
+                        $transaction->refresh();
+                        return true;
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::warning('VIP Reseller syncTransaction error: ' . $e->getMessage());
+        }
+
+        return false;
     }
 }

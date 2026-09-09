@@ -110,30 +110,10 @@ class AdminTransactionController extends Controller
             ->first();
 
         if ($transaction) {
-            if ((empty($transaction->provider_sn) || $transaction->status === 'processing') && !empty($transaction->provider_trx_id)) {
+            if (empty($transaction->provider_sn) || $transaction->status === 'processing') {
                 try {
                     $vipService = app(\App\Services\VipResellerService::class);
-                    $statusRes = $vipService->checkOrderStatus($transaction->provider_trx_id);
-                    if (isset($statusRes['result']) && $statusRes['result'] === true && !empty($statusRes['data'])) {
-                        $pData = is_array($statusRes['data']) && isset($statusRes['data'][0]) ? $statusRes['data'][0] : $statusRes['data'];
-                        $sn = $pData['sn'] ?? ($pData['note'] ?? ($pData['info'] ?? ($pData['informasi'] ?? ($pData['message'] ?? null))));
-                        $pStatus = strtolower($pData['status'] ?? '');
-
-                        $updateData = [];
-                        if (!empty($sn)) {
-                            $updateData['provider_sn'] = $sn;
-                        }
-                        if ($pStatus === 'success') {
-                            $updateData['status'] = 'success';
-                        } elseif ($pStatus === 'error' || $pStatus === 'failed') {
-                            $updateData['status'] = 'failed';
-                        }
-
-                        if (!empty($updateData)) {
-                            $transaction->update($updateData);
-                            $transaction->refresh();
-                        }
-                    }
+                    $vipService->syncTransaction($transaction);
                 } catch (\Throwable $e) {}
             }
 
@@ -335,39 +315,36 @@ class AdminTransactionController extends Controller
 
     public function syncProviderStatus($id, \App\Services\VipResellerService $vipService)
     {
-        $transaction = Transaction::findOrFail($id);
-        if (!$transaction->provider_trx_id) {
-            return back()->with('warning', 'Transaksi ini tidak memiliki Provider TRX ID.');
+        $transaction = Transaction::where('id', $id)->orWhere('invoice_number', $id)->firstOrFail();
+        
+        $synced = $vipService->syncTransaction($transaction);
+        if ($synced) {
+            $sn = $transaction->provider_sn;
+            return back()->with('success', "Status berhasil disinkronkan dari VIP Reseller: Status [{$transaction->status}]" . ($sn ? " | Info/Link Akun: {$sn}" : ''));
         }
 
-        try {
-            $statusRes = $vipService->checkOrderStatus($transaction->provider_trx_id);
-            if (isset($statusRes['result']) && $statusRes['result'] === true && !empty($statusRes['data'])) {
-                $pData = is_array($statusRes['data']) && isset($statusRes['data'][0]) ? $statusRes['data'][0] : $statusRes['data'];
-                $pStatus = strtolower($pData['status'] ?? '');
-                $sn = $pData['sn'] ?? ($pData['note'] ?? ($pData['info'] ?? ($pData['informasi'] ?? ($pData['message'] ?? $transaction->provider_sn))));
+        return back()->with('warning', 'Data transaksi belum ditemukan atau status masih diproses oleh server VIP Reseller.');
+    }
 
-                $updateData = [];
-                if (!empty($sn)) {
-                    $updateData['provider_sn'] = $sn;
-                }
-                if ($pStatus === 'success') {
-                    $updateData['status'] = 'success';
-                } elseif ($pStatus === 'error' || $pStatus === 'failed') {
-                    $updateData['status'] = 'failed';
-                }
-
-                if (!empty($updateData)) {
-                    $transaction->update($updateData);
-                }
-
-                return back()->with('success', "Status berhasil diperbarui dari VIP Reseller: Status [{$pStatus}]" . ($sn ? " | Informasi Akun: {$sn}" : ''));
-            } else {
-                return back()->with('warning', 'Respon dari VIP Reseller: ' . ($statusRes['message'] ?? 'Data tidak ditemukan.'));
+    public function updateSn(\Illuminate\Http\Request $request, $id, \App\Services\VipResellerService $vipService)
+    {
+        $transaction = Transaction::where('id', $id)->orWhere('invoice_number', $id)->firstOrFail();
+        
+        if ($request->has('sync_vip')) {
+            $synced = $vipService->syncTransaction($transaction);
+            if ($synced) {
+                return back()->with('success', 'Data Akun & Status berhasil ditarik otomatis dari VIP Reseller!');
             }
-        } catch (\Exception $e) {
-            return back()->with('error', 'Gagal memeriksa status: ' . $e->getMessage());
+            return back()->with('warning', 'Belum ada data terbaru dari VIP Reseller untuk transaksi ini.');
         }
+
+        $sn = trim($request->input('provider_sn', ''));
+        $transaction->update([
+            'provider_sn' => $sn ?: null,
+            'status' => $sn ? 'success' : $transaction->status,
+        ]);
+
+        return back()->with('success', 'Informasi Akun / Serial Number berhasil disimpan dan langsung tampil di Invoice!');
     }
 
     public function refundToBalance($id)

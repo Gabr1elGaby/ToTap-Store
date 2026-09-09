@@ -219,6 +219,75 @@
                 <p class="text-xs font-medium text-slate-800 dark:text-slate-200 pt-2.5 border-t border-amber-500/30">
                     💡 <em>Gunakan detail akun di atas untuk login ke aplikasi. Jika tertera link panduan (URL), klik link tersebut untuk panduan aktivasi profil.</em>
                 </p>
+
+                @if(!empty($isAdmin))
+                <div class="no-print pt-3 border-t border-amber-500/20">
+                    <details class="text-xs">
+                        <summary class="cursor-pointer font-bold text-amber-600 dark:text-amber-400 hover:underline">
+                            ⚙️ Panel Admin: Edit Serial Number / Tarik Ulang dari Provider
+                        </summary>
+                        <form action="{{ route('admin.transactions.update-sn', $data->id) }}" method="POST" class="mt-3 space-y-2">
+                            @csrf
+                            <textarea name="provider_sn" rows="2" class="w-full text-xs font-mono p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white" placeholder="Edit informasi SN / Akun...">{{ $rawSn }}</textarea>
+                            <div class="flex items-center gap-2">
+                                <button type="submit" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-xs shadow-sm">
+                                    Simpan Perubahan
+                                </button>
+                                <button type="submit" name="sync_vip" value="1" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-800 text-white font-bold rounded-lg text-xs shadow-sm">
+                                    <i class="fas fa-sync-alt"></i> Tarik Ulang dari VIP
+                                </button>
+                            </div>
+                        </form>
+                    </details>
+                </div>
+                @endif
+            </div>
+            @elseif($type === 'topup' && empty($data->provider_sn))
+            <!-- Box Saat SN / Data Akun Masih Dalam Proses atau Kosong -->
+            <div class="bg-indigo-500/10 dark:bg-indigo-950/40 border-2 border-indigo-500/40 rounded-2xl p-5 sm:p-6 shadow-md space-y-4">
+                <div class="flex items-center justify-between border-b border-indigo-500/20 pb-3">
+                    <div class="flex items-center gap-2 font-black text-indigo-900 dark:text-indigo-300 text-sm sm:text-base">
+                        <i class="fas fa-spinner fa-spin text-indigo-500"></i> INFORMASI AKUN / AKSES RESMI
+                    </div>
+                    <span class="text-xs font-bold bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 px-3 py-1 rounded-full uppercase tracking-wider">
+                        {{ strtoupper($data->status) }}
+                    </span>
+                </div>
+
+                <div class="p-4 bg-white/60 dark:bg-slate-900/60 rounded-xl border border-indigo-500/20 text-xs text-slate-700 dark:text-slate-300 space-y-2">
+                    <p class="font-medium">
+                        ⏳ <strong>Akses Akun / Lisensi Sedang Disiapkan:</strong> Sistem sedang menghubungkan pesanan Anda ke server provider secara otomatis.
+                    </p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                        Jika pembayaran telah berhasil, detail akun atau link aktivasi akan langsung tampil di sini setelah selesai diproses.
+                    </p>
+                    <div class="no-print pt-2">
+                        <button type="button" onclick="window.location.reload();" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-sm transition">
+                            <i class="fas fa-sync-alt"></i> Cek Status & Segarkan Halaman
+                        </button>
+                    </div>
+                </div>
+
+                @if(!empty($isAdmin))
+                <!-- Panel Khusus Admin Untuk Input Manual Atau Tarik VIP -->
+                <div class="no-print pt-2 border-t border-indigo-500/20">
+                    <div class="text-xs font-bold text-indigo-600 dark:text-indigo-400 mb-2">
+                        🛠️ Panel Admin: Kelola Akses & Serial Number
+                    </div>
+                    <form action="{{ route('admin.transactions.update-sn', $data->id) }}" method="POST" class="space-y-2">
+                        @csrf
+                        <textarea name="provider_sn" rows="2" class="w-full text-xs font-mono p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white" placeholder="Tempelkan link Canva / Detail Login / SN di sini..."></textarea>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button type="submit" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-sm">
+                                <i class="fas fa-save"></i> Simpan ke Invoice
+                            </button>
+                            <button type="submit" name="sync_vip" value="1" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-sm">
+                                <i class="fas fa-sync-alt"></i> Tarik Otomatis dari VIP Reseller
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                @endif
             </div>
             @endif
 
