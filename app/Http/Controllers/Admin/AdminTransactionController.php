@@ -331,16 +331,21 @@ class AdminTransactionController extends Controller
             if (isset($statusRes['result']) && $statusRes['result'] === true && !empty($statusRes['data'])) {
                 $pData = is_array($statusRes['data']) && isset($statusRes['data'][0]) ? $statusRes['data'][0] : $statusRes['data'];
                 $pStatus = strtolower($pData['status'] ?? '');
-                $sn = $pData['sn'] ?? ($pData['note'] ?? $transaction->provider_sn);
+                $sn = $pData['sn'] ?? ($pData['note'] ?? ($pData['info'] ?? ($pData['informasi'] ?? ($pData['message'] ?? $transaction->provider_sn))));
 
-                $updateData = ['provider_sn' => $sn];
+                $updateData = [];
+                if (!empty($sn)) {
+                    $updateData['provider_sn'] = $sn;
+                }
                 if ($pStatus === 'success') {
                     $updateData['status'] = 'success';
                 } elseif ($pStatus === 'error' || $pStatus === 'failed') {
                     $updateData['status'] = 'failed';
                 }
 
-                $transaction->update($updateData);
+                if (!empty($updateData)) {
+                    $transaction->update($updateData);
+                }
 
                 return back()->with('success', "Status berhasil diperbarui dari VIP Reseller: Status [{$pStatus}]" . ($sn ? " | Informasi Akun: {$sn}" : ''));
             } else {
