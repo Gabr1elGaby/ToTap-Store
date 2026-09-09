@@ -86,15 +86,44 @@ class RegisteredUserController extends Controller
             
             $resData = $waResponse->json();
             if (!$waResponse->successful() || (isset($resData['status']) && $resData['status'] === false)) {
-                $errorReason = $resData['reason'] ?? ($resData['message'] ?? 'Gagal mengirim pesan WhatsApp. Pastikan nomor HP aktif dan terdaftar di WhatsApp.');
-                return response()->json([
-                    'errors' => ['phone_number' => [$errorReason], 'phone' => [$errorReason]]
-                ], 422);
+                // Jika WhatsApp Gateway terputus/disconnected, jangan blokir pelanggan. Buat akun dan login otomatis!
+                $user = User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'phone_number' => $phone,
+                    'password' => Hash::make($request->password),
+                ]);
+
+                \Illuminate\Support\Facades\Auth::login($user);
+
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'requires_otp' => false,
+                        'message' => 'Pendaftaran berhasil!'
+                    ]);
+                }
+
+                return redirect(route('dashboard', absolute: false));
             }
         } catch (\Exception $e) {
-            return response()->json([
-                'errors' => ['phone_number' => ['Gangguan pengiriman WhatsApp: ' . $e->getMessage()], 'phone' => ['Gangguan pengiriman WhatsApp: ' . $e->getMessage()]]
-            ], 422);
+            // Fallback jika API WhatsApp offline
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone_number' => $phone,
+                'password' => Hash::make($request->password),
+            ]);
+
+            \Illuminate\Support\Facades\Auth::login($user);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'requires_otp' => false,
+                    'message' => 'Pendaftaran berhasil!'
+                ]);
+            }
+
+            return redirect(route('dashboard', absolute: false));
         }
 
         if ($request->expectsJson()) {
