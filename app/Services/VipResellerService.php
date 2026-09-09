@@ -114,19 +114,66 @@ class VipResellerService
 
     public function checkOrderStatus($trxId = '')
     {
+        if (empty($trxId)) {
+            return ['result' => false, 'message' => 'TRX ID kosong'];
+        }
+
         $payload = [
             'key' => $this->apiKey,
             'sign' => $this->generateSign(),
             'type' => 'status',
+            'trxid' => trim($trxId),
         ];
-        if (!empty($trxId)) {
-            $payload['trxid'] = trim($trxId);
-        } else {
-            $payload['limit'] = 50;
-        }
 
-        $response = Http::connectTimeout(30)->asForm()->post("{$this->baseUrl}/game-feature", $payload);
-        return $response->json();
+        try {
+            // 1. Coba endpoint game-feature
+            $response = Http::connectTimeout(30)->asForm()->post("{$this->baseUrl}/game-feature", $payload);
+            $res = $response->json();
+            if (isset($res['result']) && $res['result'] === true && !empty($res['data'])) {
+                return $res;
+            }
+
+            // 2. Fallback ke endpoint prepaid
+            $responsePrepaid = Http::connectTimeout(30)->asForm()->post("{$this->baseUrl}/prepaid", $payload);
+            $resPrepaid = $responsePrepaid->json();
+            if (isset($resPrepaid['result']) && $resPrepaid['result'] === true && !empty($resPrepaid['data'])) {
+                return $resPrepaid;
+            }
+
+            return $res ?: ($resPrepaid ?: ['result' => false]);
+        } catch (\Throwable $e) {
+            return ['result' => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    public function getOrderHistory($limit = 50)
+    {
+        $payload = [
+            'key' => $this->apiKey,
+            'sign' => $this->generateSign(),
+            'type' => 'history',
+            'limit' => $limit,
+        ];
+
+        try {
+            // 1. Coba game-feature
+            $response = Http::connectTimeout(30)->asForm()->post("{$this->baseUrl}/game-feature", $payload);
+            $res = $response->json();
+            if (isset($res['result']) && $res['result'] === true && !empty($res['data'])) {
+                return $res;
+            }
+
+            // 2. Coba prepaid
+            $responsePrepaid = Http::connectTimeout(30)->asForm()->post("{$this->baseUrl}/prepaid", $payload);
+            $resPrepaid = $responsePrepaid->json();
+            if (isset($resPrepaid['result']) && $resPrepaid['result'] === true && !empty($resPrepaid['data'])) {
+                return $resPrepaid;
+            }
+
+            return $res ?: ($resPrepaid ?: ['result' => false]);
+        } catch (\Throwable $e) {
+            return ['result' => false, 'message' => $e->getMessage()];
+        }
     }
 
     public static function extractSnFromData($data)
@@ -194,14 +241,14 @@ class VipResellerService
                 }
             }
 
-            // 2. Jika provider_trx_id kosong atau provider_sn masih kosong, tarik riwayat order terbaru dari VIP
-            $recentRes = $this->checkOrderStatus('');
-            if (isset($recentRes['result']) && $recentRes['result'] === true && !empty($recentRes['data']) && is_array($recentRes['data'])) {
+            // 2. Jika provider_trx_id kosong atau provider_sn masih kosong, tarik riwayat order terbaru dari VIP Reseller
+            $historyRes = $this->getOrderHistory(50);
+            if (isset($historyRes['result']) && $historyRes['result'] === true && !empty($historyRes['data']) && is_array($historyRes['data'])) {
                 // Bersihkan target (misal: "ameliacs5758@gmail.com" vs "ameliacs5758@gmail.com -")
                 $target1 = strtolower(trim(preg_replace('/[^a-zA-Z0-9@.]/', '', $transaction->target_field_1 ?? '')));
                 $productCode = $transaction->gameProduct ? strtolower(trim($transaction->gameProduct->product_code ?? '')) : '';
 
-                foreach ($recentRes['data'] as $item) {
+                foreach ($historyRes['data'] as $item) {
                     $rawItemTarget = $item['data_no'] ?? ($item['target'] ?? ($item['user_id'] ?? ($item['tujuan'] ?? '')));
                     $itemTarget = strtolower(trim(preg_replace('/[^a-zA-Z0-9@.]/', '', $rawItemTarget)));
                     $itemService = strtolower(trim($item['service'] ?? ($item['code'] ?? ($item['layanan'] ?? ''))));
