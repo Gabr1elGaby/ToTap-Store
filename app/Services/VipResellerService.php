@@ -129,6 +129,36 @@ class VipResellerService
         return $response->json();
     }
 
+    public static function extractSnFromData($data)
+    {
+        if (empty($data)) return null;
+
+        if (is_string($data)) {
+            $trimmed = trim($data);
+            if (strlen($trimmed) > 3 && !in_array(strtolower($trimmed), ['success', 'processing', 'pending', 'error', 'failed', 'empty'])) {
+                return $trimmed;
+            }
+            return null;
+        }
+
+        if (is_array($data)) {
+            if (isset($data[0])) {
+                return self::extractSnFromData($data[0]);
+            }
+
+            foreach (['sn', 'data', 'note', 'info', 'informasi', 'message', 'keterangan', 'catatan', 'serial_number', 'desc', 'link'] as $key) {
+                if (!empty($data[$key]) && is_string($data[$key])) {
+                    $val = trim($data[$key]);
+                    if (!in_array(strtolower($val), ['success', 'processing', 'pending', 'error', 'failed', 'empty', 'available'])) {
+                        return $val;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     public function syncTransaction(\App\Models\Transaction $transaction)
     {
         try {
@@ -141,15 +171,8 @@ class VipResellerService
                         $pData = $pData[0];
                     }
 
-                    $sn = null;
-                    foreach (['sn', 'note', 'info', 'informasi', 'message', 'keterangan', 'catatan', 'desc'] as $k) {
-                        if (!empty($pData[$k]) && is_string($pData[$k])) {
-                            $sn = trim($pData[$k]);
-                            break;
-                        }
-                    }
-
-                    $pStatus = strtolower($pData['status'] ?? '');
+                    $sn = self::extractSnFromData($pData);
+                    $pStatus = is_array($pData) ? strtolower($pData['status'] ?? '') : '';
 
                     $updateData = [];
                     if (!empty($sn)) {
@@ -195,29 +218,17 @@ class VipResellerService
                     }
 
                     if ($match) {
-                        $sn = null;
-                        foreach (['sn', 'note', 'info', 'informasi', 'message', 'keterangan', 'catatan', 'desc'] as $k) {
-                            if (!empty($item[$k]) && is_string($item[$k])) {
-                                $sn = trim($item[$k]);
-                                break;
-                            }
-                        }
+                        $sn = self::extractSnFromData($item);
 
                         // Jika item tidak menyertakan sn lengkap di list, cek single detail by trxid
                         if (empty($sn) && !empty($itemTrxId)) {
                             $singleRes = $this->checkOrderStatus($itemTrxId);
                             if (isset($singleRes['result']) && $singleRes['result'] === true && !empty($singleRes['data'])) {
-                                $sData = is_array($singleRes['data']) && isset($singleRes['data'][0]) ? $singleRes['data'][0] : $singleRes['data'];
-                                foreach (['sn', 'note', 'info', 'informasi', 'message', 'keterangan', 'catatan', 'desc'] as $k) {
-                                    if (!empty($sData[$k]) && is_string($sData[$k])) {
-                                        $sn = trim($sData[$k]);
-                                        break;
-                                    }
-                                }
+                                $sn = self::extractSnFromData($singleRes['data']);
                             }
                         }
 
-                        $pStatus = strtolower($item['status'] ?? 'success');
+                        $pStatus = is_array($item) ? strtolower($item['status'] ?? 'success') : 'success';
 
                         $updateData = [
                             'provider_trx_id' => $itemTrxId ?: $transaction->provider_trx_id,
