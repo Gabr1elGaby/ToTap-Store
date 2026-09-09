@@ -21,29 +21,10 @@ class TopUpPaymentController extends Controller
 
         // Jika transaksi memiliki provider_trx_id tapi provider_sn nya masih kosong,
         // otomatis tarik data akun / SN terbaru dari VIP Reseller secara real-time!
-        if (empty($transaction->provider_sn) && !empty($transaction->provider_trx_id)) {
+        if (empty($transaction->provider_sn) || $transaction->status === 'processing') {
             try {
                 $vipService = app(VipResellerService::class);
-                $statusRes = $vipService->checkOrderStatus($transaction->provider_trx_id);
-                if (isset($statusRes['result']) && $statusRes['result'] === true && !empty($statusRes['data'])) {
-                    $pData = is_array($statusRes['data']) && isset($statusRes['data'][0]) ? $statusRes['data'][0] : $statusRes['data'];
-                    $sn = $pData['sn'] ?? ($pData['note'] ?? ($pData['info'] ?? ($pData['informasi'] ?? ($pData['message'] ?? null))));
-                    $pStatus = strtolower($pData['status'] ?? '');
-                    
-                    $updateData = [];
-                    if (!empty($sn)) {
-                        $updateData['provider_sn'] = $sn;
-                    }
-                    if ($pStatus === 'success') {
-                        $updateData['status'] = 'success';
-                    } elseif ($pStatus === 'error' || $pStatus === 'failed') {
-                        $updateData['status'] = 'failed';
-                    }
-
-                    if (!empty($updateData)) {
-                        $transaction->update($updateData);
-                    }
-                }
+                $vipService->syncTransaction($transaction);
             } catch (\Throwable $e) {
                 Log::warning('Auto sync provider_sn on checkout view failed: ' . $e->getMessage());
             }
@@ -98,10 +79,11 @@ class TopUpPaymentController extends Controller
 
                         if (isset($orderRes['result']) && $orderRes['result'] === true) {
                             $pData = $orderRes['data'] ?? [];
-                            $sn = $pData['sn'] ?? ($pData['note'] ?? ($pData['info'] ?? ($pData['informasi'] ?? ($pData['message'] ?? null))));
+                            $trxId = $pData['trxid'] ?? ($pData['id'] ?? null);
+                            $sn = VipResellerService::extractSnFromData($pData);
                             $transaction->update([
                                 'status' => 'success',
-                                'provider_trx_id' => $pData['trxid'] ?? null,
+                                'provider_trx_id' => $trxId,
                                 'provider_sn' => $sn,
                             ]);
                         }
@@ -148,10 +130,11 @@ class TopUpPaymentController extends Controller
 
                             if (isset($orderRes['result']) && $orderRes['result'] === true) {
                                 $pData = $orderRes['data'] ?? [];
-                                $sn = $pData['sn'] ?? ($pData['note'] ?? ($pData['info'] ?? ($pData['informasi'] ?? ($pData['message'] ?? null))));
+                                $trxId = $pData['trxid'] ?? ($pData['id'] ?? null);
+                                $sn = VipResellerService::extractSnFromData($pData);
                                 $transaction->update([
                                     'status' => 'success',
-                                    'provider_trx_id' => $pData['trxid'] ?? null,
+                                    'provider_trx_id' => $trxId,
                                     'provider_sn' => $sn,
                                 ]);
                             }

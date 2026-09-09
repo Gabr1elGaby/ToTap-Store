@@ -85,7 +85,7 @@ class VipResellerService
             'key' => $this->apiKey,
             'sign' => $this->generateSign(),
             'type' => 'order',
-            'service' => $serviceCode,
+            'service' => trim($serviceCode),
             'data_no' => trim($targetId),
         ];
 
@@ -93,9 +93,25 @@ class VipResellerService
             $payload['data_zone'] = trim($targetZone);
         }
 
-        $response = Http::connectTimeout(60)->timeout(120)->retry(3, 2000)->asForm()->post("{$this->baseUrl}/game-feature", $payload);
+        try {
+            // 1. Coba endpoint game-feature (Games & Apps)
+            $response = Http::connectTimeout(60)->timeout(120)->retry(2, 1000)->asForm()->post("{$this->baseUrl}/game-feature", $payload);
+            $res = $response->json();
+            if (isset($res['result']) && $res['result'] === true) {
+                return $res;
+            }
 
-        return $response->json();
+            // 2. Fallback ke endpoint prepaid (Voucher, Pulsa, & Layanan Umum)
+            $responsePrepaid = Http::connectTimeout(60)->timeout(120)->retry(2, 1000)->asForm()->post("{$this->baseUrl}/prepaid", $payload);
+            $resPrepaid = $responsePrepaid->json();
+            if (isset($resPrepaid['result']) && $resPrepaid['result'] === true) {
+                return $resPrepaid;
+            }
+
+            return $res ?: ($resPrepaid ?? ['result' => false, 'message' => 'Gagal membuat pesanan ke provider']);
+        } catch (\Throwable $e) {
+            return ['result' => false, 'message' => $e->getMessage()];
+        }
     }
 
     public function checkNickname($gameCode, $target1, $target2 = '')

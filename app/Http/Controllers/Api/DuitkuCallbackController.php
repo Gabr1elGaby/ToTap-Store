@@ -74,10 +74,11 @@ class DuitkuCallbackController extends Controller
 
                         if (isset($orderRes['result']) && $orderRes['result'] === true) {
                             $pData = $orderRes['data'] ?? [];
-                            $sn = $pData['sn'] ?? ($pData['note'] ?? ($pData['info'] ?? ($pData['informasi'] ?? ($pData['message'] ?? null))));
+                            $trxId = $pData['trxid'] ?? ($pData['id'] ?? null);
+                            $sn = \App\Services\VipResellerService::extractSnFromData($pData);
                             $transaction->update([
                                 'status' => 'success',
-                                'provider_trx_id' => $pData['trxid'] ?? null,
+                                'provider_trx_id' => $trxId,
                                 'provider_sn' => $sn,
                             ]);
                         }
