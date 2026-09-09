@@ -141,7 +141,14 @@ class VipResellerService
                         $pData = $pData[0];
                     }
 
-                    $sn = !empty($pData['sn']) ? $pData['sn'] : (!empty($pData['note']) ? $pData['note'] : (!empty($pData['info']) ? $pData['info'] : (!empty($pData['informasi']) ? $pData['informasi'] : (!empty($pData['message']) ? $pData['message'] : null))));
+                    $sn = null;
+                    foreach (['sn', 'note', 'info', 'informasi', 'message', 'keterangan', 'catatan', 'desc'] as $k) {
+                        if (!empty($pData[$k]) && is_string($pData[$k])) {
+                            $sn = trim($pData[$k]);
+                            break;
+                        }
+                    }
+
                     $pStatus = strtolower($pData['status'] ?? '');
 
                     $updateData = [];
@@ -158,33 +165,62 @@ class VipResellerService
                         $transaction->update($updateData);
                         $transaction->refresh();
                     }
-                    return true;
+                    if (!empty($sn)) {
+                        return true;
+                    }
                 }
             }
 
             // 2. Jika provider_trx_id kosong atau provider_sn masih kosong, tarik riwayat order terbaru dari VIP
             $recentRes = $this->checkOrderStatus('');
             if (isset($recentRes['result']) && $recentRes['result'] === true && !empty($recentRes['data']) && is_array($recentRes['data'])) {
-                $target1 = trim($transaction->target_field_1 ?? '');
-                $productCode = $transaction->gameProduct ? trim($transaction->gameProduct->product_code ?? '') : '';
+                // Bersihkan target (misal: "ameliacs5758@gmail.com" vs "ameliacs5758@gmail.com -")
+                $target1 = strtolower(trim(preg_replace('/[^a-zA-Z0-9@.]/', '', $transaction->target_field_1 ?? '')));
+                $productCode = $transaction->gameProduct ? strtolower(trim($transaction->gameProduct->product_code ?? '')) : '';
 
                 foreach ($recentRes['data'] as $item) {
-                    $itemTarget = trim($item['data_no'] ?? ($item['target'] ?? ($item['user_id'] ?? '')));
-                    $itemService = trim($item['service'] ?? ($item['code'] ?? ''));
+                    $rawItemTarget = $item['data_no'] ?? ($item['target'] ?? ($item['user_id'] ?? ($item['tujuan'] ?? '')));
+                    $itemTarget = strtolower(trim(preg_replace('/[^a-zA-Z0-9@.]/', '', $rawItemTarget)));
+                    $itemService = strtolower(trim($item['service'] ?? ($item['code'] ?? ($item['layanan'] ?? ''))));
+                    $itemTrxId = trim($item['trxid'] ?? ($item['id_trx'] ?? ''));
 
                     $match = false;
-                    if (!empty($target1) && strcasecmp($itemTarget, $target1) === 0) {
-                        $match = true;
-                    } elseif (!empty($productCode) && strcasecmp($itemService, $productCode) === 0 && !empty($target1) && str_contains(strtolower($itemTarget), strtolower($target1))) {
+                    if (!empty($target1) && !empty($itemTarget)) {
+                        if ($itemTarget === $target1 || str_contains($itemTarget, $target1) || str_contains($target1, $itemTarget)) {
+                            $match = true;
+                        }
+                    }
+                    if (!$match && !empty($productCode) && !empty($itemService) && (str_contains($itemService, $productCode) || str_contains($productCode, $itemService))) {
                         $match = true;
                     }
 
                     if ($match) {
-                        $sn = !empty($item['sn']) ? $item['sn'] : (!empty($item['note']) ? $item['note'] : (!empty($item['info']) ? $item['info'] : (!empty($item['informasi']) ? $item['informasi'] : (!empty($item['message']) ? $item['message'] : null))));
-                        $pStatus = strtolower($item['status'] ?? '');
+                        $sn = null;
+                        foreach (['sn', 'note', 'info', 'informasi', 'message', 'keterangan', 'catatan', 'desc'] as $k) {
+                            if (!empty($item[$k]) && is_string($item[$k])) {
+                                $sn = trim($item[$k]);
+                                break;
+                            }
+                        }
+
+                        // Jika item tidak menyertakan sn lengkap di list, cek single detail by trxid
+                        if (empty($sn) && !empty($itemTrxId)) {
+                            $singleRes = $this->checkOrderStatus($itemTrxId);
+                            if (isset($singleRes['result']) && $singleRes['result'] === true && !empty($singleRes['data'])) {
+                                $sData = is_array($singleRes['data']) && isset($singleRes['data'][0]) ? $singleRes['data'][0] : $singleRes['data'];
+                                foreach (['sn', 'note', 'info', 'informasi', 'message', 'keterangan', 'catatan', 'desc'] as $k) {
+                                    if (!empty($sData[$k]) && is_string($sData[$k])) {
+                                        $sn = trim($sData[$k]);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        $pStatus = strtolower($item['status'] ?? 'success');
 
                         $updateData = [
-                            'provider_trx_id' => $item['trxid'] ?? $transaction->provider_trx_id,
+                            'provider_trx_id' => $itemTrxId ?: $transaction->provider_trx_id,
                         ];
                         if (!empty($sn)) {
                             $updateData['provider_sn'] = $sn;
