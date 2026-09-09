@@ -455,11 +455,12 @@ class TopUpController extends Controller
                 if (isset($orderRes['result']) && $orderRes['result'] === true) {
                     $provStatus = strtolower($orderRes['data']['status'] ?? 'processing');
                     $finalStatus = ($provStatus === 'success') ? 'success' : 'processing';
-                    $sn = $orderRes['data']['sn'] ?? ($orderRes['data']['note'] ?? null);
+                    $trxId = $orderRes['data']['trxid'] ?? ($orderRes['data']['id'] ?? null);
+                    $sn = \App\Services\VipResellerService::extractSnFromData($orderRes['data'] ?? []);
 
                     $transaction->update([
                         'status' => $finalStatus,
-                        'provider_trx_id' => $orderRes['data']['trxid'] ?? null,
+                        'provider_trx_id' => $trxId,
                         'provider_sn' => $sn,
                     ]);
 
