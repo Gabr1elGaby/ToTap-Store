@@ -45,7 +45,7 @@ class TransactionHistoryController extends Controller
             ->first();
 
         if ($transaction) {
-            if (empty($transaction->provider_sn) || $transaction->status === 'processing') {
+            if (\App\Services\VipResellerService::isPendingSn($transaction->provider_sn) || $transaction->status === 'processing') {
                 try {
                     $vipService = app(\App\Services\VipResellerService::class);
                     $vipService->syncTransaction($transaction);

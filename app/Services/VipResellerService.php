@@ -192,13 +192,32 @@ class VipResellerService
         }
     }
 
+    public static function isPendingSn($sn)
+    {
+        if (empty($sn)) return true;
+        $lower = strtolower(trim($sn));
+        if (in_array($lower, ['success', 'processing', 'pending', 'error', 'failed', 'empty', 'available', 'none', '-', 'null'])) {
+            return true;
+        }
+        if (str_contains($lower, 'pesanan akan diproses') ||
+            str_contains($lower, 'cek pesanan anda') ||
+            str_contains($lower, 'sedang diproses') ||
+            str_contains($lower, 'menunggu') ||
+            str_contains($lower, 'dalam antrean') ||
+            str_contains($lower, 'antrean proses') ||
+            str_contains($lower, 'secepatnya')) {
+            return true;
+        }
+        return false;
+    }
+
     public static function extractSnFromData($data)
     {
         if (empty($data)) return null;
 
         if (is_string($data)) {
             $trimmed = trim($data);
-            if (strlen($trimmed) > 3 && !in_array(strtolower($trimmed), ['success', 'processing', 'pending', 'error', 'failed', 'empty'])) {
+            if (strlen($trimmed) > 3 && !self::isPendingSn($trimmed)) {
                 return $trimmed;
             }
             return null;
@@ -212,7 +231,7 @@ class VipResellerService
             foreach (['sn', 'data', 'note', 'info', 'informasi', 'message', 'keterangan', 'catatan', 'serial_number', 'desc', 'link'] as $key) {
                 if (!empty($data[$key]) && is_string($data[$key])) {
                     $val = trim($data[$key]);
-                    if (!in_array(strtolower($val), ['success', 'processing', 'pending', 'error', 'failed', 'empty', 'available'])) {
+                    if (!self::isPendingSn($val)) {
                         return $val;
                     }
                 }

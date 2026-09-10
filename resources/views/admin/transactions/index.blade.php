@@ -319,6 +319,17 @@
                                                 @if($trx->target_field_2)
                                                     <span class="text-gray-400">({{ $trx->target_field_2 }})</span>
                                                 @endif
+                                                @if(!empty($trx->provider_sn))
+                                                    @if(\App\Services\VipResellerService::isPendingSn($trx->provider_sn))
+                                                        <div class="mt-1 text-[10px] text-blue-500 font-sans flex items-center gap-1">
+                                                            <i class="fas fa-spinner fa-spin text-[9px]"></i> Menunggu SN...
+                                                        </div>
+                                                    @else
+                                                        <div class="mt-1 p-1 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 text-[10px] text-gray-700 dark:text-gray-300 font-mono select-all break-all">
+                                                            <span class="font-bold text-gray-500">SN:</span> {{ $trx->provider_sn }}
+                                                        </div>
+                                                    @endif
+                                                @endif
                                             </td>
                                             <td class="py-4 px-6 font-bold text-gray-900 dark:text-white whitespace-nowrap">
                                                 Rp{{ number_format($trx->amount, 0, ',', '.') }}
@@ -485,37 +496,43 @@
                                                     <div class="text-gray-500 text-[11px] mt-0.5 font-sans">Request: {{ $appTrx->target_field_2 }}</div>
                                                 @endif
                                                 @if(!empty($appTrx->provider_sn))
-                                                    @php
-                                                        $adminAcc = \App\Helpers\InvoiceHelper::parseAccountCredentials($appTrx->provider_sn);
-                                                    @endphp
-                                                    <div class="mt-2 p-2.5 bg-amber-500/10 dark:bg-amber-950/60 border border-amber-400 dark:border-amber-700 rounded-xl text-xs space-y-1 shadow-sm">
-                                                        <div class="font-black text-amber-800 dark:text-amber-300 text-[10px] uppercase tracking-wider flex items-center gap-1">
-                                                            <i class="fas fa-key"></i> DETAIL AKUN PROVIDER:
+                                                    @if(\App\Services\VipResellerService::isPendingSn($appTrx->provider_sn))
+                                                        <div class="mt-2 p-2 bg-blue-500/10 dark:bg-blue-950/40 border border-blue-400/40 dark:border-blue-700/40 rounded-xl text-[11px] text-blue-600 dark:text-blue-300 font-bold flex items-center gap-1.5 shadow-sm">
+                                                            <i class="fas fa-spinner fa-spin text-xs text-blue-500"></i> Menunggu SN / Akun dari Provider...
                                                         </div>
-                                                        @if($adminAcc['is_structured'] && ($adminAcc['email'] || $adminAcc['password']))
-                                                            @if($adminAcc['email'])
-                                                                <div class="text-[11px] text-slate-800 dark:text-amber-100 font-mono select-all">
-                                                                    <span class="font-bold text-amber-700 dark:text-amber-400">Akun:</span> {{ $adminAcc['email'] }}
-                                                                </div>
-                                                            @endif
-                                                            @if($adminAcc['password'])
-                                                                <div class="text-[11px] text-slate-800 dark:text-emerald-300 font-mono select-all">
-                                                                    <span class="font-bold text-emerald-600 dark:text-emerald-400">PW:</span> {{ $adminAcc['password'] }}
-                                                                </div>
-                                                            @endif
-                                                            @if($adminAcc['link'])
-                                                                <div class="text-[11px]">
-                                                                    <a href="{{ $adminAcc['link'] }}" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline font-mono inline-flex items-center gap-1">
-                                                                        <i class="fas fa-link text-[10px]"></i> {{ $adminAcc['link'] }}
-                                                                    </a>
-                                                                </div>
-                                                            @endif
-                                                        @else
-                                                            <div class="text-[11px] font-mono text-slate-800 dark:text-amber-200 break-all select-all">
-                                                                {{ $appTrx->provider_sn }}
+                                                    @else
+                                                        @php
+                                                            $adminAcc = \App\Helpers\InvoiceHelper::parseAccountCredentials($appTrx->provider_sn);
+                                                        @endphp
+                                                        <div class="mt-2 p-2.5 bg-amber-500/10 dark:bg-amber-950/60 border border-amber-400 dark:border-amber-700 rounded-xl text-xs space-y-1 shadow-sm">
+                                                            <div class="font-black text-amber-800 dark:text-amber-300 text-[10px] uppercase tracking-wider flex items-center gap-1">
+                                                                <i class="fas fa-key"></i> DETAIL AKUN PROVIDER:
                                                             </div>
-                                                        @endif
-                                                    </div>
+                                                            @if($adminAcc['is_structured'] && ($adminAcc['email'] || $adminAcc['password']))
+                                                                @if($adminAcc['email'])
+                                                                    <div class="text-[11px] text-slate-800 dark:text-amber-100 font-mono select-all">
+                                                                        <span class="font-bold text-amber-700 dark:text-amber-400">Akun:</span> {{ $adminAcc['email'] }}
+                                                                    </div>
+                                                                @endif
+                                                                @if($adminAcc['password'])
+                                                                    <div class="text-[11px] text-slate-800 dark:text-emerald-300 font-mono select-all">
+                                                                        <span class="font-bold text-emerald-600 dark:text-emerald-400">PW:</span> {{ $adminAcc['password'] }}
+                                                                    </div>
+                                                                @endif
+                                                                @if($adminAcc['link'])
+                                                                    <div class="text-[11px]">
+                                                                        <a href="{{ $adminAcc['link'] }}" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline font-mono inline-flex items-center gap-1">
+                                                                            <i class="fas fa-link text-[10px]"></i> {{ $adminAcc['link'] }}
+                                                                        </a>
+                                                                    </div>
+                                                                @endif
+                                                            @else
+                                                                <div class="text-[11px] font-mono text-slate-800 dark:text-amber-200 break-all select-all">
+                                                                    {{ $appTrx->provider_sn }}
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    @endif
                                                 @endif
                                             </td>
                                             <td class="py-4 px-6 font-bold text-gray-900 dark:text-white whitespace-nowrap">

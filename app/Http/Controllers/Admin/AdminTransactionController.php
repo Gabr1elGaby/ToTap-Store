@@ -98,6 +98,21 @@ class AdminTransactionController extends Controller
         }
         $deposits = $depositsQuery->paginate(20, ['*'], 'dep_page')->withQueryString();
 
+        // Otomatis sinkronkan transaksi game & aplikasi yang provider_sn nya masih pending / placeholder
+        try {
+            $vipService = app(\App\Services\VipResellerService::class);
+            foreach ($appTransactions as $t) {
+                if (\App\Services\VipResellerService::isPendingSn($t->provider_sn)) {
+                    $vipService->syncTransaction($t);
+                }
+            }
+            foreach ($transactions as $t) {
+                if (\App\Services\VipResellerService::isPendingSn($t->provider_sn)) {
+                    $vipService->syncTransaction($t);
+                }
+            }
+        } catch (\Throwable $e) {}
+
         return view('admin.transactions.index', compact('transactions', 'appTransactions', 'orders', 'cvOrders', 'deposits', 'search', 'status'));
     }
 
@@ -110,7 +125,7 @@ class AdminTransactionController extends Controller
             ->first();
 
         if ($transaction) {
-            if (empty($transaction->provider_sn) || $transaction->status === 'processing') {
+            if (\App\Services\VipResellerService::isPendingSn($transaction->provider_sn) || $transaction->status === 'processing') {
                 try {
                     $vipService = app(\App\Services\VipResellerService::class);
                     $vipService->syncTransaction($transaction);

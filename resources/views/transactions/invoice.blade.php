@@ -177,49 +177,61 @@
             </div>
 
             @if($type === 'topup' && !empty($data->provider_sn))
-            @php
-                $rawSn = trim($data->provider_sn);
-                $detectedLink = null;
-                if (preg_match('/(?:https?:\/\/|bit\.ly\/|tinyurl\.com\/)[^\s|]+/i', $rawSn, $mUrl)) {
-                    $detectedLink = $mUrl[0];
-                    if (!str_starts_with($detectedLink, 'http')) {
-                        $detectedLink = 'https://' . $detectedLink;
-                    }
-                }
-            @endphp
-            <!-- Informasi Akun / Serial Number Resmi (Full Teks dari VIP) -->
-            <div class="bg-amber-500/10 dark:bg-amber-950/40 border-2 border-amber-500 rounded-2xl p-5 sm:p-6 shadow-md space-y-4">
-                <div class="flex items-center justify-between border-b border-amber-500/30 pb-3">
-                    <div class="flex items-center gap-2 font-black text-amber-950 dark:text-amber-300 text-sm sm:text-base">
-                        <i class="fas fa-key text-amber-500 text-base"></i> INFORMASI AKUN / AKSES RESMI
+                @if(\App\Services\VipResellerService::isPendingSn($data->provider_sn))
+                    <div class="bg-blue-500/10 dark:bg-blue-950/40 border-2 border-blue-500/40 rounded-2xl p-4 sm:p-5 shadow-sm flex items-center gap-3.5">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                            <i class="fas fa-spinner fa-spin text-lg"></i>
+                        </div>
+                        <div class="space-y-0.5">
+                            <div class="font-bold text-slate-900 dark:text-white text-sm">Pesanan Sedang Diproses Provider</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400">Data akun / SN resmi sedang dipersiapkan oleh server provider. Begitu selesai, informasi akan langsung muncul di sini. Silakan refresh secara berkala.</div>
+                        </div>
                     </div>
-                    <span class="text-xs font-black bg-amber-500 text-white dark:text-slate-900 px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
-                        Aktif & Sukses
-                    </span>
-                </div>
+                @else
+                    @php
+                        $rawSn = trim($data->provider_sn);
+                        $detectedLink = null;
+                        if (preg_match('/(?:https?:\/\/|bit\.ly\/|tinyurl\.com\/)[^\s|]+/i', $rawSn, $mUrl)) {
+                            $detectedLink = $mUrl[0];
+                            if (!str_starts_with($detectedLink, 'http')) {
+                                $detectedLink = 'https://' . $detectedLink;
+                            }
+                        }
+                    @endphp
+                    <!-- Informasi Akun / Serial Number Resmi (Full Teks dari VIP) -->
+                    <div class="bg-amber-500/10 dark:bg-amber-950/40 border-2 border-amber-500 rounded-2xl p-5 sm:p-6 shadow-md space-y-4">
+                        <div class="flex items-center justify-between border-b border-amber-500/30 pb-3">
+                            <div class="flex items-center gap-2 font-black text-amber-950 dark:text-amber-300 text-sm sm:text-base">
+                                <i class="fas fa-key text-amber-500 text-base"></i> INFORMASI AKUN / AKSES RESMI
+                            </div>
+                            <span class="text-xs font-black bg-amber-500 text-white dark:text-slate-900 px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                                Aktif & Sukses
+                            </span>
+                        </div>
 
-                <div class="space-y-3">
-                    <div class="p-4 bg-slate-900 dark:bg-slate-950 rounded-xl border-2 border-amber-500/40 font-mono text-xs sm:text-sm font-bold text-amber-300 select-all shadow-inner leading-relaxed break-words whitespace-pre-wrap">
-                        {{ $rawSn }}
+                        <div class="space-y-3">
+                            <div class="p-4 bg-slate-900 dark:bg-slate-950 rounded-xl border-2 border-amber-500/40 font-mono text-xs sm:text-sm font-bold text-amber-300 select-all shadow-inner leading-relaxed break-words whitespace-pre-wrap">
+                                {{ $rawSn }}
+                            </div>
+
+                            <div class="flex flex-wrap items-center gap-2 pt-1">
+                                <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($rawSn) }}'); alert('Semua data akun berhasil disalin ke clipboard!');" class="no-print flex-1 px-4 py-2.5 text-xs font-black text-white bg-amber-600 hover:bg-amber-700 active:scale-95 rounded-xl shadow-md transition whitespace-nowrap cursor-pointer flex items-center justify-center gap-2">
+                                    <i class="fas fa-copy text-sm"></i> Salin Semua Data Akun
+                                </button>
+
+                                @if($detectedLink)
+                                <a href="{{ $detectedLink }}" target="_blank" class="no-print px-4 py-2.5 text-xs font-black text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-xl shadow-md transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0">
+                                    <i class="fas fa-external-link-alt"></i> Buka Link Panduan
+                                </a>
+                                @endif
+                            </div>
+                        </div>
+
+                        <p class="text-xs font-medium text-slate-800 dark:text-slate-200 pt-2.5 border-t border-amber-500/30">
+                            💡 <em>Gunakan detail akun di atas untuk login ke aplikasi. Jika tertera link panduan (URL), klik link tersebut untuk panduan aktivasi profil.</em>
+                        </p>
                     </div>
-
-                    <div class="flex flex-wrap items-center gap-2 pt-1">
-                        <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($rawSn) }}'); alert('Semua data akun berhasil disalin ke clipboard!');" class="no-print flex-1 px-4 py-2.5 text-xs font-black text-white bg-amber-600 hover:bg-amber-700 active:scale-95 rounded-xl shadow-md transition whitespace-nowrap cursor-pointer flex items-center justify-center gap-2">
-                            <i class="fas fa-copy text-sm"></i> Salin Semua Data Akun
-                        </button>
-
-                        @if($detectedLink)
-                        <a href="{{ $detectedLink }}" target="_blank" class="no-print px-4 py-2.5 text-xs font-black text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-xl shadow-md transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0">
-                            <i class="fas fa-external-link-alt"></i> Buka Link Panduan
-                        </a>
-                        @endif
-                    </div>
-                </div>
-
-                <p class="text-xs font-medium text-slate-800 dark:text-slate-200 pt-2.5 border-t border-amber-500/30">
-                    💡 <em>Gunakan detail akun di atas untuk login ke aplikasi. Jika tertera link panduan (URL), klik link tersebut untuk panduan aktivasi profil.</em>
-                </p>
-            </div>
+                @endif
             @endif
 
             <!-- Price Breakdown -->
