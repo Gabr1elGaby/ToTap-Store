@@ -196,7 +196,7 @@ class VipResellerService
     {
         if (empty($sn)) return true;
         $lower = strtolower(trim($sn));
-        if (in_array($lower, ['success', 'processing', 'pending', 'error', 'failed', 'empty', 'available', 'none', '-', 'null'])) {
+        if (in_array($lower, ['success', 'processing', 'pending', 'error', 'failed', 'empty', 'available', 'none', '-', 'null', 'undefined'])) {
             return true;
         }
         if (str_contains($lower, 'pesanan akan diproses') ||
@@ -206,6 +206,10 @@ class VipResellerService
             str_contains($lower, 'dalam antrean') ||
             str_contains($lower, 'antrean proses') ||
             str_contains($lower, 'secepatnya')) {
+            return true;
+        }
+        // Jika hanya berupa email tunggal tanpa newline/password/link (karena ini adalah input target bukan SN/akun)
+        if (filter_var(trim($sn), FILTER_VALIDATE_EMAIL)) {
             return true;
         }
         return false;
@@ -228,7 +232,9 @@ class VipResellerService
                 return self::extractSnFromData($data[0]);
             }
 
-            foreach (['sn', 'data', 'note', 'info', 'informasi', 'message', 'keterangan', 'catatan', 'serial_number', 'desc', 'link'] as $key) {
+            // Cari pada kunci yang benar-benar memuat serial number, catatan akun, atau link invite
+            // Kunci 'data' sengaja DIHAPUS karena pada API VIP Reseller, 'data' adalah nomor HP / email target customer
+            foreach (['sn', 'note', 'catatan', 'serial_number', 'token', 'link', 'keterangan', 'message', 'info', 'informasi', 'desc'] as $key) {
                 if (!empty($data[$key]) && is_string($data[$key])) {
                     $val = trim($data[$key]);
                     if (!self::isPendingSn($val)) {
@@ -276,57 +282,48 @@ class VipResellerService
                 }
             }
 
-            // 2. Jika provider_trx_id kosong atau provider_sn masih kosong, tarik riwayat order terbaru dari VIP Reseller
+            // 2. Jika provider_trx_id kosong atau provider_sn belum ada, cari di riwayat order VIP Reseller berdasarkan TARGET EMAIL/NO HP YANG SAMA PERSIS
             $historyRes = $this->getOrderHistory(50);
             if (isset($historyRes['result']) && $historyRes['result'] === true && !empty($historyRes['data']) && is_array($historyRes['data'])) {
                 // Bersihkan target (misal: "ameliacs5758@gmail.com" vs "ameliacs5758@gmail.com -")
                 $target1 = strtolower(trim(preg_replace('/[^a-zA-Z0-9@.]/', '', $transaction->target_field_1 ?? '')));
-                $productCode = $transaction->gameProduct ? strtolower(trim($transaction->gameProduct->product_code ?? '')) : '';
 
-                foreach ($historyRes['data'] as $item) {
-                    $rawItemTarget = $item['data_no'] ?? ($item['target'] ?? ($item['user_id'] ?? ($item['tujuan'] ?? '')));
-                    $itemTarget = strtolower(trim(preg_replace('/[^a-zA-Z0-9@.]/', '', $rawItemTarget)));
-                    $itemService = strtolower(trim($item['service'] ?? ($item['code'] ?? ($item['layanan'] ?? ''))));
-                    $itemTrxId = trim($item['trxid'] ?? ($item['id_trx'] ?? ''));
+                if (!empty($target1)) {
+                    foreach ($historyRes['data'] as $item) {
+                        $rawItemTarget = $item['data_no'] ?? ($item['target'] ?? ($item['user_id'] ?? ($item['tujuan'] ?? ($item['data'] ?? ''))));
+                        $itemTarget = strtolower(trim(preg_replace('/[^a-zA-Z0-9@.]/', '', $rawItemTarget)));
+                        $itemTrxId = trim($item['trxid'] ?? ($item['id_trx'] ?? ''));
 
-                    $match = false;
-                    if (!empty($target1) && !empty($itemTarget)) {
-                        if ($itemTarget === $target1 || str_contains($itemTarget, $target1) || str_contains($target1, $itemTarget)) {
-                            $match = true;
-                        }
-                    }
-                    if (!$match && !empty($productCode) && !empty($itemService) && (str_contains($itemService, $productCode) || str_contains($productCode, $itemService))) {
-                        $match = true;
-                    }
+                        // HANYA COCOKKAN JIKA TARGETNYA BENAR-BENAR SAMA PERSIS DENGAN TRANSAKSI INI
+                        if (!empty($itemTarget) && ($itemTarget === $target1 || str_contains($itemTarget, $target1) || str_contains($target1, $itemTarget))) {
+                            $sn = self::extractSnFromData($item);
 
-                    if ($match) {
-                        $sn = self::extractSnFromData($item);
-
-                        // Jika item tidak menyertakan sn lengkap di list, cek single detail by trxid
-                        if (empty($sn) && !empty($itemTrxId)) {
-                            $singleRes = $this->checkOrderStatus($itemTrxId);
-                            if (isset($singleRes['result']) && $singleRes['result'] === true && !empty($singleRes['data'])) {
-                                $sn = self::extractSnFromData($singleRes['data']);
+                            // Jika item tidak menyertakan sn lengkap di list, cek single detail by trxid
+                            if (empty($sn) && !empty($itemTrxId)) {
+                                $singleRes = $this->checkOrderStatus($itemTrxId);
+                                if (isset($singleRes['result']) && $singleRes['result'] === true && !empty($singleRes['data'])) {
+                                    $sn = self::extractSnFromData($singleRes['data']);
+                                }
                             }
-                        }
 
-                        $pStatus = is_array($item) ? strtolower($item['status'] ?? 'success') : 'success';
+                            $pStatus = is_array($item) ? strtolower($item['status'] ?? 'success') : 'success';
 
-                        $updateData = [
-                            'provider_trx_id' => $itemTrxId ?: $transaction->provider_trx_id,
-                        ];
-                        if (!empty($sn)) {
-                            $updateData['provider_sn'] = $sn;
-                        }
-                        if ($pStatus === 'success') {
-                            $updateData['status'] = 'success';
-                        } elseif ($pStatus === 'error' || $pStatus === 'failed') {
-                            $updateData['status'] = 'failed';
-                        }
+                            $updateData = [
+                                'provider_trx_id' => $itemTrxId ?: $transaction->provider_trx_id,
+                            ];
+                            if (!empty($sn)) {
+                                $updateData['provider_sn'] = $sn;
+                            }
+                            if ($pStatus === 'success') {
+                                $updateData['status'] = 'success';
+                            } elseif ($pStatus === 'error' || $pStatus === 'failed') {
+                                $updateData['status'] = 'failed';
+                            }
 
-                        $transaction->update($updateData);
-                        $transaction->refresh();
-                        return true;
+                            $transaction->update($updateData);
+                            $transaction->refresh();
+                            return true;
+                        }
                     }
                 }
             }
