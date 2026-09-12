@@ -498,6 +498,11 @@
                        class="relative shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center justify-center group border border-gray-300 dark:border-gray-700 category-card-glow bg-white dark:bg-gray-900" 
                        style="width: 180px; height: 200px; text-decoration: none; border-radius: 24px;"
                        data-aos="zoom-in" data-aos-delay="200">
+                        @if(isset($maxAppDiscount) && $maxAppDiscount > 0)
+                        <div class="absolute top-0 right-0 bg-red-600 text-white font-black text-[10px] px-3 py-1 uppercase tracking-wider z-20" style="border-top-right-radius: 24px; border-bottom-left-radius: 12px; box-shadow: -2px 2px 5px rgba(0,0,0,0.3);">
+                            Diskon s/d {{ $maxAppDiscount }}%
+                        </div>
+                        @endif
                         
                         <!-- Icon -->
                         <div class="relative flex items-center justify-center mb-2 group-hover:-translate-y-2 transition-transform duration-300" style="width: 130px; height: 130px;">

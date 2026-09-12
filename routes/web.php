@@ -41,13 +41,35 @@ Route::get('/', function () {
 
     $totalTransactions = $paidCvCount + $topupTrxCount + $softwareOrdersCount;
 
-        // GET MAX DISCOUNT FOR TOP UP GAMES
-    $maxGameDiscount = \Illuminate\Support\Facades\DB::table('game_products')
-        ->where('is_promo', true)
-        ->where('price_normal', '>', 0)
-        ->whereColumn('price_normal', '>', 'price_sell')
-        ->selectRaw('MAX(ROUND(((price_normal - price_sell) / price_normal) * 100)) as max_discount')
-        ->value('max_discount') ?? 0;
+    // GET MAX DISCOUNT FOR TOP UP GAMES
+    $maxGameDiscount = (int) (\Illuminate\Support\Facades\DB::table('game_products')
+        ->join('games', 'game_products.game_id', '=', 'games.id')
+        ->where('game_products.is_promo', true)
+        ->where('game_products.price_normal', '>', 0)
+        ->whereColumn('game_products.price_normal', '>', 'game_products.price_sell')
+        ->where(function($q) {
+            $q->whereNull('games.category')
+              ->orWhere('games.category', 'Top Up Game')
+              ->orWhere('games.category', 'NOT LIKE', '%aplikasi%');
+        })
+        ->selectRaw('MAX(ROUND(((game_products.price_normal - game_products.price_sell) / game_products.price_normal) * 100)) as max_discount')
+        ->value('max_discount') ?? 0);
+
+    // GET MAX DISCOUNT FOR APLIKASI PREMIUM
+    $maxAppDiscount = (int) (\Illuminate\Support\Facades\DB::table('game_products')
+        ->join('games', 'game_products.game_id', '=', 'games.id')
+        ->where('game_products.is_promo', true)
+        ->where('game_products.price_normal', '>', 0)
+        ->whereColumn('game_products.price_normal', '>', 'game_products.price_sell')
+        ->where(function($q) {
+            $q->where('games.category', 'Aplikasi Premium')
+              ->orWhere('games.category', 'App & Entertainment')
+              ->orWhere('games.category', 'LIKE', '%aplikasi%')
+              ->orWhere('games.category', 'LIKE', '%streaming%');
+        })
+        ->selectRaw('MAX(ROUND(((game_products.price_normal - game_products.price_sell) / game_products.price_normal) * 100)) as max_discount')
+        ->value('max_discount') ?? 0);
+
     // GET MAX DISCOUNT FOR SOFTWARE
     $maxPlanDiscount = (int) (\Illuminate\Support\Facades\DB::table('plans')
         ->where('is_active', true)
@@ -58,21 +80,39 @@ Route::get('/', function () {
 
     // Check active Super Admin Promo settings
     $promoSettings = \App\Helpers\PromoHelper::getSettings();
-    $activePromoPct = 0;
+    $dayCheck = \App\Helpers\PromoHelper::isDayPromoActiveToday();
+
+    $gamePromoPct = 0;
+    $appPromoPct = 0;
+    $softwarePromoPct = 0;
+
+    // 1. Promo Pengguna Baru
     if (!empty($promoSettings['first_user_active']) && $promoSettings['first_user_type'] === 'percent') {
-        $activePromoPct = max($activePromoPct, (int)$promoSettings['first_user_value']);
-    }
-    if (!empty($promoSettings['day_promo_active']) && $promoSettings['day_promo_type'] === 'percent') {
-        $activePromoPct = max($activePromoPct, (int)$promoSettings['day_promo_value']);
+        $val = (int) $promoSettings['first_user_value'];
+        $cats = $promoSettings['first_user_categories'] ?? ['all'];
+        if (in_array('all', $cats) || in_array('games', $cats)) $gamePromoPct = max($gamePromoPct, $val);
+        if (in_array('all', $cats) || in_array('apps', $cats)) $appPromoPct = max($appPromoPct, $val);
+        if (in_array('all', $cats) || in_array('software', $cats)) $softwarePromoPct = max($softwarePromoPct, $val);
     }
 
-    $maxSoftwareDiscount = max($maxPlanDiscount, $activePromoPct);
+    // 2. Promo Hari Spesial (Misal Hari Minggu)
+    if (!empty($promoSettings['day_promo_active']) && !empty($dayCheck['active']) && $promoSettings['day_promo_type'] === 'percent') {
+        $val = (int) $promoSettings['day_promo_value'];
+        $cats = $promoSettings['day_promo_categories'] ?? ['all'];
+        if (in_array('all', $cats) || in_array('games', $cats)) $gamePromoPct = max($gamePromoPct, $val);
+        if (in_array('all', $cats) || in_array('apps', $cats)) $appPromoPct = max($appPromoPct, $val);
+        if (in_array('all', $cats) || in_array('software', $cats)) $softwarePromoPct = max($softwarePromoPct, $val);
+    }
+
+    $maxGameDiscount = max($maxGameDiscount, $gamePromoPct);
+    $maxAppDiscount = max($maxAppDiscount, $appPromoPct);
+    $maxSoftwareDiscount = max($maxPlanDiscount, $softwarePromoPct);
 
     // CUSTOMER REVIEWS STATS (100% REAL DATA ONLY)
     $totalReviews = \App\Models\CustomerReview::count();
     $avgRating = $totalReviews > 0 ? round((float) \App\Models\CustomerReview::avg('rating'), 1) : 0.0;
 
-    return view('welcome', compact('products', 'totalUsers', 'totalTransactions', 'maxGameDiscount', 'maxSoftwareDiscount', 'avgRating', 'totalReviews'));
+    return view('welcome', compact('products', 'totalUsers', 'totalTransactions', 'maxGameDiscount', 'maxAppDiscount', 'maxSoftwareDiscount', 'avgRating', 'totalReviews'));
 });
 
 // SUBMIT CUSTOMER REVIEW
