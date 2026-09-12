@@ -178,17 +178,15 @@
                                             @endif
                                         </div>
                                     </div>
+
+                                    <div class="text-xs font-medium text-slate-800 dark:text-slate-200 space-y-1.5 pt-2.5 border-t border-amber-500/30">
+                                        <p class="flex items-center gap-2">
+                                            <i class="fas fa-check-circle text-emerald-600 dark:text-emerald-400"></i>
+                                            <span>Gunakan data di atas untuk login / aktivasi layanan aplikasi Anda.</span>
+                                        </p>
+                                    </div>
                                 </div>
                             @endif
-                        @endif
-
-                            <div class="text-xs font-medium text-slate-800 dark:text-slate-200 space-y-1.5 pt-2.5 border-t border-amber-500/30">
-                                <p class="flex items-center gap-2">
-                                    <i class="fas fa-check-circle text-emerald-600 dark:text-emerald-400"></i>
-                                    <span>Gunakan data di atas untuk login / aktivasi layanan aplikasi Anda.</span>
-                                </p>
-                            </div>
-                        </div>
                         @elseif($isAppService)
                         <!-- Kotak Informasi Email & Undangan Aplikasi Premium -->
                         <div class="bg-amber-500/10 dark:bg-amber-950/40 border-2 border-amber-500/60 p-5 rounded-2xl text-left space-y-2.5 max-w-lg mx-auto shadow-md">
@@ -204,6 +202,7 @@
                                 <p class="flex items-center gap-1.5"><i class="fas fa-check-circle text-emerald-600 dark:text-emerald-400"></i> Buka pesan undangan masuk dari provider dan klik <strong>Terima Undangan (Accept)</strong>.</p>
                                 <p class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 pt-0.5 text-[11px]">💡 <em>Jika belum masuk, periksa juga folder <strong>Spam / Promosi / Update</strong> email Anda.</em></p>
                             </div>
+                        </div>
                         @endif
                     @else
                         <div class="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-3xl mx-auto shadow-inner font-bold animate-pulse">
