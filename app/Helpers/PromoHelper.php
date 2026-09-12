@@ -62,6 +62,7 @@ class PromoHelper
             'first_user_min_spend'    => (float) Setting::get('promo_first_user_min_spend', 10000), // Min belanja Rp
             'first_user_min_profit'   => (float) Setting::get('promo_first_user_min_profit', 2), // Target profit minimal toko %
             'first_user_categories'   => array_values($firstUserCats), // e.g. ['all'] or ['games', 'apps']
+            'first_user_banner'       => Setting::get('promo_first_user_banner', 'images/banner-promo-pengguna-baru.jpg'),
 
             // 2. Diskon Hari Tertentu (Recurring Day Promo)
             'day_promo_active'        => (bool) Setting::get('promo_day_active', false),
@@ -73,6 +74,7 @@ class PromoHelper
             'day_promo_min_spend'     => (float) Setting::get('promo_day_min_spend', 15000), // Min belanja Rp
             'day_promo_min_profit'    => (float) Setting::get('promo_day_min_profit', 2), // Target profit minimal toko %
             'day_promo_categories'    => array_values($dayPromoCats), // e.g. ['all'] or ['games', 'apps']
+            'day_promo_banner'        => Setting::get('promo_day_banner', ''),
         ];
     }
 

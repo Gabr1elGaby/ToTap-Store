@@ -99,7 +99,7 @@
             </div>
 
             <!-- Form Pengaturan Promo -->
-            <form action="{{ route('admin.promos.update') }}" method="POST" class="space-y-6">
+            <form action="{{ route('admin.promos.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -234,6 +234,23 @@
                                         @endforeach
                                     </div>
                                     <span class="text-[11px] text-gray-500 dark:text-gray-400 mt-1 block">Centang "Semua Kategori" atau pilih kategori spesifik (Game, Aplikasi Premium, dll).</span>
+                                </div>
+
+                                <!-- Poster / Banner Pengguna Baru -->
+                                <div class="pt-2 border-t border-gray-100 dark:border-gray-700">
+                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-1.5">
+                                        🖼️ Poster / Banner Promo Pengguna Baru
+                                    </label>
+                                    @php
+                                        $fBanner = $settings['first_user_banner'] ?? 'images/banner-promo-pengguna-baru.jpg';
+                                    @endphp
+                                    @if(!empty($fBanner))
+                                        <div class="mb-2 rounded-xl overflow-hidden border border-gray-300 dark:border-gray-700 max-h-24 bg-slate-950 flex items-center justify-center">
+                                            <img src="{{ asset($fBanner) }}" alt="Banner Pengguna Baru" class="w-full h-auto object-cover max-h-24">
+                                        </div>
+                                    @endif
+                                    <input type="file" name="promo_first_user_banner" accept="image/*" class="w-full text-xs text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 dark:file:bg-indigo-950 dark:file:text-indigo-300 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-900 cursor-pointer">
+                                    <span class="text-[10px] text-gray-400 mt-1 block">Upload poster baru jika ingin mengganti banner promo di beranda.</span>
                                 </div>
                             </div>
                         </div>
@@ -394,6 +411,23 @@
                                         @endforeach
                                     </div>
                                     <span class="text-[11px] text-gray-500 dark:text-gray-400 mt-1 block">Centang "Semua Kategori" atau pilih kategori spesifik.</span>
+                                </div>
+
+                                <!-- Poster / Banner Promo Hari Spesial -->
+                                <div class="pt-2 border-t border-gray-100 dark:border-gray-700">
+                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-200 mb-1.5">
+                                        🖼️ Poster / Banner Promo Hari Spesial
+                                    </label>
+                                    @php
+                                        $currentDayBanner = !empty($settings['day_promo_banner']) ? $settings['day_promo_banner'] : (file_exists(public_path('images/banner-promo-hari-minggu.png')) ? 'images/banner-promo-hari-minggu.png' : null);
+                                    @endphp
+                                    @if($currentDayBanner)
+                                        <div class="mb-2 rounded-xl overflow-hidden border border-gray-300 dark:border-gray-700 max-h-24 bg-slate-950 flex items-center justify-center">
+                                            <img src="{{ asset($currentDayBanner) }}" alt="Banner Promo Hari Spesial" class="w-full h-auto object-cover max-h-24">
+                                        </div>
+                                    @endif
+                                    <input type="file" name="promo_day_banner" accept="image/*" class="w-full text-xs text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 dark:file:bg-emerald-950 dark:file:text-emerald-300 hover:file:bg-emerald-100 dark:hover:file:bg-emerald-900 cursor-pointer">
+                                    <span class="text-[10px] text-gray-400 mt-1 block">Khusus promo hari Minggu, sistem otomatis memakai poster Minggu Seru secara bawaan jika tidak ada upload custom baru.</span>
                                 </div>
                             </div>
                         </div>

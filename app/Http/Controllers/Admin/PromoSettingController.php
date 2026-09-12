@@ -43,6 +43,7 @@ class PromoSettingController extends Controller
             'promo_first_user_min_spend'    => 'nullable|numeric|min:0',
             'promo_first_user_min_profit'   => 'nullable|numeric|min:0|max:100',
             'promo_first_user_categories'   => 'nullable|array',
+            'promo_first_user_banner'       => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:5120',
 
             'promo_day_title'               => 'nullable|string|max:100',
             'promo_day_days'                => 'nullable|array',
@@ -53,6 +54,7 @@ class PromoSettingController extends Controller
             'promo_day_min_spend'           => 'nullable|numeric|min:0',
             'promo_day_min_profit'          => 'nullable|numeric|min:0|max:100',
             'promo_day_categories'          => 'nullable|array',
+            'promo_day_banner'              => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:5120',
         ]);
 
         // 1. First Time User Discount
@@ -63,6 +65,13 @@ class PromoSettingController extends Controller
         Setting::set('promo_first_user_max_discount', (string)(float)$request->input('promo_first_user_max_discount', 0));
         Setting::set('promo_first_user_min_spend', (string)(float)$request->input('promo_first_user_min_spend', 0));
         Setting::set('promo_first_user_min_profit', (string)(float)$request->input('promo_first_user_min_profit', 2));
+
+        if ($request->hasFile('promo_first_user_banner')) {
+            $file = $request->file('promo_first_user_banner');
+            $filename = 'banner-promo-pengguna-baru-' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images'), $filename);
+            Setting::set('promo_first_user_banner', 'images/' . $filename);
+        }
 
         $firstCats = $request->input('promo_first_user_categories', ['all']);
         if (empty($firstCats)) $firstCats = ['all'];
@@ -81,6 +90,13 @@ class PromoSettingController extends Controller
         Setting::set('promo_day_max_discount', (string)(float)$request->input('promo_day_max_discount', 0));
         Setting::set('promo_day_min_spend', (string)(float)$request->input('promo_day_min_spend', 0));
         Setting::set('promo_day_min_profit', (string)(float)$request->input('promo_day_min_profit', 2));
+
+        if ($request->hasFile('promo_day_banner')) {
+            $file = $request->file('promo_day_banner');
+            $filename = 'banner-promo-hari-' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images'), $filename);
+            Setting::set('promo_day_banner', 'images/' . $filename);
+        }
 
         $dayCats = $request->input('promo_day_categories', ['all']);
         if (empty($dayCats)) $dayCats = ['all'];

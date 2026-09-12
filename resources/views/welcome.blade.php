@@ -212,7 +212,7 @@
                              x-transition:leave-end="opacity-0 scale-98"
                              class="w-full relative group overflow-hidden bg-slate-950 flex items-center justify-center">
                             <a href="#kategori" class="block relative w-full overflow-hidden cursor-pointer">
-                                <img src="{{ asset('images/banner-promo-pengguna-baru.jpg') }}" 
+                                <img src="{{ asset($promoSettings['first_user_banner'] ?? 'images/banner-promo-pengguna-baru.jpg') }}" 
                                      alt="Promo Spesial Pengguna Pertama - ToTap Store" 
                                      class="w-full h-auto object-cover object-center max-h-[160px] sm:max-h-[220px] md:max-h-[270px] lg:max-h-[300px] transition-transform duration-500 group-hover:scale-[1.008]">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -222,7 +222,35 @@
 
                         <!-- SLIDE: PROMO HARI SPESIAL -->
                         @if($showDayPromo)
-                        @php $dayIdx = $slideIndex++; @endphp
+                        @php 
+                            $dayIdx = $slideIndex++; 
+                            $dayBannerImg = null;
+                            if (!empty($promoSettings['day_promo_banner'])) {
+                                $dayBannerImg = asset($promoSettings['day_promo_banner']);
+                            } elseif ((int)($dayPromoCheck['day_num'] ?? -1) === 0 && file_exists(public_path('images/banner-promo-hari-minggu.png'))) {
+                                $dayBannerImg = asset('images/banner-promo-hari-minggu.png');
+                            }
+                        @endphp
+
+                        @if($dayBannerImg)
+                        <!-- Poster Banner Image (Sama Persis seperti Banner Pengguna Pertama) -->
+                        <div x-show="currentSlide === {{ $dayIdx }}" 
+                             x-transition:enter="transition ease-out duration-400"
+                             x-transition:enter-start="opacity-0 scale-98"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-200 absolute inset-0"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-98"
+                             class="w-full relative group overflow-hidden bg-slate-950 flex items-center justify-center">
+                            <a href="#kategori" class="block relative w-full overflow-hidden cursor-pointer">
+                                <img src="{{ $dayBannerImg }}" 
+                                     alt="Promo Spesial Hari {{ $dayPromoCheck['day_name'] }} - ToTap Store" 
+                                     class="w-full h-auto object-cover object-center max-h-[160px] sm:max-h-[220px] md:max-h-[270px] lg:max-h-[300px] transition-transform duration-500 group-hover:scale-[1.008]">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                            </a>
+                        </div>
+                        @else
+                        <!-- Dynamic CSS Gradient Card for other days without image banner -->
                         <div x-show="currentSlide === {{ $dayIdx }}" 
                              x-transition:enter="transition ease-out duration-400"
                              x-transition:enter-start="opacity-0 scale-98"
