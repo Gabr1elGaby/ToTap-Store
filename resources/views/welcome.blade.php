@@ -89,72 +89,6 @@
         <!-- Navbar -->
         @include('layouts.navigation')
 
-        <!-- Hero Section -->
-        <section class="relative bg-slate-100 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 pt-20 pb-24 overflow-hidden transition-colors duration-200" id="beranda" 
-            x-data="{ scrollY: 0 }" 
-            @scroll.window="scrollY = window.scrollY">
-            
-            <!-- Parallax Background -->
-            <div class="absolute inset-0 bg-grid-pattern opacity-30 dark:opacity-20" 
-                 :style="`transform: translateY(${scrollY * 0.5}px);`"></div>
-            
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10" 
-                 :style="`transform: translateY(${scrollY * 0.3}px); opacity: ${1 - (scrollY / 400)};`">
-                <div class="text-center max-w-4xl mx-auto">
-                    <h1 class="text-4xl md:text-6xl font-extrabold text-gray-900 dark:text-white leading-tight mb-6 tracking-tight">
-                        Pusat Layanan Digital <br>
-                        <span class="text-blue-600 dark:text-blue-500">& Top Up Terlengkap.</span>
-                    </h1>
-                    <p class="text-lg text-gray-600 dark:text-gray-400 mb-10 leading-relaxed max-w-2xl mx-auto">
-                        Platform terpercaya untuk kebutuhan top up game instant dan solusi software profesional. Transaksi otomatis, harga bersahabat, dan aman 100%.
-                    </p>
-                    <div class="flex justify-center items-center gap-4">
-                        <a href="#kategori" class="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-blue-700 transition shadow-lg shadow-blue-500/20">
-                            Pilih Kategori
-                        </a>
-                        @auth
-                            <a href="/profile" class="px-8 py-3 bg-white dark:bg-transparent text-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-gray-100 dark:hover:bg-gray-800 transition shadow-sm">
-                                Profil Saya
-                            </a>
-                        @else
-                            <button type="button" onclick="openRegisterModal()" class="px-8 py-3 bg-white dark:bg-transparent text-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-gray-100 dark:hover:bg-gray-800 transition shadow-sm cursor-pointer">
-                                Daftar Sekarang
-                            </button>
-                        @endauth
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Stats Section -->
-        <section class="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 py-12 relative z-20 shadow-sm dark:shadow-xl transition-colors duration-200">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-                    <div class="p-4" data-aos="fade-up" data-aos-delay="100">
-                        <p class="text-4xl font-extrabold text-gray-900 dark:text-white mb-2" style="font-family: 'Orbitron', sans-serif;">{{ number_format($totalUsers) }}<span class="text-blue-500"></span></p>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm font-semibold tracking-wider uppercase">Total Pengguna</p>
-                    </div>
-                    <div class="p-4" data-aos="fade-up" data-aos-delay="200">
-                        <p class="text-4xl font-extrabold text-gray-900 dark:text-white mb-2" style="font-family: 'Orbitron', sans-serif;">{{ number_format($totalTransactions) }}<span class="text-blue-500"></span></p>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm font-semibold tracking-wider uppercase">Total Transaksi Berhasil</p>
-                    </div>
-                    <div class="p-4" data-aos="fade-up" data-aos-delay="300">
-                        @if($totalReviews > 0)
-                            <p class="text-4xl font-extrabold text-gray-900 dark:text-white mb-2 flex items-center justify-center gap-2" style="font-family: 'Orbitron', sans-serif;">
-                                <span class="text-amber-400 text-3xl">⭐</span> {{ number_format($avgRating, 1) }}<span class="text-blue-500 text-2xl font-normal">/5.0</span>
-                            </p>
-                            <p class="text-gray-500 dark:text-gray-400 text-sm font-semibold tracking-wider uppercase">Rating Kepuasan ({{ $totalReviews }} Ulasan)</p>
-                        @else
-                            <p class="text-4xl font-extrabold text-gray-900 dark:text-white mb-2 flex items-center justify-center gap-2" style="font-family: 'Orbitron', sans-serif;">
-                                <span class="text-amber-400 text-3xl">⭐</span> -<span class="text-blue-500 text-2xl font-normal">/5.0</span>
-                            </p>
-                            <p class="text-gray-500 dark:text-gray-400 text-sm font-semibold tracking-wider uppercase">Belum Ada Ulasan</p>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </section>
-
         @php
             $promoSettings = \App\Helpers\PromoHelper::getSettings();
             $dayPromoCheck = \App\Helpers\PromoHelper::isDayPromoActiveToday();
@@ -164,7 +98,7 @@
         @endphp
 
         @if($promoCount > 0)
-        <!-- Promo Banner Section (Full Width Edge-to-Edge) -->
+        <!-- Promo Banner Section (Full Width Edge-to-Edge Directly Below Navbar) -->
         <section id="promo-spesial" class="w-full bg-slate-900 border-b border-gray-200 dark:border-gray-800 transition-colors duration-200 overflow-hidden">
             <div class="w-full">
                 
@@ -274,6 +208,72 @@
             </div>
         </section>
         @endif
+
+        <!-- Hero Section -->
+        <section class="relative bg-slate-100 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 pt-20 pb-24 overflow-hidden transition-colors duration-200" id="beranda" 
+            x-data="{ scrollY: 0 }" 
+            @scroll.window="scrollY = window.scrollY">
+            
+            <!-- Parallax Background -->
+            <div class="absolute inset-0 bg-grid-pattern opacity-30 dark:opacity-20" 
+                 :style="`transform: translateY(${scrollY * 0.5}px);`"></div>
+            
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10" 
+                 :style="`transform: translateY(${scrollY * 0.3}px); opacity: ${1 - (scrollY / 400)};`">
+                <div class="text-center max-w-4xl mx-auto">
+                    <h1 class="text-4xl md:text-6xl font-extrabold text-gray-900 dark:text-white leading-tight mb-6 tracking-tight">
+                        Pusat Layanan Digital <br>
+                        <span class="text-blue-600 dark:text-blue-500">& Top Up Terlengkap.</span>
+                    </h1>
+                    <p class="text-lg text-gray-600 dark:text-gray-400 mb-10 leading-relaxed max-w-2xl mx-auto">
+                        Platform terpercaya untuk kebutuhan top up game instant dan solusi software profesional. Transaksi otomatis, harga bersahabat, dan aman 100%.
+                    </p>
+                    <div class="flex justify-center items-center gap-4">
+                        <a href="#kategori" class="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-blue-700 transition shadow-lg shadow-blue-500/20">
+                            Pilih Kategori
+                        </a>
+                        @auth
+                            <a href="/profile" class="px-8 py-3 bg-white dark:bg-transparent text-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-gray-100 dark:hover:bg-gray-800 transition shadow-sm">
+                                Profil Saya
+                            </a>
+                        @else
+                            <button type="button" onclick="openRegisterModal()" class="px-8 py-3 bg-white dark:bg-transparent text-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-gray-100 dark:hover:bg-gray-800 transition shadow-sm cursor-pointer">
+                                Daftar Sekarang
+                            </button>
+                        @endauth
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 py-12 relative z-20 shadow-sm dark:shadow-xl transition-colors duration-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div class="p-4" data-aos="fade-up" data-aos-delay="100">
+                        <p class="text-4xl font-extrabold text-gray-900 dark:text-white mb-2" style="font-family: 'Orbitron', sans-serif;">{{ number_format($totalUsers) }}<span class="text-blue-500"></span></p>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm font-semibold tracking-wider uppercase">Total Pengguna</p>
+                    </div>
+                    <div class="p-4" data-aos="fade-up" data-aos-delay="200">
+                        <p class="text-4xl font-extrabold text-gray-900 dark:text-white mb-2" style="font-family: 'Orbitron', sans-serif;">{{ number_format($totalTransactions) }}<span class="text-blue-500"></span></p>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm font-semibold tracking-wider uppercase">Total Transaksi Berhasil</p>
+                    </div>
+                    <div class="p-4" data-aos="fade-up" data-aos-delay="300">
+                        @if($totalReviews > 0)
+                            <p class="text-4xl font-extrabold text-gray-900 dark:text-white mb-2 flex items-center justify-center gap-2" style="font-family: 'Orbitron', sans-serif;">
+                                <span class="text-amber-400 text-3xl">⭐</span> {{ number_format($avgRating, 1) }}<span class="text-blue-500 text-2xl font-normal">/5.0</span>
+                            </p>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm font-semibold tracking-wider uppercase">Rating Kepuasan ({{ $totalReviews }} Ulasan)</p>
+                        @else
+                            <p class="text-4xl font-extrabold text-gray-900 dark:text-white mb-2 flex items-center justify-center gap-2" style="font-family: 'Orbitron', sans-serif;">
+                                <span class="text-amber-400 text-3xl">⭐</span> -<span class="text-blue-500 text-2xl font-normal">/5.0</span>
+                            </p>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm font-semibold tracking-wider uppercase">Belum Ada Ulasan</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- Kenapa ToTap Store Section -->
         <section id="keunggulan" class="py-20 bg-slate-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
