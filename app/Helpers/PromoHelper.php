@@ -74,7 +74,7 @@ class PromoHelper
             'day_promo_min_spend'     => (float) Setting::get('promo_day_min_spend', 15000), // Min belanja Rp
             'day_promo_min_profit'    => (float) Setting::get('promo_day_min_profit', 2), // Target profit minimal toko %
             'day_promo_categories'    => array_values($dayPromoCats), // e.g. ['all'] or ['games', 'apps']
-            'day_promo_banner'        => Setting::get('promo_day_banner', ''),
+            'day_promo_banner'        => Setting::get('promo_day_banner', 'images/banner-promo-hari-minggu.png'),
         ];
     }
 
