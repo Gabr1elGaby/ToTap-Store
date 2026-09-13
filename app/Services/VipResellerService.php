@@ -195,10 +195,13 @@ class VipResellerService
     public static function isPendingSn($sn)
     {
         if (empty($sn)) return true;
-        $lower = strtolower(trim($sn));
-        if (in_array($lower, ['success', 'processing', 'pending', 'error', 'failed', 'empty', 'available', 'none', '-', 'null', 'undefined'])) {
+        $trimmed = trim($sn);
+        $lower = strtolower($trimmed);
+
+        if (in_array($lower, ['success', 'processing', 'pending', 'error', 'failed', 'empty', 'available', 'none', '-', 'null', 'undefined', 'sukses terkirim', 'sukses', 'terkirim'])) {
             return true;
         }
+
         if (str_contains($lower, 'pesanan akan diproses') ||
             str_contains($lower, 'cek pesanan anda') ||
             str_contains($lower, 'sedang diproses') ||
@@ -208,10 +211,18 @@ class VipResellerService
             str_contains($lower, 'secepatnya')) {
             return true;
         }
-        // Jika hanya berupa email tunggal tanpa newline/password/link (karena ini adalah input target bukan SN/akun)
-        if (filter_var(trim($sn), FILTER_VALIDATE_EMAIL)) {
+
+        // Jika hanya berupa format timestamp/tanggal status tanpa kode voucher atau data akun
+        // Contoh: "Sukses Terkirim - 2026-09-13 13:07:24 GMT+07:00" atau "2026-09-13 13:07:24"
+        if (preg_match('/^(?:sukses\s+terkirim\s*[-–—:]\s*)?\d{4}[-\/]\d{2}[-\/]\d{2}(?:\s+\d{2}:\d{2}(?::\d{2})?(?:\s*gmt[+-]\d{2}(?::\d{2})?)?)?\s*$/i', $trimmed)) {
             return true;
         }
+
+        // Jika hanya berupa email tunggal tanpa newline/password/link (karena ini adalah input target bukan SN/akun)
+        if (filter_var($trimmed, FILTER_VALIDATE_EMAIL)) {
+            return true;
+        }
+
         return false;
     }
 

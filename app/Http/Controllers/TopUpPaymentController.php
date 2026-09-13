@@ -19,9 +19,9 @@ class TopUpPaymentController extends Controller
             })
             ->firstOrFail();
 
-        // Jika transaksi memiliki provider_trx_id tapi provider_sn nya masih kosong,
-        // otomatis tarik data akun / SN terbaru dari VIP Reseller secara real-time!
-        if (empty($transaction->provider_sn) || $transaction->status === 'processing') {
+        // Jika transaksi belum memiliki provider_sn, atau provider_sn masih berupa status pending/timestamp saja,
+        // otomatis tarik data SN/voucher terbaru dari VIP Reseller secara real-time!
+        if (empty($transaction->provider_sn) || VipResellerService::isPendingSn($transaction->provider_sn) || $transaction->status === 'processing') {
             try {
                 $vipService = app(VipResellerService::class);
                 $vipService->syncTransaction($transaction);

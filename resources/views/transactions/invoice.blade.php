@@ -190,6 +190,12 @@
                 @else
                     @php
                         $rawSn = trim($data->provider_sn);
+                        $voucherCode = \App\Helpers\InvoiceHelper::extractVoucherCode($rawSn);
+                        $hasCleanVoucher = !empty($voucherCode) && $voucherCode !== $rawSn;
+                        $isVoucherCat = ($data->game && in_array($data->game->category, ['Voucher', 'PC Game'])) 
+                            || str_contains(strtolower($data->game->name ?? ''), 'voucher')
+                            || str_contains(strtolower($data->gameProduct->name ?? ''), 'voucher');
+
                         $detectedLink = null;
                         if (preg_match('/(?:https?:\/\/|bit\.ly\/|tinyurl\.com\/)[^\s|]+/i', $rawSn, $mUrl)) {
                             $detectedLink = $mUrl[0];
@@ -197,12 +203,14 @@
                                 $detectedLink = 'https://' . $detectedLink;
                             }
                         }
+                        $copyText = ($hasCleanVoucher || $isVoucherCat) && !empty($voucherCode) ? $voucherCode : $rawSn;
                     @endphp
-                    <!-- Informasi Akun / Serial Number Resmi (Full Teks dari VIP) -->
+                    <!-- Informasi Akun / Voucher Resmi (Dari VIP Reseller) -->
                     <div class="bg-amber-500/10 dark:bg-amber-950/40 border-2 border-amber-500 rounded-2xl p-5 sm:p-6 shadow-md space-y-4">
                         <div class="flex items-center justify-between border-b border-amber-500/30 pb-3">
                             <div class="flex items-center gap-2 font-black text-amber-950 dark:text-amber-300 text-sm sm:text-base">
-                                <i class="fas fa-key text-amber-500 text-base"></i> INFORMASI AKUN / AKSES RESMI
+                                <i class="fas {{ ($hasCleanVoucher || $isVoucherCat) ? 'fa-ticket-alt' : 'fa-key' }} text-amber-500 text-base"></i> 
+                                {{ ($hasCleanVoucher || $isVoucherCat) ? 'INFORMASI VOUCHER / SERIAL NUMBER' : 'INFORMASI AKUN / AKSES RESMI' }}
                             </div>
                             <span class="text-xs font-black bg-amber-500 text-white dark:text-slate-900 px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
                                 Aktif & Sukses
@@ -210,13 +218,25 @@
                         </div>
 
                         <div class="space-y-3">
-                            <div class="p-4 bg-slate-900 dark:bg-slate-950 rounded-xl border-2 border-amber-500/40 font-mono text-xs sm:text-sm font-bold text-amber-300 select-all shadow-inner leading-relaxed break-words whitespace-pre-wrap">
-                                {{ $rawSn }}
-                            </div>
+                            @if(($hasCleanVoucher || $isVoucherCat) && !empty($voucherCode))
+                                <!-- Voucher Code Highlight Card -->
+                                <div class="p-4 bg-slate-900 dark:bg-slate-950 rounded-xl border-2 border-amber-500 text-center shadow-inner space-y-1">
+                                    <div class="text-[11px] font-black uppercase tracking-wider text-amber-400">
+                                        🎟️ Kode Voucher / Serial Number Resmi
+                                    </div>
+                                    <div class="font-mono text-base sm:text-xl font-black text-white select-all break-all tracking-wider py-1">
+                                        {{ $voucherCode }}
+                                    </div>
+                                </div>
+                            @else
+                                <div class="p-4 bg-slate-900 dark:bg-slate-950 rounded-xl border-2 border-amber-500/40 font-mono text-xs sm:text-sm font-bold text-amber-300 select-all shadow-inner leading-relaxed break-words whitespace-pre-wrap">
+                                    {{ $rawSn }}
+                                </div>
+                            @endif
 
                             <div class="flex flex-wrap items-center gap-2 pt-1">
-                                <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($rawSn) }}'); alert('Semua data akun berhasil disalin ke clipboard!');" class="no-print flex-1 px-4 py-2.5 text-xs font-black text-white bg-amber-600 hover:bg-amber-700 active:scale-95 rounded-xl shadow-md transition whitespace-nowrap cursor-pointer flex items-center justify-center gap-2">
-                                    <i class="fas fa-copy text-sm"></i> Salin Semua Data Akun
+                                <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($copyText) }}'); alert('{{ ($hasCleanVoucher || $isVoucherCat) ? 'Kode voucher berhasil disalin!' : 'Semua data akun berhasil disalin ke clipboard!' }}');" class="no-print flex-1 px-4 py-2.5 text-xs font-black text-white bg-amber-600 hover:bg-amber-700 active:scale-95 rounded-xl shadow-md transition whitespace-nowrap cursor-pointer flex items-center justify-center gap-2">
+                                    <i class="fas fa-copy text-sm"></i> {{ ($hasCleanVoucher || $isVoucherCat) ? 'Salin Kode Voucher' : 'Salin Semua Data Akun' }}
                                 </button>
 
                                 @if($detectedLink)
@@ -228,7 +248,7 @@
                         </div>
 
                         <p class="text-xs font-medium text-slate-800 dark:text-slate-200 pt-2.5 border-t border-amber-500/30">
-                            💡 <em>Gunakan detail akun di atas untuk login ke aplikasi. Jika tertera link panduan (URL), klik link tersebut untuk panduan aktivasi profil.</em>
+                            💡 <em>{{ ($hasCleanVoucher || $isVoucherCat) ? 'Gunakan kode voucher di atas untuk melakukan redeem pada game/aplikasi Anda.' : 'Gunakan detail akun di atas untuk login ke aplikasi. Jika tertera link panduan (URL), klik link tersebut untuk panduan aktivasi profil.' }}</em>
                         </p>
                     </div>
                 @endif

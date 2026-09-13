@@ -208,6 +208,22 @@ class InvoiceHelper
     }
 
     /**
+     * Clean and extract genuine voucher code or serial number
+     * removing "Sukses Terkirim - 2026-09-13 13:07:24 GMT+07:00" timestamps from VIP Reseller.
+     */
+    public static function extractVoucherCode(?string $raw): ?string
+    {
+        if (empty($raw)) return null;
+        $trimmed = trim($raw);
+
+        // Hapus prefix timestamp provider "Sukses Terkirim - 2026-09-13 13:07:24 GMT+07:00" jika ada
+        $cleaned = preg_replace('/^(?:sukses\s+terkirim\s*[-–—:]\s*)?\d{4}[-\/]\d{2}[-\/]\d{2}(?:\s+\d{2}:\d{2}(?::\d{2})?(?:\s*gmt[+-]\d{2}(?::\d{2})?)?)?\s*[:\s-]*\s*/i', '', $trimmed);
+        $cleaned = trim($cleaned);
+
+        return !empty($cleaned) ? $cleaned : $trimmed;
+    }
+
+    /**
      * Parse raw account credentials string from VIP Reseller / provider
      * into structured email, password, profile, pin, link, and generic key-value items.
      */
