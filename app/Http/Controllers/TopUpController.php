@@ -67,6 +67,10 @@ class TopUpController extends Controller
                                     'status' => $aStatus,
                                 ]);
                             }
+                        } else {
+                            if ($lp->status !== 'empty') {
+                                $lp->update(['status' => 'empty']);
+                            }
                         }
                     }
                 }
@@ -76,7 +80,7 @@ class TopUpController extends Controller
             // Fallback ke $vipBalance
         }
 
-        $allProducts = $game->products()->where('price_modal', '>', 0)->orderBy('price_sell')->get();
+        $allProducts = $game->products()->where('status', 'available')->where('price_modal', '>', 0)->orderBy('price_sell')->get();
 
         $uniqueProducts = collect();
         $seenKeys = [];
@@ -306,6 +310,10 @@ class TopUpController extends Controller
                                     'status' => $aStatus,
                                 ]);
                             }
+                        } else {
+                            if ($lp->status !== 'empty') {
+                                $lp->update(['status' => 'empty']);
+                            }
                         }
                     }
                 }
@@ -315,11 +323,11 @@ class TopUpController extends Controller
             // Fallback ke $vipBalance
         }
 
-        $products = $game->products()->select('id', 'price_modal')->get();
+        $products = $game->products()->select('id', 'price_modal', 'status')->get();
         $stockMap = [];
         foreach ($products as $p) {
             $modal = (float) $p->price_modal;
-            $stockMap[(string)$p->id] = ($vipBalance <= 0 || $modal > $vipBalance);
+            $stockMap[(string)$p->id] = ($vipBalance <= 0 || $modal > $vipBalance || $p->status !== 'available');
         }
 
         return response()->json([
@@ -377,6 +385,10 @@ class TopUpController extends Controller
         
         $product = GameProduct::findOrFail($request->product_id);
         
+        if ($product->status !== 'available') {
+            return back()->with('error', 'Mohon maaf, nominal ' . $product->name . ' sedang kosong atau tidak tersedia dari provider.');
+        }
+
         $threshold = (float) \App\Models\Setting::get('vip_balance_threshold', 0);
         $vipBalance = Cache::get('vip_reseller_balance') ?? (float)\App\Models\Setting::get('vip_reseller_balance', 0);
         if ($threshold > 0 && $vipBalance > 0 && $product->price_modal > $vipBalance) {

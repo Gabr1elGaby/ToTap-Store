@@ -13,15 +13,14 @@ class GameProductController extends Controller
 {
     public function index(Game $game)
     {
-        // Hanya tampilkan produk yang available dan memiliki harga modal valid (tidak termasuk first top up & joki/gacha skin)
         $products = $game->products()
-            ->where('status', 'available')
             ->where('price_modal', '>', 0)
             ->where('name', 'not like', '%first top%')
             ->where('name', 'not like', '%first-top%')
             ->where('name', 'not like', '%first topup%')
             ->where('name', 'not like', '%skin%')
             ->where('product_code', 'not like', '%skin%')
+            ->orderByRaw("CASE WHEN status = 'available' THEN 0 ELSE 1 END")
             ->orderBy('price_modal')
             ->get();
             

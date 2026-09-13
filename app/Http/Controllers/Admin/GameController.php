@@ -13,7 +13,15 @@ class GameController extends Controller
     public function index(Request $request)
     {
         $categoryFilter = $request->query('category', 'all');
-        $query = Game::withCount('products')->orderBy('name');
+        $query = Game::withCount(['products' => function($q) {
+            $q->where('status', 'available')
+              ->where('price_modal', '>', 0)
+              ->where('name', 'not like', '%first top%')
+              ->where('name', 'not like', '%first-top%')
+              ->where('name', 'not like', '%first topup%')
+              ->where('name', 'not like', '%skin%')
+              ->where('product_code', 'not like', '%skin%');
+        }])->orderBy('name');
 
         if ($categoryFilter === 'app-premium') {
             $query->where(function($q) {
@@ -136,15 +144,18 @@ class GameController extends Controller
                 $code = $product->product_code;
                 if (isset($statusMap[$code])) {
                     $remoteStatus = ($statusMap[$code] === 'available') ? 'available' : 'empty';
-                    if ($product->status !== $remoteStatus) {
-                        $product->update(['status' => $remoteStatus]);
-                        $updatedCount++;
-                    }
-                    if ($remoteStatus === 'available') {
-                        $availCount++;
-                    } else {
-                        $emptyCount++;
-                    }
+                } else {
+                    $remoteStatus = 'empty';
+                }
+
+                if ($product->status !== $remoteStatus) {
+                    $product->update(['status' => $remoteStatus]);
+                    $updatedCount++;
+                }
+                if ($remoteStatus === 'available') {
+                    $availCount++;
+                } else {
+                    $emptyCount++;
                 }
             }
 
@@ -190,14 +201,17 @@ class GameController extends Controller
                 $code = $product->product_code;
                 if (isset($statusMap[$code])) {
                     $remoteStatus = ($statusMap[$code] === 'available') ? 'available' : 'empty';
-                    if ($product->status !== $remoteStatus) {
-                        $product->update(['status' => $remoteStatus]);
-                    }
-                    if ($remoteStatus === 'available') {
-                        $availCount++;
-                    } else {
-                        $emptyCount++;
-                    }
+                } else {
+                    $remoteStatus = 'empty';
+                }
+
+                if ($product->status !== $remoteStatus) {
+                    $product->update(['status' => $remoteStatus]);
+                }
+                if ($remoteStatus === 'available') {
+                    $availCount++;
+                } else {
+                    $emptyCount++;
                 }
             }
 

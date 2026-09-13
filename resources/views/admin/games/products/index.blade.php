@@ -14,8 +14,8 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Daftar Nominal Aktif ({{ $products->count() }} Item)</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Produk yang tampil hanya yang berstatus valid dan tersedia dari provider.</p>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Daftar Nominal ({{ $products->where('status', 'available')->count() }} Aktif / {{ $products->count() }} Total)</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Produk berstatus Kosong/Gangguan otomatis disembunyikan dari halaman pembelian pembeli.</p>
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <form action="{{ route('admin.games.sync-single-status', $game) }}" method="POST" onsubmit="this.querySelector('button').disabled=true; this.querySelector('button').innerText='Mengecek...';">
@@ -84,9 +84,15 @@
                                     <td class="py-3.5 px-4 font-bold text-green-600 dark:text-green-400">Rp{{ number_format($prod->price_sell, 0, ',', '.') }}</td>
                                     <td class="py-3.5 px-4 text-xs font-semibold text-indigo-600 dark:text-indigo-400">Rp{{ number_format($prod->price_sell - $prod->price_modal, 0, ',', '.') }}</td>
                                     <td class="py-3.5 px-4">
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">
-                                            Available
-                                        </span>
+                                        @if($prod->status === 'available')
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">
+                                                Available
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20" title="Kosong atau gangguan dari provider">
+                                                Kosong / Gangguan
+                                            </span>
+                                        @endif
                                     </td>
                                     <td class="py-3.5 px-4 text-right">
                                         <div class="inline-flex items-center gap-1.5 justify-end">
