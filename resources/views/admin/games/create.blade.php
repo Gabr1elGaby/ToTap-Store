@@ -62,16 +62,22 @@
                                     <option value="marvel_rivals" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Marvel Rivals (UID / Player ID)</option>
                                     <option value="valorant" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Valorant (Riot ID + Tagline)</option>
                                     <option value="point_blank" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Point Blank Zepetto (User ID)</option>
-                                    <option value="steam" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Steam Wallet IDR (Nomor WhatsApp / Voucher)</option>
                                 </optgroup>
 
-                                <optgroup label="🎟️ Voucher Game & Console" style="color: #111827; background: #ffffff;">
+                                <optgroup label="🎟️ Voucher Game & Digital (VIP Reseller)" style="color: #111827; background: #ffffff;">
+                                    <option value="steam" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Steam Wallet Code (Nomor WhatsApp)</option>
+                                    <option value="voucher_fortnite" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Voucher Fortnite V Bucks (Nomor WhatsApp)</option>
+                                    <option value="voucher_garena" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Voucher Garena Shell (Nomor WhatsApp)</option>
+                                    <option value="voucher_megaxus" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Voucher Megaxus (Nomor WhatsApp)</option>
+                                    <option value="voucher_pb" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Voucher PB Zepetto (Nomor WhatsApp)</option>
+                                    <option value="voucher_psn" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Voucher PSN (Nomor WhatsApp)</option>
+                                    <option value="voucher_razer" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Voucher Razer Gold (Nomor WhatsApp)</option>
+                                    <option value="voucher_roblox" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Voucher Roblox (Nomor WhatsApp)</option>
+                                    <option value="voucher_valorant" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Voucher Valorant (Nomor WhatsApp)</option>
+                                    <option value="warp_plus" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Warp Plus (Client ID / No WhatsApp)</option>
                                     <option value="gplay" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Google Play Voucher IDR (Nomor WhatsApp)</option>
-                                    <option value="psn" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">PlayStation Network (PSN IDR) (Nomor WhatsApp)</option>
-                                    <option value="nintendo" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Nintendo eShop Card (Nomor WhatsApp)</option>
-                                    <option value="garena_shells" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Garena Shells (Nomor WhatsApp)</option>
                                     <option value="unipin" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">UniPin Voucher IDR (Nomor WhatsApp)</option>
-                                    <option value="razer_gold" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Razer Gold IDR (Nomor WhatsApp)</option>
+                                    <option value="nintendo" class="text-gray-900 font-bold" style="color: #111827; background: #ffffff;">Nintendo eShop Card (Nomor WhatsApp)</option>
                                 </optgroup>
 
                                 <optgroup label="🎬 Apps & Streaming (VIP Reseller)" style="color: #111827; background: #ffffff;">
@@ -487,17 +493,97 @@
                         requires_zone_id: false,
                         guide_text: 'Masukkan User ID / Login ID akun Zepetto Point Blank Anda.'
                     },
+                    // Voucher Game & Digital (VIP Reseller)
                     steam: {
-                        name: 'Steam Wallet IDR',
+                        name: 'Steam Wallet Code',
                         developer: 'Valve Corporation',
-                        category: 'PC Game',
+                        category: 'Voucher',
                         target_field_1: 'Nomor WhatsApp / No HP',
                         target_field_2: '',
                         requires_zone_id: false,
-                        guide_text: 'Masukkan Nomor WhatsApp Anda. Kode Voucher Steam Wallet (Serial Number) akan dikirimkan dan tampil otomatis pada invoice setelah pembayaran berhasil.'
+                        guide_text: 'Masukkan Nomor WhatsApp Anda. Kode Voucher Steam Wallet (Serial Code) akan dikirimkan dan tampil otomatis pada invoice setelah pembayaran berhasil.'
                     },
-
-                    // Voucher & Gift Cards
+                    voucher_fortnite: {
+                        name: 'Voucher Fortnite V Bucks',
+                        developer: 'Epic Games',
+                        category: 'Voucher',
+                        target_field_1: 'Nomor WhatsApp / No HP',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Nomor WhatsApp Anda. Kode voucher Fortnite V-Bucks akan langsung dikirimkan ke invoice setelah transaksi sukses.'
+                    },
+                    voucher_garena: {
+                        name: 'Voucher Garena Shell',
+                        developer: 'Garena',
+                        category: 'Voucher',
+                        target_field_1: 'Nomor WhatsApp / No HP',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Nomor WhatsApp Anda untuk menerima serial kode & password voucher Garena Shell.'
+                    },
+                    voucher_megaxus: {
+                        name: 'Voucher Megaxus',
+                        developer: 'Megaxus Infotech',
+                        category: 'Voucher',
+                        target_field_1: 'Nomor WhatsApp / No HP',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Nomor WhatsApp Anda untuk menerima kode voucher Megaxus (Mi-Cash) & Password.'
+                    },
+                    voucher_pb: {
+                        name: 'Voucher PB Zepetto',
+                        developer: 'Zepetto',
+                        category: 'Voucher',
+                        target_field_1: 'Nomor WhatsApp / No HP',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Nomor WhatsApp Anda untuk menerima kode voucher PB Cash (Point Blank Zepetto).'
+                    },
+                    voucher_psn: {
+                        name: 'Voucher PSN',
+                        developer: 'Sony PlayStation',
+                        category: 'Voucher',
+                        target_field_1: 'Nomor WhatsApp / No HP',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Nomor WhatsApp Anda untuk menerima kode voucher PlayStation Network (PSN Card IDR).'
+                    },
+                    voucher_razer: {
+                        name: 'Voucher Razer Gold',
+                        developer: 'Razer Inc.',
+                        category: 'Voucher',
+                        target_field_1: 'Nomor WhatsApp / No HP',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Nomor WhatsApp Anda untuk menerima serial PIN kode voucher Razer Gold IDR.'
+                    },
+                    voucher_roblox: {
+                        name: 'Voucher Roblox',
+                        developer: 'Roblox Corporation',
+                        category: 'Voucher',
+                        target_field_1: 'Nomor WhatsApp / No HP',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Nomor WhatsApp Anda untuk menerima Gift Card Voucher Roblox.'
+                    },
+                    voucher_valorant: {
+                        name: 'Voucher Valorant',
+                        developer: 'Riot Games',
+                        category: 'Voucher',
+                        target_field_1: 'Nomor WhatsApp / No HP',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Nomor WhatsApp Anda untuk menerima serial kode Voucher Valorant Points (Riot Points).'
+                    },
+                    warp_plus: {
+                        name: 'Warp Plus',
+                        developer: 'Cloudflare, Inc.',
+                        category: 'Voucher',
+                        target_field_1: 'Client ID 1.1.1.1 / No WhatsApp',
+                        target_field_2: '',
+                        requires_zone_id: false,
+                        guide_text: 'Masukkan Client ID aplikasi Cloudflare 1.1.1.1 Anda atau Nomor WhatsApp untuk aktivasi kuota Warp Plus.'
+                    },
                     gplay: {
                         name: 'Google Play Voucher IDR',
                         developer: 'Google LLC',
@@ -506,33 +592,6 @@
                         target_field_2: '',
                         requires_zone_id: false,
                         guide_text: 'Masukkan Nomor WhatsApp Anda. Kode Voucher Google Play akan dikirimkan otomatis setelah transaksi sukses.'
-                    },
-                    psn: {
-                        name: 'PlayStation Network (PSN Card IDR)',
-                        developer: 'Sony PlayStation',
-                        category: 'Voucher',
-                        target_field_1: 'Nomor WhatsApp / No HP',
-                        target_field_2: '',
-                        requires_zone_id: false,
-                        guide_text: 'Masukkan Nomor WhatsApp Anda untuk menerima kode voucher PSN Card.'
-                    },
-                    nintendo: {
-                        name: 'Nintendo eShop Card',
-                        developer: 'Nintendo',
-                        category: 'Voucher',
-                        target_field_1: 'Nomor WhatsApp / No HP',
-                        target_field_2: '',
-                        requires_zone_id: false,
-                        guide_text: 'Masukkan Nomor WhatsApp Anda untuk menerima kode voucher Nintendo eShop.'
-                    },
-                    garena_shells: {
-                        name: 'Garena Shells',
-                        developer: 'Garena',
-                        category: 'Voucher',
-                        target_field_1: 'Nomor WhatsApp / No HP',
-                        target_field_2: '',
-                        requires_zone_id: false,
-                        guide_text: 'Masukkan Nomor WhatsApp Anda untuk menerima serial kode voucher Garena Shells.'
                     },
                     unipin: {
                         name: 'UniPin Voucher IDR',
@@ -543,14 +602,14 @@
                         requires_zone_id: false,
                         guide_text: 'Masukkan Nomor WhatsApp Anda untuk menerima serial kode voucher UniPin.'
                     },
-                    razer_gold: {
-                        name: 'Razer Gold IDR',
-                        developer: 'Razer Inc.',
+                    nintendo: {
+                        name: 'Nintendo eShop Card',
+                        developer: 'Nintendo',
                         category: 'Voucher',
                         target_field_1: 'Nomor WhatsApp / No HP',
                         target_field_2: '',
                         requires_zone_id: false,
-                        guide_text: 'Masukkan Nomor WhatsApp Anda untuk menerima serial kode voucher Razer Gold.'
+                        guide_text: 'Masukkan Nomor WhatsApp Anda untuk menerima kode voucher Nintendo eShop.'
                     },
 
                     // Apps & Streaming (Sesuai 100% dengan Kategori Apps & Streaming di VIP Reseller)
