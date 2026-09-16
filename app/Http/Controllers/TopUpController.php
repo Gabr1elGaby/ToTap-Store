@@ -495,7 +495,30 @@ class TopUpController extends Controller
             }
         }
 
-        // JIKA PEMBAYARAN MANUAL QRIS (DEFAULT)
+        // JIKA PEMBAYARAN QRIS (DENGAN KODE UNIK VERIFIKASI OTOMATIS GOPAY/QRIS)
+        // Cari kode unik (1 - 499) yang belum digunakan oleh transaksi pending dalam 60 menit terakhir
+        $pendingAmounts = \App\Models\Transaction::where('payment_method', 'qris')
+            ->where('status', 'pending')
+            ->where('created_at', '>=', now()->subMinutes(60))
+            ->where('amount', '>=', $finalAmount)
+            ->where('amount', '<=', $finalAmount + 999)
+            ->pluck('amount')
+            ->toArray();
+
+        $uniqueCode = 0;
+        for ($i = 1; $i <= 499; $i++) {
+            $candidate = (int) $finalAmount + $i;
+            if (!in_array($candidate, $pendingAmounts)) {
+                $uniqueCode = $i;
+                break;
+            }
+        }
+        if ($uniqueCode === 0) {
+            $uniqueCode = rand(1, 499);
+        }
+
+        $totalPayAmount = (int) $finalAmount + $uniqueCode;
+
         $transaction = \App\Models\Transaction::create([
             'id' => $orderId,
             'user_id' => auth()->id(),
@@ -503,7 +526,7 @@ class TopUpController extends Controller
             'game_product_id' => $product->id,
             'target_field_1' => $playerId,
             'target_field_2' => $isZoneRequired ? $zoneId : null,
-            'amount' => $finalAmount,
+            'amount' => $totalPayAmount,
             'discount_amount' => $discountAmount,
             'original_amount' => $originalPrice,
             'promo_title' => $promoTitle,
@@ -513,10 +536,12 @@ class TopUpController extends Controller
         
         // Set snap_token for Manual QRIS & WhatsApp Flow
         $snapData = json_encode([
-            'type'      => 'manual_qris',
-            'gateway'   => 'manual',
-            'method'    => 'qris',
-            'amount'    => (int) $finalAmount,
+            'type'        => 'manual_qris',
+            'gateway'     => 'manual',
+            'method'      => 'qris',
+            'base_amount' => (int) $finalAmount,
+            'unique_code' => $uniqueCode,
+            'amount'      => (int) $totalPayAmount,
         ]);
 
         $transaction->update([

@@ -42,8 +42,8 @@ class TopUpPaymentController extends Controller
             ->firstOrFail();
         $paymentData = json_decode($transaction->snap_token, true);
 
-        if ($transaction->status === 'success' || $transaction->status === 'paid') {
-            return response()->json(['success' => true, 'message' => 'Pembayaran Berhasil!']);
+        if (in_array(strtolower($transaction->status), ['success', 'paid', 'processing', 'completed'])) {
+            return response()->json(['success' => true, 'status' => $transaction->status, 'message' => 'Pembayaran Berhasil!']);
         }
 
         // 1. Verifikasi via Duitku

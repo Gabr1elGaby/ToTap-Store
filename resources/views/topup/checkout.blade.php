@@ -87,6 +87,16 @@
                             </span>
                         </div>
                     @endif
+                    @if(!empty($paymentData['unique_code']))
+                        <div class="pt-2 border-t border-indigo-100 dark:border-gray-800 flex justify-between items-center text-xs">
+                            <span class="font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                                ⚡ Kode Unik Otomatis GoPay/QRIS
+                            </span>
+                            <span class="font-black text-indigo-600 dark:text-indigo-400 font-mono">
+                                + Rp{{ number_format($paymentData['unique_code'], 0, ',', '.') }}
+                            </span>
+                        </div>
+                    @endif
                 </div>
                 
                 @php

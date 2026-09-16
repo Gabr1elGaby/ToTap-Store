@@ -65,4 +65,9 @@ return [
         'token' => env('FONNTE_TOKEN', '7rYeC3EsZAxizJDTFPin'),
     ],
 
+    'gopay' => [
+        'webhook_secret' => env('GOPAY_WEBHOOK_SECRET', 'G4b-4M3l_T0T4p'),
+    ],
+
 ];
+
