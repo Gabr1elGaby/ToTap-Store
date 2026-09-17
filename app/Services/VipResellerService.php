@@ -93,23 +93,34 @@ class VipResellerService
             $payload['data_zone'] = trim($targetZone);
         }
 
+        Log::info('VIP Reseller Order Request:', ['service' => $serviceCode, 'targetId' => $targetId, 'targetZone' => $targetZone]);
+
         try {
-            // 1. Coba endpoint game-feature (Games & Apps)
+            // 1. Coba endpoint game-feature (Games)
             $response = Http::connectTimeout(60)->timeout(120)->retry(2, 1000)->asForm()->post("{$this->baseUrl}/game-feature", $payload);
             $res = $response->json();
+
             if (isset($res['result']) && $res['result'] === true) {
+                Log::info('VIP Reseller game-feature order success:', ['res' => $res]);
                 return $res;
             }
 
-            // 2. Fallback ke endpoint prepaid (Voucher, Pulsa, & Layanan Umum)
+            // 2. Fallback ke endpoint prepaid (Aplikasi Premium, Voucher, Pulsa, & Layanan Umum)
             $responsePrepaid = Http::connectTimeout(60)->timeout(120)->retry(2, 1000)->asForm()->post("{$this->baseUrl}/prepaid", $payload);
             $resPrepaid = $responsePrepaid->json();
+
             if (isset($resPrepaid['result']) && $resPrepaid['result'] === true) {
+                Log::info('VIP Reseller prepaid order success:', ['resPrepaid' => $resPrepaid]);
                 return $resPrepaid;
             }
 
-            return $res ?: ($resPrepaid ?? ['result' => false, 'message' => 'Gagal membuat pesanan ke provider']);
+            // Ambil pesan penolakan resmi dari provider
+            $msg = $resPrepaid['message'] ?? ($res['message'] ?? 'Gagal membuat pesanan ke provider');
+            Log::warning('VIP Reseller Order Rejected:', ['game_msg' => $res['message'] ?? null, 'prepaid_msg' => $resPrepaid['message'] ?? null]);
+
+            return ['result' => false, 'message' => $msg, 'data' => null];
         } catch (\Throwable $e) {
+            Log::error('VIP Reseller Order Exception:', ['error' => $e->getMessage()]);
             return ['result' => false, 'message' => $e->getMessage()];
         }
     }
