@@ -60,9 +60,12 @@ class GoPayWebhookController extends Controller
 
         // 3. Match against Pending Top Up Transactions (created in the last 24 hours)
         $transaction = Transaction::with(['game', 'gameProduct', 'user'])
-            ->where('payment_method', 'qris')
-            ->where('status', 'pending')
-            ->where('amount', $amount)
+            ->whereIn('status', ['pending', 'waiting', 'unpaid'])
+            ->where(function ($q) use ($amount) {
+                $q->where('amount', $amount)
+                  ->orWhere('amount', (float)$amount)
+                  ->orWhereRaw('CAST(amount AS SIGNED) = ?', [$amount]);
+            })
             ->where('created_at', '>=', now()->subHours(24))
             ->orderBy('created_at', 'desc')
             ->first();
@@ -73,9 +76,12 @@ class GoPayWebhookController extends Controller
 
         // 4. Match against Pending Deposits (created in the last 24 hours)
         $deposit = Deposit::with('user')
-            ->where('payment_method', 'qris')
-            ->where('status', 'pending')
-            ->where('amount', $amount)
+            ->whereIn('status', ['pending', 'waiting', 'unpaid'])
+            ->where(function ($q) use ($amount) {
+                $q->where('amount', $amount)
+                  ->orWhere('amount', (float)$amount)
+                  ->orWhereRaw('CAST(amount AS SIGNED) = ?', [$amount]);
+            })
             ->where('created_at', '>=', now()->subHours(24))
             ->orderBy('created_at', 'desc')
             ->first();
@@ -244,7 +250,18 @@ class GoPayWebhookController extends Controller
             }
         }
 
-        // 4. Fallback: match any 4-8 digit number in the text
+        // 4. Match dotted amounts like 5.001 or 19.001 or 50.000
+        if (preg_match_all('/\b(\d{1,3}(?:[\.,]\d{3})+)\b/', $fullText, $matches)) {
+            foreach ($matches[1] as $rawNominal) {
+                $clean = preg_replace('/[^0-9]/', '', $rawNominal);
+                $num = (int) $clean;
+                if ($num >= 1000 && $num <= 50000000) {
+                    return $num;
+                }
+            }
+        }
+
+        // 5. Fallback: match any 4-8 digit number in the text
         if (preg_match_all('/\b(\d{4,8})\b/', $fullText, $matches)) {
             foreach ($matches[1] as $rawNum) {
                 $num = (int) $rawNum;
