@@ -373,8 +373,16 @@ class TopUpController extends Controller
             }
         }
 
-        // 2. Validasi Angka untuk game dengan Zone ID (MLBB, Magic Chess, dll)
-        if ($isZoneRequired) {
+        // 2. Validasi Khusus Netflix (Hanya Android, iPhone, iPad)
+        if (str_contains($gameSlug, 'netflix')) {
+            if (!in_array($zoneId, ['Android', 'iPhone', 'iPad'])) {
+                return back()->with('error', 'Tipe perangkat tidak valid! Hanya mendukung pilihan: Android, iPhone, atau iPad.');
+            }
+        }
+
+        // 3. Validasi Angka untuk game dengan Zone ID (MLBB, Magic Chess, dll)
+        $isNumericZone = str_contains($gameSlug, 'magic-chess') || str_contains($gameSlug, 'mobile-legend');
+        if ($isNumericZone) {
             if (!preg_match('/^[0-9]+$/', $playerId)) {
                 return back()->with('error', 'User ID ' . $game->name . ' harus berupa angka (contoh: 12345678), tanpa huruf atau simbol.');
             }
@@ -600,9 +608,25 @@ class TopUpController extends Controller
                 ]);
             }
 
-            // 3. VALIDASI NUMERIK UNTUK GAME BERBASIS ANGKA & ZONE ID (MLBB, Magic Chess, dll)
-            $isZoneRequired = $game->requires_zone_id || str_contains($gameSlug, 'magic-chess') || str_contains($gameSlug, 'mobile-legend');
-            if ($isZoneRequired) {
+            // 3. VALIDASI KHUSUS NETFLIX (Hanya Android, iPhone, iPad)
+            if (str_contains($gameSlug, 'netflix')) {
+                if (!in_array($target2, ['Android', 'iPhone', 'iPad'])) {
+                    return response()->json([
+                        'result' => false,
+                        'message' => 'Tipe perangkat tidak valid! Hanya mendukung pilihan: Android, iPhone, atau iPad.',
+                    ]);
+                }
+                return response()->json([
+                    'result' => true,
+                    'is_checked' => false,
+                    'nickname' => $target1 . ' (' . $target2 . ')',
+                    'discount_info' => $discountInfo,
+                ]);
+            }
+
+            // 4. VALIDASI NUMERIK UNTUK GAME BERBASIS ANGKA & ZONE ID (MLBB, Magic Chess, dll)
+            $isNumericGame = str_contains($gameSlug, 'magic-chess') || str_contains($gameSlug, 'mobile-legend');
+            if ($isNumericGame) {
                 if (!preg_match('/^[0-9]+$/', $target1)) {
                     return response()->json([
                         'result' => false,

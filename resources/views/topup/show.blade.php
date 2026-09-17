@@ -47,11 +47,13 @@
             @endif
             @php
                 $gameName = strtolower($game->name);
+                $gameSlug = strtolower($game->slug);
                 $catLower = strtolower($game->category ?? '');
+                $isNetflix = str_contains($gameName, 'netflix') || str_contains($gameSlug, 'netflix');
                 $isApp = str_contains($catLower, 'app') || str_contains($catLower, 'aplikasi') || str_contains($catLower, 'streaming') || str_contains($catLower, 'entertainment');
-                $isRequiresZone = $game->requires_zone_id || str_contains($gameName, 'magic chess') || str_contains($gameName, 'mobile legend');
-                $field1Label = $game->target_field_1 ?: ($isApp ? 'Alamat Email Aktif' : 'User ID');
-                $field2Label = $game->target_field_2 ?: ($isApp ? 'Request Profil / Server' : 'Zone ID');
+                $isRequiresZone = $game->requires_zone_id || str_contains($gameName, 'magic chess') || str_contains($gameName, 'mobile legend') || $isNetflix;
+                $field1Label = $game->target_field_1 ?: ($isNetflix ? 'Nama / Model Perangkat' : ($isApp ? 'Alamat Email Aktif' : 'User ID'));
+                $field2Label = $game->target_field_2 ?: ($isNetflix ? 'Tipe Perangkat Login' : ($isApp ? 'Request Profil / Server' : 'Zone ID'));
             @endphp
 
             <!-- Panduan Top Up -->
@@ -69,6 +71,10 @@
                             @if(!empty($game->guide_text))
                                 <div class="text-xs text-indigo-700 dark:text-indigo-300 font-semibold mt-1 bg-indigo-50 dark:bg-indigo-950/60 p-2.5 rounded-lg border border-indigo-100 dark:border-indigo-800/40">
                                     <i class="fas fa-info-circle mr-1"></i> {{ $game->guide_text }}
+                                </div>
+                            @elseif($isNetflix)
+                                <div class="text-xs text-indigo-700 dark:text-indigo-300 font-semibold mt-1 bg-indigo-50 dark:bg-indigo-950/60 p-2.5 rounded-lg border border-indigo-100 dark:border-indigo-800/40">
+                                    <i class="fas fa-tv mr-1"></i> Pilih tipe perangkat (Android / iPhone / iPad) & ketikkan nama/model HP/Tablet Anda. Detail akun & link login akan langsung muncul di invoice pesanan Anda.
                                 </div>
                             @elseif($isApp)
                                 <div class="text-xs text-indigo-700 dark:text-indigo-300 font-semibold mt-1 bg-indigo-50 dark:bg-indigo-950/60 p-2.5 rounded-lg border border-indigo-100 dark:border-indigo-800/40">
@@ -262,7 +268,36 @@
                                         </h3>
                                     </div>
 
-                                    @if($isRequiresZone)
+                                    @if($isNetflix)
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5 flex items-center gap-1.5">
+                                                    <i class="fas fa-mobile-alt text-indigo-500"></i>
+                                                    {{ $field1Label }}
+                                                </label>
+                                                <input type="text" name="player_id" x-model="playerId" 
+                                                    placeholder="Contoh: iPhone 13 / Samsung A54 / iPad Air" required
+                                                    class="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm p-3 font-semibold text-sm">
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5 flex items-center gap-1.5">
+                                                    <i class="fas fa-tablet-alt text-indigo-500"></i>
+                                                    {{ $field2Label }}
+                                                </label>
+                                                <select name="zone_id" x-model="zoneId" required
+                                                    class="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm p-3 font-semibold text-sm cursor-pointer">
+                                                    <option value="" disabled>-- Pilih Tipe Device --</option>
+                                                    <option value="Android">📱 Android (HP / Tablet)</option>
+                                                    <option value="iPhone">🍏 iPhone (iOS)</option>
+                                                    <option value="iPad">📱 iPad (iPadOS)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-[11px] text-amber-800 dark:text-amber-300 flex items-start gap-2 font-medium">
+                                            <i class="fas fa-shield-alt text-amber-500 text-sm mt-0.5 shrink-0"></i>
+                                            <span><strong>Ketentuan Device:</strong> 1 Akun/Profil hanya untuk <strong>1 Perangkat HP/Tablet</strong> (Android, iPhone, atau iPad). Tidak diperkenankan untuk Smart TV atau Laptop/PC.</span>
+                                        </div>
+                                    @elseif($isRequiresZone)
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
                                                 <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5 flex items-center gap-1.5">
