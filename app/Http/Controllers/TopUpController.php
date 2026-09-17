@@ -80,6 +80,15 @@ class TopUpController extends Controller
             // Fallback ke $vipBalance
         }
 
+        $isAppOrVoucher = in_array($game->category, ['Aplikasi Premium', 'Voucher', 'App & Entertainment']) 
+            || str_contains(strtolower($game->category ?? ''), 'app') 
+            || str_contains(strtolower($game->category ?? ''), 'aplikasi')
+            || str_contains(strtolower($game->category ?? ''), 'streaming')
+            || str_contains(strtolower($game->category ?? ''), 'voucher')
+            || str_contains(strtolower($game->name), 'premium')
+            || str_contains(strtolower($game->name), 'netflix')
+            || str_contains(strtolower($game->name), 'voucher');
+
         $allProducts = $game->products()->where('status', 'available')->where('price_modal', '>', 0)->orderBy('price_sell')->get();
 
         $uniqueProducts = collect();
@@ -118,14 +127,6 @@ class TopUpController extends Controller
             
             // Hilangkan titik (.) yang digunakan sebagai pemisah ribuan agar 1.446 terbaca 1446
             $nameForMath = str_replace('.', '', $name);
-
-            $isAppOrVoucher = in_array($game->category, ['Aplikasi Premium', 'Voucher', 'App & Entertainment']) 
-                || str_contains(strtolower($game->category ?? ''), 'app') 
-                || str_contains(strtolower($game->category ?? ''), 'aplikasi')
-                || str_contains(strtolower($game->category ?? ''), 'streaming')
-                || str_contains(strtolower($game->category ?? ''), 'voucher')
-                || str_contains(strtolower($game->name), 'premium')
-                || str_contains(strtolower($game->name), 'voucher');
 
             $isPass = (str_contains($name, 'pass') || str_contains($name, 'weekly') || str_contains($name, 'starlight') || str_contains($name, 'twilight') || str_contains($name, 'member') || str_contains($name, 'bundle') || str_contains($name, 'gsuite') || str_contains($name, 'invite') || str_contains($name, 'individu') || str_contains($name, 'family') || str_contains($name, 'private') || str_contains($name, 'shared') || str_contains($name, 'garansi') || str_contains($name, 'bulan') || str_contains($name, 'hari') || str_contains($name, 'tahun'));
             
