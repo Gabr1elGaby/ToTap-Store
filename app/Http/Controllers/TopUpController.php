@@ -45,6 +45,9 @@ class TopUpController extends Controller
                     'roblox' => 'Roblox',
                     'pubg' => 'PUBG',
                     'pubg-mobile' => 'PUBG',
+                    'netflix' => 'Netflix',
+                    'netflix-premium' => 'Netflix',
+                    'marvel-rivals' => 'Marvel Rivals',
                 ];
                 $keyword = $filterMap[$game->slug] ?? $game->name;
                 $apiRes = $vipApi->getGameProducts($keyword);
@@ -66,10 +69,6 @@ class TopUpController extends Controller
                                     'price_sell' => ceil($newSell),
                                     'status' => $aStatus,
                                 ]);
-                            }
-                        } else {
-                            if ($lp->status !== 'empty') {
-                                $lp->update(['status' => 'empty']);
                             }
                         }
                     }
@@ -288,6 +287,8 @@ class TopUpController extends Controller
                     'roblox' => 'Roblox',
                     'pubg' => 'PUBG',
                     'pubg-mobile' => 'PUBG',
+                    'netflix' => 'Netflix',
+                    'netflix-premium' => 'Netflix',
                     'marvel-rivals' => 'Marvel Rivals',
                 ];
                 $keyword = $filterMap[$game->slug] ?? $game->name;
@@ -310,10 +311,6 @@ class TopUpController extends Controller
                                     'price_sell' => ceil($newSell),
                                     'status' => $aStatus,
                                 ]);
-                            }
-                        } else {
-                            if ($lp->status !== 'empty') {
-                                $lp->update(['status' => 'empty']);
                             }
                         }
                     }
