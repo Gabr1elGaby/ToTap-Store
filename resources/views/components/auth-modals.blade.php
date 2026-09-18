@@ -16,11 +16,11 @@
                 <span id="login-error-email" class="text-red-500 text-xs mt-1 block font-medium hidden"></span>
             </div>
             <div>
-                <div class="flex justify-between items-center mb-1">
-                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-300">Password</label>
+                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                <input class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm" type="password" name="password" required>
+                <div class="flex justify-end mt-1.5">
                     <button type="button" onclick="openForgotPasswordModal()" class="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium">Lupa Password?</button>
                 </div>
-                <input class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm" type="password" name="password" required>
                 <span id="login-error-password" class="text-red-500 text-xs mt-1 block font-medium hidden"></span>
             </div>
             <button id="login-submit-btn" type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition mt-2 shadow-md shadow-blue-500/20 text-sm">
