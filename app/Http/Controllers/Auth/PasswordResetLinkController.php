@@ -33,10 +33,27 @@ class PasswordResetLinkController extends Controller
             'email.email' => 'Format email tidak valid.',
         ]);
 
-        // We will send the password reset link to this user.
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        try {
+            // We will send the password reset link to this user.
+            $status = Password::sendResetLink(
+                $request->only('email')
+            );
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Password reset mail failed: ' . $e->getMessage());
+            
+            $errMessage = 'Gagal menghubungi server email. Silakan coba beberapa saat lagi atau hubungi admin.';
+            
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'status' => 'error',
+                    'errors' => ['email' => [$errMessage]],
+                    'message' => $errMessage,
+                ], 500);
+            }
+
+            return back()->withInput($request->only('email'))
+                ->withErrors(['email' => $errMessage]);
+        }
 
         $isSuccess = ($status == Password::RESET_LINK_SENT);
         $message = $isSuccess 
