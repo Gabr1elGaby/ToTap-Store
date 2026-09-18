@@ -24,22 +24,43 @@ class PasswordResetLinkController extends Controller
      *
      * @throws ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $request->validate([
             'email' => ['required', 'email'],
+        ], [
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
         ]);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
+        // We will send the password reset link to this user.
         $status = Password::sendResetLink(
             $request->only('email')
         );
 
-        return $status == Password::RESET_LINK_SENT
-                    ? back()->with('status', __($status))
+        $isSuccess = ($status == Password::RESET_LINK_SENT);
+        $message = $isSuccess 
+            ? 'Link reset password telah berhasil dikirim ke email Anda! Silakan cek kotak masuk atau folder spam.' 
+            : 'Email tersebut tidak terdaftar di sistem kami.';
+
+        if ($request->expectsJson() || $request->ajax()) {
+            if ($isSuccess) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => $message,
+                ]);
+            }
+
+            return response()->json([
+                'status' => 'error',
+                'errors' => ['email' => [$message]],
+                'message' => $message,
+            ], 422);
+        }
+
+        return $isSuccess
+                    ? back()->with('status', $message)
                     : back()->withInput($request->only('email'))
-                        ->withErrors(['email' => __($status)]);
+                        ->withErrors(['email' => $message]);
     }
 }
