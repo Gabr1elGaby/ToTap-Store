@@ -41,7 +41,10 @@ class PasswordResetLinkController extends Controller
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('Password reset mail failed: ' . $e->getMessage());
             
-            $errMessage = 'Gagal menghubungi server email. Silakan coba beberapa saat lagi atau hubungi admin.';
+            $errDetail = $e->getMessage();
+            $errMessage = config('app.debug') 
+                ? 'Gagal mengirim email: ' . $errDetail 
+                : 'Gagal menghubungi server email. Silakan periksa pengaturan SMTP atau hubungi admin.';
             
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
