@@ -501,8 +501,8 @@ class TopUpController extends Controller
             }
         }
 
-        // JIKA PEMBAYARAN QRIS (DENGAN KODE UNIK VERIFIKASI OTOMATIS GOPAY/QRIS)
-        // Cari kode unik (1 - 499) yang belum digunakan oleh transaksi pending dalam 60 menit terakhir
+        // JIKA PEMBAYARAN QRIS (DENGAN BIAYA LAYANAN / KODE UNIK VERIFIKASI OTOMATIS GOPAY/QRIS)
+        // Cari kode unik (100 - 499) yang belum digunakan oleh transaksi pending dalam 60 menit terakhir
         $pendingAmounts = \App\Models\Transaction::where('payment_method', 'qris')
             ->where('status', 'pending')
             ->where('created_at', '>=', now()->subMinutes(60))
@@ -511,16 +511,23 @@ class TopUpController extends Controller
             ->pluck('amount')
             ->toArray();
 
-        $uniqueCode = 0;
-        for ($i = 1; $i <= 499; $i++) {
-            $candidate = (int) $finalAmount + $i;
-            if (!in_array($candidate, $pendingAmounts)) {
-                $uniqueCode = $i;
-                break;
+        $requestedFee = (int) $request->input('service_fee', 0);
+        if ($requestedFee >= 1 && $requestedFee <= 499 && !in_array((int)$finalAmount + $requestedFee, $pendingAmounts)) {
+            $uniqueCode = $requestedFee;
+        } else {
+            $randomCandidates = range(100, 499);
+            shuffle($randomCandidates);
+            $uniqueCode = 0;
+            foreach ($randomCandidates as $candidate) {
+                $candidateAmount = (int) $finalAmount + $candidate;
+                if (!in_array($candidateAmount, $pendingAmounts)) {
+                    $uniqueCode = $candidate;
+                    break;
+                }
             }
-        }
-        if ($uniqueCode === 0) {
-            $uniqueCode = rand(1, 499);
+            if ($uniqueCode === 0) {
+                $uniqueCode = rand(100, 499);
+            }
         }
 
         $totalPayAmount = (int) $finalAmount + $uniqueCode;
@@ -583,15 +590,17 @@ class TopUpController extends Controller
                     ->pluck('amount')
                     ->toArray();
 
-                for ($i = 1; $i <= 499; $i++) {
-                    $candidate = (int) $discountInfo['final_amount'] + $i;
-                    if (!in_array($candidate, $pendingAmounts)) {
-                        $serviceFee = $i;
+                $randomCandidates = range(100, 499);
+                shuffle($randomCandidates);
+                foreach ($randomCandidates as $candidate) {
+                    $candidateAmount = (int) $discountInfo['final_amount'] + $candidate;
+                    if (!in_array($candidateAmount, $pendingAmounts)) {
+                        $serviceFee = $candidate;
                         break;
                     }
                 }
                 if ($serviceFee === 0) {
-                    $serviceFee = rand(1, 499);
+                    $serviceFee = rand(100, 499);
                 }
             }
 

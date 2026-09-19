@@ -196,6 +196,9 @@
                         const chosen = item.eligible_promos.find(ep => ep.type === this.selectedPromo);
                         return chosen ? chosen.final_amount : item.default_final_amount;
                     },
+                    getCurrentPriceFormatted() {
+                        return 'Rp' + Number(this.getCurrentPrice()).toLocaleString('id-ID');
+                    },
                     fetchStock() {
                         fetch('{{ route('topup.stock-status', $game->slug) }}', { headers: { 'Accept': 'application/json' } })
                             .then(res => res.json())
@@ -251,6 +254,7 @@
                         @csrf
                         <input type="hidden" name="product_id" x-model="selectedProduct">
                         <input type="hidden" name="selected_promo" x-model="selectedPromo">
+                        <input type="hidden" name="service_fee" id="service-fee-input" value="0">
                         
                         <div class="flex flex-col xl:flex-row gap-6 items-start">
                             <!-- Kolom Tengah: Tujuan & Nominal -->
@@ -706,6 +710,12 @@
                 if (data.result === true) {
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
+
+                    const serviceFeeVal = (data.discount_info && data.discount_info.service_fee) ? data.discount_info.service_fee : 0;
+                    const serviceFeeEl = document.getElementById('service-fee-input');
+                    if (serviceFeeEl) {
+                        serviceFeeEl.value = (payMethodVal === 'qris') ? serviceFeeVal : 0;
+                    }
 
                     let accountRowHtml = '';
                     if (data.is_checked && data.nickname) {
