@@ -572,6 +572,32 @@ class TopUpController extends Controller
             $selectedPromoType = $request->input('selected_promo');
             $discountInfo = \App\Helpers\PromoHelper::calculateDiscount(auth()->user(), $originalPrice, $game, (float)($product ? $product->price_modal : 0), $selectedPromoType);
 
+            $payMethod = $request->input('payment_method', 'qris');
+            $serviceFee = 0;
+            if ($payMethod === 'qris') {
+                $pendingAmounts = \App\Models\Transaction::where('payment_method', 'qris')
+                    ->where('status', 'pending')
+                    ->where('created_at', '>=', now()->subMinutes(60))
+                    ->where('amount', '>=', $discountInfo['final_amount'])
+                    ->where('amount', '<=', $discountInfo['final_amount'] + 999)
+                    ->pluck('amount')
+                    ->toArray();
+
+                for ($i = 1; $i <= 499; $i++) {
+                    $candidate = (int) $discountInfo['final_amount'] + $i;
+                    if (!in_array($candidate, $pendingAmounts)) {
+                        $serviceFee = $i;
+                        break;
+                    }
+                }
+                if ($serviceFee === 0) {
+                    $serviceFee = rand(1, 499);
+                }
+            }
+
+            $discountInfo['service_fee'] = $serviceFee;
+            $discountInfo['total_with_fee'] = (int)$discountInfo['final_amount'] + $serviceFee;
+
             // 1. VALIDASI KHUSUS VALORANT: HANYA Valorant yang boleh dan wajib memakai tanda '#' (Riot ID: Username#TAG)
             if ($gameSlug === 'valorant') {
                 if (!str_contains($target1, '#')) {

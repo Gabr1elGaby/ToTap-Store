@@ -740,27 +740,46 @@
 
                     const payMethodDisplay = payMethodVal === 'balance' ? 'Saldo Akun (Dompet Web)' : 'QRIS All Payment';
 
+                    let feeHtml = '';
+                    let finalTotalVal = data.discount_info ? (data.discount_info.total_with_fee || data.discount_info.final_amount) : productRawPrice;
+
+                    if (payMethodVal === 'qris' && data.discount_info && data.discount_info.service_fee > 0) {
+                        feeHtml = `
+                            <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700 text-indigo-600 dark:text-indigo-400">
+                                <span class="font-bold flex items-center gap-1">Biaya Layanan:</span>
+                                <span class="font-black font-mono">+ Rp${Number(data.discount_info.service_fee).toLocaleString('id-ID')}</span>
+                            </div>
+                        `;
+                    }
+
                     let priceBreakdownHtml = '';
                     if (data.discount_info && data.discount_info.has_discount) {
                         priceBreakdownHtml = `
                             <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
-                                <span class="text-gray-500 dark:text-gray-400 font-semibold">Harga Asli:</span>
+                                <span class="text-gray-500 dark:text-gray-400 font-semibold">Harga Produk:</span>
                                 <span class="font-bold text-gray-500 dark:text-gray-400 line-through">Rp${Number(data.discount_info.original_amount).toLocaleString('id-ID')}</span>
                             </div>
                             <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700 text-emerald-600 dark:text-emerald-400">
                                 <span class="font-bold flex items-center gap-1">🎁 ${data.discount_info.promo_title}:</span>
                                 <span class="font-black font-mono">- Rp${Number(data.discount_info.discount_amount).toLocaleString('id-ID')}</span>
                             </div>
+                            ${feeHtml}
                             <div class="flex justify-between items-center pt-2">
                                 <span class="text-gray-900 dark:text-white font-black text-sm">Total Pembayaran:</span>
-                                <span class="font-black text-base text-emerald-600 dark:text-emerald-400 font-mono">Rp${Number(data.discount_info.final_amount).toLocaleString('id-ID')}</span>
+                                <span class="font-black text-base text-emerald-600 dark:text-emerald-400 font-mono">Rp${Number(finalTotalVal).toLocaleString('id-ID')}</span>
                             </div>
                         `;
                     } else {
+                        let basePriceVal = data.discount_info ? data.discount_info.original_amount : productRawPrice;
                         priceBreakdownHtml = `
+                            <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-gray-500 dark:text-gray-400 font-semibold">Harga Produk:</span>
+                                <span class="font-bold text-gray-900 dark:text-white font-mono">Rp${Number(basePriceVal).toLocaleString('id-ID')}</span>
+                            </div>
+                            ${feeHtml}
                             <div class="flex justify-between items-center pt-2">
-                                <span class="text-gray-700 dark:text-gray-300 font-bold">Total Tagihan:</span>
-                                <span class="font-black text-sm text-emerald-600 dark:text-emerald-400">${productPrice}</span>
+                                <span class="text-gray-900 dark:text-white font-black text-sm">Total Pembayaran:</span>
+                                <span class="font-black text-base text-emerald-600 dark:text-emerald-400 font-mono">Rp${Number(finalTotalVal).toLocaleString('id-ID')}</span>
                             </div>
                         `;
                     }
