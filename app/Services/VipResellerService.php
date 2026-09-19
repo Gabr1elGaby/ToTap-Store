@@ -174,6 +174,56 @@ class VipResellerService
         }
     }
 
+    public function isProductInStock($serviceCode): bool
+    {
+        if (empty($serviceCode)) {
+            return true;
+        }
+
+        $res = $this->checkServiceStock($serviceCode);
+        if (!$res || !is_array($res)) {
+            return true;
+        }
+
+        // 1. Jika API mengembalikan result: false dengan pesan stok kosong/gangguan/tidak tersedia
+        if (isset($res['result']) && $res['result'] === false) {
+            $msg = strtolower($res['message'] ?? '');
+            if (
+                str_contains($msg, 'stok') || 
+                str_contains($msg, 'stock') || 
+                str_contains($msg, 'kosong') || 
+                str_contains($msg, 'empty') || 
+                str_contains($msg, 'habis') || 
+                str_contains($msg, 'tidak tersedia') ||
+                str_contains($msg, 'not available') ||
+                str_contains($msg, 'gangguan') ||
+                str_contains($msg, 'off') ||
+                str_contains($msg, 'limit')
+            ) {
+                return false;
+            }
+        }
+
+        // 2. Jika API mengembalikan result: true dengan data stok
+        if (isset($res['result']) && $res['result'] === true && isset($res['data'])) {
+            $data = $res['data'];
+            if (isset($data['status']) && in_array(strtolower($data['status']), ['empty', 'kosong', 'habis', 'off', 'inactive'])) {
+                return false;
+            }
+            if (isset($data['total_stock']) && is_numeric($data['total_stock']) && (int)$data['total_stock'] <= 0) {
+                return false;
+            }
+            if (isset($data['stock']) && is_numeric($data['stock']) && (int)$data['stock'] <= 0) {
+                return false;
+            }
+            if (isset($data['sisa_stok']) && is_numeric($data['sisa_stok']) && (int)$data['sisa_stok'] <= 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public function checkOrderStatus($trxId = '')
     {
         if (empty($trxId)) {

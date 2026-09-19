@@ -236,6 +236,21 @@ class TopUpController extends Controller
         }
 
         $stockMap = [];
+        foreach ($uniqueProducts as $p) {
+            $modal = (float) $p->price_modal;
+            $isOutOfStock = ($vipBalance <= 0 || $modal > $vipBalance || $p->status !== 'available');
+            if (!$isOutOfStock && $isAppOrVoucher && !empty($p->product_code)) {
+                $stockCacheKey = 'vip_stock_prod_' . $p->product_code;
+                $inStock = Cache::remember($stockCacheKey, 180, function () use ($p) {
+                    return app(\App\Services\VipResellerService::class)->isProductInStock($p->product_code);
+                });
+                if (!$inStock) {
+                    $isOutOfStock = true;
+                }
+            }
+            $stockMap[(string)$p->id] = $isOutOfStock;
+        }
+
         $user = auth()->user();
         $promoSettings = \App\Helpers\PromoHelper::getSettings();
         $dayCheck = \App\Helpers\PromoHelper::isDayPromoActiveToday();
@@ -321,11 +336,27 @@ class TopUpController extends Controller
             // Fallback ke $vipBalance
         }
 
-        $products = $game->products()->select('id', 'price_modal', 'status')->get();
+        $isAppOrVoucher = in_array($game->category, ['Aplikasi Premium', 'Voucher', 'App & Entertainment']) 
+            || str_contains(strtolower($game->category ?? ''), 'app') 
+            || str_contains(strtolower($game->category ?? ''), 'aplikasi')
+            || str_contains(strtolower($game->category ?? ''), 'streaming')
+            || str_contains(strtolower($game->category ?? ''), 'voucher');
+
+        $products = $game->products()->select('id', 'price_modal', 'status', 'product_code')->get();
         $stockMap = [];
         foreach ($products as $p) {
             $modal = (float) $p->price_modal;
-            $stockMap[(string)$p->id] = ($vipBalance <= 0 || $modal > $vipBalance || $p->status !== 'available');
+            $isOutOfStock = ($vipBalance <= 0 || $modal > $vipBalance || $p->status !== 'available');
+            if (!$isOutOfStock && $isAppOrVoucher && !empty($p->product_code)) {
+                $stockCacheKey = 'vip_stock_prod_' . $p->product_code;
+                $inStock = Cache::remember($stockCacheKey, 180, function () use ($p) {
+                    return app(\App\Services\VipResellerService::class)->isProductInStock($p->product_code);
+                });
+                if (!$inStock) {
+                    $isOutOfStock = true;
+                }
+            }
+            $stockMap[(string)$p->id] = $isOutOfStock;
         }
 
         return response()->json([
@@ -411,23 +442,11 @@ class TopUpController extends Controller
         if ($isApp && !empty($product->product_code)) {
             try {
                 $vipApi = app(\App\Services\VipResellerService::class);
-                $stockCheck = $vipApi->checkServiceStock($product->product_code);
-                if (isset($stockCheck['result']) && $stockCheck['result'] === true && isset($stockCheck['data'])) {
-                    $sData = $stockCheck['data'];
-                    $isAvailable = true;
-                    if (isset($sData['status']) && strtolower($sData['status']) === 'empty') {
-                        $isAvailable = false;
-                    }
-                    if (isset($sData['total_stock']) && (int)$sData['total_stock'] <= 0) {
-                        $isAvailable = false;
-                    }
-                    if (isset($sData['stock']) && is_numeric($sData['stock']) && (int)$sData['stock'] <= 0) {
-                        $isAvailable = false;
-                    }
-                    if (!$isAvailable) {
-                        $product->update(['status' => 'empty']);
-                        return back()->with('error', 'Mohon maaf, stok akun/layanan ' . $product->name . ' dari provider pusat saat ini sedang habis.');
-                    }
+                $inStock = $vipApi->isProductInStock($product->product_code);
+                if (!$inStock) {
+                    $product->update(['status' => 'empty']);
+                    Cache::put('vip_stock_prod_' . $product->product_code, false, 180);
+                    return back()->with('error', 'Mohon maaf, stok akun/layanan ' . $product->name . ' dari provider pusat saat ini sedang habis.');
                 }
             } catch (\Throwable $eStock) {}
         }
@@ -609,30 +628,19 @@ class TopUpController extends Controller
             $isAppOrVoucher = in_array($game->category, ['Aplikasi Premium', 'Voucher', 'App & Entertainment']) 
                 || str_contains(strtolower($game->category ?? ''), 'app') 
                 || str_contains(strtolower($game->category ?? ''), 'aplikasi')
-                || str_contains(strtolower($game->category ?? ''), 'streaming');
+                || str_contains(strtolower($game->category ?? ''), 'streaming')
+                || str_contains(strtolower($game->category ?? ''), 'voucher');
 
             if ($product && !empty($product->product_code) && $isAppOrVoucher) {
                 try {
-                    $stockCheck = $api->checkServiceStock($product->product_code);
-                    if (isset($stockCheck['result']) && $stockCheck['result'] === true && isset($stockCheck['data'])) {
-                        $sData = $stockCheck['data'];
-                        $isAvailable = true;
-                        if (isset($sData['status']) && strtolower($sData['status']) === 'empty') {
-                            $isAvailable = false;
-                        }
-                        if (isset($sData['total_stock']) && (int)$sData['total_stock'] <= 0) {
-                            $isAvailable = false;
-                        }
-                        if (isset($sData['stock']) && is_numeric($sData['stock']) && (int)$sData['stock'] <= 0) {
-                            $isAvailable = false;
-                        }
-                        if (!$isAvailable) {
-                            $product->update(['status' => 'empty']);
-                            return response()->json([
-                                'result' => false,
-                                'message' => 'Mohon maaf, stok akun/layanan ' . $product->name . ' dari provider pusat saat ini sedang habis. Silakan pilih paket lain atau coba lagi nanti.',
-                            ]);
-                        }
+                    $inStock = $api->isProductInStock($product->product_code);
+                    if (!$inStock) {
+                        $product->update(['status' => 'empty']);
+                        Cache::put('vip_stock_prod_' . $product->product_code, false, 180);
+                        return response()->json([
+                            'result' => false,
+                            'message' => 'Mohon maaf, stok akun/layanan ' . $product->name . ' dari provider pusat saat ini sedang habis. Silakan pilih paket lain atau coba lagi nanti.',
+                        ]);
                     }
                 } catch (\Throwable $eStock) {}
             }
