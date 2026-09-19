@@ -207,6 +207,25 @@ Route::middleware(['auth', 'verified', 'role:superadmin'])->prefix('admin')->nam
         return view('admin.dashboard');
     })->name('dashboard');
 
+    // Debug: lihat webhook GoPay terakhir & pending transactions
+    Route::get('/debug/webhook-info', function () {
+        $info = \Illuminate\Support\Facades\Cache::get('latest_gopay_webhook_info', 'BELUM ADA DATA (belum ada webhook masuk)');
+        $pending = \App\Models\Transaction::whereIn('status', ['pending', 'waiting', 'unpaid'])
+            ->where('payment_method', 'qris')
+            ->where('created_at', '>=', now()->subHours(24))
+            ->get(['id', 'amount', 'status', 'created_at', 'snap_token'])
+            ->map(fn($t) => [
+                'id' => $t->id,
+                'amount_db' => (int) $t->amount,
+                'snap' => json_decode($t->snap_token, true),
+                'created_at' => $t->created_at,
+            ]);
+        return response()->json([
+            'latest_webhook' => $info,
+            'pending_qris_24h' => $pending,
+        ], 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    })->name('debug.webhook-info');
+
     Route::resource('products', \App\Http\Controllers\ProductController::class);
     Route::resource('plans', \App\Http\Controllers\PlanController::class);
     Route::post('cv-templates/update-all', [\App\Http\Controllers\Admin\CvTemplateController::class, 'updateAll'])->name('cv-templates.update-all');

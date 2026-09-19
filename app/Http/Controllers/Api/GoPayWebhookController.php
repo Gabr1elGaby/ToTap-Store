@@ -59,15 +59,34 @@ class GoPayWebhookController extends Controller
 
         Log::info("GoPay Webhook: Extracted amount Rp" . number_format($amount, 0, ',', '.'));
 
+        // Debug: log semua transaksi pending 24 jam terakhir untuk mempermudah diagnosis
+        $pendingTrx = Transaction::whereIn('status', ['pending', 'waiting', 'unpaid'])
+            ->where('created_at', '>=', now()->subHours(24))
+            ->get(['id', 'amount', 'status', 'payment_method', 'created_at', 'snap_token']);
+        
         \Illuminate\Support\Facades\Cache::put('latest_gopay_webhook_info', [
             'time' => now()->toDateTimeString(),
             'extracted_amount' => $amount,
             'raw_content' => $request->getContent(),
             'query' => $request->query->all(),
             'payload' => $payload,
+            'pending_transactions' => $pendingTrx->map(fn($t) => [
+                'id' => $t->id,
+                'amount' => $t->amount,
+                'status' => $t->status,
+                'payment_method' => $t->payment_method,
+                'created_at' => $t->created_at,
+                'snap_token' => $t->snap_token,
+            ])->toArray(),
         ], 86400);
 
-        // 3. Match against Pending Top Up Transactions (created in the last 24 hours)
+        Log::info('GoPay Webhook: Pending transactions in last 24h:', $pendingTrx->map(fn($t) => [
+            'id' => $t->id,
+            'amount' => (int)$t->amount,
+            'payment_method' => $t->payment_method,
+        ])->toArray());
+
+        // 3. Match EXACT amount against Pending Top Up Transactions (created in the last 24 hours)
         $transaction = Transaction::with(['game', 'gameProduct', 'user'])
             ->whereIn('status', ['pending', 'waiting', 'unpaid'])
             ->where(function ($q) use ($amount) {
@@ -78,6 +97,49 @@ class GoPayWebhookController extends Controller
             ->where('created_at', '>=', now()->subHours(24))
             ->orderBy('created_at', 'desc')
             ->first();
+
+        if ($transaction) {
+            Log::info("GoPay Webhook: Matched transaction (exact) ID={$transaction->id} amount={$transaction->amount}");
+            return $this->processTransaction($transaction, $amount, $payload);
+        }
+
+        // 3b. Fallback: range ±10 (toleransi pembulatan GoPay)
+        $transaction = Transaction::with(['game', 'gameProduct', 'user'])
+            ->whereIn('status', ['pending', 'waiting', 'unpaid'])
+            ->whereBetween(\DB::raw('CAST(amount AS SIGNED)'), [$amount - 10, $amount + 10])
+            ->where('payment_method', 'qris')
+            ->where('created_at', '>=', now()->subHours(24))
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if ($transaction) {
+            Log::info("GoPay Webhook: Matched transaction (range ±10) ID={$transaction->id} amount={$transaction->amount} vs webhook_amount={$amount}");
+            return $this->processTransaction($transaction, $amount, $payload);
+        }
+
+        // 3c. Fallback: match by base_amount inside snap_token JSON
+        $allPendingQris = Transaction::with(['game', 'gameProduct', 'user'])
+            ->whereIn('status', ['pending', 'waiting', 'unpaid'])
+            ->where('payment_method', 'qris')
+            ->where('created_at', '>=', now()->subHours(24))
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        foreach ($allPendingQris as $t) {
+            try {
+                $snapData = json_decode($t->snap_token, true);
+                if ($snapData && isset($snapData['base_amount'])) {
+                    $base = (int) $snapData['base_amount'];
+                    $total = (int) ($snapData['amount'] ?? $t->amount);
+                    // GoPay bisa kirim base_amount ATAU total; toleransi ±10
+                    if (abs($base - $amount) <= 10 || abs($total - $amount) <= 10) {
+                        Log::info("GoPay Webhook: Matched transaction (snap_token base_amount) ID={$t->id} base={$base} total={$total} vs webhook_amount={$amount}");
+                        $transaction = $t;
+                        break;
+                    }
+                }
+            } catch (\Throwable $e) {}
+        }
 
         if ($transaction) {
             return $this->processTransaction($transaction, $amount, $payload);
@@ -99,12 +161,13 @@ class GoPayWebhookController extends Controller
             return $this->processDeposit($deposit, $amount, $payload);
         }
 
-        Log::warning("GoPay Webhook: No pending transaction or deposit matching amount Rp" . number_format($amount, 0, ',', '.'));
+        Log::warning("GoPay Webhook: No pending transaction or deposit matching amount Rp" . number_format($amount, 0, ',', '.') . ". Pending counts: " . $pendingTrx->count());
 
         return response()->json([
             'success' => false,
             'message' => 'Payment received but no matching pending transaction found for amount Rp' . number_format($amount, 0, ',', '.'),
             'amount' => $amount,
+            'debug_pending_count' => $pendingTrx->count(),
         ], 200);
     }
 
