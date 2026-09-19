@@ -59,6 +59,14 @@ class GoPayWebhookController extends Controller
 
         Log::info("GoPay Webhook: Extracted amount Rp" . number_format($amount, 0, ',', '.'));
 
+        \Illuminate\Support\Facades\Cache::put('latest_gopay_webhook_info', [
+            'time' => now()->toDateTimeString(),
+            'extracted_amount' => $amount,
+            'raw_content' => $request->getContent(),
+            'query' => $request->query->all(),
+            'payload' => $payload,
+        ], 86400);
+
         // 3. Match against Pending Top Up Transactions (created in the last 24 hours)
         $transaction = Transaction::with(['game', 'gameProduct', 'user'])
             ->whereIn('status', ['pending', 'waiting', 'unpaid'])
