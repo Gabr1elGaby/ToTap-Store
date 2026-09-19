@@ -401,10 +401,36 @@ class TopUpController extends Controller
             return back()->with('error', 'Mohon maaf, nominal ' . $product->name . ' sedang dalam pemeliharaan saldo provider. Silakan hubungi Admin.');
         }
         
-        // Cek apakah produk yang dibeli adalah Aplikasi Premium
-        $isApp = in_array($game->category, ['Aplikasi Premium', 'App & Entertainment', 'streaming']) 
+        // Cek apakah produk yang dibeli adalah Aplikasi Premium / Streaming / Voucher
+        $isApp = in_array($game->category, ['Aplikasi Premium', 'App & Entertainment', 'streaming', 'Voucher']) 
             || str_contains(strtolower($game->category ?? ''), 'app') 
-            || str_contains(strtolower($game->category ?? ''), 'aplikasi');
+            || str_contains(strtolower($game->category ?? ''), 'aplikasi')
+            || str_contains(strtolower($game->category ?? ''), 'streaming')
+            || str_contains(strtolower($game->category ?? ''), 'voucher');
+
+        if ($isApp && !empty($product->product_code)) {
+            try {
+                $vipApi = app(\App\Services\VipResellerService::class);
+                $stockCheck = $vipApi->checkServiceStock($product->product_code);
+                if (isset($stockCheck['result']) && $stockCheck['result'] === true && isset($stockCheck['data'])) {
+                    $sData = $stockCheck['data'];
+                    $isAvailable = true;
+                    if (isset($sData['status']) && strtolower($sData['status']) === 'empty') {
+                        $isAvailable = false;
+                    }
+                    if (isset($sData['total_stock']) && (int)$sData['total_stock'] <= 0) {
+                        $isAvailable = false;
+                    }
+                    if (isset($sData['stock']) && is_numeric($sData['stock']) && (int)$sData['stock'] <= 0) {
+                        $isAvailable = false;
+                    }
+                    if (!$isAvailable) {
+                        $product->update(['status' => 'empty']);
+                        return back()->with('error', 'Mohon maaf, stok akun/layanan ' . $product->name . ' dari provider pusat saat ini sedang habis.');
+                    }
+                }
+            } catch (\Throwable $eStock) {}
+        }
 
         // Buat ID Transaksi & Nomor Invoice Unik (Format Aplikasi Premium: INV/APKPRE/TTS/001/VIII/2026 | Game: INV/TOPUP/TTS/001/VIII/2026)
         $orderId = $isApp 
@@ -578,6 +604,38 @@ class TopUpController extends Controller
             $originalPrice = $product ? (float)$product->price_sell : 0;
             $selectedPromoType = $request->input('selected_promo');
             $discountInfo = \App\Helpers\PromoHelper::calculateDiscount(auth()->user(), $originalPrice, $game, (float)($product ? $product->price_modal : 0), $selectedPromoType);
+
+            // CEK STOK REAL-TIME KE VIP RESELLER (Khusus Aplikasi / Streaming / Voucher)
+            $isAppOrVoucher = in_array($game->category, ['Aplikasi Premium', 'Voucher', 'App & Entertainment']) 
+                || str_contains(strtolower($game->category ?? ''), 'app') 
+                || str_contains(strtolower($game->category ?? ''), 'aplikasi')
+                || str_contains(strtolower($game->category ?? ''), 'streaming');
+
+            if ($product && !empty($product->product_code) && $isAppOrVoucher) {
+                try {
+                    $stockCheck = $api->checkServiceStock($product->product_code);
+                    if (isset($stockCheck['result']) && $stockCheck['result'] === true && isset($stockCheck['data'])) {
+                        $sData = $stockCheck['data'];
+                        $isAvailable = true;
+                        if (isset($sData['status']) && strtolower($sData['status']) === 'empty') {
+                            $isAvailable = false;
+                        }
+                        if (isset($sData['total_stock']) && (int)$sData['total_stock'] <= 0) {
+                            $isAvailable = false;
+                        }
+                        if (isset($sData['stock']) && is_numeric($sData['stock']) && (int)$sData['stock'] <= 0) {
+                            $isAvailable = false;
+                        }
+                        if (!$isAvailable) {
+                            $product->update(['status' => 'empty']);
+                            return response()->json([
+                                'result' => false,
+                                'message' => 'Mohon maaf, stok akun/layanan ' . $product->name . ' dari provider pusat saat ini sedang habis. Silakan pilih paket lain atau coba lagi nanti.',
+                            ]);
+                        }
+                    }
+                } catch (\Throwable $eStock) {}
+            }
 
             $payMethod = $request->input('payment_method', 'qris');
             $serviceFee = 0;

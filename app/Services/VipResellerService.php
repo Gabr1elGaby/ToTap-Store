@@ -139,6 +139,41 @@ class VipResellerService
         return $response->json();
     }
 
+    public function checkServiceStock($serviceCode)
+    {
+        if (empty($serviceCode)) {
+            return ['result' => false, 'message' => 'Kode layanan kosong'];
+        }
+
+        $payload = [
+            'key' => $this->apiKey,
+            'sign' => $this->generateSign(),
+            'type' => 'service-stock',
+            'service' => trim($serviceCode),
+        ];
+
+        try {
+            // 1. Coba endpoint game-feature
+            $response = Http::connectTimeout(10)->timeout(20)->asForm()->post("{$this->baseUrl}/game-feature", $payload);
+            $res = $response->json();
+            if (isset($res['result']) && $res['result'] === true && isset($res['data'])) {
+                return $res;
+            }
+
+            // 2. Fallback ke endpoint prepaid
+            $responsePrepaid = Http::connectTimeout(10)->timeout(20)->asForm()->post("{$this->baseUrl}/prepaid", $payload);
+            $resPrepaid = $responsePrepaid->json();
+            if (isset($resPrepaid['result']) && $resPrepaid['result'] === true && isset($resPrepaid['data'])) {
+                return $resPrepaid;
+            }
+
+            return $res ?: ($resPrepaid ?: ['result' => false, 'message' => 'Gagal memeriksa stok']);
+        } catch (\Throwable $e) {
+            Log::error('VIP Reseller checkServiceStock error: ' . $e->getMessage());
+            return ['result' => false, 'message' => $e->getMessage()];
+        }
+    }
+
     public function checkOrderStatus($trxId = '')
     {
         if (empty($trxId)) {
