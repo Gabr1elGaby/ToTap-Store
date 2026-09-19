@@ -88,14 +88,17 @@ class TopUpController extends Controller
             || str_contains(strtolower($game->name), 'netflix')
             || str_contains(strtolower($game->name), 'voucher');
 
+        $threshold = (float) \App\Models\Setting::get('vip_balance_threshold', 0);
+        $hasBalanceThreshold = ($threshold > 0 && $vipBalance > 0);
+
         $allProducts = $game->products()->where('status', 'available')->where('price_modal', '>', 0)->orderBy('price_sell')->get();
 
         $uniqueProducts = collect();
         $seenKeys = [];
 
         foreach ($allProducts as $product) {
-            // BUKA jika harga modal <= saldo modal, TUTUP jika modal > saldo
-            $product->is_out_of_stock = ($vipBalance <= 0 || (float)$product->price_modal > $vipBalance);
+            $modal = (float)$product->price_modal;
+            $product->is_out_of_stock = ($product->status !== 'available' || ($hasBalanceThreshold && $modal > $vipBalance));
             $name = strtolower(trim($product->name));
             
             // 1. FILTERING STRICT: Hapus produk Skin, First Top Up, Charisma, dan NON-IDN (Global/Luar Negeri)
@@ -238,7 +241,7 @@ class TopUpController extends Controller
         $stockMap = [];
         foreach ($uniqueProducts as $p) {
             $modal = (float) $p->price_modal;
-            $isOutOfStock = ($vipBalance <= 0 || $modal > $vipBalance || $p->status !== 'available');
+            $isOutOfStock = ($p->status !== 'available' || ($hasBalanceThreshold && $modal > $vipBalance));
             if (!$isOutOfStock && $isAppOrVoucher && !empty($p->product_code)) {
                 $stockCacheKey = 'vip_stock_prod_' . $p->product_code;
                 $inStock = Cache::remember($stockCacheKey, 180, function () use ($p) {
@@ -342,11 +345,14 @@ class TopUpController extends Controller
             || str_contains(strtolower($game->category ?? ''), 'streaming')
             || str_contains(strtolower($game->category ?? ''), 'voucher');
 
+        $threshold = (float) \App\Models\Setting::get('vip_balance_threshold', 0);
+        $hasBalanceThreshold = ($threshold > 0 && $vipBalance > 0);
+
         $products = $game->products()->select('id', 'price_modal', 'status', 'product_code')->get();
         $stockMap = [];
         foreach ($products as $p) {
             $modal = (float) $p->price_modal;
-            $isOutOfStock = ($vipBalance <= 0 || $modal > $vipBalance || $p->status !== 'available');
+            $isOutOfStock = ($p->status !== 'available' || ($hasBalanceThreshold && $modal > $vipBalance));
             if (!$isOutOfStock && $isAppOrVoucher && !empty($p->product_code)) {
                 $stockCacheKey = 'vip_stock_prod_' . $p->product_code;
                 $inStock = Cache::remember($stockCacheKey, 180, function () use ($p) {
