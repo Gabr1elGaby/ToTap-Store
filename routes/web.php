@@ -226,6 +226,87 @@ Route::middleware(['auth', 'verified', 'role:superadmin'])->prefix('admin')->nam
         ], 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     })->name('debug.webhook-info');
 
+    // Debug: test Digiflazz API
+    Route::get('/debug/digiflazz', function () {
+        $payload = [
+            'username'       => 'tuwumiWXAdqg',
+            'buyer_sku_code' => 'test',
+            'customer_no'    => '087800001233',
+            'ref_id'         => 'some1d',
+            'sign'           => 'a47659b5af3b52fb57d4b8a3c069b11b',
+        ];
+
+        $start = microtime(true);
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(10)
+                ->post('https://api.digiflazz.com/v1/transaction', $payload);
+            $result   = $response->json();
+            $httpCode = $response->status();
+            $error    = null;
+        } catch (\Throwable $e) {
+            $result   = null;
+            $httpCode = 0;
+            $error    = $e->getMessage();
+        }
+        $duration = round((microtime(true) - $start) * 1000, 1);
+
+        $status  = $result['data']['status'] ?? '-';
+        $message = $result['data']['message'] ?? ($error ?? 'Tidak ada respon');
+        $rc      = $result['data']['rc'] ?? '-';
+        $sn      = $result['data']['sn'] ?? '';
+        $isOk    = $status === 'Sukses';
+
+        $badgeColor = $isOk ? '#22c55e' : '#ef4444';
+        $json       = json_encode($result ?? ['error' => $error], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $reqJson    = json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $snDisplay  = $sn ?: '—';
+
+        $html = <<<HTML
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Debug Digiflazz</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .card{background:#1e293b;border-radius:16px;padding:32px;width:100%;max-width:680px;box-shadow:0 25px 60px rgba(0,0,0,.5)}
+  h2{font-size:1.4rem;margin-bottom:6px;color:#f8fafc}
+  .sub{font-size:.85rem;color:#64748b;margin-bottom:24px}
+  .badge{display:inline-block;padding:4px 14px;border-radius:99px;font-weight:700;font-size:.85rem;color:#fff;background:{$badgeColor};margin-bottom:20px}
+  .row{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+  .box{flex:1;min-width:140px;background:#0f172a;border-radius:10px;padding:14px 16px}
+  .box .label{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:4px}
+  .box .val{font-size:1rem;font-weight:600;color:#f1f5f9;word-break:break-all}
+  pre{background:#0f172a;border-radius:10px;padding:16px;font-size:.8rem;color:#94a3b8;overflow-x:auto;line-height:1.6;white-space:pre-wrap;word-break:break-all}
+  .lbl{font-size:.75rem;color:#64748b;margin:20px 0 8px;text-transform:uppercase;letter-spacing:.08em}
+  .btn{display:inline-block;margin-top:20px;padding:10px 22px;background:#3b82f6;color:#fff;border-radius:8px;text-decoration:none;font-size:.85rem;font-weight:600}
+  .btn:hover{background:#2563eb}
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>🔌 Digiflazz API — Debug</h2>
+  <div class="sub">POST https://api.digiflazz.com/v1/transaction &nbsp;·&nbsp; {$duration}ms &nbsp;·&nbsp; HTTP {$httpCode}</div>
+  <span class="badge">{$status}</span>
+  <div class="row">
+    <div class="box"><div class="label">RC</div><div class="val">{$rc}</div></div>
+    <div class="box"><div class="label">SN</div><div class="val">{$snDisplay}</div></div>
+    <div class="box"><div class="label">Pesan</div><div class="val">{$message}</div></div>
+  </div>
+  <div class="lbl">Request yang dikirim</div>
+  <pre>{$reqJson}</pre>
+  <div class="lbl">Response dari Digiflazz</div>
+  <pre>{$json}</pre>
+  <a class="btn" href="javascript:location.reload()">🔄 Coba Lagi</a>
+</div>
+</body>
+</html>
+HTML;
+        return response($html, 200, ['Content-Type' => 'text/html; charset=utf-8']);
+    })->name('debug.digiflazz');
+
     Route::resource('products', \App\Http\Controllers\ProductController::class);
     Route::resource('plans', \App\Http\Controllers\PlanController::class);
     Route::post('cv-templates/update-all', [\App\Http\Controllers\Admin\CvTemplateController::class, 'updateAll'])->name('cv-templates.update-all');
