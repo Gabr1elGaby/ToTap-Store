@@ -211,15 +211,23 @@ class GoPayWebhookController extends Controller
      */
     protected function extractAmount(Request $request): int
     {
-        // 1. Direct explicit amount in JSON payload
-        if ($request->filled('amount') && is_numeric($request->input('amount'))) {
-            return (int) $request->input('amount');
-        }
-        if ($request->filled('nominal') && is_numeric($request->input('nominal'))) {
-            return (int) $request->input('nominal');
+        // 1. Direct explicit numeric fields (amount, nominal, total, value, saldo)
+        $directKeys = ['amount', 'nominal', 'total', 'value', 'saldo', 'price'];
+        foreach ($directKeys as $k) {
+            if ($request->filled($k)) {
+                $val = (string) $request->input($k);
+                // Clean any currency text e.g. "Rp 5.147,00" or "Rp.5.147"
+                $val = str_replace(["\xc2\xa0", "\xa0", "&nbsp;"], ' ', $val);
+                $clean = preg_replace('/[,\.](?:00|-)$/', '', trim($val));
+                $clean = preg_replace('/[^0-9]/', '', $clean);
+                $num = (int) $clean;
+                if ($num >= 500 && $num <= 50000000) {
+                    return $num;
+                }
+            }
         }
 
-        // 2. Concatenate all scalar values from request parameters and raw content
+        // 2. Concatenate all scalar values from request parameters, headers, and raw content
         $data = array_merge(
             $request->query->all(),
             $request->request->all(),
@@ -236,36 +244,40 @@ class GoPayWebhookController extends Controller
 
         $fullText = implode(' ', $textFragments);
 
-        // 3. Regex match for "Rp 20.147" or "Rp20.147" or "Rp 20,147" or "IDR 20.147"
-        if (preg_match_all('/(?:rp|idr)\.?\s*([0-9\.,]+)/i', $fullText, $matches)) {
+        // 3. Normalize unicode spaces & NBSP (frequently present in Android notifications)
+        $fullText = str_replace(["\xc2\xa0", "\xa0", "&nbsp;"], ' ', $fullText);
+        $fullText = preg_replace('/\s+/u', ' ', $fullText);
+
+        // 4. Regex match for currency prefix: "Rp 5.147", "Rp. 5.147,00", "IDR 50.000", "sebesar Rp5.147", "dana Rp5.147"
+        if (preg_match_all('/(?:rp|idr|sebesar|dana|masuk|senilai)[\s\.\:\=]*([0-9\.,]+)/iu', $fullText, $matches)) {
             foreach ($matches[1] as $rawNominal) {
-                // Strip trailing cents like ,00 or .00
-                $clean = preg_replace('/[,\.]00$/', '', trim($rawNominal));
+                // Strip trailing cents like ,00 or .00 or ,-
+                $clean = preg_replace('/[,\.](?:00|-)$/', '', trim($rawNominal));
                 // Remove thousand dots and commas
                 $clean = preg_replace('/[^0-9]/', '', $clean);
                 $num = (int) $clean;
-                if ($num >= 1000 && $num <= 50000000) {
+                if ($num >= 500 && $num <= 50000000) {
                     return $num;
                 }
             }
         }
 
-        // 4. Match dotted amounts like 5.001 or 19.001 or 50.000
-        if (preg_match_all('/\b(\d{1,3}(?:[\.,]\d{3})+)\b/', $fullText, $matches)) {
+        // 5. Match dotted thousand amounts like 5.001 or 19.147 or 50.000
+        if (preg_match_all('/\b(\d{1,3}(?:[\.,]\d{3})+)(?:[,\.]00)?\b/u', $fullText, $matches)) {
             foreach ($matches[1] as $rawNominal) {
                 $clean = preg_replace('/[^0-9]/', '', $rawNominal);
                 $num = (int) $clean;
-                if ($num >= 1000 && $num <= 50000000) {
+                if ($num >= 500 && $num <= 50000000) {
                     return $num;
                 }
             }
         }
 
-        // 5. Fallback: match any 4-8 digit number in the text
+        // 6. Fallback: match any standalone 4-8 digit number in the text
         if (preg_match_all('/\b(\d{4,8})\b/', $fullText, $matches)) {
             foreach ($matches[1] as $rawNum) {
                 $num = (int) $rawNum;
-                if ($num >= 1000 && $num <= 50000000) {
+                if ($num >= 500 && $num <= 50000000) {
                     return $num;
                 }
             }
