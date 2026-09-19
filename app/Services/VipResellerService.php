@@ -185,23 +185,21 @@ class VipResellerService
             return true;
         }
 
-        // 1. Jika API mengembalikan result: false dengan pesan stok kosong/gangguan/tidak tersedia
+        // 1. Jika API mengembalikan result: false dengan pesan yang SPESIFIK menyatakan stok habis
         if (isset($res['result']) && $res['result'] === false) {
             $msg = strtolower($res['message'] ?? '');
             if (
-                str_contains($msg, 'stok') || 
-                str_contains($msg, 'stock') || 
-                str_contains($msg, 'kosong') || 
-                str_contains($msg, 'empty') || 
-                str_contains($msg, 'habis') || 
-                str_contains($msg, 'tidak tersedia') ||
-                str_contains($msg, 'not available') ||
-                str_contains($msg, 'gangguan') ||
-                str_contains($msg, 'off') ||
-                str_contains($msg, 'limit')
+                str_contains($msg, 'stok habis') || 
+                str_contains($msg, 'stok kosong') || 
+                str_contains($msg, 'stock empty') || 
+                str_contains($msg, 'out of stock') || 
+                str_contains($msg, 'stok tidak tersedia') ||
+                str_contains($msg, 'stok produk tidak')
             ) {
                 return false;
             }
+            // Jika pesan error umum / format (bukan stok habis), jangan blokir
+            return true;
         }
 
         // 2. Jika API mengembalikan result: true dengan data stok
