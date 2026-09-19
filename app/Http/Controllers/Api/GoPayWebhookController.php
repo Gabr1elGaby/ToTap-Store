@@ -47,13 +47,14 @@ class GoPayWebhookController extends Controller
         $amount = $this->extractAmount($request);
 
         if (!$amount || $amount <= 0) {
-            Log::warning('GoPay Webhook: Failed to parse nominal amount from notification payload.', [
+            Log::info('GoPay Webhook: Non-payment notification received or nominal not found.', [
                 'payload' => $payload,
+                'raw_content' => $request->getContent(),
             ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Nominal amount could not be extracted from the notification.',
-            ], 422);
+                'message' => 'Notifikasi diterima (Bukan pembayaran / tidak ada nominal).',
+            ], 200);
         }
 
         Log::info("GoPay Webhook: Extracted amount Rp" . number_format($amount, 0, ',', '.'));
