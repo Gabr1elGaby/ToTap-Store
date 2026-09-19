@@ -250,7 +250,7 @@ class GoPayWebhookController extends Controller
         $fullText = preg_replace('/\s+/u', ' ', $fullText);
 
         // 4. Regex match for currency prefix: "Rp 5.147", "Rp. 5.147,00", "IDR 50.000", "sebesar Rp5.147", "dana Rp5.147"
-        if (preg_match_all('/(?:rp|idr|sebesar|dana|masuk|senilai)[\s\.\:\=]*([0-9\.,]+)/iu', $fullText, $matches)) {
+        if (preg_match_all('/(?:rp|idr|sebesar|dana|masuk|senilai)[\s\.\:\=]*(?:rp|idr)?[\s\.\:\=]*([0-9\.,]+)/iu', $fullText, $matches)) {
             foreach ($matches[1] as $rawNominal) {
                 // Strip trailing cents like ,00 or .00 or ,-
                 $clean = preg_replace('/[,\.](?:00|-)$/', '', trim($rawNominal));
