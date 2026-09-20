@@ -69,5 +69,11 @@ return [
         'webhook_secret' => env('GOPAY_WEBHOOK_SECRET', 'G4b-4M3l_T0T4p'),
     ],
 
+    'google' => [
+        'client_id'     => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect'      => env('GOOGLE_REDIRECT_URI', 'https://totapstore.com/auth/google/callback'),
+    ],
+
 ];
 
