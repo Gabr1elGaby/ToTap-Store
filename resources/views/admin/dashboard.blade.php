@@ -317,6 +317,8 @@
                         <h3 class="text-gray-500 dark:text-gray-400 text-xs font-semibold uppercase tracking-wider mb-0.5">Order Sukses Hari Ini</h3>
                         <p class="text-3xl font-black text-indigo-600 dark:text-indigo-400 leading-none">{{ $todayCount }}</p>
                         <span class="text-[11px] text-gray-400 dark:text-gray-500 block mt-0.5">{{ now()->translatedFormat('d F Y') }}</span>
+                    </div>
+                </div>
             </div>
 
             {{-- TABEL PENGUNJUNG ONLINE LIVE --}}
