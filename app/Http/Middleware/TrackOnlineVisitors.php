@@ -16,7 +16,7 @@ class TrackOnlineVisitors
     public function handle(Request $request, Closure $next)
     {
         // Abaikan request assets/api/debug internal agar tidak memenuhi log
-        if ($request->is('admin/debug/*', 'livewire/*', 'build/*', 'storage/*')) {
+        if ($request->is('api/*', 'admin/debug/*', 'livewire/*', 'build/*', 'storage/*')) {
             return $next($request);
         }
 
