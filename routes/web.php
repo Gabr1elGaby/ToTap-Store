@@ -309,7 +309,10 @@ HTML;
 
     // AJAX: jumlah pengunjung online sekarang
     Route::get('/debug/online-count', function () {
-        return response()->json(['count' => \App\Http\Middleware\TrackOnlineVisitors::countOnline()]);
+        return response()->json([
+            'count'   => \App\Http\Middleware\TrackOnlineVisitors::countOnline(),
+            'details' => \App\Http\Middleware\TrackOnlineVisitors::getOnlineDetails(),
+        ]);
     })->name('debug.online-count');
 
     Route::resource('products', \App\Http\Controllers\ProductController::class);

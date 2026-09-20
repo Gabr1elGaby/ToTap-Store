@@ -317,18 +317,100 @@
                         <h3 class="text-gray-500 dark:text-gray-400 text-xs font-semibold uppercase tracking-wider mb-0.5">Order Sukses Hari Ini</h3>
                         <p class="text-3xl font-black text-indigo-600 dark:text-indigo-400 leading-none">{{ $todayCount }}</p>
                         <span class="text-[11px] text-gray-400 dark:text-gray-500 block mt-0.5">{{ now()->translatedFormat('d F Y') }}</span>
+            </div>
+
+            {{-- TABEL PENGUNJUNG ONLINE LIVE --}}
+            @php $onlineDetails = \App\Http\Middleware\TrackOnlineVisitors::getOnlineDetails(); @endphp
+            <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm mt-4">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></div>
+                        <h3 class="text-base font-black text-gray-900 dark:text-white">Aktivitas Pengunjung Online (Real-time)</h3>
                     </div>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold" id="online-last-sync">Diperbarui baru saja</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-gray-100 dark:border-gray-700 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                                <th class="pb-3 px-2">Pengunjung / Akun</th>
+                                <th class="pb-3 px-2">Halaman yang Sedang Dibuka</th>
+                                <th class="pb-3 px-2">Perangkat</th>
+                                <th class="pb-3 px-2 text-right">Terakhir Aktif</th>
+                            </tr>
+                        </thead>
+                        <tbody id="online-visitors-table-body" class="divide-y divide-gray-100 dark:divide-gray-700/50 text-xs">
+                            @forelse($onlineDetails as $item)
+                                <tr>
+                                    <td class="py-3 px-2 font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                        <span class="w-2 h-2 rounded-full {{ $item['is_logged_in'] ? 'bg-indigo-500' : 'bg-emerald-500' }}"></span>
+                                        {{ $item['user_name'] ?? 'Pengunjung Umum' }}
+                                    </td>
+                                    <td class="py-3 px-2 text-indigo-600 dark:text-indigo-400 font-semibold">
+                                        {{ $item['page_label'] ?? $item['url'] ?? '/' }}
+                                    </td>
+                                    <td class="py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">
+                                        {{ !empty($item['is_mobile']) ? '📱 HP Mobile' : '💻 Laptop / PC' }}
+                                    </td>
+                                    <td class="py-3 px-2 text-right font-medium text-gray-400">
+                                        {{ $item['time_ago'] ?? 'Baru saja' }}
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="py-6 text-center text-gray-400 italic">Belum ada aktivitas pengunjung aktif saat ini.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            {{-- Auto-refresh jumlah online setiap 60 detik --}}
+            {{-- Auto-refresh jumlah online & tabel aktivitas setiap 15 detik --}}
             <script>
-                setInterval(function () {
+                function refreshOnlineData() {
                     fetch('{{ route("admin.debug.online-count") }}')
                         .then(r => r.json())
-                        .then(d => { const el = document.getElementById('online-count'); if (el) el.textContent = d.count; })
+                        .then(d => {
+                            const countEl = document.getElementById('online-count');
+                            if (countEl) countEl.textContent = d.count;
+
+                            const syncEl = document.getElementById('online-last-sync');
+                            if (syncEl) syncEl.textContent = 'Diperbarui pada ' + new Date().toLocaleTimeString('id-ID');
+
+                            const tbody = document.getElementById('online-visitors-table-body');
+                            if (!tbody) return;
+
+                            if (!d.details || d.details.length === 0) {
+                                tbody.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-gray-400 italic">Belum ada aktivitas pengunjung aktif saat ini.</td></tr>';
+                                return;
+                            }
+
+                            let html = '';
+                            d.details.forEach(item => {
+                                const dotColor = item.is_logged_in ? 'bg-indigo-500' : 'bg-emerald-500';
+                                const device = item.is_mobile ? '📱 HP Mobile' : '💻 Laptop / PC';
+                                const userName = item.user_name || 'Pengunjung Umum';
+                                const page = item.page_label || item.url || '/';
+                                const time = item.time_ago || 'Baru saja';
+
+                                html += `<tr>
+                                    <td class="py-3 px-2 font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                        <span class="w-2 h-2 rounded-full ${dotColor}"></span>
+                                        ${userName}
+                                    </td>
+                                    <td class="py-3 px-2 text-indigo-600 dark:text-indigo-400 font-semibold">${page}</td>
+                                    <td class="py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">${device}</td>
+                                    <td class="py-3 px-2 text-right font-medium text-gray-400">${time}</td>
+                                </tr>`;
+                            });
+                            tbody.innerHTML = html;
+                        })
                         .catch(() => {});
-                }, 60000);
+                }
+
+                setInterval(refreshOnlineData, 15000);
             </script>
 
             <!-- SECTION: Rating & Kritik/Saran Khusus Super Admin -->
