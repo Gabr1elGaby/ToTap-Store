@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
         $middleware->web(append: [
             \App\Http\Middleware\CheckMaintenanceMode::class,
+            \App\Http\Middleware\TrackOnlineVisitors::class,
         ]);
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,

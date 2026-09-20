@@ -274,6 +274,63 @@
                 </div>
             </div>
 
+            {{-- REALTIME: Pengunjung Online, Pending, Order Hari Ini --}}
+            @php
+                $onlineNow    = \App\Http\Middleware\TrackOnlineVisitors::countOnline();
+                $pendingCount = \Illuminate\Support\Facades\Schema::hasTable('transactions')
+                    ? \App\Models\Transaction::whereIn('status', ['pending','waiting','unpaid'])->count()
+                    : 0;
+                $todayCount   = \Illuminate\Support\Facades\Schema::hasTable('transactions')
+                    ? \App\Models\Transaction::whereIn('status', ['success','paid'])->whereDate('created_at', today())->count()
+                    : 0;
+            @endphp
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {{-- Pengunjung Online --}}
+                <div class="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 dark:from-emerald-950/40 dark:to-gray-800 overflow-hidden shadow-sm sm:rounded-2xl p-5 border border-emerald-300/40 dark:border-emerald-700/40 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-xl font-bold shadow-lg shadow-emerald-500/30 shrink-0 relative">
+                        🟢
+                        <span class="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full animate-ping"></span>
+                    </div>
+                    <div>
+                        <h3 class="text-gray-500 dark:text-gray-400 text-xs font-semibold uppercase tracking-wider mb-0.5">Pengunjung Online</h3>
+                        <p class="text-3xl font-black text-emerald-600 dark:text-emerald-400 leading-none" id="online-count">{{ $onlineNow }}</p>
+                        <span class="text-[11px] text-gray-400 dark:text-gray-500 block mt-0.5">aktif 5 menit terakhir</span>
+                    </div>
+                </div>
+                {{-- Transaksi Pending --}}
+                <div class="bg-gradient-to-br from-amber-500/10 to-orange-500/10 dark:from-amber-950/40 dark:to-gray-800 overflow-hidden shadow-sm sm:rounded-2xl p-5 border border-amber-300/40 dark:border-amber-700/40 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-xl font-bold shadow-lg shadow-amber-500/30 shrink-0">
+                        ⏳
+                    </div>
+                    <div>
+                        <h3 class="text-gray-500 dark:text-gray-400 text-xs font-semibold uppercase tracking-wider mb-0.5">Transaksi Pending</h3>
+                        <p class="text-3xl font-black text-amber-600 dark:text-amber-400 leading-none">{{ $pendingCount }}</p>
+                        <span class="text-[11px] text-gray-400 dark:text-gray-500 block mt-0.5">menunggu pembayaran</span>
+                    </div>
+                </div>
+                {{-- Order Sukses Hari Ini --}}
+                <div class="bg-gradient-to-br from-indigo-500/10 to-blue-500/10 dark:from-indigo-950/40 dark:to-gray-800 overflow-hidden shadow-sm sm:rounded-2xl p-5 border border-indigo-300/40 dark:border-indigo-700/40 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-500 text-white flex items-center justify-center text-xl font-bold shadow-lg shadow-indigo-500/30 shrink-0">
+                        📦
+                    </div>
+                    <div>
+                        <h3 class="text-gray-500 dark:text-gray-400 text-xs font-semibold uppercase tracking-wider mb-0.5">Order Sukses Hari Ini</h3>
+                        <p class="text-3xl font-black text-indigo-600 dark:text-indigo-400 leading-none">{{ $todayCount }}</p>
+                        <span class="text-[11px] text-gray-400 dark:text-gray-500 block mt-0.5">{{ now()->translatedFormat('d F Y') }}</span>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Auto-refresh jumlah online setiap 60 detik --}}
+            <script>
+                setInterval(function () {
+                    fetch('{{ route("admin.debug.online-count") }}')
+                        .then(r => r.json())
+                        .then(d => { const el = document.getElementById('online-count'); if (el) el.textContent = d.count; })
+                        .catch(() => {});
+                }, 60000);
+            </script>
+
             <!-- SECTION: Rating & Kritik/Saran Khusus Super Admin -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <!-- Star Breakdown & Satisfaction Overview -->

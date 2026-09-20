@@ -307,6 +307,11 @@ HTML;
         return response($html, 200, ['Content-Type' => 'text/html; charset=utf-8']);
     })->name('debug.digiflazz');
 
+    // AJAX: jumlah pengunjung online sekarang
+    Route::get('/debug/online-count', function () {
+        return response()->json(['count' => \App\Http\Middleware\TrackOnlineVisitors::countOnline()]);
+    })->name('debug.online-count');
+
     Route::resource('products', \App\Http\Controllers\ProductController::class);
     Route::resource('plans', \App\Http\Controllers\PlanController::class);
     Route::post('cv-templates/update-all', [\App\Http\Controllers\Admin\CvTemplateController::class, 'updateAll'])->name('cv-templates.update-all');
