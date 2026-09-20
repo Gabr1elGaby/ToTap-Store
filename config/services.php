@@ -70,7 +70,7 @@ return [
     ],
 
     'google' => [
-        'client_id'     => env('GOOGLE_CLIENT_ID'),
+        'client_id'     => env('GOOGLE_CLIENT_ID', '741753420595-5srp3jlkhoh4lqr7ao775j4ssuac7ge3.apps.googleusercontent.com'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect'      => env('GOOGLE_REDIRECT_URI', 'https://totapstore.com/auth/google/callback'),
     ],
