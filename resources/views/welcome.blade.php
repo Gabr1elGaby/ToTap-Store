@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="google-site-verification" content="oxfKQl2rW_hSKMa0neoDOXt1oeVRlOwxuADP8NE4fkg" />
         <title>ToTap Store - Enterprise Software Solutions & Top Up Game</title>
 
         <!-- Early Theme Initialization to prevent flicker -->
