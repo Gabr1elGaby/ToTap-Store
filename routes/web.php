@@ -430,3 +430,28 @@ Route::get('/aplikasi-premium', function () {
         ->get();
     return view('aplikasi-premium.index', compact('apps'));
 })->name('aplikasi-premium.index');
+
+// Dynamic XML Sitemap for Google Search Console
+Route::get('/sitemap.xml', function () {
+    $baseUrl = url('/');
+    $games = \Illuminate\Support\Facades\Schema::hasTable('games')
+        ? \App\Models\Game::where('is_active', true)->get(['slug', 'updated_at'])
+        : collect();
+
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+    $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+    
+    // Homepage
+    $xml .= '<url><loc>' . $baseUrl . '</loc><changefreq>daily</changefreq><priority>1.0</priority></url>';
+    $xml .= '<url><loc>' . $baseUrl . '/aplikasi-premium</loc><changefreq>daily</changefreq><priority>0.9</priority></url>';
+    $xml .= '<url><loc>' . $baseUrl . '/software</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>';
+
+    // Game & App Pages
+    foreach ($games as $g) {
+        $xml .= '<url><loc>' . $baseUrl . '/topup/' . $g->slug . '</loc><changefreq>daily</changefreq><priority>0.9</priority></url>';
+    }
+
+    $xml .= '</urlset>';
+
+    return response($xml, 200, ['Content-Type' => 'application/xml']);
+})->name('sitemap');
