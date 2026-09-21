@@ -11,22 +11,25 @@ class TrackOnlineVisitors
 {
     /**
      * Catat setiap pengunjung aktif ke Cache.
-     * Key unik per session/IP, expire 5 menit.
+     * Key unik per IP / User ID, expire 5 menit.
      */
     public function handle(Request $request, Closure $next)
     {
-        // Abaikan request assets/api/debug internal agar tidak memenuhi log
-        if ($request->is('api/*', 'admin/debug/*', 'livewire/*', 'build/*', 'storage/*')) {
+        // Abaikan request assets/api/debug internal/logout agar tidak memenuhi log
+        if ($request->is('api/*', 'admin/debug/*', 'livewire/*', 'build/*', 'storage/*', 'logout')) {
             return $next($request);
         }
 
-        $sessionId = session()->getId() ?: $request->ip();
-        $cacheKey  = 'online_visitor_' . md5($sessionId);
+        $user = Auth::user();
+        $ip   = $request->ip();
+
+        // 1 IP / 1 User = 1 Cache Key unik (mencegah duplikasi saat login/logout/tab baru)
+        $identifier = $user ? 'user_' . $user->id : 'ip_' . md5($ip);
+        $cacheKey   = 'online_visitor_' . $identifier;
 
         $ua = strtolower($request->userAgent() ?? '');
         $isMobile = str_contains($ua, 'mobile') || str_contains($ua, 'android') || str_contains($ua, 'iphone');
 
-        $user = Auth::user();
         $userName = $user ? $user->name . ' (' . ucfirst($user->role ?? 'user') . ')' : 'Pengunjung Umum';
 
         $path = $request->path();
@@ -48,7 +51,7 @@ class TrackOnlineVisitors
         }
 
         Cache::put($cacheKey, [
-            'ip'          => $request->ip(),
+            'ip'          => $ip,
             'url'         => '/' . $path,
             'page_label'  => $pageLabel,
             'user_name'   => $userName,
