@@ -11,7 +11,7 @@ class TrackOnlineVisitors
 {
     /**
      * Catat setiap pengunjung aktif ke Cache.
-     * Key unik per IP / User ID, expire 5 menit.
+     * Expire 5 menit.
      */
     public function handle(Request $request, Closure $next)
     {
@@ -23,9 +23,8 @@ class TrackOnlineVisitors
         $user = Auth::user();
         $ip   = $request->ip();
 
-        // 1 IP / 1 User = 1 Cache Key unik (mencegah duplikasi saat login/logout/tab baru)
-        $identifier = $user ? 'user_' . $user->id : 'ip_' . md5($ip);
-        $cacheKey   = 'online_visitor_' . $identifier;
+        // 1 IP = 1 Cache Key unik (mencegah duplikasi sama sekali)
+        $cacheKey = 'online_visitor_ip_' . md5($ip);
 
         $ua = strtolower($request->userAgent() ?? '');
         $isMobile = str_contains($ua, 'mobile') || str_contains($ua, 'android') || str_contains($ua, 'iphone');
@@ -73,44 +72,60 @@ class TrackOnlineVisitors
     }
 
     /**
-     * Hitung jumlah pengunjung aktif saat ini.
-     */
-    public static function countOnline(): int
-    {
-        $keys = Cache::get('online_visitor_keys', []);
-        $keys = array_filter($keys, fn($exp) => $exp > now()->timestamp);
-        return count($keys);
-    }
-
-    /**
-     * Ambil rincian lengkap pengunjung online saat ini.
+     * Ambil rincian lengkap pengunjung online (1 IP = 1 Baris).
      */
     public static function getOnlineDetails(): array
     {
         $keys = Cache::get('online_visitor_keys', []);
-        $now = now()->timestamp;
+        $now  = now()->timestamp;
         $keys = array_filter($keys, fn($exp) => $exp > $now);
 
-        $details = [];
+        $byIp = [];
         foreach (array_keys($keys) as $cacheKey) {
             $data = Cache::get($cacheKey);
-            if ($data) {
-                $secondsAgo = max(0, $now - ($data['timestamp'] ?? $now));
-                if ($secondsAgo < 10) {
-                    $timeAgo = 'Baru saja';
-                } elseif ($secondsAgo < 60) {
-                    $timeAgo = $secondsAgo . ' detik lalu';
+            if ($data && !empty($data['ip'])) {
+                $ip = $data['ip'];
+                if (!isset($byIp[$ip])) {
+                    $byIp[$ip] = $data;
                 } else {
-                    $timeAgo = floor($secondsAgo / 60) . ' mnt lalu';
+                    $existing = $byIp[$ip];
+                    // Utamakan data yang logged-in atau aktivitas terbaru
+                    if ($data['is_logged_in'] && !$existing['is_logged_in']) {
+                        $byIp[$ip] = $data;
+                    } elseif ($data['timestamp'] >= $existing['timestamp']) {
+                        if ($data['is_logged_in'] === $existing['is_logged_in']) {
+                            $byIp[$ip] = $data;
+                        }
+                    }
                 }
-                $data['time_ago'] = $timeAgo;
-                $details[] = $data;
             }
+        }
+
+        $details = [];
+        foreach ($byIp as $data) {
+            $secondsAgo = max(0, $now - ($data['timestamp'] ?? $now));
+            if ($secondsAgo < 10) {
+                $timeAgo = 'Baru saja';
+            } elseif ($secondsAgo < 60) {
+                $timeAgo = $secondsAgo . ' detik lalu';
+            } else {
+                $timeAgo = floor($secondsAgo / 60) . ' mnt lalu';
+            }
+            $data['time_ago'] = $timeAgo;
+            $details[] = $data;
         }
 
         // Urutkan dari yang paling baru aktif
         usort($details, fn($a, $b) => ($b['timestamp'] ?? 0) <=> ($a['timestamp'] ?? 0));
 
         return $details;
+    }
+
+    /**
+     * Hitung jumlah pengunjung unik (berdasarkan IP unik).
+     */
+    public static function countOnline(): int
+    {
+        return count(static::getOnlineDetails());
     }
 }
