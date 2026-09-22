@@ -82,7 +82,7 @@
                 </div>
                 <div class="sm:text-right">
                     <div class="text-xs uppercase font-extrabold tracking-widest text-indigo-600 dark:text-indigo-400 mb-1">INVOICE RESMI</div>
-                    <div class="text-base sm:text-lg font-black font-mono text-slate-900 dark:text-white">
+                    <div class="text-sm sm:text-lg font-black font-mono text-slate-900 dark:text-white break-all">
                         {{ $data->invoice_number ?? ($type === 'topup' ? $data->id : $data->order_number) }}
                     </div>
                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -92,35 +92,35 @@
             </div>
 
             <!-- Customer & Status Info -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div class="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                <div class="bg-slate-50 dark:bg-slate-800/50 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 min-w-0">
                     <span class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400 block mb-2">Informasi Pembeli:</span>
                     @if($data->user)
-                        <div class="font-bold text-slate-900 dark:text-white text-base">{{ $data->user->name }}</div>
-                        <div class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">{{ $data->user->email }}</div>
-                        <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ $data->user->phone_number ?? '-' }}</div>
+                        <div class="font-bold text-slate-900 dark:text-white text-sm sm:text-base truncate">{{ $data->user->name }}</div>
+                        <div class="text-xs text-slate-600 dark:text-slate-400 mt-0.5 break-all">{{ $data->user->email }}</div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-mono">{{ $data->user->phone_number ?? '-' }}</div>
                     @else
-                        <div class="font-bold text-slate-900 dark:text-white text-base">Pelanggan Langsung (Guest)</div>
-                        <div class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">ID: {{ $data->target_field_1 }}</div>
+                        <div class="font-bold text-slate-900 dark:text-white text-sm sm:text-base">Pelanggan Langsung (Guest)</div>
+                        <div class="text-xs text-slate-600 dark:text-slate-400 mt-0.5 break-all font-mono">ID: {{ $data->target_field_1 }}</div>
                     @endif
                 </div>
 
-                <div class="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 flex flex-col justify-between">
+                <div class="bg-slate-50 dark:bg-slate-800/50 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 flex flex-col justify-between min-w-0">
                     <div>
                         <span class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400 block mb-2">Status Pembayaran:</span>
                         @php
                             $status = $type === 'topup' ? $data->status : strtolower($data->payment_status);
                         @endphp
                         @if($status === 'paid' || $status === 'success')
-                            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-green-100 dark:bg-green-950/60 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-800">
+                            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-green-100 dark:bg-green-950/60 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-800 shrink-0">
                                 <i class="fas fa-check-circle"></i> PEMBAYARAN LUNAS
                             </span>
                         @elseif($status === 'pending')
-                            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800 shrink-0">
                                 <i class="fas fa-clock"></i> MENUNGGU PEMBAYARAN
                             </span>
                         @else
-                            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800">
+                            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800 shrink-0">
                                 <i class="fas fa-times-circle"></i> {{ strtoupper($status) }}
                             </span>
                         @endif
@@ -132,42 +132,42 @@
             </div>
 
             <!-- Table of Items -->
-            <div class="overflow-hidden border border-slate-200 dark:border-slate-800 rounded-2xl">
-                <table class="w-full text-left border-collapse">
+            <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-2xl">
+                <table class="w-full text-left border-collapse min-w-[500px] sm:min-w-full">
                     <thead>
                         <tr class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider font-bold">
-                            <th class="py-3.5 px-6">Deskripsi Item</th>
-                            <th class="py-3.5 px-6 text-center">Tujuan / Lisensi</th>
-                            <th class="py-3.5 px-6 text-right">Harga</th>
+                            <th class="py-3.5 px-4 sm:px-6">Deskripsi Item</th>
+                            <th class="py-3.5 px-4 sm:px-6 text-center">Tujuan / Lisensi</th>
+                            <th class="py-3.5 px-4 sm:px-6 text-right">Harga</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 dark:divide-slate-800 text-sm">
                         @if($type === 'topup')
                             <tr>
-                                <td class="py-4 px-6">
-                                    <div class="font-bold text-slate-900 dark:text-white text-base">{{ $data->game->name ?? 'Game Top Up' }}</div>
+                                <td class="py-4 px-4 sm:px-6">
+                                    <div class="font-bold text-slate-900 dark:text-white text-sm sm:text-base">{{ $data->game->name ?? 'Game Top Up' }}</div>
                                     <div class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold mt-0.5">{{ $data->gameProduct->name ?? '-' }}</div>
-                                    <div class="text-[11px] text-slate-400 font-mono mt-0.5">Kode: {{ $data->gameProduct->product_code ?? '-' }}</div>
+                                    <div class="text-[11px] text-slate-400 font-mono mt-0.5 break-all">Kode: {{ $data->gameProduct->product_code ?? '-' }}</div>
                                 </td>
-                                <td class="py-4 px-6 text-center">
-                                    <span class="font-mono text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700">
+                                <td class="py-4 px-4 sm:px-6 text-center">
+                                    <span class="font-mono text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 break-all inline-block max-w-[160px] sm:max-w-none">
                                         {{ $data->target_field_1 }} {{ $data->target_field_2 ? "({$data->target_field_2})" : '' }}
                                     </span>
                                 </td>
-                                <td class="py-4 px-6 text-right font-extrabold text-slate-900 dark:text-white">
+                                <td class="py-4 px-4 sm:px-6 text-right font-extrabold text-slate-900 dark:text-white whitespace-nowrap">
                                     Rp{{ number_format($data->amount, 0, ',', '.') }}
                                 </td>
                             </tr>
                         @else
                             <tr>
-                                <td class="py-4 px-6">
-                                    <div class="font-bold text-slate-900 dark:text-white text-base">{{ $data->product->name ?? 'Software' }}</div>
+                                <td class="py-4 px-4 sm:px-6">
+                                    <div class="font-bold text-slate-900 dark:text-white text-sm sm:text-base">{{ $data->product->name ?? 'Software' }}</div>
                                     <div class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold mt-0.5">{{ $data->plan->name ?? '-' }}</div>
                                 </td>
-                                <td class="py-4 px-6 text-center text-xs text-slate-500 dark:text-slate-400">
+                                <td class="py-4 px-4 sm:px-6 text-center text-xs text-slate-500 dark:text-slate-400">
                                     Paket Berlangganan
                                 </td>
-                                <td class="py-4 px-6 text-right font-extrabold text-slate-900 dark:text-white">
+                                <td class="py-4 px-4 sm:px-6 text-right font-extrabold text-slate-900 dark:text-white whitespace-nowrap">
                                     Rp{{ number_format($data->amount, 0, ',', '.') }}
                                 </td>
                             </tr>
@@ -182,7 +182,7 @@
                         <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
                             <i class="fas fa-spinner fa-spin text-lg"></i>
                         </div>
-                        <div class="space-y-0.5">
+                        <div class="space-y-0.5 min-w-0">
                             <div class="font-bold text-slate-900 dark:text-white text-sm">Pesanan Sedang Diproses Provider</div>
                             <div class="text-xs text-slate-500 dark:text-slate-400">Data akun / SN resmi sedang dipersiapkan oleh server provider. Begitu selesai, informasi akan langsung muncul di sini. Silakan refresh secara berkala.</div>
                         </div>
@@ -206,13 +206,13 @@
                         $copyText = ($hasCleanVoucher || $isVoucherCat) && !empty($voucherCode) ? $voucherCode : $rawSn;
                     @endphp
                     <!-- Informasi Akun / Voucher Resmi (Dari VIP Reseller) -->
-                    <div class="bg-amber-500/10 dark:bg-amber-950/40 border-2 border-amber-500 rounded-2xl p-5 sm:p-6 shadow-md space-y-4">
-                        <div class="flex items-center justify-between border-b border-amber-500/30 pb-3">
+                    <div class="bg-amber-500/10 dark:bg-amber-950/40 border-2 border-amber-500 rounded-2xl p-4 sm:p-6 shadow-md space-y-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-amber-500/30 pb-3">
                             <div class="flex items-center gap-2 font-black text-amber-950 dark:text-amber-300 text-sm sm:text-base">
-                                <i class="fas {{ ($hasCleanVoucher || $isVoucherCat) ? 'fa-ticket-alt' : 'fa-key' }} text-amber-500 text-base"></i> 
-                                {{ ($hasCleanVoucher || $isVoucherCat) ? 'INFORMASI VOUCHER / SERIAL NUMBER' : 'INFORMASI AKUN / AKSES RESMI' }}
+                                <i class="fas {{ ($hasCleanVoucher || $isVoucherCat) ? 'fa-ticket-alt' : 'fa-key' }} text-amber-500 text-base shrink-0"></i> 
+                                <span class="break-words">{{ ($hasCleanVoucher || $isVoucherCat) ? 'INFORMASI VOUCHER / SERIAL NUMBER' : 'INFORMASI AKUN / AKSES RESMI' }}</span>
                             </div>
-                            <span class="text-xs font-black bg-amber-500 text-white dark:text-slate-900 px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                            <span class="text-xs font-black bg-amber-500 text-white dark:text-slate-900 px-3 py-1 rounded-full uppercase tracking-wider shadow-sm shrink-0 w-fit">
                                 Aktif & Sukses
                             </span>
                         </div>

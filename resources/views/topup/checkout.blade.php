@@ -9,12 +9,12 @@
                     $isPaid = $isSuccess || $isProcessing || $isBalance;
                 @endphp
 
-                <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
                     <div>
-                        <h2 class="text-2xl font-black text-gray-900 dark:text-white">Detail Pembayaran & Invoice</h2>
+                        <h2 class="text-xl sm:text-2xl font-black text-gray-900 dark:text-white break-words">Detail Pembayaran & Invoice</h2>
                         <p class="text-xs text-gray-600 dark:text-gray-300 font-medium mt-0.5">Selesaikan pembayaran untuk memproses pesanan top up game Anda.</p>
                     </div>
-                    <div>
+                    <div class="shrink-0">
                         @if($isSuccess)
                             <span id="status-badge" class="px-3.5 py-1.5 bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 rounded-full text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -35,25 +35,25 @@
                 </div>
                 
                 <!-- Order Summary Card -->
-                <div class="bg-gray-50 dark:bg-gray-900 rounded-2xl p-6 mb-8 border border-gray-200 dark:border-gray-700">
+                <div class="bg-gray-50 dark:bg-gray-900 rounded-2xl p-4 sm:p-6 mb-8 border border-gray-200 dark:border-gray-700">
                     <div class="flex items-center gap-4 mb-4 pb-4 border-b border-gray-200 dark:border-gray-800">
                         @if($transaction->game && $transaction->game->thumbnail)
-                        <img src="{{ $transaction->game->thumbnail }}" class="w-16 h-16 rounded-2xl object-cover shadow-md border border-gray-200 dark:border-gray-700">
+                        <img src="{{ $transaction->game->thumbnail }}" class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover shadow-md border border-gray-200 dark:border-gray-700 shrink-0">
                         @endif
-                        <div>
-                            <h3 class="text-lg font-black text-gray-900 dark:text-white">{{ $transaction->game->name ?? 'Top Up Game' }}</h3>
-                            <p class="text-indigo-600 dark:text-indigo-300 font-black text-sm">{{ $transaction->gameProduct->name ?? 'Nominal Diamond' }}</p>
+                        <div class="min-w-0 flex-1">
+                            <h3 class="text-base sm:text-lg font-black text-gray-900 dark:text-white truncate">{{ $transaction->game->name ?? 'Top Up Game' }}</h3>
+                            <p class="text-indigo-600 dark:text-indigo-300 font-black text-xs sm:text-sm truncate">{{ $transaction->gameProduct->name ?? 'Nominal Diamond' }}</p>
                         </div>
                     </div>
                     
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                        <div class="flex justify-between sm:block bg-white dark:bg-gray-800 p-3.5 rounded-xl border border-gray-200 dark:border-gray-700">
+                        <div class="bg-white dark:bg-gray-800 p-3.5 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col gap-1">
                             <span class="text-xs text-gray-600 dark:text-gray-300 block font-bold">Nomor Invoice</span>
-                            <span class="font-mono text-indigo-600 dark:text-indigo-300 font-black text-sm">{{ $transaction->invoice_number ?? ('TRX-' . $transaction->id) }}</span>
+                            <span class="font-mono text-indigo-600 dark:text-indigo-300 font-black text-xs sm:text-sm break-all">{{ $transaction->invoice_number ?? ('TRX-' . $transaction->id) }}</span>
                         </div>
-                        <div class="flex justify-between sm:block bg-white dark:bg-gray-800 p-3.5 rounded-xl border border-gray-200 dark:border-gray-700">
+                        <div class="bg-white dark:bg-gray-800 p-3.5 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col gap-1">
                             <span class="text-xs text-gray-600 dark:text-gray-300 block font-bold">{{ $transaction->game ? ($transaction->game->target_field_1 ?: 'Player ID') : 'Target ID' }}</span>
-                            <span class="text-gray-900 dark:text-white font-black text-sm font-mono">
+                            <span class="text-gray-900 dark:text-white font-black text-xs sm:text-sm font-mono break-all">
                                 {{ $transaction->target_field_1 }}
                                 @if($transaction->target_field_2)
                                 <span class="text-indigo-600 dark:text-indigo-300">({{ $transaction->target_field_2 }})</span>
@@ -64,17 +64,17 @@
                 </div>
                 
                 <!-- Total Amount Banner -->
-                <div class="bg-indigo-50 dark:bg-gray-900 p-5 rounded-2xl border border-indigo-200 dark:border-gray-700 mb-8 space-y-2.5">
-                    <div class="flex justify-between items-center">
+                <div class="bg-indigo-50 dark:bg-gray-900 p-4 sm:p-5 rounded-2xl border border-indigo-200 dark:border-gray-700 mb-8 space-y-2.5">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                         <div>
                             <span class="text-xs font-black text-indigo-600 dark:text-indigo-300 uppercase tracking-wider block">Metode: {{ $isBalance ? 'Saldo Akun' : 'QRIS All Payment' }}</span>
                             <span class="text-xs text-gray-600 dark:text-gray-300 font-medium">Bebas biaya admin gateway (Rp0)</span>
                         </div>
-                        <div class="text-right">
+                        <div class="sm:text-right">
                             @if(!empty($transaction->discount_amount) && $transaction->discount_amount > 0)
                                 <div class="text-xs font-bold text-gray-400 line-through">Rp{{ number_format($transaction->original_amount ?? ($transaction->amount + $transaction->discount_amount), 0, ',', '.') }}</div>
                             @endif
-                            <span class="text-3xl font-black text-indigo-600 dark:text-emerald-400 font-mono">Rp{{ number_format($transaction->amount, 0, ',', '.') }}</span>
+                            <span class="text-2xl sm:text-3xl font-black text-indigo-600 dark:text-emerald-400 font-mono">Rp{{ number_format($transaction->amount, 0, ',', '.') }}</span>
                         </div>
                     </div>
                     @if(!empty($transaction->discount_amount) && $transaction->discount_amount > 0)
