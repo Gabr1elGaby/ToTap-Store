@@ -34,6 +34,7 @@ class NewPasswordController extends Controller
         $request->validate([
             'token' => ['required'],
             'email' => ['required', 'email'],
+            'phone_number' => ['required', 'string'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ], [
             'password.required' => 'Password baru wajib diisi.',
@@ -41,7 +42,30 @@ class NewPasswordController extends Controller
             'password.min' => 'Password minimal 8 karakter.',
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
+            'phone_number.required' => 'Nomor WhatsApp terdaftar wajib diisi.',
         ]);
+
+        // Verifikasi bahwa nomor HP yang dimasukkan sesuai dengan nomor HP pengguna di database
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return back()->withInput($request->only('email', 'phone_number'))
+                ->withErrors(['email' => 'Pengguna dengan email ini tidak ditemukan.']);
+        }
+
+        $inputPhone = preg_replace('/[^0-9]/', '', $request->phone_number);
+        if (str_starts_with($inputPhone, '0')) {
+            $inputPhone = '62' . substr($inputPhone, 1);
+        }
+
+        $userPhone = preg_replace('/[^0-9]/', '', $user->phone_number ?? '');
+        if (str_starts_with($userPhone, '0')) {
+            $userPhone = '62' . substr($userPhone, 1);
+        }
+
+        if (empty($userPhone) || $inputPhone !== $userPhone) {
+            return back()->withInput($request->only('email', 'phone_number'))
+                ->withErrors(['phone_number' => 'Nomor WhatsApp yang Anda masukkan tidak cocok dengan nomor terdaftar pada akun ini.']);
+        }
 
         // Here we will attempt to reset the user's password.
         $status = Password::reset(

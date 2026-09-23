@@ -29,10 +29,17 @@
             <input id="email" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm opacity-80" type="email" name="email" value="{{ old('email', $request->email) }}" required readonly autocomplete="username" />
         </div>
 
+        <!-- Nomor WhatsApp Terdaftar -->
+        <div>
+            <label for="phone_number" class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Nomor WhatsApp Terdaftar</label>
+            <input id="phone_number" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm" type="tel" name="phone_number" value="{{ old('phone_number') }}" required autofocus placeholder="Contoh: 081234567890" />
+            <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1">Verifikasi keamanan: masukkan nomor WhatsApp yang terdaftar pada akun ini.</p>
+        </div>
+
         <!-- Password -->
         <div>
             <label for="password" class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Password Baru</label>
-            <input id="password" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm" type="password" name="password" required autofocus autocomplete="new-password" placeholder="Minimal 8 karakter" />
+            <input id="password" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm" type="password" name="password" required autocomplete="new-password" placeholder="Minimal 8 karakter" />
         </div>
 
         <!-- Confirm Password -->
