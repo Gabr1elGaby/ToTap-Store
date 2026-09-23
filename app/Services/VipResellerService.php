@@ -114,6 +114,26 @@ class VipResellerService
                 return $resPrepaid;
             }
 
+            // 3. Fallback Khusus Aplikasi Premium / Streaming (Netflix, Canva, dll): Coba lagi TANPA parameter data_zone
+            if (!empty($targetZone)) {
+                $payloadNoZone = $payload;
+                unset($payloadNoZone['data_zone']);
+
+                $responsePrepaidNoZone = Http::connectTimeout(60)->timeout(120)->retry(2, 1000)->asForm()->post("{$this->baseUrl}/prepaid", $payloadNoZone);
+                $resPrepaidNoZone = $responsePrepaidNoZone->json();
+                if (isset($resPrepaidNoZone['result']) && $resPrepaidNoZone['result'] === true) {
+                    Log::info('VIP Reseller prepaid order success (without zone):', ['resPrepaidNoZone' => $resPrepaidNoZone]);
+                    return $resPrepaidNoZone;
+                }
+
+                $responseGameNoZone = Http::connectTimeout(60)->timeout(120)->retry(2, 1000)->asForm()->post("{$this->baseUrl}/game-feature", $payloadNoZone);
+                $resGameNoZone = $responseGameNoZone->json();
+                if (isset($resGameNoZone['result']) && $resGameNoZone['result'] === true) {
+                    Log::info('VIP Reseller game-feature order success (without zone):', ['resGameNoZone' => $resGameNoZone]);
+                    return $resGameNoZone;
+                }
+            }
+
             // Ambil pesan penolakan resmi dari provider
             $msg = $resPrepaid['message'] ?? ($res['message'] ?? 'Gagal membuat pesanan ke provider');
             Log::warning('VIP Reseller Order Rejected:', ['game_msg' => $res['message'] ?? null, 'prepaid_msg' => $resPrepaid['message'] ?? null]);
