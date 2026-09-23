@@ -40,6 +40,12 @@ Route::middleware('guest')->group(function () {
         ->name('auth.google');
     Route::get('auth/google/callback', [\App\Http\Controllers\Auth\GoogleController::class, 'handleGoogleCallback'])
         ->name('auth.google.callback');
+    Route::get('auth/google/phone-setup', [\App\Http\Controllers\Auth\GoogleController::class, 'showPhoneSetup'])
+        ->name('auth.google.phone_setup');
+    Route::post('auth/google/send-otp', [\App\Http\Controllers\Auth\GoogleController::class, 'sendOtp'])
+        ->name('auth.google.send_otp');
+    Route::post('auth/google/verify-otp', [\App\Http\Controllers\Auth\GoogleController::class, 'verifyOtp'])
+        ->name('auth.google.verify_otp');
 });
 
 Route::middleware('auth')->group(function () {
