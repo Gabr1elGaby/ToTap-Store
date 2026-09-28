@@ -57,11 +57,15 @@ class GameProductController extends Controller
 
                         return ['status' => 'available', 'stock' => null, 'label' => 'Tersedia'];
                     }
+                    
+                    if ($prod->status === 'available') {
+                        return ['status' => 'available', 'stock' => null, 'label' => 'Tersedia'];
+                    }
 
                     return ['status' => 'unknown', 'stock' => null, 'label' => '-'];
                 });
             } else {
-                $prod->stock_info = ['status' => 'unknown', 'stock' => null, 'label' => '-'];
+                $prod->stock_info = $prod->status === 'available' ? ['status' => 'available', 'stock' => null, 'label' => 'Tersedia'] : ['status' => 'unknown', 'stock' => null, 'label' => '-'];
             }
         }
 
