@@ -244,7 +244,7 @@ class TopUpController extends Controller
             $isOutOfStock = ($p->status !== 'available' || ($hasBalanceThreshold && $modal > $vipBalance));
             if (!$isOutOfStock && $isAppOrVoucher && !empty($p->product_code)) {
                 $stockCacheKey = 'vip_stock_prod_' . $p->product_code;
-                $inStock = Cache::remember($stockCacheKey, 180, function () use ($p) {
+                $inStock = Cache::remember($stockCacheKey, 10, function () use ($p) {
                     return app(\App\Services\VipResellerService::class)->isProductInStock($p->product_code);
                 });
                 if (!$inStock) {
@@ -355,7 +355,7 @@ class TopUpController extends Controller
             $isOutOfStock = ($p->status !== 'available' || ($hasBalanceThreshold && $modal > $vipBalance));
             if (!$isOutOfStock && $isAppOrVoucher && !empty($p->product_code)) {
                 $stockCacheKey = 'vip_stock_prod_' . $p->product_code;
-                $inStock = Cache::remember($stockCacheKey, 180, function () use ($p) {
+                $inStock = Cache::remember($stockCacheKey, 10, function () use ($p) {
                     return app(\App\Services\VipResellerService::class)->isProductInStock($p->product_code);
                 });
                 if (!$inStock) {

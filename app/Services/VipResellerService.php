@@ -230,6 +230,9 @@ class VipResellerService
         // 2. Jika API mengembalikan result: true dengan data stok
         if (isset($res['result']) && $res['result'] === true && isset($res['data'])) {
             $data = $res['data'];
+            if (is_array($data) && isset($data[0]) && is_array($data[0])) {
+                $data = $data[0];
+            }
             $st = strtolower($data['status'] ?? '');
             if (in_array($st, ['empty', 'kosong', 'habis', 'off', 'inactive', 'restok', 'restock', 'gangguan', 'trouble', 'maintenance', 'close', 'closed'])) {
                 return false;
