@@ -205,7 +205,7 @@ class VipResellerService
             return true;
         }
 
-        // 1. Jika API mengembalikan result: false dengan pesan yang SPESIFIK menyatakan stok habis
+        // 1. Jika API mengembalikan result: false dengan pesan yang SPESIFIK menyatakan stok habis / restok / gangguan
         if (isset($res['result']) && $res['result'] === false) {
             $msg = strtolower($res['message'] ?? '');
             if (
@@ -214,7 +214,12 @@ class VipResellerService
                 str_contains($msg, 'stock empty') || 
                 str_contains($msg, 'out of stock') || 
                 str_contains($msg, 'stok tidak tersedia') ||
-                str_contains($msg, 'stok produk tidak')
+                str_contains($msg, 'stok produk tidak') ||
+                str_contains($msg, 'restok') ||
+                str_contains($msg, 'restock') ||
+                str_contains($msg, 'gangguan') ||
+                str_contains($msg, 'maintenance') ||
+                str_contains($msg, 'close')
             ) {
                 return false;
             }
@@ -225,7 +230,8 @@ class VipResellerService
         // 2. Jika API mengembalikan result: true dengan data stok
         if (isset($res['result']) && $res['result'] === true && isset($res['data'])) {
             $data = $res['data'];
-            if (isset($data['status']) && in_array(strtolower($data['status']), ['empty', 'kosong', 'habis', 'off', 'inactive'])) {
+            $st = strtolower($data['status'] ?? '');
+            if (in_array($st, ['empty', 'kosong', 'habis', 'off', 'inactive', 'restok', 'restock', 'gangguan', 'trouble', 'maintenance', 'close', 'closed'])) {
                 return false;
             }
             if (isset($data['total_stock']) && is_numeric($data['total_stock']) && (int)$data['total_stock'] <= 0) {
