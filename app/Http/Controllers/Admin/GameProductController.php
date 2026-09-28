@@ -110,17 +110,18 @@ class GameProductController extends Controller
 
         $product->update($updateData);
 
-        if ($validated['status'] !== 'available') {
-            $product->delete();
-        }
-
-        return redirect()->route('admin.games.products.index', $game)->with('success', "Harga produk '{$product->name}' berhasil diperbarui menjadi Rp " . number_format($product->price_sell, 0, ',', '.'));
+        return redirect()->route('admin.games.products.index', $game)->with('success', "Status/Harga produk '{$product->name}' berhasil diperbarui.");
     }
 
     public function destroy(Game $game, GameProduct $product)
     {
-        $product->delete();
-        return back()->with('success', 'Produk berhasil dihapus.');
+        try {
+            $product->delete();
+            return back()->with('success', 'Produk berhasil dihapus.');
+        } catch (\Throwable $e) {
+            $product->update(['status' => 'empty']);
+            return back()->with('success', 'Produk memiliki riwayat transaksi sehingga tidak dihapus permanen, namun statusnya telah diubah menjadi Kosong/Nonaktif.');
+        }
     }
 
     public function cleanupNonIdr(Game $game)
