@@ -24,6 +24,47 @@ class GameProductController extends Controller
             ->orderBy('price_modal')
             ->get();
             
+        $vipService = app(VipResellerService::class);
+        foreach ($products as $prod) {
+            if (!empty($prod->product_code)) {
+                $stockCacheKey = 'admin_vip_stock_' . $prod->product_code;
+                $prod->stock_info = \Illuminate\Support\Facades\Cache::remember($stockCacheKey, 10, function () use ($vipService, $prod) {
+                    $res = $vipService->checkServiceStock($prod->product_code);
+                    if (isset($res['result']) && $res['result'] === true && isset($res['data'])) {
+                        $data = $res['data'];
+                        if (is_array($data) && isset($data[0]) && is_array($data[0])) {
+                            $data = $data[0];
+                        }
+                        $st = strtolower($data['status'] ?? '');
+                        if (in_array($st, ['empty', 'kosong', 'habis', 'off', 'inactive', 'restok', 'restock', 'gangguan', 'trouble', 'maintenance', 'close', 'closed'])) {
+                            return ['status' => 'empty', 'stock' => 0, 'label' => '0 Pcs (Habis)'];
+                        }
+
+                        $qty = null;
+                        foreach (['stock', 'total_stock', 'sisa_stok'] as $k) {
+                            if (isset($data[$k]) && is_numeric($data[$k])) {
+                                $qty = (int)$data[$k];
+                                break;
+                            }
+                        }
+
+                        if ($qty !== null) {
+                            if ($qty <= 0) {
+                                return ['status' => 'empty', 'stock' => 0, 'label' => '0 Pcs (Habis)'];
+                            }
+                            return ['status' => 'available', 'stock' => $qty, 'label' => number_format($qty, 0, ',', '.') . ' Pcs'];
+                        }
+
+                        return ['status' => 'available', 'stock' => null, 'label' => 'Tersedia'];
+                    }
+
+                    return ['status' => 'unknown', 'stock' => null, 'label' => '-'];
+                });
+            } else {
+                $prod->stock_info = ['status' => 'unknown', 'stock' => null, 'label' => '-'];
+            }
+        }
+
         return view('admin.games.products.index', compact('game', 'products'));
     }
 

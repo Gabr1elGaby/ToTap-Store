@@ -199,6 +199,10 @@ class GameController extends Controller
 
             foreach ($gameProducts as $product) {
                 $code = $product->product_code;
+                if (!empty($code)) {
+                    \Illuminate\Support\Facades\Cache::forget('admin_vip_stock_' . $code);
+                    \Illuminate\Support\Facades\Cache::forget('vip_stock_prod_' . $code);
+                }
                 if (isset($statusMap[$code])) {
                     $remoteStatus = ($statusMap[$code] === 'available') ? 'available' : 'empty';
                 } else {

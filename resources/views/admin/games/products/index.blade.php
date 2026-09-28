@@ -53,6 +53,7 @@
                                     <th class="py-3.5 px-4">Harga Modal</th>
                                     <th class="py-3.5 px-4">Harga Jual</th>
                                     <th class="py-3.5 px-4">Margin Untung</th>
+                                    <th class="py-3.5 px-4">Stok VIP</th>
                                     <th class="py-3.5 px-4">Status</th>
                                     <th class="py-3.5 px-4 text-right">Aksi</th>
                                 </tr>
@@ -84,6 +85,25 @@
                                     <td class="py-3.5 px-4 font-bold text-green-600 dark:text-green-400">Rp{{ number_format($prod->price_sell, 0, ',', '.') }}</td>
                                     <td class="py-3.5 px-4 text-xs font-semibold text-indigo-600 dark:text-indigo-400">Rp{{ number_format($prod->price_sell - $prod->price_modal, 0, ',', '.') }}</td>
                                     <td class="py-3.5 px-4">
+                                        @if(isset($prod->stock_info['label']))
+                                            @if(($prod->stock_info['status'] ?? '') === 'available')
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                                    <i class="fas fa-cubes text-[10px] mr-1"></i> {{ $prod->stock_info['label'] }}
+                                                </span>
+                                            @elseif(($prod->stock_info['status'] ?? '') === 'empty')
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                                                    <i class="fas fa-exclamation-circle text-[10px] mr-1"></i> {{ $prod->stock_info['label'] }}
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20">
+                                                    {{ $prod->stock_info['label'] }}
+                                                </span>
+                                            @endif
+                                        @else
+                                            <span class="text-xs text-gray-400">-</span>
+                                        @endif
+                                    </td>
+                                    <td class="py-3.5 px-4">
                                         @if($prod->status === 'available')
                                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">
                                                 Available
@@ -112,7 +132,7 @@
                                 @endforeach
                                 @if($products->isEmpty())
                                 <tr>
-                                    <td colspan="7" class="text-center py-12 text-gray-500 dark:text-gray-400">
+                                    <td colspan="8" class="text-center py-12 text-gray-500 dark:text-gray-400">
                                         <i class="fas fa-box-open text-4xl mb-2 text-gray-400"></i>
                                         <p class="font-semibold">Belum ada produk aktif untuk game ini. Silakan klik tombol Tarik Data Otomatis.</p>
                                     </td>
