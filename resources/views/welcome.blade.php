@@ -296,6 +296,66 @@
             </div>
         </section>
 
+        @if(isset($customerReviews) && $customerReviews->count() > 0)
+        <!-- Running Customer Reviews Slider (Continuous Loop - Rating & Review Only) -->
+        <section class="py-8 bg-slate-900 border-b border-gray-800 overflow-hidden relative z-20 transition-colors duration-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4 text-center">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 uppercase tracking-widest">
+                    <span class="text-amber-400">★</span> Ulasan Pembeli Real-Time
+                </span>
+            </div>
+            
+            <div class="relative w-full overflow-hidden">
+                <!-- Fade Edges for Smooth Look -->
+                <div class="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent z-10 pointer-events-none"></div>
+                <div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-slate-900 via-slate-900/80 to-transparent z-10 pointer-events-none"></div>
+
+                @php
+                    // Repeat collection to ensure continuous smooth infinite marquee loop
+                    $loopItems = $customerReviews;
+                    while ($loopItems->count() < 12) {
+                        $loopItems = $loopItems->concat($customerReviews);
+                    }
+                @endphp
+
+                <div class="animate-marquee-track flex gap-4 py-2">
+                    @foreach($loopItems as $rev)
+                    <div class="flex-shrink-0 bg-slate-800/90 border border-slate-700/80 rounded-2xl p-4 w-72 sm:w-80 shadow-md transition hover:border-amber-500/50">
+                        <div class="flex items-center gap-1 mb-2">
+                            @for($i = 1; $i <= 5; $i++)
+                                @if($i <= (int)$rev->rating)
+                                    <span class="text-amber-400 text-sm">★</span>
+                                @else
+                                    <span class="text-slate-600 text-sm">★</span>
+                                @endif
+                            @endfor
+                            <span class="text-xs font-bold text-amber-400 ml-1.5">{{ number_format($rev->rating, 1) }}</span>
+                        </div>
+                        <p class="text-gray-200 text-xs leading-relaxed line-clamp-3 italic">
+                            "{{ $rev->review_text }}"
+                        </p>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+
+        <style>
+            @keyframes marqueeScroll {
+                0% { transform: translateX(0%); }
+                100% { transform: translateX(-50%); }
+            }
+            .animate-marquee-track {
+                display: flex;
+                width: max-content;
+                animation: marqueeScroll 40s linear infinite;
+            }
+            .animate-marquee-track:hover {
+                animation-play-state: paused;
+            }
+        </style>
+        @endif
+
         <!-- Kenapa ToTap Store Section -->
         <section id="keunggulan" class="py-20 bg-slate-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

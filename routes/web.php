@@ -111,8 +111,9 @@ Route::get('/', function () {
     // CUSTOMER REVIEWS STATS (100% REAL DATA ONLY)
     $totalReviews = \App\Models\CustomerReview::count();
     $avgRating = $totalReviews > 0 ? round((float) \App\Models\CustomerReview::avg('rating'), 1) : 0.0;
+    $customerReviews = \App\Models\CustomerReview::orderBy('id', 'desc')->take(20)->get();
 
-    return view('welcome', compact('products', 'totalUsers', 'totalTransactions', 'maxGameDiscount', 'maxAppDiscount', 'maxSoftwareDiscount', 'avgRating', 'totalReviews'));
+    return view('welcome', compact('products', 'totalUsers', 'totalTransactions', 'maxGameDiscount', 'maxAppDiscount', 'maxSoftwareDiscount', 'avgRating', 'totalReviews', 'customerReviews'));
 });
 
 // SUBMIT CUSTOMER REVIEW
