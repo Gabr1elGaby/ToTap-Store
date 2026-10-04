@@ -320,8 +320,8 @@
 
                 <div class="animate-marquee-track flex gap-4 py-2">
                     @foreach($loopItems as $rev)
-                    <div class="flex-shrink-0 bg-slate-800/90 border border-slate-700/80 rounded-2xl p-4 w-72 sm:w-80 shadow-md transition hover:border-amber-500/50">
-                        <div class="flex items-center gap-1 mb-2">
+                    <div class="flex-shrink-0 bg-slate-800/90 border border-slate-700/80 rounded-2xl p-4.5 w-72 sm:w-80 h-36 sm:h-40 flex flex-col justify-between shadow-md transition hover:border-amber-500/50">
+                        <div class="flex items-center gap-1">
                             @for($i = 1; $i <= 5; $i++)
                                 @if($i <= (int)$rev->rating)
                                     <span class="text-amber-400 text-sm">★</span>
@@ -331,7 +331,7 @@
                             @endfor
                             <span class="text-xs font-bold text-amber-400 ml-1.5">{{ number_format($rev->rating, 1) }}</span>
                         </div>
-                        <p class="text-gray-200 text-xs leading-relaxed line-clamp-3 italic">
+                        <p class="text-gray-200 text-xs leading-relaxed line-clamp-4 italic my-auto">
                             "{{ $rev->review_text }}"
                         </p>
                     </div>
