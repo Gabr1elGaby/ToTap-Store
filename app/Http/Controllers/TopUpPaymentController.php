@@ -51,6 +51,13 @@ class TopUpPaymentController extends Controller
         $paymentData = json_decode($transaction->snap_token, true);
 
         if (in_array(strtolower($transaction->status), ['success', 'paid', 'processing', 'completed'])) {
+            $prod = $transaction->gameProduct ?? $transaction->product;
+            if ($prod && ($prod->provider === 'manual' || ($transaction->game && $transaction->game->category === 'manual'))) {
+                if (empty($transaction->provider_sn) || VipResellerService::isPendingSn($transaction->provider_sn)) {
+                    \App\Models\GameProductStock::fulfillManualStock($transaction);
+                    $transaction->refresh();
+                }
+            }
             return response()->json(['success' => true, 'status' => $transaction->status, 'message' => 'Pembayaran Berhasil!']);
         }
 
