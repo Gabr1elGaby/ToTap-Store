@@ -22,7 +22,12 @@ class Transaction extends Model
     
     public function gameProduct()
     {
-        return $this->belongsTo(GameProduct::class);
+        return $this->belongsTo(GameProduct::class, 'game_product_id');
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(GameProduct::class, 'game_product_id');
     }
 
     public function user()

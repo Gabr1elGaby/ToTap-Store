@@ -19,14 +19,21 @@ class TopUpPaymentController extends Controller
             })
             ->firstOrFail();
 
-        // Jika transaksi belum memiliki provider_sn, atau provider_sn masih berupa status pending/timestamp saja,
-        // otomatis tarik data SN/voucher terbaru dari VIP Reseller secara real-time!
-        if (empty($transaction->provider_sn) || VipResellerService::isPendingSn($transaction->provider_sn) || $transaction->status === 'processing') {
-            try {
-                $vipService = app(VipResellerService::class);
-                $vipService->syncTransaction($transaction);
-            } catch (\Throwable $e) {
-                Log::warning('Auto sync provider_sn on checkout view failed: ' . $e->getMessage());
+        // Jika produk manual: otomatis alokasikan stok jika belum sukses
+        $prod = $transaction->gameProduct ?? $transaction->product;
+        if ($prod && ($prod->provider === 'manual' || ($transaction->game && $transaction->game->category === 'manual'))) {
+            if ($transaction->status !== 'success') {
+                \App\Models\GameProductStock::fulfillManualStock($transaction);
+            }
+        } else {
+            // Untuk produk provider otomatis: tarik data SN/voucher terbaru dari VIP Reseller secara real-time
+            if (empty($transaction->provider_sn) || VipResellerService::isPendingSn($transaction->provider_sn) || $transaction->status === 'processing') {
+                try {
+                    $vipService = app(VipResellerService::class);
+                    $vipService->syncTransaction($transaction);
+                } catch (\Throwable $e) {
+                    Log::warning('Auto sync provider_sn on checkout view failed: ' . $e->getMessage());
+                }
             }
         }
 

@@ -384,6 +384,14 @@ class VipResellerService
     public function syncTransaction(\App\Models\Transaction $transaction)
     {
         try {
+            $product = $transaction->gameProduct ?? $transaction->product;
+            if ($product && $product->provider === 'manual') {
+                return false;
+            }
+            if ($transaction->game && $transaction->game->category === 'manual') {
+                return false;
+            }
+
             // 1. Jika ada provider_trx_id, cek langsung berdasarkan trxid
             if (!empty($transaction->provider_trx_id)) {
                 $statusRes = $this->checkOrderStatus($transaction->provider_trx_id);

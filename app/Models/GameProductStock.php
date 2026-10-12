@@ -86,8 +86,28 @@ class GameProductStock extends Model
      */
     public static function fulfillManualStock(\App\Models\Transaction $transaction): bool
     {
-        $product = $transaction->gameProduct;
-        if (!$product || $product->provider !== 'manual') {
+        // Jika sudah berhasil dan sudah ada SN/script yang valid, jangan kurangi stok lagi
+        if ($transaction->status === 'success' && !empty($transaction->provider_sn) && !\App\Services\VipResellerService::isPendingSn($transaction->provider_sn)) {
+            return true;
+        }
+
+        // Jangan proses jika transaksi sudah dibatalkan atau direfund
+        if (in_array(strtolower($transaction->status ?? ''), ['refunded', 'failed', 'cancelled', 'expired'])) {
+            return false;
+        }
+
+        $product = $transaction->gameProduct ?? $transaction->product;
+        if (!$product && !empty($transaction->game_product_id)) {
+            $product = \App\Models\GameProduct::find($transaction->game_product_id);
+        }
+
+        if (!$product) {
+            return false;
+        }
+
+        $game = $transaction->game ?: ($product->game ?? null);
+        $isManual = ($product->provider === 'manual') || ($game && $game->category === 'manual');
+        if (!$isManual) {
             return false;
         }
 

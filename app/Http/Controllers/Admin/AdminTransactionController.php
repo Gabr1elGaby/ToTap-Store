@@ -107,6 +107,13 @@ class AdminTransactionController extends Controller
                 }
             }
             foreach ($transactions as $t) {
+                $prod = $t->gameProduct ?? $t->product;
+                if ($prod && ($prod->provider === 'manual' || ($t->game && $t->game->category === 'manual'))) {
+                    if ($t->status !== 'success') {
+                        \App\Models\GameProductStock::fulfillManualStock($t);
+                    }
+                    continue;
+                }
                 if (\App\Services\VipResellerService::isPendingSn($t->provider_sn)) {
                     $vipService->syncTransaction($t);
                 }
@@ -125,11 +132,18 @@ class AdminTransactionController extends Controller
             ->first();
 
         if ($transaction) {
-            if (\App\Services\VipResellerService::isPendingSn($transaction->provider_sn) || $transaction->status === 'processing') {
-                try {
-                    $vipService = app(\App\Services\VipResellerService::class);
-                    $vipService->syncTransaction($transaction);
-                } catch (\Throwable $e) {}
+            $prod = $transaction->gameProduct ?? $transaction->product;
+            if ($prod && ($prod->provider === 'manual' || ($transaction->game && $transaction->game->category === 'manual'))) {
+                if ($transaction->status !== 'success') {
+                    \App\Models\GameProductStock::fulfillManualStock($transaction);
+                }
+            } else {
+                if (\App\Services\VipResellerService::isPendingSn($transaction->provider_sn) || $transaction->status === 'processing') {
+                    try {
+                        $vipService = app(\App\Services\VipResellerService::class);
+                        $vipService->syncTransaction($transaction);
+                    } catch (\Throwable $e) {}
+                }
             }
 
             return view('transactions.invoice', [
@@ -331,6 +345,14 @@ class AdminTransactionController extends Controller
     public function syncProviderStatus($id, \App\Services\VipResellerService $vipService)
     {
         $transaction = Transaction::where('id', $id)->orWhere('invoice_number', $id)->firstOrFail();
+        $prod = $transaction->gameProduct ?? $transaction->product;
+        if ($prod && ($prod->provider === 'manual' || ($transaction->game && $transaction->game->category === 'manual'))) {
+            $fulfilled = \App\Models\GameProductStock::fulfillManualStock($transaction);
+            if ($fulfilled) {
+                return back()->with('success', '1 Stok manual berhasil dialokasikan ke pesanan ini!');
+            }
+            return back()->with('warning', 'Stok manual sedang kosong atau belum diinput.');
+        }
         
         $synced = $vipService->syncTransaction($transaction);
         if ($synced) {

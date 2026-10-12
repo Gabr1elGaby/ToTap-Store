@@ -191,44 +191,48 @@ class GoPayWebhookController extends Controller
             return response()->json(['success' => false, 'message' => 'Database error'], 500);
         }
 
-        // Call VIP Reseller API for instant fulfillment
+        // Call Fulfillment (Manual Stok Pool atau VIP Reseller)
         try {
-            $product = $transaction->gameProduct;
+            $product = $transaction->gameProduct ?? $transaction->product;
             $game = $transaction->game;
 
             if ($product) {
-                $vipService = app(VipResellerService::class);
-                if (method_exists($vipService, 'order')) {
-                    $orderRes = $vipService->order(
-                        $product->product_code,
-                        $transaction->target_field_1,
-                        $transaction->target_field_2,
-                        $transaction->id
-                    );
+                if ($product->provider === 'manual' || ($game && $game->category === 'manual')) {
+                    \App\Models\GameProductStock::fulfillManualStock($transaction);
                 } else {
-                    $orderRes = $vipService->createOrder(
-                        $product->product_code,
-                        $transaction->target_field_1,
-                        $transaction->target_field_2 ?? ''
-                    );
-                }
+                    $vipService = app(VipResellerService::class);
+                    if (method_exists($vipService, 'order')) {
+                        $orderRes = $vipService->order(
+                            $product->product_code,
+                            $transaction->target_field_1,
+                            $transaction->target_field_2,
+                            $transaction->id
+                        );
+                    } else {
+                        $orderRes = $vipService->createOrder(
+                            $product->product_code,
+                            $transaction->target_field_1,
+                            $transaction->target_field_2 ?? ''
+                        );
+                    }
 
-                Log::info('GoPay Webhook: VIP Reseller Order Response:', ['orderRes' => $orderRes]);
+                    Log::info('GoPay Webhook: VIP Reseller Order Response:', ['orderRes' => $orderRes]);
 
-                if (isset($orderRes['result']) && $orderRes['result'] === true) {
-                    $pData = $orderRes['data'] ?? [];
-                    $trxId = $pData['trxid'] ?? ($pData['id'] ?? null);
-                    $sn = VipResellerService::extractSnFromData($pData);
+                    if (isset($orderRes['result']) && $orderRes['result'] === true) {
+                        $pData = $orderRes['data'] ?? [];
+                        $trxId = $pData['trxid'] ?? ($pData['id'] ?? null);
+                        $sn = VipResellerService::extractSnFromData($pData);
 
-                    $transaction->update([
-                        'status' => 'success',
-                        'provider_trx_id' => $trxId,
-                        'provider_sn' => $sn,
-                    ]);
+                        $transaction->update([
+                            'status' => 'success',
+                            'provider_trx_id' => $trxId,
+                            'provider_sn' => $sn,
+                        ]);
+                    }
                 }
             }
         } catch (\Exception $e) {
-            Log::error('GoPay Webhook: VIP Reseller Fulfillment Error: ' . $e->getMessage());
+            Log::error('GoPay Webhook: Fulfillment Error: ' . $e->getMessage());
         }
 
         Log::info("GoPay Webhook: Transaction {$transaction->id} successfully matched and processed.");

@@ -45,11 +45,18 @@ class TransactionHistoryController extends Controller
             ->first();
 
         if ($transaction) {
-            if (\App\Services\VipResellerService::isPendingSn($transaction->provider_sn) || $transaction->status === 'processing') {
-                try {
-                    $vipService = app(\App\Services\VipResellerService::class);
-                    $vipService->syncTransaction($transaction);
-                } catch (\Throwable $e) {}
+            $prod = $transaction->gameProduct ?? $transaction->product;
+            if ($prod && ($prod->provider === 'manual' || ($transaction->game && $transaction->game->category === 'manual'))) {
+                if ($transaction->status !== 'success') {
+                    \App\Models\GameProductStock::fulfillManualStock($transaction);
+                }
+            } else {
+                if (\App\Services\VipResellerService::isPendingSn($transaction->provider_sn) || $transaction->status === 'processing') {
+                    try {
+                        $vipService = app(\App\Services\VipResellerService::class);
+                        $vipService->syncTransaction($transaction);
+                    } catch (\Throwable $e) {}
+                }
             }
 
             return view('transactions.invoice', [
