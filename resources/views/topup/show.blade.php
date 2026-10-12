@@ -81,8 +81,10 @@
                                 <i class="fas fa-terminal"></i>
                             </div>
                             <div>
-                                <span class="inline-block px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 rounded-full border border-amber-300 dark:border-amber-800 mb-1">
-                                    ⚠️ Perhatian Sebelum Membeli
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-extrabold uppercase tracking-wider rounded-full mb-1.5"
+                                      style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1.5px solid #f59e0b;">
+                                    <span style="font-size: 13px;">⚠️</span>
+                                    <span style="letter-spacing: 0.5px; font-weight: 800; color: #fbbf24;">Perhatian Sebelum Membeli</span>
                                 </span>
                                 <h3 class="text-lg sm:text-xl font-extrabold text-gray-900 dark:text-white leading-tight">
                                     Pemberitahuan Khusus Claude AI
@@ -91,41 +93,46 @@
                         </div>
 
                         <!-- Body Message -->
-                        <div class="space-y-3.5 text-sm text-gray-600 dark:text-gray-300 mb-6">
-                            <div class="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-amber-900 dark:text-amber-200 text-xs sm:text-sm leading-relaxed">
-                                <strong class="font-bold flex items-center gap-1.5 mb-1 text-amber-800 dark:text-amber-300">
-                                    <i class="fas fa-exclamation-triangle"></i> Hanya Bisa Menggunakan PowerShell (CLI)
+                        <div class="space-y-3.5 text-sm mb-6">
+                            <div class="p-4 rounded-2xl text-xs sm:text-sm leading-relaxed"
+                                 style="background: rgba(245, 158, 11, 0.12); border: 1.5px solid rgba(245, 158, 11, 0.45);">
+                                <strong class="font-bold flex items-center gap-2 mb-1.5" style="color: #fbbf24; font-size: 14px;">
+                                    <i class="fas fa-exclamation-triangle" style="color: #f59e0b;"></i> Hanya Bisa Menggunakan PowerShell (CLI)
                                 </strong>
-                                Layanan ini <strong>hanya dapat dijalankan menggunakan Windows PowerShell / Terminal</strong> untuk tools seperti <strong>Claude Code CLI</strong>, Cursor, atau VS Code.
+                                <p style="color: #e2e8f0; line-height: 1.6;">
+                                    Layanan saldo API Claude ini <strong style="color: #ffffff; text-decoration: underline;">KHUSUS</strong> dijalankan melalui <span style="color: #93c5fd; font-weight: bold;">Windows PowerShell / Terminal</span> (Claude Code CLI, Cursor, atau VS Code).
+                                </p>
                             </div>
 
                             <ul class="space-y-2.5 text-xs sm:text-sm">
-                                <li class="flex items-start gap-2.5">
-                                    <span class="text-red-500 font-bold shrink-0 mt-0.5 text-base leading-none">✕</span>
-                                    <span><strong>Bukan akun login website:</strong> Tidak bisa digunakan untuk login di website browser <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-800 dark:text-gray-200">claude.ai</code>.</span>
+                                <li class="flex items-start gap-2.5 p-2.5 rounded-xl border" style="background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 255, 255, 0.1);">
+                                    <span style="color: #ef4444; font-weight: 900; font-size: 15px; line-height: 1;" class="shrink-0">✕</span>
+                                    <span style="color: #e2e8f0;"><strong style="color: #f87171;">Bukan akun login website:</strong> Tidak bisa digunakan untuk login di website browser <code style="font-family: monospace; font-size: 11px; padding: 2px 6px; border-radius: 6px; background: rgba(0,0,0,0.5); color: #ffffff;">claude.ai</code>.</span>
                                 </li>
-                                <li class="flex items-start gap-2.5">
-                                    <span class="text-emerald-500 font-bold shrink-0 mt-0.5 text-base leading-none">✓</span>
-                                    <span>Setelah pembayaran berhasil, Anda akan otomatis mendapatkan <strong>3 baris script pengaktifan</strong> di halaman invoice untuk di-paste langsung ke PowerShell.</span>
+                                <li class="flex items-start gap-2.5 p-2.5 rounded-xl border" style="background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 255, 255, 0.1);">
+                                    <span style="color: #10b981; font-weight: 900; font-size: 15px; line-height: 1;" class="shrink-0">✓</span>
+                                    <span style="color: #e2e8f0;"><strong style="color: #34d399;">Otomatis Langsung Jadi:</strong> Setelah pembayaran sukses, Anda akan langsung diberikan <strong style="color: #ffffff;">3 baris script pengaktifan</strong> di invoice untuk di-paste ke PowerShell.</span>
                                 </li>
-                                <li class="flex items-start gap-2.5">
-                                    <span class="text-blue-500 font-bold shrink-0 mt-0.5 text-base leading-none">ℹ</span>
-                                    <span>Jika Anda belum tahu cara menggunakannya atau ingin bertanya terlebih dahulu, silakan hubungi admin kami.</span>
+                                <li class="flex items-start gap-2.5 p-2.5 rounded-xl border" style="background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 255, 255, 0.1);">
+                                    <span style="color: #3b82f6; font-weight: 900; font-size: 15px; line-height: 1;" class="shrink-0">ℹ</span>
+                                    <span style="color: #e2e8f0;"><strong style="color: #60a5fa;">Belum Paham Cara Pakainya?</strong> Silakan klik tombol <strong style="color: #22c55e;">Hubungi Admin</strong> di bawah untuk bertanya tutorialnya sebelum membeli.</span>
                                 </li>
                             </ul>
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="flex flex-col sm:flex-row gap-2.5 pt-2 border-t border-gray-100 dark:border-gray-800">
+                        <div class="flex flex-col sm:flex-row gap-3 pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
                             <a href="https://wa.me/6285198503253?text=Halo%20Admin%20ToTap%20Store%2C%20saya%20ingin%20bertanya%20seputar%20Claude%20AI%20API%20(PowerShell%20/%20Claude%20Code%20CLI)%20sebelum%20membeli." 
                                target="_blank" 
-                               class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 rounded-xl transition shadow-md hover:shadow-lg">
-                                <i class="fab fa-whatsapp text-base"></i>
+                               class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-white rounded-xl transition hover:opacity-95 shadow-lg"
+                               style="background-color: #16a34a;">
+                                <i class="fab fa-whatsapp text-lg"></i>
                                 <span>Hubungi Admin</span>
                             </a>
                             <button type="button" 
                                     onclick="closeClaudeModal()" 
-                                    class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-xl transition shadow-md hover:shadow-lg">
+                                    class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-white rounded-xl transition hover:opacity-95 shadow-lg"
+                                    style="background-color: #4f46e5;">
                                 <span>Saya Paham</span>
                                 <i class="fas fa-check text-xs"></i>
                             </button>
