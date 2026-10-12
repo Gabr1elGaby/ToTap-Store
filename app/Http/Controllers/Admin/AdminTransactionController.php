@@ -109,7 +109,7 @@ class AdminTransactionController extends Controller
             foreach ($transactions as $t) {
                 $prod = $t->gameProduct ?? $t->product;
                 if ($prod && ($prod->provider === 'manual' || ($t->game && $t->game->category === 'manual'))) {
-                    if ($t->status !== 'success') {
+                    if (in_array(strtolower($t->status), ['processing', 'paid'])) {
                         \App\Models\GameProductStock::fulfillManualStock($t);
                     }
                     continue;
@@ -134,7 +134,7 @@ class AdminTransactionController extends Controller
         if ($transaction) {
             $prod = $transaction->gameProduct ?? $transaction->product;
             if ($prod && ($prod->provider === 'manual' || ($transaction->game && $transaction->game->category === 'manual'))) {
-                if ($transaction->status !== 'success') {
+                if (in_array(strtolower($transaction->status), ['processing', 'paid'])) {
                     \App\Models\GameProductStock::fulfillManualStock($transaction);
                 }
             } else {

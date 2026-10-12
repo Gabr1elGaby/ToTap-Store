@@ -19,10 +19,10 @@ class TopUpPaymentController extends Controller
             })
             ->firstOrFail();
 
-        // Jika produk manual: otomatis alokasikan stok jika belum sukses
+        // Jika produk manual: hanya alokasikan stok jika statusnya SUDAH DIBAYAR/LUNAS (processing/paid)
         $prod = $transaction->gameProduct ?? $transaction->product;
         if ($prod && ($prod->provider === 'manual' || ($transaction->game && $transaction->game->category === 'manual'))) {
-            if ($transaction->status !== 'success') {
+            if (in_array(strtolower($transaction->status), ['processing', 'paid'])) {
                 \App\Models\GameProductStock::fulfillManualStock($transaction);
             }
         } else {

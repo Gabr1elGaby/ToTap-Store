@@ -47,7 +47,7 @@ class TransactionHistoryController extends Controller
         if ($transaction) {
             $prod = $transaction->gameProduct ?? $transaction->product;
             if ($prod && ($prod->provider === 'manual' || ($transaction->game && $transaction->game->category === 'manual'))) {
-                if ($transaction->status !== 'success') {
+                if (in_array(strtolower($transaction->status), ['processing', 'paid'])) {
                     \App\Models\GameProductStock::fulfillManualStock($transaction);
                 }
             } else {

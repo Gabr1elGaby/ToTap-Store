@@ -91,8 +91,10 @@ class GameProductStock extends Model
             return true;
         }
 
-        // Jangan proses jika transaksi sudah dibatalkan atau direfund
-        if (in_array(strtolower($transaction->status ?? ''), ['refunded', 'failed', 'cancelled', 'expired'])) {
+        // 2. KUNCI PENTING: Transaksi yang BELUM DIBAYAR ('pending') atau gagal/dibatalkan TIDAK BOLEH dialokasikan stok!
+        // Hanya boleh dialokasikan stok jika statusnya sudah dikonfirmasi lunas ('processing' atau 'paid')!
+        $status = strtolower($transaction->status ?? '');
+        if (!in_array($status, ['processing', 'paid'])) {
             return false;
         }
 
