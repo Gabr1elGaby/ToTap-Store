@@ -552,6 +552,10 @@ class TopUpController extends Controller
                 return redirect()->route('topup.checkout.show', $transaction->id)->with('info', 'Pembayaran via Saldo Akun berhasil diterima! Pesanan Anda sedang diproses.');
             }
         } else {
+            $fulfilled = \App\Models\GameProductStock::fulfillManualStock($transaction);
+            if ($fulfilled) {
+                return redirect()->route('topup.checkout.show', $transaction->id)->with('success', 'Pembayaran via Saldo Akun berhasil! Akses Claude Code / item Anda langsung aktif.');
+            }
             return redirect()->route('topup.checkout.show', $transaction->id)->with('success', 'Pembayaran via Saldo Akun berhasil! Pesanan Anda sedang dipersiapkan oleh Admin.');
         }
         }

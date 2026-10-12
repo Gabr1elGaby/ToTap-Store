@@ -10,7 +10,29 @@
         </div>
     </x-slot>
 
-    <div class="py-12 bg-slate-50 dark:bg-gray-900 min-h-screen transition-colors duration-200" x-data="{ openCreateModal: false, priceModal: 0, priceSell: 0, isPromo: false, priceNormal: 0 }">
+    <div class="py-12 bg-slate-50 dark:bg-gray-900 min-h-screen transition-colors duration-200" x-data="{ 
+        openCreateModal: false, 
+        openStockModal: false,
+        activeProduct: '',
+        activeProductName: '',
+        stockList: [],
+        loadingStocks: false,
+        priceModal: 0, 
+        priceSell: 0, 
+        isPromo: false, 
+        priceNormal: 0,
+        async loadStocks(prodId) {
+            this.loadingStocks = true;
+            try {
+                const res = await fetch('/admin/games/{{ $game->id }}/products/' + prodId + '/stocks');
+                const data = await res.json();
+                this.stockList = data.stocks || [];
+            } catch(e) {
+                this.stockList = [];
+            }
+            this.loadingStocks = false;
+        }
+    }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
@@ -129,6 +151,11 @@
                                     </td>
                                     <td class="py-3.5 px-4 text-right">
                                         <div class="inline-flex items-center gap-1.5 justify-end">
+                                            @if($prod->provider === 'manual')
+                                                <button type="button" @click="activeProduct = '{{ $prod->id }}'; activeProductName = '{{ addslashes($prod->name) }}'; loadStocks('{{ $prod->id }}'); openStockModal = true;" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition cursor-pointer" title="Kelola Stok Akun / Token">
+                                                    <i class="fas fa-boxes"></i> Stok ({{ $prod->stocks_count ?? 0 }})
+                                                </button>
+                                            @endif
                                             <a href="{{ route('admin.games.products.edit', ['game' => $game->id, 'product' => $prod->id]) }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 transition">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
@@ -237,6 +264,17 @@
                         </div>
                     </div>
 
+                    <!-- Input Stok Akun / Token API -->
+                    <div class="space-y-1.5 p-4 bg-slate-50 dark:bg-gray-900/60 rounded-2xl border border-gray-200 dark:border-gray-700">
+                        <label class="block text-xs font-black text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fas fa-boxes text-emerald-500"></i> Input Stok Token / Script API (Bisa Banyak Sekaligus)
+                        </label>
+                        <p class="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
+                            Tempelkan 4 script API yang Anda punya sekaligus di sini (pisahkan dengan enter kosong). Sistem otomatis mendeteksi setiap script sebagai <strong>1 stok</strong>. Saat customer beli, mereka otomatis hanya menerima 1 stok dan sisa stok Anda berkurang 1.
+                        </p>
+                        <textarea name="stocks_input" rows="5" class="w-full mt-1 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 font-mono text-xs text-emerald-600 dark:text-emerald-400 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500" placeholder="set ANTHROPIC_BASE_URL=https://api.mwapi.dev&#10;set ANTHROPIC_AUTH_TOKEN=sk-xxx1&#10;set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1&#10;&#10;set ANTHROPIC_BASE_URL=https://api.mwapi.dev&#10;set ANTHROPIC_AUTH_TOKEN=sk-xxx2&#10;set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1"></textarea>
+                    </div>
+
                     <div>
                         <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Status Ketersediaan</label>
                         <select name="status" class="w-full mt-1.5 p-2.5 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-bold text-sm">
@@ -254,6 +292,102 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- Modal Kelola Stok Produk -->
+        <div x-show="openStockModal" 
+             x-cloak 
+             class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+            
+            <div @click.away="openStockModal = false" 
+                 class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+                
+                <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-700">
+                    <div>
+                        <h3 class="text-lg font-black text-gray-900 dark:text-white flex items-center gap-2">
+                            <i class="fas fa-boxes text-emerald-500"></i> Kelola Stok Akun / Token
+                        </h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Produk: <span class="font-bold text-indigo-600 dark:text-indigo-400" x-text="activeProductName"></span></p>
+                    </div>
+                    <button type="button" @click="openStockModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-lg cursor-pointer">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <!-- Form Tambah Stok Baru -->
+                <form :action="'/admin/games/{{ $game->id }}/products/' + activeProduct + '/stocks'" method="POST" class="p-4 bg-slate-50 dark:bg-gray-900/60 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-3">
+                    @csrf
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1">
+                            + Tambah Stok Token / Script Baru
+                        </label>
+                        <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-1.5">
+                            Tempelkan 1 atau beberapa script/token API di sini (pisahkan dengan enter kosong).
+                        </p>
+                        <textarea name="stocks_input" rows="4" class="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 font-mono text-xs text-emerald-600 dark:text-emerald-400 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500" placeholder="Paste script/token baru di sini..." required></textarea>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                            <i class="fas fa-plus-circle"></i> Tambah ke Stok
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Daftar Stok yang Tersedia & Terpakai -->
+                <div class="space-y-3">
+                    <h4 class="text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center justify-between">
+                        <span>Daftar Stok (<span x-text="stockList.filter(s => s.status === 'available').length"></span> Tersedia / <span x-text="stockList.length"></span> Total)</span>
+                    </h4>
+
+                    <div x-show="loadingStocks" class="text-center py-6 text-gray-400 text-xs">
+                        <i class="fas fa-spinner fa-spin mr-1"></i> Memuat data stok...
+                    </div>
+
+                    <div x-show="!loadingStocks && stockList.length === 0" class="text-center py-6 text-gray-400 text-xs">
+                        Belum ada stok untuk produk ini. Silakan tempelkan script di atas untuk menambahkan stok.
+                    </div>
+
+                    <div x-show="!loadingStocks && stockList.length > 0" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                        <template x-for="item in stockList" :key="item.id">
+                            <div class="p-3 rounded-xl border flex items-center justify-between gap-3 text-xs"
+                                 :class="item.status === 'available' ? 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700' : 'bg-slate-100 dark:bg-gray-900/40 border-gray-100 dark:border-gray-800 opacity-60'">
+                                <div class="min-w-0 flex-1 space-y-0.5">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-mono text-[10px] px-2 py-0.5 rounded-full font-bold"
+                                              :class="item.status === 'available' ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' : 'bg-slate-500/10 text-slate-500 border border-slate-500/20'"
+                                              x-text="item.status === 'available' ? 'Tersedia' : 'Terpakai (Order #' + (item.transaction_id || '-') + ')'">
+                                        </span>
+                                        <span class="text-[11px] text-gray-400 font-mono" x-text="item.created_at"></span>
+                                    </div>
+                                    <div class="font-mono text-[11px] text-gray-700 dark:text-gray-300 truncate" x-text="item.content_preview"></div>
+                                </div>
+
+                                <template x-if="item.status === 'available'">
+                                    <form :action="'/admin/games/{{ $game->id }}/products/' + activeProduct + '/stocks/' + item.id" method="POST" onsubmit="return confirm('Hapus 1 stok ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-rose-500 hover:text-rose-700 p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer" title="Hapus Stok Ini">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-gray-100 dark:border-gray-700 flex justify-end">
+                    <button type="button" @click="openStockModal = false" class="px-5 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold text-xs transition cursor-pointer">
+                        Tutup
+                    </button>
+                </div>
             </div>
         </div>
     </div>

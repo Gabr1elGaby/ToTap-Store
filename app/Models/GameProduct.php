@@ -23,4 +23,14 @@ class GameProduct extends Model
     {
         return $this->belongsTo(Game::class);
     }
+
+    public function stocks()
+    {
+        return $this->hasMany(GameProductStock::class, 'game_product_id');
+    }
+
+    public function availableStocks()
+    {
+        return $this->hasMany(GameProductStock::class, 'game_product_id')->where('status', 'available');
+    }
 }

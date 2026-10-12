@@ -61,31 +61,35 @@ class TopUpPaymentController extends Controller
                     $product = $transaction->gameProduct;
                     $game = $transaction->game;
                     if ($product && $game) {
-                        $vipService = app(VipResellerService::class);
-                        if (method_exists($vipService, 'order')) {
-                            $orderRes = $vipService->order(
-                                $product->product_code,
-                                $transaction->target_field_1,
-                                $transaction->target_field_2,
-                                $transaction->id
-                            );
+                        if ($product->provider === 'manual') {
+                            \App\Models\GameProductStock::fulfillManualStock($transaction);
                         } else {
-                            $orderRes = $vipService->createOrder(
-                                $product->product_code,
-                                $transaction->target_field_1,
-                                $transaction->target_field_2 ?? ''
-                            );
-                        }
+                            $vipService = app(VipResellerService::class);
+                            if (method_exists($vipService, 'order')) {
+                                $orderRes = $vipService->order(
+                                    $product->product_code,
+                                    $transaction->target_field_1,
+                                    $transaction->target_field_2,
+                                    $transaction->id
+                                );
+                            } else {
+                                $orderRes = $vipService->createOrder(
+                                    $product->product_code,
+                                    $transaction->target_field_1,
+                                    $transaction->target_field_2 ?? ''
+                                );
+                            }
 
-                        if (isset($orderRes['result']) && $orderRes['result'] === true) {
-                            $pData = $orderRes['data'] ?? [];
-                            $trxId = $pData['trxid'] ?? ($pData['id'] ?? null);
-                            $sn = VipResellerService::extractSnFromData($pData);
-                            $transaction->update([
-                                'status' => 'success',
-                                'provider_trx_id' => $trxId,
-                                'provider_sn' => $sn,
-                            ]);
+                            if (isset($orderRes['result']) && $orderRes['result'] === true) {
+                                $pData = $orderRes['data'] ?? [];
+                                $trxId = $pData['trxid'] ?? ($pData['id'] ?? null);
+                                $sn = VipResellerService::extractSnFromData($pData);
+                                $transaction->update([
+                                    'status' => 'success',
+                                    'provider_trx_id' => $trxId,
+                                    'provider_sn' => $sn,
+                                ]);
+                            }
                         }
                     }
                 } catch (\Exception $e) {
@@ -112,31 +116,35 @@ class TopUpPaymentController extends Controller
                         $product = $transaction->gameProduct;
                         $game = $transaction->game;
                         if ($product && $game) {
-                            $vipService = app(VipResellerService::class);
-                            if (method_exists($vipService, 'order')) {
-                                $orderRes = $vipService->order(
-                                    $product->product_code,
-                                    $transaction->target_field_1,
-                                    $transaction->target_field_2,
-                                    $transaction->id
-                                );
+                            if ($product->provider === 'manual') {
+                                \App\Models\GameProductStock::fulfillManualStock($transaction);
                             } else {
-                                $orderRes = $vipService->createOrder(
-                                    $product->product_code,
-                                    $transaction->target_field_1,
-                                    $transaction->target_field_2 ?? ''
-                                );
-                            }
+                                $vipService = app(VipResellerService::class);
+                                if (method_exists($vipService, 'order')) {
+                                    $orderRes = $vipService->order(
+                                        $product->product_code,
+                                        $transaction->target_field_1,
+                                        $transaction->target_field_2,
+                                        $transaction->id
+                                    );
+                                } else {
+                                    $orderRes = $vipService->createOrder(
+                                        $product->product_code,
+                                        $transaction->target_field_1,
+                                        $transaction->target_field_2 ?? ''
+                                    );
+                                }
 
-                            if (isset($orderRes['result']) && $orderRes['result'] === true) {
-                                $pData = $orderRes['data'] ?? [];
-                                $trxId = $pData['trxid'] ?? ($pData['id'] ?? null);
-                                $sn = VipResellerService::extractSnFromData($pData);
-                                $transaction->update([
-                                    'status' => 'success',
-                                    'provider_trx_id' => $trxId,
-                                    'provider_sn' => $sn,
-                                ]);
+                                if (isset($orderRes['result']) && $orderRes['result'] === true) {
+                                    $pData = $orderRes['data'] ?? [];
+                                    $trxId = $pData['trxid'] ?? ($pData['id'] ?? null);
+                                    $sn = VipResellerService::extractSnFromData($pData);
+                                    $transaction->update([
+                                        'status' => 'success',
+                                        'provider_trx_id' => $trxId,
+                                        'provider_sn' => $sn,
+                                    ]);
+                                }
                             }
                         }
                     } catch (\Exception $e) {

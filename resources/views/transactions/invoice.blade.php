@@ -245,12 +245,16 @@
                             || str_contains(strtolower($data->gameProduct->name ?? ''), 'voucher');
 
                         if ($isClaude) {
-                            if (!str_contains($rawSn, '$env:ANTHROPIC_BASE_URL')) {
-                                $claudeKey = trim($rawSn);
-                                $claudeScript = "\$env:ANTHROPIC_BASE_URL=\"https://api.mwapi.dev\"\n\$env:ANTHROPIC_AUTH_TOKEN=\"{$claudeKey}\"\n\$env:CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1";
+                            $claudeKey = '';
+                            if (preg_match('/ANTHROPIC_AUTH_TOKEN\s*=\s*["\']?([^"\'\r\n\s]+)/i', $rawSn, $mToken)) {
+                                $claudeKey = trim($mToken[1]);
+                            } elseif (preg_match('/(sk-[a-zA-Z0-9_-]{20,})/i', $rawSn, $mToken)) {
+                                $claudeKey = trim($mToken[1]);
                             } else {
-                                $claudeScript = $rawSn;
+                                $claudeKey = trim($rawSn);
                             }
+
+                            $claudeScript = "\$env:ANTHROPIC_BASE_URL=\"https://api.mwapi.dev\"\n\$env:ANTHROPIC_AUTH_TOKEN=\"{$claudeKey}\"\n\$env:CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1";
                             $copyText = $claudeScript;
                         } else {
                             $copyText = ($hasCleanVoucher || $isVoucherCat) && !empty($voucherCode) ? $voucherCode : $rawSn;

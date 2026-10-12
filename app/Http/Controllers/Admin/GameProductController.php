@@ -30,9 +30,15 @@ class GameProductController extends Controller
         $vipService = app(VipResellerService::class);
         foreach ($products as $prod) {
             if ($prod->provider === 'manual') {
-                $prod->stock_info = $prod->status === 'available'
-                    ? ['status' => 'available', 'stock' => null, 'label' => 'Tersedia (Manual)']
-                    : ['status' => 'empty', 'stock' => 0, 'label' => '0 Pcs (Habis)'];
+                $avail = $prod->availableStocks()->count();
+                $totalStock = $prod->stocks()->count();
+                $prod->stocks_count = $avail;
+                $prod->total_stocks_count = $totalStock;
+                $prod->stock_info = [
+                    'status' => $avail > 0 ? 'available' : ($totalStock > 0 ? 'empty' : ($prod->status === 'available' ? 'available' : 'empty')),
+                    'stock' => $avail,
+                    'label' => $totalStock > 0 ? "{$avail}/{$totalStock} Pcs" : ($prod->status === 'available' ? 'Tersedia' : '0 Pcs (Habis)'),
+                ];
                 continue;
             }
 
@@ -127,8 +133,76 @@ class GameProductController extends Controller
             'provider' => 'manual',
         ]);
 
-        return redirect()->route('admin.games.products.index', $game)
-            ->with('success', "Produk nominal '{$product->name}' berhasil ditambahkan secara manual!");
+        $stocksAdded = 0;
+        if ($request->filled('stocks_input')) {
+            $items = \App\Models\GameProductStock::parseStockItems($request->input('stocks_input'));
+            foreach ($items as $item) {
+                $product->stocks()->create([
+                    'content' => $item,
+                    'status' => 'available',
+                ]);
+                $stocksAdded++;
+            }
+        }
+
+        $msg = "Produk nominal '{$product->name}' berhasil ditambahkan";
+        if ($stocksAdded > 0) {
+            $msg .= " beserta {$stocksAdded} stok siap pakai!";
+        } else {
+            $msg .= " secara manual!";
+        }
+
+        return redirect()->route('admin.games.products.index', $game)->with('success', $msg);
+    }
+
+    public function storeStock(Request $request, Game $game, GameProduct $product)
+    {
+        $request->validate([
+            'stocks_input' => 'required|string',
+        ]);
+
+        $items = \App\Models\GameProductStock::parseStockItems($request->input('stocks_input'));
+        $count = 0;
+        foreach ($items as $item) {
+            $product->stocks()->create([
+                'content' => $item,
+                'status' => 'available',
+            ]);
+            $count++;
+        }
+
+        if ($count > 0 && $product->status === 'empty') {
+            $product->update(['status' => 'available']);
+        }
+
+        return back()->with('success', "Berhasil menambahkan {$count} stok baru untuk '{$product->name}'!");
+    }
+
+    public function destroyStock(Game $game, GameProduct $product, \App\Models\GameProductStock $stock)
+    {
+        $stock->delete();
+        return back()->with('success', 'Data stok berhasil dihapus.');
+    }
+
+    public function getStocks(Game $game, GameProduct $product)
+    {
+        $stocks = $product->stocks()->latest()->get()->map(function($s) {
+            return [
+                'id' => $s->id,
+                'content_preview' => \Illuminate\Support\Str::limit($s->content, 80),
+                'status' => $s->status,
+                'transaction_id' => $s->transaction_id,
+                'created_at' => $s->created_at->format('d/m/Y H:i'),
+                'used_at' => $s->used_at ? $s->used_at->format('d/m/Y H:i') : null,
+            ];
+        });
+
+        return response()->json([
+            'product_name' => $product->name,
+            'stocks' => $stocks,
+            'available_count' => $product->availableStocks()->count(),
+            'total_count' => $product->stocks()->count(),
+        ]);
     }
 
     public function edit(Game $game, GameProduct $product)
