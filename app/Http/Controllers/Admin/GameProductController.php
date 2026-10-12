@@ -14,7 +14,10 @@ class GameProductController extends Controller
     public function index(Game $game)
     {
         $products = $game->products()
-            ->where('price_modal', '>', 0)
+            ->where(function($q) {
+                $q->where('price_modal', '>', 0)
+                  ->orWhere('provider', '!=', 'vip_reseller');
+            })
             ->where('name', 'not like', '%first top%')
             ->where('name', 'not like', '%first-top%')
             ->where('name', 'not like', '%first topup%')
@@ -26,6 +29,13 @@ class GameProductController extends Controller
             
         $vipService = app(VipResellerService::class);
         foreach ($products as $prod) {
+            if ($prod->provider === 'manual') {
+                $prod->stock_info = $prod->status === 'available'
+                    ? ['status' => 'available', 'stock' => null, 'label' => 'Tersedia (Manual)']
+                    : ['status' => 'empty', 'stock' => 0, 'label' => '0 Pcs (Habis)'];
+                continue;
+            }
+
             if (!empty($prod->product_code)) {
                 $stockCacheKey = 'admin_vip_stock_' . $prod->product_code;
                 $prod->stock_info = \Illuminate\Support\Facades\Cache::remember($stockCacheKey, 10, function () use ($vipService, $prod) {
@@ -72,15 +82,13 @@ class GameProductController extends Controller
         return view('admin.games.products.index', compact('game', 'products'));
     }
 
-    public function edit(Game $game, GameProduct $product)
-    {
-        return view('admin.games.products.edit', compact('game', 'product'));
-    }
-
-    public function update(Request $request, Game $game, GameProduct $product)
+    public function store(Request $request, Game $game)
     {
         // Sanitize price inputs if formatted with dots/commas
         $input = $request->all();
+        if (isset($input['price_modal'])) {
+            $input['price_modal'] = str_replace(',', '.', str_replace('.', '', (string)$input['price_modal']));
+        }
         if (isset($input['price_sell'])) {
             $input['price_sell'] = str_replace(',', '.', str_replace('.', '', (string)$input['price_sell']));
         }
@@ -90,6 +98,61 @@ class GameProductController extends Controller
         $request->merge($input);
 
         $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'product_code' => 'nullable|string|max:100',
+            'price_modal' => 'required|numeric|min:0',
+            'price_sell' => 'required|numeric|min:0',
+            'price_normal' => 'nullable|numeric|min:0',
+            'is_promo' => 'nullable',
+            'status' => 'required|string|in:available,empty',
+        ]);
+
+        $code = !empty($validated['product_code'])
+            ? Str::upper(Str::slug($validated['product_code'], '_'))
+            : Str::upper(Str::slug($game->slug . '-' . $validated['name'], '_'));
+
+        $existing = GameProduct::where('product_code', $code)->first();
+        if ($existing) {
+            $code = $code . '_' . rand(100, 999);
+        }
+
+        $product = $game->products()->create([
+            'product_code' => $code,
+            'name' => $validated['name'],
+            'price_modal' => (float)$validated['price_modal'],
+            'price_sell' => (float)$validated['price_sell'],
+            'price_normal' => !empty($validated['price_normal']) ? (float)$validated['price_normal'] : null,
+            'is_promo' => $request->has('is_promo') && $request->is_promo == '1' ? 1 : 0,
+            'status' => $validated['status'],
+            'provider' => 'manual',
+        ]);
+
+        return redirect()->route('admin.games.products.index', $game)
+            ->with('success', "Produk nominal '{$product->name}' berhasil ditambahkan secara manual!");
+    }
+
+    public function edit(Game $game, GameProduct $product)
+    {
+        return view('admin.games.products.edit', compact('game', 'product'));
+    }
+
+    public function update(Request $request, Game $game, GameProduct $product)
+    {
+        // Sanitize price inputs if formatted with dots/commas
+        $input = $request->all();
+        if (isset($input['price_modal'])) {
+            $input['price_modal'] = str_replace(',', '.', str_replace('.', '', (string)$input['price_modal']));
+        }
+        if (isset($input['price_sell'])) {
+            $input['price_sell'] = str_replace(',', '.', str_replace('.', '', (string)$input['price_sell']));
+        }
+        if (isset($input['price_normal']) && $input['price_normal'] !== '') {
+            $input['price_normal'] = str_replace(',', '.', str_replace('.', '', (string)$input['price_normal']));
+        }
+        $request->merge($input);
+
+        $validated = $request->validate([
+            'price_modal' => 'nullable|numeric|min:0',
             'price_sell' => 'required|numeric|min:0',
             'price_normal' => 'nullable|numeric|min:0',
             'is_promo' => 'nullable',
@@ -103,6 +166,10 @@ class GameProductController extends Controller
             'is_promo' => $request->has('is_promo') && $request->is_promo == '1' ? 1 : 0,
             'status' => $validated['status'],
         ];
+
+        if (isset($validated['price_modal'])) {
+            $updateData['price_modal'] = (float)$validated['price_modal'];
+        }
 
         if (!empty($validated['name'])) {
             $updateData['name'] = $validated['name'];

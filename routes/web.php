@@ -335,7 +335,7 @@ HTML;
     Route::get('games/{game}/products/sync', [\App\Http\Controllers\Admin\GameProductController::class, 'syncForm'])->name('games.products.sync');
     Route::post('games/{game}/products/sync', [\App\Http\Controllers\Admin\GameProductController::class, 'syncProcess'])->name('games.products.sync.process');
     Route::post('games/{game}/products/cleanup-non-idr', [\App\Http\Controllers\Admin\GameProductController::class, 'cleanupNonIdr'])->name('games.products.cleanup-non-idr');
-    Route::resource('games.products', \App\Http\Controllers\Admin\GameProductController::class)->except(['create', 'store', 'show']);
+    Route::resource('games.products', \App\Http\Controllers\Admin\GameProductController::class)->except(['create', 'show']);
 
     // Admin Actions (Placed before wildcard routes)
     Route::post('/transactions/clear-all', [\App\Http\Controllers\Admin\AdminTransactionController::class, 'clearAll'])->name('transactions.clear-all');

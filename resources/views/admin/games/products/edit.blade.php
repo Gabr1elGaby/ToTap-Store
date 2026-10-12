@@ -42,8 +42,8 @@
             <!-- Info Modal & Margin Card -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
-                    <span class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Harga Modal Provider</span>
-                    <div class="text-xl font-black text-gray-900 dark:text-white mt-1 font-mono">
+                    <span class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ $product->provider === 'manual' ? 'Harga Modal (Kulakan)' : 'Harga Modal Provider' }}</span>
+                    <div class="text-xl font-black text-gray-900 dark:text-white mt-1 font-mono" x-text="'Rp' + new Intl.NumberFormat('id-ID').format(priceModal || 0)">
                         Rp{{ number_format($product->price_modal, 0, ',', '.') }}
                     </div>
                 </div>
@@ -73,6 +73,17 @@
                         <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Nama Produk Nominal</label>
                         <input type="text" name="name" value="{{ old('name', $product->name) }}" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-bold" required>
                     </div>
+
+                    @if($product->provider === 'manual')
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Harga Modal (Kulakan/Beli) <span class="text-red-500">*</span></label>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 mb-1.5">Harga modal untuk menghitung margin keuntungan.</p>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 font-bold text-gray-500 dark:text-gray-400 text-sm">Rp</span>
+                            <input type="number" step="1" name="price_modal" x-model.number="priceModal" class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-mono font-bold text-lg" required>
+                        </div>
+                    </div>
+                    @endif
 
                     <div>
                         <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Harga Jual (Di Website Anda) <span class="text-red-500">*</span></label>
