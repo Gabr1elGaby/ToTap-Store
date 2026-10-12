@@ -50,11 +50,102 @@
                 $gameSlug = strtolower($game->slug);
                 $catLower = strtolower($game->category ?? '');
                 $isNetflix = str_contains($gameName, 'netflix') || str_contains($gameSlug, 'netflix');
+                $isClaude = str_contains($gameSlug, 'claude') || str_contains($gameName, 'claude');
                 $isApp = str_contains($catLower, 'app') || str_contains($catLower, 'aplikasi') || str_contains($catLower, 'streaming') || str_contains($catLower, 'entertainment');
                 $isRequiresZone = $game->requires_zone_id || str_contains($gameName, 'magic chess') || str_contains($gameName, 'mobile legend') || $isNetflix;
                 $field1Label = $game->target_field_1 ?: ($isNetflix ? 'Nama / Model Perangkat' : ($isApp ? 'Alamat Email Aktif' : 'User ID'));
                 $field2Label = $game->target_field_2 ?: ($isNetflix ? 'Tipe Perangkat Login' : ($isApp ? 'Request Profil / Server' : 'Zone ID'));
             @endphp
+
+            @if($isClaude)
+                <!-- Pop Up Pemberitahuan Khusus Claude AI (PowerShell) -->
+                <div id="claudeNoticeModal" 
+                     onclick="if(event.target === this) closeClaudeModal()"
+                     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-all duration-300">
+                    <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 border-2 border-amber-500/50 dark:border-amber-500/60 rounded-3xl shadow-2xl p-6 sm:p-7 overflow-hidden transform transition-all animate-in fade-in zoom-in-95 duration-200">
+                        <!-- Glow background decor -->
+                        <div class="absolute -top-16 -right-16 w-36 h-36 bg-amber-500/15 rounded-full blur-2xl pointer-events-none"></div>
+                        <div class="absolute -bottom-16 -left-16 w-36 h-36 bg-blue-500/15 rounded-full blur-2xl pointer-events-none"></div>
+                        
+                        <!-- Close button (X) -->
+                        <button type="button" 
+                                onclick="closeClaudeModal()" 
+                                class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+                                title="Tutup">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+
+                        <!-- Header Icon & Title -->
+                        <div class="flex items-center gap-3.5 mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white shadow-lg shadow-orange-500/25 shrink-0 text-xl">
+                                <i class="fas fa-terminal"></i>
+                            </div>
+                            <div>
+                                <span class="inline-block px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 rounded-full border border-amber-300 dark:border-amber-800 mb-1">
+                                    ⚠️ Perhatian Sebelum Membeli
+                                </span>
+                                <h3 class="text-lg sm:text-xl font-extrabold text-gray-900 dark:text-white leading-tight">
+                                    Pemberitahuan Khusus Claude AI
+                                </h3>
+                            </div>
+                        </div>
+
+                        <!-- Body Message -->
+                        <div class="space-y-3.5 text-sm text-gray-600 dark:text-gray-300 mb-6">
+                            <div class="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-amber-900 dark:text-amber-200 text-xs sm:text-sm leading-relaxed">
+                                <strong class="font-bold flex items-center gap-1.5 mb-1 text-amber-800 dark:text-amber-300">
+                                    <i class="fas fa-exclamation-triangle"></i> Hanya Bisa Menggunakan PowerShell (CLI)
+                                </strong>
+                                Layanan ini <strong>hanya dapat dijalankan menggunakan Windows PowerShell / Terminal</strong> untuk tools seperti <strong>Claude Code CLI</strong>, Cursor, atau VS Code.
+                            </div>
+
+                            <ul class="space-y-2.5 text-xs sm:text-sm">
+                                <li class="flex items-start gap-2.5">
+                                    <span class="text-red-500 font-bold shrink-0 mt-0.5 text-base leading-none">✕</span>
+                                    <span><strong>Bukan akun login website:</strong> Tidak bisa digunakan untuk login di website browser <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-800 dark:text-gray-200">claude.ai</code>.</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="text-emerald-500 font-bold shrink-0 mt-0.5 text-base leading-none">✓</span>
+                                    <span>Setelah pembayaran berhasil, Anda akan otomatis mendapatkan <strong>3 baris script pengaktifan</strong> di halaman invoice untuk di-paste langsung ke PowerShell.</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="text-blue-500 font-bold shrink-0 mt-0.5 text-base leading-none">ℹ</span>
+                                    <span>Jika Anda belum tahu cara menggunakannya atau ingin bertanya terlebih dahulu, silakan hubungi admin kami.</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col sm:flex-row gap-2.5 pt-2 border-t border-gray-100 dark:border-gray-800">
+                            <a href="https://wa.me/6285198503253?text=Halo%20Admin%20ToTap%20Store%2C%20saya%20ingin%20bertanya%20seputar%20Claude%20AI%20API%20(PowerShell%20/%20Claude%20Code%20CLI)%20sebelum%20membeli." 
+                               target="_blank" 
+                               class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 rounded-xl transition shadow-md hover:shadow-lg">
+                                <i class="fab fa-whatsapp text-base"></i>
+                                <span>Hubungi Admin</span>
+                            </a>
+                            <button type="button" 
+                                    onclick="closeClaudeModal()" 
+                                    class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-xl transition shadow-md hover:shadow-lg">
+                                <span>Saya Paham</span>
+                                <i class="fas fa-check text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    function closeClaudeModal() {
+                        const m = document.getElementById('claudeNoticeModal');
+                        if (m) {
+                            m.style.opacity = '0';
+                            setTimeout(() => m.remove(), 200);
+                        }
+                    }
+                    document.addEventListener('keydown', function(e) {
+                        if (e.key === 'Escape') closeClaudeModal();
+                    });
+                </script>
+            @endif
 
             <!-- Panduan Top Up -->
             <div class="bg-blue-50/80 dark:bg-gray-800 border-l-4 border-blue-600 dark:border-blue-500 rounded-2xl p-5 mb-8 shadow-sm dark:shadow-md border border-blue-100 dark:border-gray-700" data-aos="fade-down">
