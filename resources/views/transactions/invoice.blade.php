@@ -176,6 +176,54 @@
                 </table>
             </div>
 
+            @php
+                $isClaude = ($type === 'topup') && (
+                    ($data->game && (str_contains(strtolower($data->game->slug ?? ''), 'claude') || str_contains(strtolower($data->game->name ?? ''), 'claude')))
+                    || str_contains(strtolower($data->gameProduct->name ?? ''), 'claude')
+                    || str_contains($data->provider_sn ?? '', 'ANTHROPIC_')
+                );
+            @endphp
+
+            <!-- Panel Admin: Input / Update Token Claude & SN (Hanya terlihat oleh Admin) -->
+            @if((isset($isAdmin) && $isAdmin) || (auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->is_admin)))
+                <div class="no-print bg-slate-900 border-2 border-amber-500 rounded-2xl p-5 text-white shadow-xl space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                        <div class="font-bold text-amber-400 flex items-center gap-2 text-sm sm:text-base">
+                            <i class="fas fa-user-shield text-amber-500"></i> Panel Admin: Input Token / Kunci Akses Customer
+                        </div>
+                        <span class="text-xs font-mono px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 font-bold">
+                            Status: {{ strtoupper($data->status) }}
+                        </span>
+                    </div>
+
+                    <form action="{{ route('admin.transactions.update-sn', $data->id) }}" method="POST" class="space-y-3">
+                        @csrf
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-1.5">
+                                @if($isClaude)
+                                    🔑 Masukkan Token API Claude (Contoh: <code>sk-ant-...</code>) ATAU masukkan 3 baris script lengkap:
+                                @else
+                                    🔑 Serial Number (SN) / Akun / Kode Voucher:
+                                @endif
+                            </label>
+                            <textarea name="provider_sn" rows="3" class="w-full p-3 rounded-xl bg-slate-950 border border-slate-700 text-emerald-400 font-mono text-xs focus:ring-2 focus:ring-amber-500 focus:border-amber-500 placeholder-slate-600" placeholder="{{ $isClaude ? 'Paste Token Claude API di sini (atau langsung 3 baris script)...' : 'Masukkan SN / Akun / Lisensi di sini...' }}">{{ $data->provider_sn }}</textarea>
+                            @if($isClaude)
+                                <p class="text-[11px] text-slate-400 mt-1">
+                                    💡 <em>Admin cukup memasukkan Token API Claude saja, sistem akan otomatis merangkainya menjadi 3 baris perintah PowerShell lengkap dengan tombol copy dan tutorial untuk customer di bawah.</em>
+                                </p>
+                            @endif
+                        </div>
+
+                        <div class="flex items-center justify-between pt-1">
+                            <span class="text-[11px] text-slate-500">Menyimpan ini otomatis mengubah status pesanan menjadi Sukses.</span>
+                            <button type="submit" class="bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-black px-5 py-2.5 rounded-xl text-xs transition shadow-md flex items-center gap-2 cursor-pointer">
+                                <i class="fas fa-save"></i> Simpan & Tampilkan ke Customer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            @endif
+
             @if($type === 'topup' && !empty($data->provider_sn))
                 @if(\App\Services\VipResellerService::isPendingSn($data->provider_sn))
                     <div class="bg-blue-500/10 dark:bg-blue-950/40 border-2 border-blue-500/40 rounded-2xl p-4 sm:p-5 shadow-sm flex items-center gap-3.5">
@@ -195,10 +243,6 @@
                         $isVoucherCat = ($data->game && in_array($data->game->category, ['Voucher', 'PC Game'])) 
                             || str_contains(strtolower($data->game->name ?? ''), 'voucher')
                             || str_contains(strtolower($data->gameProduct->name ?? ''), 'voucher');
-
-                        $isClaude = ($data->game && (str_contains(strtolower($data->game->slug ?? ''), 'claude') || str_contains(strtolower($data->game->name ?? ''), 'claude')))
-                            || str_contains(strtolower($data->gameProduct->name ?? ''), 'claude')
-                            || str_contains($rawSn, 'ANTHROPIC_');
 
                         if ($isClaude) {
                             if (!str_contains($rawSn, '$env:ANTHROPIC_BASE_URL')) {
@@ -311,6 +355,16 @@
                         </p>
                     </div>
                 @endif
+            @elseif($type === 'topup' && empty($data->provider_sn) && $isClaude)
+                <div class="bg-indigo-500/10 dark:bg-indigo-950/40 border-2 border-indigo-500/50 rounded-2xl p-5 sm:p-6 shadow-md space-y-3 text-left">
+                    <div class="flex items-center gap-2.5 font-black text-indigo-950 dark:text-indigo-300 text-sm sm:text-base">
+                        <i class="fas fa-spinner fa-spin text-indigo-500 text-lg"></i>
+                        <span>AKSES CLAUDE AI API (POWERSHELL CLI) SEDANG DIPROSES</span>
+                    </div>
+                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                        Pembayaran Anda telah diterima! Token akses Claude Code Anda sedang disiapkan oleh Admin. Begitu selesai diproses, <strong>3 baris perintah PowerShell siap pakai</strong> dan <strong>panduan koding otomatis</strong> akan langsung muncul di halaman ini. Silakan muat ulang (refresh) halaman invoice ini secara berkala.
+                    </p>
+                </div>
             @endif
 
             <!-- Price Breakdown -->

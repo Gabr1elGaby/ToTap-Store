@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="py-12 bg-slate-50 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100 transition-colors duration-200">
+    <div class="py-12 bg-slate-50 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100 transition-colors duration-200" x-data="{ openSnModal: false, activeTrx: '', activeSn: '', activeProduct: '' }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
             
             <!-- Header Card -->
@@ -378,6 +378,11 @@
                                                                 <i class="fas fa-check"></i> Manual
                                                             </button>
                                                         </form>
+
+                                                        <!-- Input Token/SN -->
+                                                        <button type="button" @click="activeTrx = '{{ $trx->id }}'; activeSn = '{{ addslashes($trx->provider_sn ?? '') }}'; activeProduct = '{{ addslashes($trx->gameProduct->name ?? ($trx->game->name ?? 'Top Up')) }}'; openSnModal = true;" title="Input Token / SN Akun" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition cursor-pointer">
+                                                            <i class="fas fa-key"></i> Input Token/SN
+                                                        </button>
                                                     @elseif($trx->status === 'processing')
                                                         <!-- Manual Success if finished -->
                                                         <form action="{{ route('admin.transactions.manual-success', $trx->id) }}" method="POST" onsubmit="return confirm('Tandai pesanan ini Sukses Manual?');" class="inline">
@@ -386,6 +391,16 @@
                                                                 <i class="fas fa-check-double"></i> Selesai
                                                             </button>
                                                         </form>
+
+                                                        <!-- Input Token/SN -->
+                                                        <button type="button" @click="activeTrx = '{{ $trx->id }}'; activeSn = '{{ addslashes($trx->provider_sn ?? '') }}'; activeProduct = '{{ addslashes($trx->gameProduct->name ?? ($trx->game->name ?? 'Top Up')) }}'; openSnModal = true;" title="Input Token / SN Akun" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition cursor-pointer">
+                                                            <i class="fas fa-key"></i> Input Token/SN
+                                                        </button>
+                                                    @else
+                                                        <!-- Input / Edit Token/SN -->
+                                                        <button type="button" @click="activeTrx = '{{ $trx->id }}'; activeSn = '{{ addslashes($trx->provider_sn ?? '') }}'; activeProduct = '{{ addslashes($trx->gameProduct->name ?? ($trx->game->name ?? 'Top Up')) }}'; openSnModal = true;" title="Input / Edit Token / SN Akun" class="inline-flex items-center gap-1 px-2 py-1.5 rounded-xl text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition cursor-pointer">
+                                                            <i class="fas fa-key"></i> Edit SN
+                                                        </button>
                                                     @endif
 
                                                     @if($trx->user_id && $trx->status !== 'refunded')
@@ -582,6 +597,11 @@
                                                                 <i class="fas fa-check"></i> Manual
                                                             </button>
                                                         </form>
+
+                                                        <!-- Input Token/SN -->
+                                                        <button type="button" @click="activeTrx = '{{ $appTrx->id }}'; activeSn = '{{ addslashes($appTrx->provider_sn ?? '') }}'; activeProduct = '{{ addslashes($appTrx->gameProduct->name ?? ($appTrx->game->name ?? 'Aplikasi')) }}'; openSnModal = true;" title="Input Token Claude atau SN Akun" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition cursor-pointer">
+                                                            <i class="fas fa-key"></i> Input Token/SN
+                                                        </button>
                                                     @elseif($appTrx->status === 'processing')
                                                         <!-- Manual Success if finished -->
                                                         <form action="{{ route('admin.transactions.manual-success', $appTrx->id) }}" method="POST" onsubmit="return confirm('Tandai pesanan ini Sukses Manual?');" class="inline">
@@ -590,6 +610,16 @@
                                                                 <i class="fas fa-check-double"></i> Selesai
                                                             </button>
                                                         </form>
+
+                                                        <!-- Input Token/SN -->
+                                                        <button type="button" @click="activeTrx = '{{ $appTrx->id }}'; activeSn = '{{ addslashes($appTrx->provider_sn ?? '') }}'; activeProduct = '{{ addslashes($appTrx->gameProduct->name ?? ($appTrx->game->name ?? 'Aplikasi')) }}'; openSnModal = true;" title="Input Token Claude atau SN Akun" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition cursor-pointer">
+                                                            <i class="fas fa-key"></i> Input Token/SN
+                                                        </button>
+                                                    @else
+                                                        <!-- Input / Edit Token/SN -->
+                                                        <button type="button" @click="activeTrx = '{{ $appTrx->id }}'; activeSn = '{{ addslashes($appTrx->provider_sn ?? '') }}'; activeProduct = '{{ addslashes($appTrx->gameProduct->name ?? ($appTrx->game->name ?? 'Aplikasi')) }}'; openSnModal = true;" title="Input / Edit Token Claude atau SN Akun" class="inline-flex items-center gap-1 px-2 py-1.5 rounded-xl text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition cursor-pointer">
+                                                            <i class="fas fa-key"></i> Edit SN
+                                                        </button>
                                                     @endif
 
                                                     @if(!empty($appTrx->provider_trx_id))
@@ -875,6 +905,57 @@
             </div>
 
         </div>
+
+        <!-- Modal Input Token / SN -->
+        <div x-show="openSnModal" 
+             x-cloak 
+             id="admin-sn-modal"
+             class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+            
+            <div @click.away="openSnModal = false" 
+                 class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-lg p-6 sm:p-8 space-y-5">
+                
+                <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-700">
+                    <div>
+                        <h3 class="text-lg font-black text-gray-900 dark:text-white flex items-center gap-2">
+                            <i class="fas fa-key text-emerald-500"></i> Input Token / Serial Number (SN)
+                        </h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Pesanan: <span class="font-mono font-bold text-indigo-600 dark:text-indigo-400" x-text="'#' + activeTrx"></span> (<span x-text="activeProduct"></span>)</p>
+                    </div>
+                    <button type="button" @click="openSnModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-lg cursor-pointer">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <form :action="'/admin/transactions/' + activeTrx + '/update-sn'" method="POST" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5">
+                            Masukkan Token / Kunci Akses / SN:
+                        </label>
+                        <textarea name="provider_sn" x-model="activeSn" rows="3" class="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-slate-50 dark:bg-gray-900 text-emerald-600 dark:text-emerald-400 font-mono text-xs focus:ring-2 focus:ring-emerald-500" placeholder="Paste Token Claude (sk-...) atau Serial Number di sini..."></textarea>
+                        <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
+                            💡 Khusus Claude AI: Cukup paste token API Claude saja, sistem otomatis merangkainya menjadi 3 baris perintah PowerShell siap pakai beserta tutorial untuk customer di invoice!
+                        </p>
+                    </div>
+
+                    <div class="pt-3 flex items-center justify-end gap-2 border-t border-gray-100 dark:border-gray-700">
+                        <button type="button" @click="openSnModal = false" class="px-4 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold text-xs transition cursor-pointer">
+                            Batal
+                        </button>
+                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl shadow-md transition flex items-center gap-1.5 text-xs cursor-pointer">
+                            <i class="fas fa-paper-plane"></i> Simpan & Kirim ke Customer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -977,7 +1058,12 @@
         setInterval(() => {
             if (!autoRefreshEnabled) return;
             
-            // Check if user is actively typing in a search/filter input
+            // Check if user is actively typing in a search/filter input or modal is open
+            const modalEl = document.getElementById('admin-sn-modal');
+            if (modalEl && modalEl.offsetParent !== null) {
+                return; // Pause reload while modal is open
+            }
+
             const activeInput = document.activeElement;
             if (activeInput && (activeInput.tagName === 'INPUT' || activeInput.tagName === 'TEXTAREA')) {
                 return; // Pause reload while typing
