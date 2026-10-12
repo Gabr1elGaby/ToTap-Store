@@ -50,8 +50,10 @@ return new class extends Migration
 
         // Pastikan transaksi yang sempat pending sebelumnya langsung dipenuhi jika ada stok
         $targetTrxs = Transaction::where(function ($q) {
-            $q->where('invoice_number', 'like', '%310826%')
-              ->orWhere('id', 'like', '%310826%');
+            if (\Illuminate\Support\Facades\Schema::hasColumn('transactions', 'invoice_number')) {
+                $q->where('invoice_number', 'like', '%310826%');
+            }
+            $q->orWhere('id', 'like', '%310826%');
         })->get();
 
         foreach ($targetTrxs as $t) {
