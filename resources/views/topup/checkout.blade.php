@@ -202,12 +202,14 @@
                                         @if($isClaude)
                                             <!-- Claude Code 3-Lines Script Card -->
                                             <div class="space-y-3">
-                                                <div class="p-4 bg-slate-950 rounded-xl border-2 border-indigo-500 shadow-inner space-y-2">
+                                                <div class="p-4 bg-slate-950 rounded-xl border-2 border-indigo-500 shadow-inner space-y-2 overflow-hidden">
                                                     <div class="flex items-center justify-between text-xs font-bold text-indigo-400">
                                                         <span><i class="fas fa-terminal mr-1.5"></i> Perintah PowerShell (3 Baris):</span>
                                                         <span class="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded font-mono">Siap Pakai</span>
                                                     </div>
-                                                    <pre class="font-mono text-xs sm:text-sm font-semibold text-emerald-400 select-all leading-relaxed whitespace-pre-wrap break-all p-3 bg-slate-900 rounded-lg border border-slate-800">{{ $claudeScript }}</pre>
+                                                    <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 overflow-x-auto max-w-full">
+                                                        <pre class="font-mono text-xs sm:text-sm font-semibold text-emerald-400 select-all leading-relaxed whitespace-pre-wrap break-all" style="word-break: break-all; overflow-wrap: anywhere; white-space: pre-wrap; margin: 0;">{{ $claudeScript }}</pre>
+                                                    </div>
                                                 </div>
 
                                                 <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($copyText) }}'); alert('3 Baris Perintah PowerShell berhasil disalin! Silakan paste di Windows PowerShell dan tekan Enter.');" class="w-full px-4 py-3 text-xs sm:text-sm font-black text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-xl shadow-md transition cursor-pointer flex items-center justify-center gap-2">
