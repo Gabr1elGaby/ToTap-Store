@@ -92,9 +92,9 @@ class GameProductStock extends Model
         }
 
         // 2. KUNCI PENTING: Transaksi yang BELUM DIBAYAR ('pending') atau gagal/dibatalkan TIDAK BOLEH dialokasikan stok!
-        // Hanya boleh dialokasikan stok jika statusnya sudah dikonfirmasi lunas ('processing' atau 'paid')!
+        // Hanya boleh dialokasikan stok jika statusnya sudah dikonfirmasi lunas ('processing', 'paid', atau 'success' tapi belum ada token)!
         $status = strtolower($transaction->status ?? '');
-        if (!in_array($status, ['processing', 'paid'])) {
+        if (!in_array($status, ['processing', 'paid', 'success'])) {
             return false;
         }
 

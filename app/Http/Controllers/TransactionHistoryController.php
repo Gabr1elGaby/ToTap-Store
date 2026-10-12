@@ -47,8 +47,9 @@ class TransactionHistoryController extends Controller
         if ($transaction) {
             $prod = $transaction->gameProduct ?? $transaction->product;
             if ($prod && ($prod->provider === 'manual' || ($transaction->game && $transaction->game->category === 'manual'))) {
-                if (in_array(strtolower($transaction->status), ['processing', 'paid'])) {
+                if (in_array(strtolower($transaction->status), ['processing', 'paid', 'success']) && (empty($transaction->provider_sn) || \App\Services\VipResellerService::isPendingSn($transaction->provider_sn))) {
                     \App\Models\GameProductStock::fulfillManualStock($transaction);
+                    $transaction->refresh();
                 }
             } else {
                 if (\App\Services\VipResellerService::isPendingSn($transaction->provider_sn) || $transaction->status === 'processing') {

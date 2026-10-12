@@ -22,8 +22,9 @@ class TopUpPaymentController extends Controller
         // Jika produk manual: hanya alokasikan stok jika statusnya SUDAH DIBAYAR/LUNAS (processing/paid)
         $prod = $transaction->gameProduct ?? $transaction->product;
         if ($prod && ($prod->provider === 'manual' || ($transaction->game && $transaction->game->category === 'manual'))) {
-            if (in_array(strtolower($transaction->status), ['processing', 'paid'])) {
+            if (in_array(strtolower($transaction->status), ['processing', 'paid', 'success']) && (empty($transaction->provider_sn) || VipResellerService::isPendingSn($transaction->provider_sn))) {
                 \App\Models\GameProductStock::fulfillManualStock($transaction);
+                $transaction->refresh();
             }
         } else {
             // Untuk produk provider otomatis: tarik data SN/voucher terbaru dari VIP Reseller secara real-time

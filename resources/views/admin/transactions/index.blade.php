@@ -581,12 +581,16 @@
                                             </td>
                                             <td class="py-4 px-6 text-center whitespace-nowrap">
                                                 <div class="flex items-center justify-center gap-1.5 flex-wrap">
+                                                    @php
+                                                        $isAppManual = ($appTrx->gameProduct && $appTrx->gameProduct->provider === 'manual') || ($appTrx->game && $appTrx->game->category === 'manual');
+                                                    @endphp
+
                                                     @if($appTrx->status === 'pending' || $appTrx->status === 'paid')
-                                                        <!-- ACC & Auto Fulfillment via API -->
-                                                        <form action="{{ route('admin.transactions.approve', $appTrx->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin ACC dan proses otomatis via API VIP Reseller?');" class="inline">
+                                                        <!-- ACC & Auto Fulfillment -->
+                                                        <form action="{{ route('admin.transactions.approve', $appTrx->id) }}" method="POST" onsubmit="return confirm('{{ $isAppManual ? "ACC pesanan ini dan alokasikan 1 token dari stok otomatis ke customer?" : "Apakah Anda yakin ingin ACC dan proses otomatis via API VIP Reseller?" }}');" class="inline">
                                                             @csrf
-                                                            <button type="submit" title="ACC & Kirim Otomatis via API VIP Reseller" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition cursor-pointer">
-                                                                <i class="fas fa-bolt"></i> ACC (API)
+                                                            <button type="submit" title="{{ $isAppManual ? 'ACC & Berikan 1 Token dari Stok Otomatis' : 'ACC & Kirim Otomatis via API VIP Reseller' }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition cursor-pointer">
+                                                                <i class="fas {{ $isAppManual ? 'fa-check-circle' : 'fa-bolt' }}"></i> {{ $isAppManual ? 'ACC (Stok)' : 'ACC (API)' }}
                                                             </button>
                                                         </form>
 
@@ -622,7 +626,17 @@
                                                         </button>
                                                     @endif
 
-                                                    @if(!empty($appTrx->provider_trx_id))
+                                                    @if($isAppManual)
+                                                        @if(empty($appTrx->provider_sn))
+                                                            <!-- Alokasikan dari Stok Pool Otomatis -->
+                                                            <form action="{{ route('admin.transactions.sync-status', $appTrx->id) }}" method="POST" class="inline">
+                                                                @csrf
+                                                                <button type="submit" title="Ambil 1 token dari Stok Pool otomatis" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition cursor-pointer">
+                                                                    <i class="fas fa-boxes"></i> Ambil Stok
+                                                                </button>
+                                                            </form>
+                                                        @endif
+                                                    @elseif(!empty($appTrx->provider_trx_id))
                                                         <!-- Cek & Tarik Status/SN dari VIP Reseller -->
                                                         <form action="{{ route('admin.transactions.sync-status', $appTrx->id) }}" method="POST" class="inline">
                                                             @csrf

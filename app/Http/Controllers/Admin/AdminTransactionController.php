@@ -102,6 +102,13 @@ class AdminTransactionController extends Controller
         try {
             $vipService = app(\App\Services\VipResellerService::class);
             foreach ($appTransactions as $t) {
+                $prod = $t->gameProduct ?? $t->product;
+                if ($prod && ($prod->provider === 'manual' || ($t->game && $t->game->category === 'manual'))) {
+                    if (in_array(strtolower($t->status), ['processing', 'paid', 'success']) && (empty($t->provider_sn) || \App\Services\VipResellerService::isPendingSn($t->provider_sn))) {
+                        \App\Models\GameProductStock::fulfillManualStock($t);
+                    }
+                    continue;
+                }
                 if (\App\Services\VipResellerService::isPendingSn($t->provider_sn)) {
                     $vipService->syncTransaction($t);
                 }
@@ -109,7 +116,7 @@ class AdminTransactionController extends Controller
             foreach ($transactions as $t) {
                 $prod = $t->gameProduct ?? $t->product;
                 if ($prod && ($prod->provider === 'manual' || ($t->game && $t->game->category === 'manual'))) {
-                    if (in_array(strtolower($t->status), ['processing', 'paid'])) {
+                    if (in_array(strtolower($t->status), ['processing', 'paid', 'success']) && (empty($t->provider_sn) || \App\Services\VipResellerService::isPendingSn($t->provider_sn))) {
                         \App\Models\GameProductStock::fulfillManualStock($t);
                     }
                     continue;
@@ -134,8 +141,9 @@ class AdminTransactionController extends Controller
         if ($transaction) {
             $prod = $transaction->gameProduct ?? $transaction->product;
             if ($prod && ($prod->provider === 'manual' || ($transaction->game && $transaction->game->category === 'manual'))) {
-                if (in_array(strtolower($transaction->status), ['processing', 'paid'])) {
+                if (in_array(strtolower($transaction->status), ['processing', 'paid', 'success']) && (empty($transaction->provider_sn) || \App\Services\VipResellerService::isPendingSn($transaction->provider_sn))) {
                     \App\Models\GameProductStock::fulfillManualStock($transaction);
+                    $transaction->refresh();
                 }
             } else {
                 if (\App\Services\VipResellerService::isPendingSn($transaction->provider_sn) || $transaction->status === 'processing') {
@@ -291,16 +299,28 @@ class AdminTransactionController extends Controller
     {
         $transaction = Transaction::with(['game', 'gameProduct', 'user'])->findOrFail($id);
 
-        if ($transaction->status === 'success') {
+        if ($transaction->status === 'success' && !empty($transaction->provider_sn)) {
             return back()->with('info', 'Transaksi ini sudah berstatus Sukses sebelumnya.');
+        }
+
+        $product = $transaction->gameProduct ?? $transaction->product;
+        $game = $transaction->game;
+
+        // JIKA PRODUK MANUAL (CLAUDE AI): ALOKASIKAN STOK POOL MANUAL & JANGAN KE VIP RESELLER!
+        if ($product && ($product->provider === 'manual' || ($game && $game->category === 'manual'))) {
+            $transaction->update(['status' => 'processing']);
+            $fulfilled = \App\Models\GameProductStock::fulfillManualStock($transaction);
+            if ($fulfilled) {
+                return back()->with('success', "Pesanan Claude / Manual #{$transaction->id} BERHASIL di-ACC! 1 Token telah otomatis diberikan ke customer.");
+            } else {
+                $transaction->update(['status' => 'paid']);
+                return back()->with('warning', "Pembayaran di-ACC, namun stok manual sedang KOSONG. Silakan tambahkan stok di Kelola Stok.");
+            }
         }
 
         $transaction->update(['status' => 'processing']);
 
         try {
-            $product = $transaction->gameProduct;
-            $game = $transaction->game;
-            
             if ($product && $game) {
                 $vipService = app(\App\Services\VipResellerService::class);
                 if (method_exists($vipService, 'order')) {

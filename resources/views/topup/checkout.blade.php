@@ -492,17 +492,7 @@
         function onPaymentSuccess() {
             isAlreadyPaid = true;
             if (pollInterval) clearInterval(pollInterval);
-
-            const pendingCard = document.getElementById('topup-pending-card');
-            const paidCard = document.getElementById('topup-paid-card');
-            const badge = document.getElementById('status-badge');
-
-            if (pendingCard) pendingCard.classList.add('hidden');
-            if (paidCard) paidCard.classList.remove('hidden');
-            if (badge) {
-                badge.className = 'px-3.5 py-1.5 bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 rounded-full text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5';
-                badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Sukses Terkirim';
-            }
+            window.location.reload();
         }
 
         if (!isAlreadyPaid) {
