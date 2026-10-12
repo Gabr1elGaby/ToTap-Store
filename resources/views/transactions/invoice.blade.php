@@ -196,6 +196,22 @@
                             || str_contains(strtolower($data->game->name ?? ''), 'voucher')
                             || str_contains(strtolower($data->gameProduct->name ?? ''), 'voucher');
 
+                        $isClaude = ($data->game && (str_contains(strtolower($data->game->slug ?? ''), 'claude') || str_contains(strtolower($data->game->name ?? ''), 'claude')))
+                            || str_contains(strtolower($data->gameProduct->name ?? ''), 'claude')
+                            || str_contains($rawSn, 'ANTHROPIC_');
+
+                        if ($isClaude) {
+                            if (!str_contains($rawSn, '$env:ANTHROPIC_BASE_URL')) {
+                                $claudeKey = trim($rawSn);
+                                $claudeScript = "\$env:ANTHROPIC_BASE_URL=\"https://api.mwapi.dev\"\n\$env:ANTHROPIC_AUTH_TOKEN=\"{$claudeKey}\"\n\$env:CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1";
+                            } else {
+                                $claudeScript = $rawSn;
+                            }
+                            $copyText = $claudeScript;
+                        } else {
+                            $copyText = ($hasCleanVoucher || $isVoucherCat) && !empty($voucherCode) ? $voucherCode : $rawSn;
+                        }
+
                         $detectedLink = null;
                         if (preg_match('/(?:https?:\/\/|bit\.ly\/|tinyurl\.com\/)[^\s|]+/i', $rawSn, $mUrl)) {
                             $detectedLink = $mUrl[0];
@@ -203,14 +219,13 @@
                                 $detectedLink = 'https://' . $detectedLink;
                             }
                         }
-                        $copyText = ($hasCleanVoucher || $isVoucherCat) && !empty($voucherCode) ? $voucherCode : $rawSn;
                     @endphp
                     <!-- Informasi Akun / Voucher Resmi (Dari VIP Reseller) -->
                     <div class="bg-amber-500/10 dark:bg-amber-950/40 border-2 border-amber-500 rounded-2xl p-4 sm:p-6 shadow-md space-y-4">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-amber-500/30 pb-3">
                             <div class="flex items-center gap-2 font-black text-amber-950 dark:text-amber-300 text-sm sm:text-base">
-                                <i class="fas {{ ($hasCleanVoucher || $isVoucherCat) ? 'fa-ticket-alt' : 'fa-key' }} text-amber-500 text-base shrink-0"></i> 
-                                <span class="break-words">{{ ($hasCleanVoucher || $isVoucherCat) ? 'INFORMASI VOUCHER / SERIAL NUMBER' : 'INFORMASI AKUN / AKSES RESMI' }}</span>
+                                <i class="fas {{ $isClaude ? 'fa-terminal' : (($hasCleanVoucher || $isVoucherCat) ? 'fa-ticket-alt' : 'fa-key') }} text-amber-500 text-base shrink-0"></i> 
+                                <span class="break-words">{{ $isClaude ? 'AKSES CLAUDE AI API (POWERSHELL CLI)' : (($hasCleanVoucher || $isVoucherCat) ? 'INFORMASI VOUCHER / SERIAL NUMBER' : 'INFORMASI AKUN / AKSES RESMI') }}</span>
                             </div>
                             <span class="text-xs font-black bg-amber-500 text-white dark:text-slate-900 px-3 py-1 rounded-full uppercase tracking-wider shadow-sm shrink-0 w-fit">
                                 Aktif & Sukses
@@ -218,7 +233,39 @@
                         </div>
 
                         <div class="space-y-3">
-                            @if(($hasCleanVoucher || $isVoucherCat) && !empty($voucherCode))
+                            @if($isClaude)
+                                <!-- Claude Code 3-Lines Script Card -->
+                                <div class="space-y-3">
+                                    <div class="p-4 bg-slate-950 rounded-xl border-2 border-indigo-500 shadow-inner space-y-2 text-left">
+                                        <div class="flex items-center justify-between text-xs font-bold text-indigo-400">
+                                            <span><i class="fas fa-terminal mr-1.5"></i> Perintah PowerShell (3 Baris):</span>
+                                            <span class="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded font-mono">Siap Pakai</span>
+                                        </div>
+                                        <pre class="font-mono text-xs sm:text-sm font-semibold text-emerald-400 select-all leading-relaxed whitespace-pre-wrap break-all p-3 bg-slate-900 rounded-lg border border-slate-800">{{ $claudeScript }}</pre>
+                                    </div>
+
+                                    <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($copyText) }}'); alert('3 Baris Perintah PowerShell berhasil disalin! Silakan paste di Windows PowerShell dan tekan Enter.');" class="no-print w-full px-4 py-3 text-xs sm:text-sm font-black text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-xl shadow-md transition cursor-pointer flex items-center justify-center gap-2">
+                                        <i class="fas fa-copy text-sm"></i> Salin 3 Baris Perintah PowerShell
+                                    </button>
+
+                                    <!-- Tutorial Penggunaan untuk Customer -->
+                                    <div class="p-4 bg-slate-900/90 rounded-xl border border-indigo-500/30 text-left text-xs space-y-2.5">
+                                        <div class="font-bold text-white flex items-center gap-2 text-xs sm:text-sm text-indigo-300">
+                                            <i class="fas fa-book-open"></i> Panduan Penggunaan Claude Code (Customer):
+                                        </div>
+                                        <ol class="list-decimal list-inside space-y-2 text-slate-300 leading-relaxed">
+                                            <li>Buka aplikasi <strong>Windows PowerShell</strong> di laptop/PC Anda (Klik tombol <em>Start Windows</em> &gt; ketik <strong>PowerShell</strong>).</li>
+                                            <li>Klik tombol biru <strong>"Salin 3 Baris Perintah PowerShell"</strong> di atas.</li>
+                                            <li><strong>Paste</strong> di jendela PowerShell (klik kanan atau tekan <code>Ctrl + V</code>), lalu tekan <strong>Enter</strong> di keyboard.</li>
+                                            <li>Ketik perintah <code class="bg-indigo-950 text-indigo-300 px-1.5 py-0.5 rounded font-mono font-bold">claude</code> lalu tekan <strong>Enter</strong>. Selesai! Claude langsung aktif dan siap koding otomatis.</li>
+                                        </ol>
+                                        <div class="text-[11px] text-slate-400 pt-2 border-t border-slate-800 leading-relaxed">
+                                            💡 <em>Catatan: Jika laptop belum pernah memasang Claude Code, jalankan perintah instalasi 1 kali ini di PowerShell:</em><br>
+                                            <code class="text-amber-400 font-mono select-all">npm install -g @anthropic-ai/claude-code</code>
+                                        </div>
+                                    </div>
+                                </div>
+                            @elseif(($hasCleanVoucher || $isVoucherCat) && !empty($voucherCode))
                                 <!-- Voucher Code Highlight Card -->
                                 <div class="p-4 bg-slate-900 dark:bg-slate-950 rounded-xl border-2 border-amber-500 text-center shadow-inner space-y-1">
                                     <div class="text-[11px] font-black uppercase tracking-wider text-amber-400">
@@ -228,23 +275,35 @@
                                         {{ $voucherCode }}
                                     </div>
                                 </div>
+
+                                <div class="flex flex-wrap items-center gap-2 pt-1">
+                                    <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($copyText) }}'); alert('Kode voucher berhasil disalin!');" class="no-print flex-1 px-4 py-2.5 text-xs font-black text-white bg-amber-600 hover:bg-amber-700 active:scale-95 rounded-xl shadow-md transition whitespace-nowrap cursor-pointer flex items-center justify-center gap-2">
+                                        <i class="fas fa-copy text-sm"></i> Salin Kode Voucher
+                                    </button>
+
+                                    @if($detectedLink)
+                                    <a href="{{ $detectedLink }}" target="_blank" class="no-print px-4 py-2.5 text-xs font-black text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-xl shadow-md transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0">
+                                        <i class="fas fa-external-link-alt"></i> Buka Link Panduan
+                                    </a>
+                                    @endif
+                                </div>
                             @else
                                 <div class="p-4 bg-slate-900 dark:bg-slate-950 rounded-xl border-2 border-amber-500/40 font-mono text-xs sm:text-sm font-bold text-amber-300 select-all shadow-inner leading-relaxed break-words whitespace-pre-wrap">
                                     {{ $rawSn }}
                                 </div>
+
+                                <div class="flex flex-wrap items-center gap-2 pt-1">
+                                    <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($copyText) }}'); alert('Semua data akun berhasil disalin ke clipboard!');" class="no-print flex-1 px-4 py-2.5 text-xs font-black text-white bg-amber-600 hover:bg-amber-700 active:scale-95 rounded-xl shadow-md transition whitespace-nowrap cursor-pointer flex items-center justify-center gap-2">
+                                        <i class="fas fa-copy text-sm"></i> Salin Semua Data Akun
+                                    </button>
+
+                                    @if($detectedLink)
+                                    <a href="{{ $detectedLink }}" target="_blank" class="no-print px-4 py-2.5 text-xs font-black text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-xl shadow-md transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0">
+                                        <i class="fas fa-external-link-alt"></i> Buka Link Panduan
+                                    </a>
+                                    @endif
+                                </div>
                             @endif
-
-                            <div class="flex flex-wrap items-center gap-2 pt-1">
-                                <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($copyText) }}'); alert('{{ ($hasCleanVoucher || $isVoucherCat) ? 'Kode voucher berhasil disalin!' : 'Semua data akun berhasil disalin ke clipboard!' }}');" class="no-print flex-1 px-4 py-2.5 text-xs font-black text-white bg-amber-600 hover:bg-amber-700 active:scale-95 rounded-xl shadow-md transition whitespace-nowrap cursor-pointer flex items-center justify-center gap-2">
-                                    <i class="fas fa-copy text-sm"></i> {{ ($hasCleanVoucher || $isVoucherCat) ? 'Salin Kode Voucher' : 'Salin Semua Data Akun' }}
-                                </button>
-
-                                @if($detectedLink)
-                                <a href="{{ $detectedLink }}" target="_blank" class="no-print px-4 py-2.5 text-xs font-black text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-xl shadow-md transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0">
-                                    <i class="fas fa-external-link-alt"></i> Buka Link Panduan
-                                </a>
-                                @endif
-                            </div>
                         </div>
 
                         <p class="text-xs font-medium text-slate-800 dark:text-slate-200 pt-2.5 border-t border-amber-500/30">

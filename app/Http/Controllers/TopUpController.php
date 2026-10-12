@@ -445,7 +445,7 @@ class TopUpController extends Controller
             || str_contains(strtolower($game->category ?? ''), 'streaming')
             || str_contains(strtolower($game->category ?? ''), 'voucher');
 
-        if ($isApp && !empty($product->product_code)) {
+        if ($isApp && !empty($product->product_code) && $product->provider === 'vip_reseller') {
             try {
                 $vipApi = app(\App\Services\VipResellerService::class);
                 $inStock = $vipApi->isProductInStock($product->product_code);
@@ -503,9 +503,10 @@ class TopUpController extends Controller
                 'snap_token' => json_encode(['type' => 'balance', 'gateway' => 'wallet', 'amount' => (int) $finalAmount]),
             ]);
 
-            // 3. Coba kirim otomatis ke Provider (VIP Reseller)
-            try {
-                $vipService = app(\App\Services\VipResellerService::class);
+            // 3. Coba kirim otomatis ke Provider (VIP Reseller) jika provider adalah vip_reseller
+            if ($product->provider === 'vip_reseller') {
+                try {
+                    $vipService = app(\App\Services\VipResellerService::class);
                 if (method_exists($vipService, 'order')) {
                     $orderRes = $vipService->order(
                         $product->product_code,
@@ -550,6 +551,9 @@ class TopUpController extends Controller
             } catch (\Exception $e) {
                 return redirect()->route('topup.checkout.show', $transaction->id)->with('info', 'Pembayaran via Saldo Akun berhasil diterima! Pesanan Anda sedang diproses.');
             }
+        } else {
+            return redirect()->route('topup.checkout.show', $transaction->id)->with('success', 'Pembayaran via Saldo Akun berhasil! Pesanan Anda sedang dipersiapkan oleh Admin.');
+        }
         }
 
         // JIKA PEMBAYARAN QRIS (DENGAN BIAYA LAYANAN / KODE UNIK VERIFIKASI OTOMATIS GOPAY/QRIS)
