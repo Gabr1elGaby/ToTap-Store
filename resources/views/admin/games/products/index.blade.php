@@ -189,7 +189,7 @@
         <!-- Modal Tambah Nominal Manual -->
         <div x-show="openCreateModal" 
              x-cloak 
-             class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+             class="fixed inset-0 z-50 overflow-y-auto p-4 sm:p-6 flex min-h-full items-center justify-center bg-black/60 backdrop-blur-sm"
              x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0"
              x-transition:enter-end="opacity-100"
@@ -198,96 +198,102 @@
              x-transition:leave-end="opacity-0">
             
             <div @click.away="openCreateModal = false" 
-                 class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-lg p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+                 class="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-lg max-h-[85vh] flex flex-col my-auto overflow-hidden">
                 
-                <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-700">
+                <!-- Modal Header (Tetap di Atas) -->
+                <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 shrink-0 flex items-center justify-between bg-white dark:bg-gray-800">
                     <div>
                         <h3 class="text-lg font-black text-gray-900 dark:text-white flex items-center gap-2">
                             <i class="fas fa-plus-circle text-emerald-500"></i> Tambah Nominal Manual
                         </h3>
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Produk/Layanan: {{ $game->name }}</p>
                     </div>
-                    <button type="button" @click="openCreateModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-lg cursor-pointer">
+                    <button type="button" @click="openCreateModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-lg cursor-pointer p-1">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
 
-                <form action="{{ route('admin.games.products.store', $game) }}" method="POST" class="space-y-4">
+                <!-- Form dengan Body yang Scrollable dan Footer yang Terlihat Terus -->
+                <form action="{{ route('admin.games.products.store', $game) }}" method="POST" class="flex flex-col flex-1 min-h-0 overflow-hidden">
                     @csrf
 
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Nama Produk Nominal <span class="text-red-500">*</span></label>
-                        <input type="text" name="name" placeholder="Contoh: Claude Code API $100" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-bold text-sm" required>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Kode Produk (Opsional)</label>
-                        <input type="text" name="product_code" placeholder="Contoh: CLAUDE-100 (kosongkan jika otomatis)" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-mono text-xs">
-                        <p class="text-[11px] text-gray-400 mt-0.5">Bisa dikosongkan, sistem akan membuat kode otomatis.</p>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Scrollable Fields -->
+                    <div class="flex-1 overflow-y-auto px-6 py-4 space-y-4">
                         <div>
-                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Harga Modal (Rp) <span class="text-red-500">*</span></label>
-                            <div class="relative mt-1">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 font-bold text-gray-400 text-xs">Rp</span>
-                                <input type="number" step="1" name="price_modal" x-model.number="priceModal" placeholder="0" class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-mono font-bold text-sm" required>
-                            </div>
+                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Nama Produk Nominal <span class="text-red-500">*</span></label>
+                            <input type="text" name="name" placeholder="Contoh: Claude Code API $100" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-bold text-sm" required>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Harga Jual (Rp) <span class="text-red-500">*</span></label>
-                            <div class="relative mt-1">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 font-bold text-emerald-500 text-xs">Rp</span>
-                                <input type="number" step="1" name="price_sell" x-model.number="priceSell" placeholder="0" class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-mono font-bold text-sm text-emerald-600 dark:text-emerald-400" required>
+                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Kode Produk (Opsional)</label>
+                            <input type="text" name="product_code" placeholder="Contoh: CLAUDE-100 (kosongkan jika otomatis)" class="w-full mt-1.5 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-mono text-xs">
+                            <p class="text-[11px] text-gray-400 mt-0.5">Bisa dikosongkan, sistem akan membuat kode otomatis.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Harga Modal (Rp) <span class="text-red-500">*</span></label>
+                                <div class="relative mt-1">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 font-bold text-gray-400 text-xs">Rp</span>
+                                    <input type="number" step="1" name="price_modal" x-model.number="priceModal" placeholder="0" class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-mono font-bold text-sm" required>
+                                </div>
                             </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Harga Jual (Rp) <span class="text-red-500">*</span></label>
+                                <div class="relative mt-1">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 font-bold text-emerald-500 text-xs">Rp</span>
+                                    <input type="number" step="1" name="price_sell" x-model.number="priceSell" placeholder="0" class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-mono font-bold text-sm text-emerald-600 dark:text-emerald-400" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-slate-50 dark:bg-gray-900/60 rounded-xl flex items-center justify-between text-xs font-bold border border-gray-200 dark:border-gray-700">
+                            <span class="text-gray-500 dark:text-gray-400">Estimasi Untung/Margin:</span>
+                            <span :class="(priceSell - priceModal) >= 0 ? 'text-indigo-600 dark:text-indigo-400' : 'text-red-500'" x-text="'Rp' + new Intl.NumberFormat('id-ID').format((priceSell || 0) - (priceModal || 0))">Rp0</span>
+                        </div>
+
+                        <!-- Promo Checkbox -->
+                        <div class="p-4 bg-amber-500/10 border border-amber-400/40 rounded-xl space-y-2">
+                            <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-800 dark:text-gray-200">
+                                <input type="checkbox" name="is_promo" value="1" x-model="isPromo" class="rounded text-indigo-600 focus:ring-indigo-500">
+                                <span>🔥 Pasang Diskon / Harga Coret</span>
+                            </label>
+                            <div x-show="isPromo" class="space-y-1 pt-1">
+                                <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400">Harga Normal (Sebelum Diskon)</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 font-bold text-gray-400 text-xs">Rp</span>
+                                    <input type="number" step="1" name="price_normal" x-model.number="priceNormal" placeholder="Contoh: 150000" class="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-mono text-xs">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Input Stok Akun / Token API -->
+                        <div class="space-y-1.5 p-4 bg-slate-50 dark:bg-gray-900/60 rounded-2xl border border-gray-200 dark:border-gray-700">
+                            <label class="block text-xs font-black text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fas fa-boxes text-emerald-500"></i> Input Stok Token / Script API (Bisa Banyak Sekaligus)
+                            </label>
+                            <p class="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
+                                Tempelkan 4 script API yang Anda punya sekaligus di sini (pisahkan dengan enter kosong). Sistem otomatis mendeteksi setiap script sebagai <strong>1 stok</strong>. Saat customer beli, mereka otomatis hanya menerima 1 stok dan sisa stok Anda berkurang 1.
+                            </p>
+                            <textarea name="stocks_input" rows="5" class="w-full mt-1 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 font-mono text-xs text-emerald-600 dark:text-emerald-400 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500" placeholder="set ANTHROPIC_BASE_URL=https://api.mwapi.dev&#10;set ANTHROPIC_AUTH_TOKEN=sk-xxx1&#10;set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1&#10;&#10;set ANTHROPIC_BASE_URL=https://api.mwapi.dev&#10;set ANTHROPIC_AUTH_TOKEN=sk-xxx2&#10;set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Status Ketersediaan</label>
+                            <select name="status" class="w-full mt-1.5 p-2.5 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-bold text-sm">
+                                <option value="available" selected>Tersedia (Available) - Tampil di Website</option>
+                                <option value="empty">Kosong / Habis (Sembunyikan)</option>
+                            </select>
                         </div>
                     </div>
 
-                    <div class="p-3 bg-slate-50 dark:bg-gray-900/60 rounded-xl flex items-center justify-between text-xs font-bold border border-gray-200 dark:border-gray-700">
-                        <span class="text-gray-500 dark:text-gray-400">Estimasi Untung/Margin:</span>
-                        <span :class="(priceSell - priceModal) >= 0 ? 'text-indigo-600 dark:text-indigo-400' : 'text-red-500'" x-text="'Rp' + new Intl.NumberFormat('id-ID').format((priceSell || 0) - (priceModal || 0))">Rp0</span>
-                    </div>
-
-                    <!-- Promo Checkbox -->
-                    <div class="p-4 bg-amber-500/10 border border-amber-400/40 rounded-xl space-y-2">
-                        <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-800 dark:text-gray-200">
-                            <input type="checkbox" name="is_promo" value="1" x-model="isPromo" class="rounded text-indigo-600 focus:ring-indigo-500">
-                            <span>🔥 Pasang Diskon / Harga Coret</span>
-                        </label>
-                        <div x-show="isPromo" class="space-y-1 pt-1">
-                            <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400">Harga Normal (Sebelum Diskon)</label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 font-bold text-gray-400 text-xs">Rp</span>
-                                <input type="number" step="1" name="price_normal" x-model.number="priceNormal" placeholder="Contoh: 150000" class="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-mono text-xs">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Input Stok Akun / Token API -->
-                    <div class="space-y-1.5 p-4 bg-slate-50 dark:bg-gray-900/60 rounded-2xl border border-gray-200 dark:border-gray-700">
-                        <label class="block text-xs font-black text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
-                            <i class="fas fa-boxes text-emerald-500"></i> Input Stok Token / Script API (Bisa Banyak Sekaligus)
-                        </label>
-                        <p class="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
-                            Tempelkan 4 script API yang Anda punya sekaligus di sini (pisahkan dengan enter kosong). Sistem otomatis mendeteksi setiap script sebagai <strong>1 stok</strong>. Saat customer beli, mereka otomatis hanya menerima 1 stok dan sisa stok Anda berkurang 1.
-                        </p>
-                        <textarea name="stocks_input" rows="5" class="w-full mt-1 p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 font-mono text-xs text-emerald-600 dark:text-emerald-400 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500" placeholder="set ANTHROPIC_BASE_URL=https://api.mwapi.dev&#10;set ANTHROPIC_AUTH_TOKEN=sk-xxx1&#10;set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1&#10;&#10;set ANTHROPIC_BASE_URL=https://api.mwapi.dev&#10;set ANTHROPIC_AUTH_TOKEN=sk-xxx2&#10;set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1"></textarea>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Status Ketersediaan</label>
-                        <select name="status" class="w-full mt-1.5 p-2.5 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white font-bold text-sm">
-                            <option value="available" selected>Tersedia (Available) - Tampil di Website</option>
-                            <option value="empty">Kosong / Habis (Sembunyikan)</option>
-                        </select>
-                    </div>
-
-                    <div class="pt-4 flex items-center justify-end gap-2 border-t border-gray-100 dark:border-gray-700">
-                        <button type="button" @click="openCreateModal = false" class="px-4 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold text-xs transition cursor-pointer">
+                    <!-- Modal Footer (Selalu Terlihat di Bagian Bawah, Tidak Terpotong) -->
+                    <div class="px-6 py-4 bg-gray-50 dark:bg-gray-800/90 border-t border-gray-100 dark:border-gray-700 shrink-0 flex items-center justify-end gap-2">
+                        <button type="button" @click="openCreateModal = false" class="px-4 py-2.5 rounded-xl bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold text-xs transition cursor-pointer">
                             Batal
                         </button>
-                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl shadow-md transition flex items-center gap-1.5 text-xs cursor-pointer">
+                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-lg hover:shadow-emerald-500/20 transition flex items-center gap-1.5 text-xs cursor-pointer">
                             <i class="fas fa-save"></i> Simpan Nominal
                         </button>
                     </div>
@@ -298,7 +304,7 @@
         <!-- Modal Kelola Stok Produk -->
         <div x-show="openStockModal" 
              x-cloak 
-             class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+             class="fixed inset-0 z-50 overflow-y-auto p-4 sm:p-6 flex min-h-full items-center justify-center bg-black/60 backdrop-blur-sm"
              x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0"
              x-transition:enter-end="opacity-100"
@@ -307,84 +313,89 @@
              x-transition:leave-end="opacity-0">
             
             <div @click.away="openStockModal = false" 
-                 class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+                 class="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-2xl max-h-[85vh] flex flex-col my-auto overflow-hidden">
                 
-                <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-700">
+                <!-- Modal Header (Tetap di Atas) -->
+                <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 shrink-0 flex items-center justify-between bg-white dark:bg-gray-800">
                     <div>
                         <h3 class="text-lg font-black text-gray-900 dark:text-white flex items-center gap-2">
                             <i class="fas fa-boxes text-emerald-500"></i> Kelola Stok Akun / Token
                         </h3>
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Produk: <span class="font-bold text-indigo-600 dark:text-indigo-400" x-text="activeProductName"></span></p>
                     </div>
-                    <button type="button" @click="openStockModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-lg cursor-pointer">
+                    <button type="button" @click="openStockModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-lg cursor-pointer p-1">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
 
-                <!-- Form Tambah Stok Baru -->
-                <form :action="'/admin/games/{{ $game->id }}/products/' + activeProduct + '/stocks'" method="POST" class="p-4 bg-slate-50 dark:bg-gray-900/60 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-3">
-                    @csrf
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1">
-                            + Tambah Stok Token / Script Baru
-                        </label>
-                        <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-1.5">
-                            Tempelkan 1 atau beberapa script/token API di sini (pisahkan dengan enter kosong).
-                        </p>
-                        <textarea name="stocks_input" rows="4" class="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 font-mono text-xs text-emerald-600 dark:text-emerald-400 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500" placeholder="Paste script/token baru di sini..." required></textarea>
-                    </div>
-                    <div class="flex justify-end">
-                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
-                            <i class="fas fa-plus-circle"></i> Tambah ke Stok
-                        </button>
-                    </div>
-                </form>
+                <!-- Scrollable Body -->
+                <div class="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+                    <!-- Form Tambah Stok Baru -->
+                    <form :action="'/admin/games/{{ $game->id }}/products/' + activeProduct + '/stocks'" method="POST" class="p-4 bg-slate-50 dark:bg-gray-900/60 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-3">
+                        @csrf
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1">
+                                + Tambah Stok Token / Script Baru
+                            </label>
+                            <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-1.5">
+                                Tempelkan 1 atau beberapa script/token API di sini (pisahkan dengan enter kosong).
+                            </p>
+                            <textarea name="stocks_input" rows="4" class="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-900 font-mono text-xs text-emerald-600 dark:text-emerald-400 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500" placeholder="Paste script/token baru di sini..." required></textarea>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                                <i class="fas fa-plus-circle"></i> Tambah ke Stok
+                            </button>
+                        </div>
+                    </form>
 
-                <!-- Daftar Stok yang Tersedia & Terpakai -->
-                <div class="space-y-3">
-                    <h4 class="text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center justify-between">
-                        <span>Daftar Stok (<span x-text="stockList.filter(s => s.status === 'available').length"></span> Tersedia / <span x-text="stockList.length"></span> Total)</span>
-                    </h4>
+                    <!-- Daftar Stok yang Tersedia & Terpakai -->
+                    <div class="space-y-3">
+                        <h4 class="text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center justify-between">
+                            <span>Daftar Stok (<span x-text="stockList.filter(s => s.status === 'available').length"></span> Tersedia / <span x-text="stockList.length"></span> Total)</span>
+                        </h4>
 
-                    <div x-show="loadingStocks" class="text-center py-6 text-gray-400 text-xs">
-                        <i class="fas fa-spinner fa-spin mr-1"></i> Memuat data stok...
-                    </div>
+                        <div x-show="loadingStocks" class="text-center py-6 text-gray-400 text-xs">
+                            <i class="fas fa-spinner fa-spin mr-1"></i> Memuat data stok...
+                        </div>
 
-                    <div x-show="!loadingStocks && stockList.length === 0" class="text-center py-6 text-gray-400 text-xs">
-                        Belum ada stok untuk produk ini. Silakan tempelkan script di atas untuk menambahkan stok.
-                    </div>
+                        <div x-show="!loadingStocks && stockList.length === 0" class="text-center py-6 text-gray-400 text-xs">
+                            Belum ada stok untuk produk ini. Silakan tempelkan script di atas untuk menambahkan stok.
+                        </div>
 
-                    <div x-show="!loadingStocks && stockList.length > 0" class="space-y-2 max-h-60 overflow-y-auto pr-1">
-                        <template x-for="item in stockList" :key="item.id">
-                            <div class="p-3 rounded-xl border flex items-center justify-between gap-3 text-xs"
-                                 :class="item.status === 'available' ? 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700' : 'bg-slate-100 dark:bg-gray-900/40 border-gray-100 dark:border-gray-800 opacity-60'">
-                                <div class="min-w-0 flex-1 space-y-0.5">
-                                    <div class="flex items-center gap-2">
-                                        <span class="font-mono text-[10px] px-2 py-0.5 rounded-full font-bold"
-                                              :class="item.status === 'available' ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' : 'bg-slate-500/10 text-slate-500 border border-slate-500/20'"
-                                              x-text="item.status === 'available' ? 'Tersedia' : 'Terpakai (Order #' + (item.transaction_id || '-') + ')'">
-                                        </span>
-                                        <span class="text-[11px] text-gray-400 font-mono" x-text="item.created_at"></span>
+                        <div x-show="!loadingStocks && stockList.length > 0" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                            <template x-for="item in stockList" :key="item.id">
+                                <div class="p-3 rounded-xl border flex items-center justify-between gap-3 text-xs"
+                                     :class="item.status === 'available' ? 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700' : 'bg-slate-100 dark:bg-gray-900/40 border-gray-100 dark:border-gray-800 opacity-60'">
+                                    <div class="min-w-0 flex-1 space-y-0.5">
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-mono text-[10px] px-2 py-0.5 rounded-full font-bold"
+                                                  :class="item.status === 'available' ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' : 'bg-slate-500/10 text-slate-500 border border-slate-500/20'"
+                                                  x-text="item.status === 'available' ? 'Tersedia' : 'Terpakai (Order #' + (item.transaction_id || '-') + ')'">
+                                            </span>
+                                            <span class="text-[11px] text-gray-400 font-mono" x-text="item.created_at"></span>
+                                        </div>
+                                        <div class="font-mono text-[11px] text-gray-700 dark:text-gray-300 truncate" x-text="item.content_preview"></div>
                                     </div>
-                                    <div class="font-mono text-[11px] text-gray-700 dark:text-gray-300 truncate" x-text="item.content_preview"></div>
-                                </div>
 
-                                <template x-if="item.status === 'available'">
-                                    <form :action="'/admin/games/{{ $game->id }}/products/' + activeProduct + '/stocks/' + item.id" method="POST" onsubmit="return confirm('Hapus 1 stok ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-rose-500 hover:text-rose-700 p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer" title="Hapus Stok Ini">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </form>
-                                </template>
-                            </div>
-                        </template>
+                                    <template x-if="item.status === 'available'">
+                                        <form :action="'/admin/games/{{ $game->id }}/products/' + activeProduct + '/stocks/' + item.id" method="POST" onsubmit="return confirm('Hapus 1 stok ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-rose-500 hover:text-rose-700 p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer" title="Hapus Stok Ini">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
                     </div>
                 </div>
 
-                <div class="pt-3 border-t border-gray-100 dark:border-gray-700 flex justify-end">
-                    <button type="button" @click="openStockModal = false" class="px-5 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold text-xs transition cursor-pointer">
+                <!-- Modal Footer (Tetap di Bawah) -->
+                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-800/90 border-t border-gray-100 dark:border-gray-700 shrink-0 flex justify-end">
+                    <button type="button" @click="openStockModal = false" class="px-5 py-2.5 rounded-xl bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold text-xs transition cursor-pointer">
                         Tutup
                     </button>
                 </div>
