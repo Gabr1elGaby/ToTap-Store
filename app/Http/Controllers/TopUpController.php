@@ -241,14 +241,27 @@ class TopUpController extends Controller
         $stockMap = [];
         foreach ($uniqueProducts as $p) {
             $modal = (float) $p->price_modal;
-            $isOutOfStock = ($p->status !== 'available' || ($hasBalanceThreshold && $modal > $vipBalance));
-            if (!$isOutOfStock && $isAppOrVoucher && !empty($p->product_code)) {
-                $stockCacheKey = 'vip_stock_prod_' . $p->product_code;
-                $inStock = Cache::remember($stockCacheKey, 10, function () use ($p) {
-                    return app(\App\Services\VipResellerService::class)->isProductInStock($p->product_code);
-                });
-                if (!$inStock) {
-                    $isOutOfStock = true;
+            $isManual = ($p->provider === 'manual') || ($game->category === 'manual');
+
+            if ($isManual) {
+                // Untuk produk manual (ChatGPT, dll): jika statusnya 'available', pembeli langsung bisa order!
+                // Jika produk memiliki stok database yang diisi (misal Claude), cek ketersediaan stoknya.
+                $hasStockPool = $p->stocks()->exists();
+                if ($hasStockPool) {
+                    $isOutOfStock = ($p->status !== 'available' || $p->availableStocks()->count() <= 0);
+                } else {
+                    $isOutOfStock = ($p->status !== 'available');
+                }
+            } else {
+                $isOutOfStock = ($p->status !== 'available' || ($hasBalanceThreshold && $modal > $vipBalance));
+                if (!$isOutOfStock && $isAppOrVoucher && !empty($p->product_code)) {
+                    $stockCacheKey = 'vip_stock_prod_' . $p->product_code;
+                    $inStock = Cache::remember($stockCacheKey, 10, function () use ($p) {
+                        return app(\App\Services\VipResellerService::class)->isProductInStock($p->product_code);
+                    });
+                    if (!$inStock) {
+                        $isOutOfStock = true;
+                    }
                 }
             }
             $stockMap[(string)$p->id] = $isOutOfStock;
@@ -348,18 +361,31 @@ class TopUpController extends Controller
         $threshold = (float) \App\Models\Setting::get('vip_balance_threshold', 0);
         $hasBalanceThreshold = ($threshold > 0 && $vipBalance > 0);
 
-        $products = $game->products()->select('id', 'price_modal', 'status', 'product_code')->get();
+        $products = $game->products()->select('id', 'price_modal', 'status', 'product_code', 'provider')->get();
         $stockMap = [];
         foreach ($products as $p) {
             $modal = (float) $p->price_modal;
-            $isOutOfStock = ($p->status !== 'available' || ($hasBalanceThreshold && $modal > $vipBalance));
-            if (!$isOutOfStock && $isAppOrVoucher && !empty($p->product_code)) {
-                $stockCacheKey = 'vip_stock_prod_' . $p->product_code;
-                $inStock = Cache::remember($stockCacheKey, 10, function () use ($p) {
-                    return app(\App\Services\VipResellerService::class)->isProductInStock($p->product_code);
-                });
-                if (!$inStock) {
-                    $isOutOfStock = true;
+            $isManual = ($p->provider === 'manual') || ($game->category === 'manual');
+
+            if ($isManual) {
+                // Untuk produk manual (ChatGPT, dll): jika statusnya 'available', pembeli langsung bisa order!
+                // Jika produk memiliki stok database yang diisi (misal Claude), cek ketersediaan stoknya.
+                $hasStockPool = $p->stocks()->exists();
+                if ($hasStockPool) {
+                    $isOutOfStock = ($p->status !== 'available' || $p->availableStocks()->count() <= 0);
+                } else {
+                    $isOutOfStock = ($p->status !== 'available');
+                }
+            } else {
+                $isOutOfStock = ($p->status !== 'available' || ($hasBalanceThreshold && $modal > $vipBalance));
+                if (!$isOutOfStock && $isAppOrVoucher && !empty($p->product_code)) {
+                    $stockCacheKey = 'vip_stock_prod_' . $p->product_code;
+                    $inStock = Cache::remember($stockCacheKey, 10, function () use ($p) {
+                        return app(\App\Services\VipResellerService::class)->isProductInStock($p->product_code);
+                    });
+                    if (!$inStock) {
+                        $isOutOfStock = true;
+                    }
                 }
             }
             $stockMap[(string)$p->id] = $isOutOfStock;

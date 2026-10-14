@@ -306,15 +306,22 @@ class AdminTransactionController extends Controller
         $product = $transaction->gameProduct ?? $transaction->product;
         $game = $transaction->game;
 
-        // JIKA PRODUK MANUAL (CLAUDE AI): ALOKASIKAN STOK POOL MANUAL & JANGAN KE VIP RESELLER!
+        // JIKA PRODUK MANUAL (CLAUDE AI / CHATGPT MANUAL):
         if ($product && ($product->provider === 'manual' || ($game && $game->category === 'manual'))) {
-            $transaction->update(['status' => 'processing']);
-            $fulfilled = \App\Models\GameProductStock::fulfillManualStock($transaction);
-            if ($fulfilled) {
-                return back()->with('success', "Pesanan Claude / Manual #{$transaction->id} BERHASIL di-ACC! 1 Token telah otomatis diberikan ke customer.");
+            $hasStockPool = $product->stocks()->exists();
+            if ($hasStockPool) {
+                $transaction->update(['status' => 'processing']);
+                $fulfilled = \App\Models\GameProductStock::fulfillManualStock($transaction);
+                if ($fulfilled) {
+                    return back()->with('success', "Pesanan {$product->name} #{$transaction->id} BERHASIL di-ACC! 1 Stok/Token telah otomatis diberikan ke customer.");
+                } else {
+                    $transaction->update(['status' => 'paid']);
+                    return back()->with('warning', "Pembayaran di-ACC, namun stok instan sedang KOSONG. Silakan tambahkan stok di Kelola Stok.");
+                }
             } else {
-                $transaction->update(['status' => 'paid']);
-                return back()->with('warning', "Pembayaran di-ACC, namun stok manual sedang KOSONG. Silakan tambahkan stok di Kelola Stok.");
+                // Untuk produk yang tidak menggunakan stok instan (misal ChatGPT: admin beli dulu ke supplier lalu input akun)
+                $transaction->update(['status' => 'processing']);
+                return back()->with('success', "Pesanan {$product->name} #{$transaction->id} berhasil di-ACC! Silakan proses akun dan klik tombol 'Input Token/SN' untuk memberikan akun ke pembeli.");
             }
         }
 
