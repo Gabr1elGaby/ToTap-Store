@@ -280,6 +280,7 @@
                     playerId: sessionStorage.getItem('totap_player_id_{{ $game->slug }}') || '',
                     zoneId: sessionStorage.getItem('totap_zone_id_{{ $game->slug }}') || '',
                     stockMap: {{ json_encode($stockMap ?? []) }},
+                    queueMap: {{ json_encode($queueMap ?? []) }},
                     productPromoMap: {{ json_encode($productPromoMap) }},
                     getAvailablePromos() {
                         if (!this.selectedProduct || !this.productPromoMap[this.selectedProduct]) return [];
@@ -303,6 +304,9 @@
                             .then(data => {
                                 if (data && data.stock_map) {
                                     this.stockMap = data.stock_map;
+                                    if (data.queue_map) {
+                                        this.queueMap = data.queue_map;
+                                    }
                                     if (this.selectedProduct && this.stockMap[this.selectedProduct]) {
                                         this.selectedProduct = null;
                                     }
@@ -542,6 +546,7 @@
                                                       data-product-name="{{ $displayName }}"
                                                       data-product-price="Rp{{ number_format($prodCalc['final_amount'], 0, ',', '.') }}"
                                                       data-product-original-price="Rp{{ number_format($product->price_sell, 0, ',', '.') }}"
+                                                      data-is-queue="{{ (!empty($queueMap[$product->id])) ? '1' : '0' }}"
                                                       :class="{
                                                           'border-2 border-dashed border-gray-300 dark:border-gray-700 bg-gray-100/50 dark:bg-gray-800/40 opacity-40 cursor-not-allowed select-none': stockMap['{{ $product->id }}'],
                                                           'border-2 border-indigo-500 bg-indigo-50/60 dark:bg-gray-900 shadow-lg shadow-indigo-500/20 ring-2 ring-indigo-500/50 scale-[1.02] cursor-pointer': !stockMap['{{ $product->id }}'] && selectedProduct == '{{ $product->id }}',
@@ -892,9 +897,22 @@
                         `;
                     }
 
+                    const isQueueFromProdEl = prodEl ? (prodEl.getAttribute('data-is-queue') === '1' || prodEl.getAttribute('data-is-queue') === 'true') : false;
+                    const alpineData = (typeof Alpine !== 'undefined' && Alpine.$data) ? Alpine.$data(document.querySelector('[x-data]')) : null;
+                    const isQueueFromAlpine = (alpineData && alpineData.queueMap && (alpineData.queueMap[formData.get('product_id')] === true || alpineData.queueMap[formData.get('product_id')] == 1));
+                    const isQueueGame = !{{ $isApp ? 'true' : 'false' }} && (isQueueFromProdEl || isQueueFromAlpine);
+
+                    const queueNoticeHtml = isQueueGame ? `
+                        <div class="mb-3 p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 font-bold text-xs sm:text-sm text-center flex items-center justify-center gap-2">
+                            <span class="text-base">⏳</span>
+                            <span>Estimasi proses 1 x 24 jam</span>
+                        </div>
+                    ` : '';
+
                     Swal.fire({
                         title: '<span class="text-lg font-black text-gray-900 dark:text-white">Konfirmasi Data Pesanan</span>',
                         html: `
+                            ${queueNoticeHtml}
                             <div class="text-left text-xs space-y-2.5 p-4 rounded-2xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 my-2">
                                 <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
                                     <span class="text-gray-500 dark:text-gray-400 font-semibold">Game:</span>

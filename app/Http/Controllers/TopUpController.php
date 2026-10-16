@@ -98,7 +98,11 @@ class TopUpController extends Controller
 
         foreach ($allProducts as $product) {
             $modal = (float)$product->price_modal;
-            $product->is_out_of_stock = ($product->status !== 'available' || ($hasBalanceThreshold && $modal > $vipBalance));
+            if ($isAppOrVoucher) {
+                $product->is_out_of_stock = ($product->status !== 'available' || ($hasBalanceThreshold && $modal > $vipBalance));
+            } else {
+                $product->is_out_of_stock = false;
+            }
             $name = strtolower(trim($product->name));
             
             // 1. FILTERING STRICT: Hapus produk Skin, First Top Up, Charisma, dan NON-IDN (Global/Luar Negeri)
@@ -239,9 +243,11 @@ class TopUpController extends Controller
         }
 
         $stockMap = [];
+        $queueMap = [];
         foreach ($uniqueProducts as $p) {
             $modal = (float) $p->price_modal;
             $isManual = ($p->provider === 'manual') || ($game->category === 'manual');
+            $isQueue = false;
 
             if ($isManual) {
                 // Untuk produk manual (ChatGPT, dll): jika statusnya 'available', pembeli langsung bisa order!
@@ -253,18 +259,27 @@ class TopUpController extends Controller
                     $isOutOfStock = ($p->status !== 'available');
                 }
             } else {
-                $isOutOfStock = ($p->status !== 'available' || ($hasBalanceThreshold && $modal > $vipBalance));
-                if (!$isOutOfStock && $isAppOrVoucher && !empty($p->product_code)) {
-                    $stockCacheKey = 'vip_stock_prod_' . $p->product_code;
-                    $inStock = Cache::remember($stockCacheKey, 10, function () use ($p) {
-                        return app(\App\Services\VipResellerService::class)->isProductInStock($p->product_code);
-                    });
-                    if (!$inStock) {
-                        $isOutOfStock = true;
+                if ($isAppOrVoucher) {
+                    $isOutOfStock = ($p->status !== 'available' || ($hasBalanceThreshold && $modal > $vipBalance));
+                    if (!$isOutOfStock && !empty($p->product_code)) {
+                        $stockCacheKey = 'vip_stock_prod_' . $p->product_code;
+                        $inStock = Cache::remember($stockCacheKey, 10, function () use ($p) {
+                            return app(\App\Services\VipResellerService::class)->isProductInStock($p->product_code);
+                        });
+                        if (!$inStock) {
+                            $isOutOfStock = true;
+                        }
+                    }
+                } else {
+                    // Untuk Game: jangan tandai Stok Habis karena saldo provider kurang
+                    $isOutOfStock = false;
+                    if ($hasBalanceThreshold && $modal > $vipBalance) {
+                        $isQueue = true;
                     }
                 }
             }
             $stockMap[(string)$p->id] = $isOutOfStock;
+            $queueMap[(string)$p->id] = $isQueue;
         }
 
         $user = auth()->user();
@@ -277,6 +292,7 @@ class TopUpController extends Controller
             'categories' => $finalCategories,
             'vipBalance' => $vipBalance,
             'stockMap' => $stockMap,
+            'queueMap' => $queueMap,
             'promoSettings' => $promoSettings,
             'dayCheck' => $dayCheck,
             'isFirstTime' => $isFirstTime,
@@ -363,9 +379,11 @@ class TopUpController extends Controller
 
         $products = $game->products()->select('id', 'price_modal', 'status', 'product_code', 'provider')->get();
         $stockMap = [];
+        $queueMap = [];
         foreach ($products as $p) {
             $modal = (float) $p->price_modal;
             $isManual = ($p->provider === 'manual') || ($game->category === 'manual');
+            $isQueue = false;
 
             if ($isManual) {
                 // Untuk produk manual (ChatGPT, dll): jika statusnya 'available', pembeli langsung bisa order!
@@ -377,24 +395,34 @@ class TopUpController extends Controller
                     $isOutOfStock = ($p->status !== 'available');
                 }
             } else {
-                $isOutOfStock = ($p->status !== 'available' || ($hasBalanceThreshold && $modal > $vipBalance));
-                if (!$isOutOfStock && $isAppOrVoucher && !empty($p->product_code)) {
-                    $stockCacheKey = 'vip_stock_prod_' . $p->product_code;
-                    $inStock = Cache::remember($stockCacheKey, 10, function () use ($p) {
-                        return app(\App\Services\VipResellerService::class)->isProductInStock($p->product_code);
-                    });
-                    if (!$inStock) {
-                        $isOutOfStock = true;
+                if ($isAppOrVoucher) {
+                    $isOutOfStock = ($p->status !== 'available' || ($hasBalanceThreshold && $modal > $vipBalance));
+                    if (!$isOutOfStock && !empty($p->product_code)) {
+                        $stockCacheKey = 'vip_stock_prod_' . $p->product_code;
+                        $inStock = Cache::remember($stockCacheKey, 10, function () use ($p) {
+                            return app(\App\Services\VipResellerService::class)->isProductInStock($p->product_code);
+                        });
+                        if (!$inStock) {
+                            $isOutOfStock = true;
+                        }
+                    }
+                } else {
+                    // Untuk Game: jangan tandai Stok Habis karena saldo provider kurang
+                    $isOutOfStock = false;
+                    if ($hasBalanceThreshold && $modal > $vipBalance) {
+                        $isQueue = true;
                     }
                 }
             }
             $stockMap[(string)$p->id] = $isOutOfStock;
+            $queueMap[(string)$p->id] = $isQueue;
         }
 
         return response()->json([
             'success' => true,
             'vip_balance' => $vipBalance,
             'stock_map' => $stockMap,
+            'queue_map' => $queueMap,
         ])->header('Cache-Control', 'no-store, no-cache, must-revalidate');
     }
 
@@ -460,9 +488,6 @@ class TopUpController extends Controller
 
         $threshold = (float) \App\Models\Setting::get('vip_balance_threshold', 0);
         $vipBalance = Cache::get('vip_reseller_balance') ?? (float)\App\Models\Setting::get('vip_reseller_balance', 0);
-        if ($threshold > 0 && $vipBalance > 0 && $product->price_modal > $vipBalance) {
-            return back()->with('error', 'Mohon maaf, nominal ' . $product->name . ' sedang dalam pemeliharaan saldo provider. Silakan hubungi Admin.');
-        }
         
         // Cek apakah produk yang dibeli adalah Aplikasi Premium / Streaming / Voucher
         $isApp = in_array($game->category, ['Aplikasi Premium', 'App & Entertainment', 'streaming', 'Voucher']) 
@@ -470,6 +495,10 @@ class TopUpController extends Controller
             || str_contains(strtolower($game->category ?? ''), 'aplikasi')
             || str_contains(strtolower($game->category ?? ''), 'streaming')
             || str_contains(strtolower($game->category ?? ''), 'voucher');
+
+        if ($isApp && $threshold > 0 && $vipBalance > 0 && $product->price_modal > $vipBalance) {
+            return back()->with('error', 'Mohon maaf, nominal ' . $product->name . ' sedang dalam pemeliharaan saldo provider. Silakan hubungi Admin.');
+        }
 
         if ($isApp && !empty($product->product_code) && $product->provider === 'vip_reseller') {
             try {
@@ -566,8 +595,19 @@ class TopUpController extends Controller
                         return redirect()->route('topup.checkout.show', $transaction->id)->with('info', 'Pembayaran via Saldo Akun berhasil! Pesanan sedang dalam antrean proses server provider.');
                     }
                 } else {
-                    // JIKA PROVIDER GAGAL/MENOLAK: OTOMATIS REFUND DANA KE SALDO AKUN USER!
                     $errMsg = $orderRes['message'] ?? 'Provider gagal memproses pesanan.';
+                    $isSaldoIssue = str_contains(strtolower($errMsg), 'saldo') || str_contains(strtolower($errMsg), 'balance');
+                    
+                    if (!$isApp && $isSaldoIssue) {
+                        // Masukkan ke antrean otomatis 1x24 jam
+                        $transaction->update([
+                            'status' => 'processing',
+                            'provider_sn' => 'MENUNGGU SALDO ADMIN',
+                        ]);
+                        return redirect()->route('topup.checkout.show', $transaction->id)->with('info', 'Pembayaran via Saldo Akun berhasil diterima! Pesanan Anda telah masuk antrean otomatis (Estimasi 1 x 24 Jam) dan akan diproses segera.');
+                    }
+
+                    // JIKA PROVIDER GAGAL/MENOLAK KARENA ALASAN LAIN: OTOMATIS REFUND DANA KE SALDO AKUN USER!
                     $user->increment('balance', $finalAmount);
                     $transaction->update([
                         'status' => 'refunded',

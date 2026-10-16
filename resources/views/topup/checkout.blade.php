@@ -7,6 +7,11 @@
                     $isSuccess = in_array(strtolower($transaction->status), ['paid', 'success', 'completed']);
                     $isProcessing = in_array(strtolower($transaction->status), ['processing', 'waiting']);
                     $isPaid = $isSuccess || $isProcessing || $isBalance;
+                    $isGameOrder = ($transaction->game && !in_array($transaction->game->category, ['Aplikasi Premium', 'Voucher', 'App & Entertainment']) && !str_contains(strtolower($transaction->game->category ?? ''), 'app') && !str_contains(strtolower($transaction->game->category ?? ''), 'aplikasi'));
+                    $threshold = (float) \App\Models\Setting::get('vip_balance_threshold', 0);
+                    $vipBal = \Illuminate\Support\Facades\Cache::get('vip_reseller_balance') ?? (float)\App\Models\Setting::get('vip_reseller_balance', 0);
+                    $isLowBalance = ($threshold > 0 && $vipBal > 0 && !empty($transaction->gameProduct) && $transaction->gameProduct->price_modal > $vipBal);
+                    $isQueueOrder = $isGameOrder && (($transaction->provider_sn === 'MENUNGGU SALDO ADMIN') || $isLowBalance);
                 @endphp
 
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
@@ -33,6 +38,13 @@
                         @endif
                     </div>
                 </div>
+                
+                @if($isQueueOrder)
+                    <div class="mb-6 p-4 rounded-2xl bg-amber-500/10 border-2 border-amber-500/30 flex items-center justify-center gap-2 text-center text-amber-700 dark:text-amber-300 font-bold text-sm shadow-sm">
+                        <span class="text-base">⏳</span>
+                        <span>Estimasi proses 1 x 24 jam</span>
+                    </div>
+                @endif
                 
                 <!-- Order Summary Card -->
                 <div class="bg-gray-50 dark:bg-gray-900 rounded-2xl p-4 sm:p-6 mb-8 border border-gray-200 dark:border-gray-700">
