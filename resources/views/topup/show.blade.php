@@ -897,10 +897,8 @@
                         `;
                     }
 
-                    const isQueueFromProdEl = prodEl ? (prodEl.getAttribute('data-is-queue') === '1' || prodEl.getAttribute('data-is-queue') === 'true') : false;
-                    const alpineData = (typeof Alpine !== 'undefined' && Alpine.$data) ? Alpine.$data(document.querySelector('[x-data]')) : null;
-                    const isQueueFromAlpine = (alpineData && alpineData.queueMap && (alpineData.queueMap[formData.get('product_id')] === true || alpineData.queueMap[formData.get('product_id')] == 1));
-                    const isQueueGame = !{{ $isApp ? 'true' : 'false' }} && (isQueueFromProdEl || isQueueFromAlpine);
+                    const isChatGPT = {{ (str_contains(strtolower($game->slug ?? ''), 'chatgpt') || str_contains(strtolower($game->name ?? ''), 'chatgpt')) ? 'true' : 'false' }};
+                    const isQueueGame = (!{{ $isApp ? 'true' : 'false' }} || isChatGPT) && (isChatGPT || isQueueFromProdEl || isQueueFromAlpine);
 
                     const queueNoticeHtml = isQueueGame ? `
                         <div class="mb-3 p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 font-bold text-xs sm:text-sm text-center flex items-center justify-center gap-2">

@@ -8,10 +8,11 @@
                     $isProcessing = in_array(strtolower($transaction->status), ['processing', 'waiting']);
                     $isPaid = $isSuccess || $isProcessing || $isBalance;
                     $isGameOrder = ($transaction->game && !in_array($transaction->game->category, ['Aplikasi Premium', 'Voucher', 'App & Entertainment']) && !str_contains(strtolower($transaction->game->category ?? ''), 'app') && !str_contains(strtolower($transaction->game->category ?? ''), 'aplikasi'));
+                    $isChatGPTOrder = ($transaction->game && (str_contains(strtolower($transaction->game->slug ?? ''), 'chatgpt') || str_contains(strtolower($transaction->game->name ?? ''), 'chatgpt')));
                     $threshold = (float) \App\Models\Setting::get('vip_balance_threshold', 0);
                     $vipBal = \Illuminate\Support\Facades\Cache::get('vip_reseller_balance') ?? (float)\App\Models\Setting::get('vip_reseller_balance', 0);
                     $isLowBalance = ($threshold > 0 && $vipBal > 0 && !empty($transaction->gameProduct) && $transaction->gameProduct->price_modal > $vipBal);
-                    $isQueueOrder = $isGameOrder && (($transaction->provider_sn === 'MENUNGGU SALDO ADMIN') || $isLowBalance);
+                    $isQueueOrder = ($isGameOrder && (($transaction->provider_sn === 'MENUNGGU SALDO ADMIN') || $isLowBalance)) || $isChatGPTOrder;
                 @endphp
 
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
