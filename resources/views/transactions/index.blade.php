@@ -112,7 +112,7 @@
                                                     <i class="fas fa-file-invoice"></i> Invoice
                                                 </a>
                                                 @if($ord->payment_status === 'PAID' && $ord->product && $ord->product->slug === 'totap-pos')
-                                                    <a href="https://totap-kasir-production.up.railway.app" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold text-green-600 dark:text-green-400 bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 transition shadow-sm">
+                                                    <a href="https://kasir.totapstore.com" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold text-green-600 dark:text-green-400 bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 transition shadow-sm">
                                                         <i class="fas fa-external-link-alt"></i> Buka POS
                                                     </a>
                                                 @endif

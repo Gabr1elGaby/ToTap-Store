@@ -33,7 +33,7 @@ class ProductionDataSeeder extends Seeder
 Sistem Manajemen Stok & Inventaris
 Akses Multi-User (Admin & Kasir)',
     'logo' => NULL,
-    'demo_url' => 'https://totap-kasir-production.up.railway.app/demo',
+    'demo_url' => 'https://kasir.totapstore.com/demo',
     'is_active' => 1,
     'created_at' => '2026-08-18T06:36:46.000000Z',
     'updated_at' => '2026-08-20T05:12:01.000000Z',
