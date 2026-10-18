@@ -1,0 +1,22 @@
+{
+    "name": "ToTap Store",
+    "short_name": "ToTap Store",
+    "icons": [
+        {
+            "src": "/images/logo-totap-v2.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/images/logo-totap-v2.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "start_url": "/",
+    "background_color": "#111827",
+    "theme_color": "#111827",
+    "display": "standalone"
+}
