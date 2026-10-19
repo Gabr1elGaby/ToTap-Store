@@ -98,7 +98,8 @@ class TopUpController extends Controller
 
         foreach ($allProducts as $product) {
             $modal = (float)$product->price_modal;
-            if ($isAppOrVoucher) {
+            $isManualProduct = ($product->provider === 'manual') || ($game->category === 'manual') || str_contains(strtolower($game->slug ?? ''), 'chatgpt') || str_contains(strtolower($game->name ?? ''), 'chatgpt');
+            if ($isAppOrVoucher && !$isManualProduct) {
                 $product->is_out_of_stock = ($product->status !== 'available' || ($hasBalanceThreshold && $modal > $vipBalance));
             } else {
                 $product->is_out_of_stock = false;
@@ -246,7 +247,7 @@ class TopUpController extends Controller
         $queueMap = [];
         foreach ($uniqueProducts as $p) {
             $modal = (float) $p->price_modal;
-            $isManual = ($p->provider === 'manual') || ($game->category === 'manual');
+            $isManual = ($p->provider === 'manual') || ($game->category === 'manual') || str_contains(strtolower($game->slug ?? ''), 'chatgpt') || str_contains(strtolower($game->name ?? ''), 'chatgpt');
             $isQueue = false;
 
             if ($isManual) {
@@ -257,6 +258,9 @@ class TopUpController extends Controller
                     $isOutOfStock = ($p->status !== 'available' || $p->availableStocks()->count() <= 0);
                 } else {
                     $isOutOfStock = ($p->status !== 'available');
+                }
+                if (str_contains(strtolower($game->slug ?? ''), 'chatgpt') || str_contains(strtolower($game->name ?? ''), 'chatgpt')) {
+                    $isQueue = true;
                 }
             } else {
                 if ($isAppOrVoucher) {
@@ -382,7 +386,7 @@ class TopUpController extends Controller
         $queueMap = [];
         foreach ($products as $p) {
             $modal = (float) $p->price_modal;
-            $isManual = ($p->provider === 'manual') || ($game->category === 'manual');
+            $isManual = ($p->provider === 'manual') || ($game->category === 'manual') || str_contains(strtolower($game->slug ?? ''), 'chatgpt') || str_contains(strtolower($game->name ?? ''), 'chatgpt');
             $isQueue = false;
 
             if ($isManual) {
@@ -393,6 +397,9 @@ class TopUpController extends Controller
                     $isOutOfStock = ($p->status !== 'available' || $p->availableStocks()->count() <= 0);
                 } else {
                     $isOutOfStock = ($p->status !== 'available');
+                }
+                if (str_contains(strtolower($game->slug ?? ''), 'chatgpt') || str_contains(strtolower($game->name ?? ''), 'chatgpt')) {
+                    $isQueue = true;
                 }
             } else {
                 if ($isAppOrVoucher) {
@@ -496,7 +503,9 @@ class TopUpController extends Controller
             || str_contains(strtolower($game->category ?? ''), 'streaming')
             || str_contains(strtolower($game->category ?? ''), 'voucher');
 
-        if ($isApp && $threshold > 0 && $vipBalance > 0 && $product->price_modal > $vipBalance) {
+        $isManualProduct = ($product->provider === 'manual') || ($game->category === 'manual') || str_contains(strtolower($game->slug ?? ''), 'chatgpt') || str_contains(strtolower($game->name ?? ''), 'chatgpt');
+
+        if ($isApp && !$isManualProduct && $threshold > 0 && $vipBalance > 0 && $product->price_modal > $vipBalance) {
             return back()->with('error', 'Mohon maaf, nominal ' . $product->name . ' sedang dalam pemeliharaan saldo provider. Silakan hubungi Admin.');
         }
 
