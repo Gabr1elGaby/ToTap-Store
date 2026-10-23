@@ -133,9 +133,33 @@ class GameController extends Controller
                 }
             }
 
-            // ONLY check status of existing products in database.
+            // ONLY check status of existing products in database that belong to VIP Reseller.
+            // NEVER check or touch manual products (e.g. ChatGPT, Youku, Claude, etc).
             // NEVER add new items, NEVER overwrite custom sell prices, NEVER change custom names!
-            $allProducts = \App\Models\GameProduct::all();
+            $allProducts = \App\Models\GameProduct::with('game')
+                ->where(function($q) {
+                    $q->where('provider', 'vip_reseller')
+                      ->orWhere(function($sub) {
+                          $sub->whereNull('provider')
+                              ->whereNotNull('product_code')
+                              ->where('product_code', '!=', '');
+                      });
+                })
+                ->where('provider', '!=', 'manual')
+                ->get()
+                ->filter(function($prod) {
+                    $game = $prod->game;
+                    if (!$game) return false;
+                    $slug = strtolower($game->slug ?? '');
+                    $name = strtolower($game->name ?? '');
+                    $cat = strtolower($game->category ?? '');
+                    if ($cat === 'manual' || $prod->provider === 'manual') return false;
+                    if (str_contains($slug, 'chatgpt') || str_contains($name, 'chatgpt')) return false;
+                    if (str_contains($slug, 'youku') || str_contains($name, 'youku')) return false;
+                    if (str_contains($slug, 'claude') || str_contains($name, 'claude')) return false;
+                    return true;
+                });
+
             $availCount = 0;
             $emptyCount = 0;
             $updatedCount = 0;
@@ -178,6 +202,18 @@ class GameController extends Controller
         set_time_limit(180);
         ini_set('max_execution_time', '180');
 
+        $slug = strtolower($game->slug ?? '');
+        $name = strtolower($game->name ?? '');
+        $cat = strtolower($game->category ?? '');
+        $isManualGame = ($cat === 'manual') 
+            || str_contains($slug, 'chatgpt') || str_contains($name, 'chatgpt')
+            || str_contains($slug, 'youku') || str_contains($name, 'youku')
+            || str_contains($slug, 'claude') || str_contains($name, 'claude');
+
+        if ($isManualGame) {
+            return back()->with('info', "Layanan {$game->name} adalah produk manual / di luar VIP Reseller, sehingga status stoknya tidak diubah.");
+        }
+
         try {
             $vip = new \App\Services\VipResellerService();
             $response = $vip->getGameProducts('');
@@ -193,7 +229,17 @@ class GameController extends Controller
                 }
             }
 
-            $gameProducts = $game->products()->get();
+            $gameProducts = $game->products()
+                ->where(function($q) {
+                    $q->where('provider', 'vip_reseller')
+                      ->orWhere(function($sub) {
+                          $sub->whereNull('provider')
+                              ->whereNotNull('product_code')
+                              ->where('product_code', '!=', '');
+                      });
+                })
+                ->where('provider', '!=', 'manual')
+                ->get();
             $availCount = 0;
             $emptyCount = 0;
 

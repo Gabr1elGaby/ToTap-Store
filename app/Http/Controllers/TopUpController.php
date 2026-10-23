@@ -98,11 +98,16 @@ class TopUpController extends Controller
 
         foreach ($allProducts as $product) {
             $modal = (float)$product->price_modal;
-            $isManualProduct = ($product->provider === 'manual') || ($game->category === 'manual') || str_contains(strtolower($game->slug ?? ''), 'chatgpt') || str_contains(strtolower($game->name ?? ''), 'chatgpt');
+            $isManualProduct = ($product->provider === 'manual') 
+                || ($game->category === 'manual') 
+                || empty($product->product_code) 
+                || str_contains(strtolower($game->slug ?? ''), 'chatgpt') || str_contains(strtolower($game->name ?? ''), 'chatgpt')
+                || str_contains(strtolower($game->slug ?? ''), 'youku') || str_contains(strtolower($game->name ?? ''), 'youku')
+                || str_contains(strtolower($game->slug ?? ''), 'claude') || str_contains(strtolower($game->name ?? ''), 'claude');
             if ($isAppOrVoucher && !$isManualProduct) {
                 $product->is_out_of_stock = ($product->status !== 'available' || ($hasBalanceThreshold && $modal > $vipBalance));
             } else {
-                $product->is_out_of_stock = false;
+                $product->is_out_of_stock = ($product->status !== 'available');
             }
             $name = strtolower(trim($product->name));
             
@@ -247,11 +252,16 @@ class TopUpController extends Controller
         $queueMap = [];
         foreach ($uniqueProducts as $p) {
             $modal = (float) $p->price_modal;
-            $isManual = ($p->provider === 'manual') || ($game->category === 'manual') || str_contains(strtolower($game->slug ?? ''), 'chatgpt') || str_contains(strtolower($game->name ?? ''), 'chatgpt');
+            $isManual = ($p->provider === 'manual') 
+                || ($game->category === 'manual') 
+                || empty($p->product_code)
+                || str_contains(strtolower($game->slug ?? ''), 'chatgpt') || str_contains(strtolower($game->name ?? ''), 'chatgpt')
+                || str_contains(strtolower($game->slug ?? ''), 'youku') || str_contains(strtolower($game->name ?? ''), 'youku')
+                || str_contains(strtolower($game->slug ?? ''), 'claude') || str_contains(strtolower($game->name ?? ''), 'claude');
             $isQueue = false;
 
             if ($isManual) {
-                // Untuk produk manual (ChatGPT, dll): jika statusnya 'available', pembeli langsung bisa order!
+                // Untuk produk manual (ChatGPT, Youku, dll): jika statusnya 'available', pembeli langsung bisa order!
                 // Jika produk memiliki stok database yang diisi (misal Claude), cek ketersediaan stoknya.
                 $hasStockPool = $p->stocks()->exists();
                 if ($hasStockPool) {
@@ -386,11 +396,16 @@ class TopUpController extends Controller
         $queueMap = [];
         foreach ($products as $p) {
             $modal = (float) $p->price_modal;
-            $isManual = ($p->provider === 'manual') || ($game->category === 'manual') || str_contains(strtolower($game->slug ?? ''), 'chatgpt') || str_contains(strtolower($game->name ?? ''), 'chatgpt');
+            $isManual = ($p->provider === 'manual') 
+                || ($game->category === 'manual') 
+                || empty($p->product_code)
+                || str_contains(strtolower($game->slug ?? ''), 'chatgpt') || str_contains(strtolower($game->name ?? ''), 'chatgpt')
+                || str_contains(strtolower($game->slug ?? ''), 'youku') || str_contains(strtolower($game->name ?? ''), 'youku')
+                || str_contains(strtolower($game->slug ?? ''), 'claude') || str_contains(strtolower($game->name ?? ''), 'claude');
             $isQueue = false;
 
             if ($isManual) {
-                // Untuk produk manual (ChatGPT, dll): jika statusnya 'available', pembeli langsung bisa order!
+                // Untuk produk manual (ChatGPT, Youku, dll): jika statusnya 'available', pembeli langsung bisa order!
                 // Jika produk memiliki stok database yang diisi (misal Claude), cek ketersediaan stoknya.
                 $hasStockPool = $p->stocks()->exists();
                 if ($hasStockPool) {
@@ -503,7 +518,12 @@ class TopUpController extends Controller
             || str_contains(strtolower($game->category ?? ''), 'streaming')
             || str_contains(strtolower($game->category ?? ''), 'voucher');
 
-        $isManualProduct = ($product->provider === 'manual') || ($game->category === 'manual') || str_contains(strtolower($game->slug ?? ''), 'chatgpt') || str_contains(strtolower($game->name ?? ''), 'chatgpt');
+        $isManualProduct = ($product->provider === 'manual') 
+            || ($game->category === 'manual') 
+            || empty($product->product_code)
+            || str_contains(strtolower($game->slug ?? ''), 'chatgpt') || str_contains(strtolower($game->name ?? ''), 'chatgpt')
+            || str_contains(strtolower($game->slug ?? ''), 'youku') || str_contains(strtolower($game->name ?? ''), 'youku')
+            || str_contains(strtolower($game->slug ?? ''), 'claude') || str_contains(strtolower($game->name ?? ''), 'claude');
 
         if ($isApp && !$isManualProduct && $threshold > 0 && $vipBalance > 0 && $product->price_modal > $vipBalance) {
             return back()->with('error', 'Mohon maaf, nominal ' . $product->name . ' sedang dalam pemeliharaan saldo provider. Silakan hubungi Admin.');
