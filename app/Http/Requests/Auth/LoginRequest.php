@@ -50,6 +50,16 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        $user = Auth::user();
+        if ($user && ($user->is_blocked || \App\Models\BlockedIdentity::isEmailBlocked($user->email))) {
+            Auth::logout();
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'email' => 'Akun Anda telah dinonaktifkan/diblokir oleh Administrator. Silakan hubungi Customer Service jika merasa ini kekeliruan.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

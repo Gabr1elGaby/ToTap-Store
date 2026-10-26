@@ -179,4 +179,35 @@ class AdminCustomerController extends Controller
             return back()->with('error', 'Gagal mencabut akses: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Blokir pengguna dan daftarkan email & nomor HP ke daftar hitam.
+     */
+    public function blockUser(User $user)
+    {
+        if (in_array(strtolower($user->role ?? ''), ['superadmin', 'admin']) || $user->id === auth()->id()) {
+            return back()->with('error', 'Akun Administrator tidak dapat diblokir.');
+        }
+
+        try {
+            \App\Models\BlockedIdentity::blockUser($user, 'Diblokir oleh Administrator');
+            return back()->with('success', 'User ' . $user->name . ' (' . $user->email . ') berhasil diblokir. Akses login dan pendaftaran ulang telah ditolak.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal memblokir user: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Buka blokir pengguna dan hapus email & nomor HP dari daftar hitam.
+     */
+    public function unblockUser(User $user)
+    {
+        try {
+            \App\Models\BlockedIdentity::unblockUser($user);
+            return back()->with('success', 'Blokir akun ' . $user->name . ' (' . $user->email . ') berhasil dibuka.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal membuka blokir user: ' . $e->getMessage());
+        }
+    }
 }
+

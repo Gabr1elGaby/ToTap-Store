@@ -40,6 +40,19 @@ class RegisteredUserController extends Controller
         $rawPhone = preg_replace('/[^0-9]/', '', (string)$request->input('phone_number', ''));
         $request->merge(['phone_number' => $rawPhone]);
 
+        // Check if email or phone is blocked / blacklisted
+        if (\App\Models\BlockedIdentity::isEmailBlocked($request->email)) {
+            throw ValidationException::withMessages([
+                'email' => 'Alamat email ini telah diblokir dan tidak dapat digunakan untuk mendaftar akun baru.',
+            ]);
+        }
+
+        if (\App\Models\BlockedIdentity::isPhoneBlocked($rawPhone)) {
+            throw ValidationException::withMessages([
+                'phone_number' => 'Nomor WhatsApp ini telah diblokir dan tidak dapat digunakan untuk mendaftar akun baru.',
+            ]);
+        }
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
@@ -159,6 +172,12 @@ class RegisteredUserController extends Controller
         if (!$userData) {
             return response()->json([
                 'errors' => ['otp' => ['Sesi pendaftaran habis. Silakan daftar ulang.']]
+            ], 422);
+        }
+
+        if (\App\Models\BlockedIdentity::isEmailBlocked($userData['email'] ?? null) || \App\Models\BlockedIdentity::isPhoneBlocked($userData['phone_number'] ?? null)) {
+            return response()->json([
+                'errors' => ['otp' => ['Email atau Nomor WhatsApp ini telah diblokir dan tidak dapat didaftarkan.']]
             ], 422);
         }
 

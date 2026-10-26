@@ -772,8 +772,10 @@
                                     <th class="py-2 px-4">Email</th>
                                     <th class="py-2 px-4">No. WhatsApp</th>
                                     <th class="py-2 px-4">Role</th>
+                                    <th class="py-2 px-4">Status</th>
                                     <th class="py-2 px-4">Password</th>
                                     <th class="py-2 px-4">Terdaftar Pada</th>
+                                    <th class="py-2 px-4 text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -781,8 +783,13 @@
                                     $allUsers = \App\Models\User::orderBy('created_at', 'desc')->get();
                                 @endphp
                                 @forelse($allUsers as $user)
-                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                                        <td class="border-b py-2 px-4 font-semibold">{{ $user->name }}</td>
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition {{ $user->is_blocked ? 'bg-red-50/50 dark:bg-red-950/20' : '' }}">
+                                        <td class="border-b py-2 px-4 font-semibold">
+                                            {{ $user->name }}
+                                            @if($user->is_blocked)
+                                                <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300">BLOCKED</span>
+                                            @endif
+                                        </td>
                                         <td class="border-b py-2 px-4">{{ $user->email }}</td>
                                         <td class="border-b py-2 px-4">{{ $user->phone_number ?? '-' }}</td>
                                         <td class="border-b py-2 px-4">
@@ -795,13 +802,39 @@
                                             @endif
                                         </td>
                                         <td class="border-b py-2 px-4">
+                                            @if($user->is_blocked)
+                                                <span class="px-2 py-0.5 inline-flex text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200">Terblokir</span>
+                                            @else
+                                                <span class="px-2 py-0.5 inline-flex text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200">Aktif</span>
+                                            @endif
+                                        </td>
+                                        <td class="border-b py-2 px-4">
                                             <span class="text-xs text-gray-400 font-mono tracking-widest cursor-help" title="Password dienkripsi (Bcrypt) demi keamanan standar internasional. Admin tidak dapat melihatnya.">********</span>
                                         </td>
                                         <td class="border-b py-2 px-4 text-sm text-gray-500">{{ $user->created_at->format('d M Y, H:i') }}</td>
+                                        <td class="border-b py-2 px-4 text-center">
+                                            @if($user->role === 'superadmin' || $user->id === auth()->id())
+                                                <span class="text-xs text-gray-400 italic">Protected</span>
+                                            @elseif($user->is_blocked)
+                                                <form action="{{ route('admin.customers.unblock', $user->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Buka blokir user {{ $user->name }}? User akan dapat kembali login dan mendaftar.');">
+                                                    @csrf
+                                                    <button type="submit" class="px-2.5 py-1 text-xs font-semibold rounded-md bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-sm">
+                                                        Buka Blokir
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <form action="{{ route('admin.customers.block', $user->id) }}" method="POST" class="inline-block" onsubmit="return confirm('YAKIN INGIN MEMBLOKIR {{ $user->name }}?\n\n• User tidak akan bisa login lagi ke website.\n• Email & No WhatsApp tidak akan bisa digunakan mendaftar akun baru.');">
+                                                    @csrf
+                                                    <button type="submit" class="px-2.5 py-1 text-xs font-semibold rounded-md bg-rose-600 hover:bg-rose-700 text-white transition shadow-sm">
+                                                        Blokir User
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="border-b py-4 px-4 text-center text-gray-500">Belum ada user yang terdaftar.</td>
+                                        <td colspan="8" class="border-b py-4 px-4 text-center text-gray-500">Belum ada user yang terdaftar.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

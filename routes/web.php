@@ -321,10 +321,12 @@ HTML;
     Route::post('cv-templates/update-all', [\App\Http\Controllers\Admin\CvTemplateController::class, 'updateAll'])->name('cv-templates.update-all');
     Route::resource('cv-templates', \App\Http\Controllers\Admin\CvTemplateController::class)->only(['index', 'edit', 'update']);
     
-    // Manual Customer Provisioning
+    // Manual Customer Provisioning & Management
     Route::get('/customers/create', [\App\Http\Controllers\AdminCustomerController::class, 'create'])->name('customers.create');
     Route::post('/customers', [\App\Http\Controllers\AdminCustomerController::class, 'store'])->name('customers.store');
     Route::post('/customers/{subscription}/revoke', [\App\Http\Controllers\AdminCustomerController::class, 'revokeAccess'])->name('customers.revoke');
+    Route::post('/customers/{user}/block', [\App\Http\Controllers\AdminCustomerController::class, 'blockUser'])->name('customers.block');
+    Route::post('/customers/{user}/unblock', [\App\Http\Controllers\AdminCustomerController::class, 'unblockUser'])->name('customers.unblock');
 
     // Game Top-Up Management
     Route::match(['GET', 'POST'], 'games/sync-balance', [\App\Http\Controllers\Admin\GameController::class, 'syncBalance'])->name('games.sync-balance');
