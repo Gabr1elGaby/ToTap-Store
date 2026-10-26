@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\CheckMaintenanceMode::class,
             \App\Http\Middleware\TrackOnlineVisitors::class,
+            \App\Http\Middleware\CheckBlockedUser::class,
         ]);
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
