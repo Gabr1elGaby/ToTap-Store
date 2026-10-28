@@ -12,6 +12,9 @@ class DepositController extends Controller
 {
     public function index()
     {
+        // Otomatis bersihkan tagihan pending yang sudah lewat 15 menit
+        \Illuminate\Support\Facades\Artisan::call('invoices:delete-expired-pending');
+
         $user = Auth::user();
         $deposits = Deposit::where('user_id', $user->id)->latest()->paginate(10);
         $presets = [10000, 20000, 50000, 100000, 200000, 500000];

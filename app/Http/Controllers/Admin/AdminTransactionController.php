@@ -11,6 +11,9 @@ class AdminTransactionController extends Controller
 {
     public function index(Request $request)
     {
+        // Otomatis bersihkan tagihan pending yang sudah lewat 15 menit
+        \Illuminate\Support\Facades\Artisan::call('invoices:delete-expired-pending');
+
         $search = $request->query('search');
         $status = $request->query('status');
 
