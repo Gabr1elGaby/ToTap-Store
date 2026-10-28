@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('subscriptions:expire')->daily();
 Schedule::command('vip:sync-stock')->everyFifteenMinutes();
+Schedule::command('invoices:delete-expired-pending')->everyFiveMinutes();
