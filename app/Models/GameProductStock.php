@@ -130,6 +130,8 @@ class GameProductStock extends Model
                 'provider_sn' => $stockItem->content,
             ]);
 
+            \App\Services\NotificationService::sendOrderSuccessNotification($transaction->fresh());
+
             if ($product->availableStocks()->count() <= 0) {
                 $product->update(['status' => 'empty']);
             }

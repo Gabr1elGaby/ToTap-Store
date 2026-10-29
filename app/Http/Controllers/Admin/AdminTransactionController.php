@@ -356,6 +356,8 @@ class AdminTransactionController extends Controller
                         'provider_sn' => $sn,
                     ]);
 
+                    \App\Services\NotificationService::sendOrderSuccessNotification($transaction->fresh());
+
                     return back()->with('success', "Pesanan #{$transaction->id} BERHASIL di-ACC! " . ($sn ? "Detail Akun/SN: {$sn}" : "Proses sukses via API VIP Reseller."));
                 } else {
                     $errMsg = $orderRes['message'] ?? 'API Provider gagal memproses pesanan.';
@@ -406,10 +408,15 @@ class AdminTransactionController extends Controller
         }
 
         $sn = trim($request->input('provider_sn', ''));
+        $newStatus = $sn ? 'success' : $transaction->status;
         $transaction->update([
             'provider_sn' => $sn ?: null,
-            'status' => $sn ? 'success' : $transaction->status,
+            'status' => $newStatus,
         ]);
+
+        if ($newStatus === 'success') {
+            \App\Services\NotificationService::sendOrderSuccessNotification($transaction->fresh());
+        }
 
         return back()->with('success', 'Informasi Akun / Serial Number berhasil disimpan dan langsung tampil di Invoice!');
     }
@@ -472,6 +479,8 @@ class AdminTransactionController extends Controller
             'status' => 'success',
             'provider_trx_id' => $transaction->provider_trx_id ?? 'MANUAL-ADMIN-' . time(),
         ]);
+
+        \App\Services\NotificationService::sendOrderSuccessNotification($transaction->fresh());
 
         return back()->with('success', "Pesanan #{$transaction->id} berhasil ditandai sebagai SUKSES secara manual!");
     }
