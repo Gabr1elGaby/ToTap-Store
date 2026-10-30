@@ -301,9 +301,9 @@
         </section>
 
         @if(isset($customerReviews) && $customerReviews->count() > 0)
-        <!-- Running Customer Reviews Slider (Full Width, 2 Rows Grid, Auto 5s & Manual Swipe/Scroll) -->
+        <!-- Running Customer Reviews Slider (2 Rows, Auto 5s & Manual Swipe/Scroll) -->
         <section class="py-8 bg-slate-900 border-b border-gray-800 overflow-hidden relative z-20 transition-colors duration-200">
-            <div class="w-full px-4 sm:px-6 lg:px-8 mb-4 flex items-center justify-between">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4 flex items-center justify-between">
                 <div>
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 uppercase tracking-widest">
                         <span class="text-amber-400">★</span> Ulasan Pembeli Real-Time
@@ -320,17 +320,17 @@
                 </div>
             </div>
             
-            <div class="relative w-full overflow-hidden">
+            <div class="relative w-full">
                 <!-- Fade Edges for Smooth Look on Large Screens -->
-                <div class="hidden sm:block absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent z-10 pointer-events-none"></div>
-                <div class="hidden sm:block absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-slate-900 via-slate-900/80 to-transparent z-10 pointer-events-none"></div>
+                <div class="hidden sm:block absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent z-10 pointer-events-none"></div>
+                <div class="hidden sm:block absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-slate-900 via-slate-900/80 to-transparent z-10 pointer-events-none"></div>
 
-                <!-- 2-Row Grid Horizontal Scroll Container (Full Width) -->
+                <!-- 2-Row Horizontal Scroll Container -->
                 <div id="reviews-slider" class="overflow-x-auto scroll-smooth no-scrollbar px-4 sm:px-8 py-2 select-none" style="cursor: grab; scroll-snap-type: x mandatory;">
                     <div class="grid grid-rows-2 grid-flow-col gap-4 w-max">
                         @foreach($customerReviews as $rev)
-                        <div class="review-card scroll-snap-start flex-shrink-0 bg-slate-800/90 border border-slate-700/80 rounded-2xl p-4 w-[300px] sm:w-[360px] md:w-[420px] h-[125px] flex flex-col justify-between shadow-md transition hover:border-amber-500/50">
-                            <div class="flex items-center gap-1 mb-1">
+                        <div class="review-card scroll-snap-start flex-shrink-0 bg-slate-800/90 border border-slate-700/80 rounded-2xl p-4 w-[280px] sm:w-[320px] h-[130px] flex flex-col justify-between shadow-md transition hover:border-amber-500/50">
+                            <div class="flex items-center gap-1">
                                 @for($i = 1; $i <= 5; $i++)
                                     @if($i <= (int)$rev->rating)
                                         <span class="text-amber-400 text-sm">★</span>
@@ -340,7 +340,7 @@
                                 @endfor
                                 <span class="text-xs font-bold text-amber-400 ml-1.5">{{ number_format($rev->rating, 1) }}</span>
                             </div>
-                            <p class="text-gray-200 text-xs sm:text-sm leading-relaxed line-clamp-3 italic">
+                            <p class="text-gray-200 text-xs leading-relaxed line-clamp-3 italic">
                                 "{{ $rev->review_text }}"
                             </p>
                         </div>
@@ -378,13 +378,13 @@
 
                 const getScrollStep = () => {
                     const firstCard = slider.querySelector('.review-card');
-                    return firstCard ? (firstCard.offsetWidth + 16) : 380;
+                    return firstCard ? (firstCard.offsetWidth + 16) : 300;
                 };
 
                 const slideNext = () => {
                     const step = getScrollStep();
                     const maxScroll = slider.scrollWidth - slider.clientWidth;
-                    if (slider.scrollLeft >= maxScroll - 15) {
+                    if (slider.scrollLeft >= maxScroll - 10) {
                         slider.scrollTo({ left: 0, behavior: 'smooth' });
                     } else {
                         slider.scrollBy({ left: step, behavior: 'smooth' });
@@ -393,7 +393,7 @@
 
                 const slidePrev = () => {
                     const step = getScrollStep();
-                    if (slider.scrollLeft <= 15) {
+                    if (slider.scrollLeft <= 10) {
                         slider.scrollTo({ left: slider.scrollWidth - slider.clientWidth, behavior: 'smooth' });
                     } else {
                         slider.scrollBy({ left: -step, behavior: 'smooth' });
