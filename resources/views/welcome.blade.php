@@ -321,28 +321,35 @@
             </div>
             
             <div class="relative w-full">
-                <!-- Fade Edges for Smooth Look on Large Screens -->
-                <div class="hidden sm:block absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent z-10 pointer-events-none"></div>
-                <div class="hidden sm:block absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-slate-900 via-slate-900/80 to-transparent z-10 pointer-events-none"></div>
+                <div class="hidden sm:block absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-slate-900 to-transparent z-10 pointer-events-none"></div>
+                <div class="hidden sm:block absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-900 to-transparent z-10 pointer-events-none"></div>
 
-                <!-- 2-Row Horizontal Scroll Container (Lebih Besar & Nyaman Dibaca) -->
-                <div id="reviews-slider" class="overflow-x-auto scroll-smooth no-scrollbar px-4 sm:px-8 py-2 select-none" style="cursor: grab; scroll-snap-type: x mandatory; max-height: 350px;">
-                    <div style="display: grid; grid-template-rows: repeat(2, 140px); grid-auto-flow: column; gap: 20px; width: max-content;">
-                        @foreach($customerReviews as $rev)
-                        <div class="review-card scroll-snap-start bg-slate-800/90 border border-slate-700/80 rounded-2xl p-5 flex flex-col justify-between shadow-md transition hover:border-amber-500/50 box-border overflow-hidden" style="width: 440px; max-width: 85vw; height: 140px;">
-                            <div class="flex items-center gap-1 mb-2">
-                                @for($i = 1; $i <= 5; $i++)
-                                    @if($i <= (int)$rev->rating)
-                                        <span class="text-amber-400 text-sm">★</span>
-                                    @else
-                                        <span class="text-slate-600 text-sm">★</span>
-                                    @endif
-                                @endfor
-                                <span class="text-xs font-bold text-amber-400 ml-1.5">{{ number_format($rev->rating, 1) }}</span>
+                <!-- 2 Ulasan per Slide (1 Atas & 1 Bawah, Pas 1 Halaman Tanpa Kepotong) -->
+                <div id="reviews-slider" class="overflow-x-auto scroll-smooth no-scrollbar select-none" style="cursor: grab; scroll-snap-type: x mandatory;">
+                    <div class="flex w-max">
+                        @php
+                            $reviewPairs = $customerReviews->chunk(2);
+                        @endphp
+
+                        @foreach($reviewPairs as $pair)
+                        <div class="review-slide scroll-snap-start flex-shrink-0 w-[calc(100vw-2rem)] sm:w-[calc(100vw-4rem)] max-w-7xl flex flex-col gap-3 px-1 box-border">
+                            @foreach($pair as $rev)
+                            <div class="w-full bg-slate-800/90 border border-slate-700/80 rounded-2xl p-4 sm:p-5 flex flex-col justify-between shadow-md transition hover:border-amber-500/50 box-border">
+                                <div class="flex items-center gap-1 mb-1.5">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        @if($i <= (int)$rev->rating)
+                                            <span class="text-amber-400 text-sm">★</span>
+                                        @else
+                                            <span class="text-slate-600 text-sm">★</span>
+                                        @endif
+                                    @endfor
+                                    <span class="text-xs font-bold text-amber-400 ml-1.5">{{ number_format($rev->rating, 1) }}</span>
+                                </div>
+                                <p class="text-gray-200 text-xs sm:text-sm leading-relaxed italic m-0">
+                                    "{{ $rev->review_text }}"
+                                </p>
                             </div>
-                            <p class="text-gray-200 text-sm leading-relaxed line-clamp-3 italic m-0">
-                                "{{ $rev->review_text }}"
-                            </p>
+                            @endforeach
                         </div>
                         @endforeach
                     </div>
@@ -377,14 +384,14 @@
                 let autoSlideInterval = null;
 
                 const getScrollStep = () => {
-                    const firstCard = slider.querySelector('.review-card');
-                    return firstCard ? (firstCard.offsetWidth + 16) : 300;
+                    const firstSlide = slider.querySelector('.review-slide');
+                    return firstSlide ? firstSlide.offsetWidth : slider.clientWidth;
                 };
 
                 const slideNext = () => {
                     const step = getScrollStep();
                     const maxScroll = slider.scrollWidth - slider.clientWidth;
-                    if (slider.scrollLeft >= maxScroll - 10) {
+                    if (slider.scrollLeft >= maxScroll - 20) {
                         slider.scrollTo({ left: 0, behavior: 'smooth' });
                     } else {
                         slider.scrollBy({ left: step, behavior: 'smooth' });
@@ -393,7 +400,7 @@
 
                 const slidePrev = () => {
                     const step = getScrollStep();
-                    if (slider.scrollLeft <= 10) {
+                    if (slider.scrollLeft <= 20) {
                         slider.scrollTo({ left: slider.scrollWidth - slider.clientWidth, behavior: 'smooth' });
                     } else {
                         slider.scrollBy({ left: -step, behavior: 'smooth' });
