@@ -301,7 +301,7 @@
         </section>
 
         @if(isset($customerReviews) && $customerReviews->count() > 0)
-        <!-- Running Customer Reviews Slider (2 Rows, Auto 5s & Manual Swipe/Scroll) -->
+        <!-- Running Customer Reviews Slider: Tepat 2 Ulasan (1 Atas & 1 Bawah) Full 100% Layar per Slide -->
         <section class="py-8 bg-slate-900 border-b border-gray-800 overflow-hidden relative z-20 transition-colors duration-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4 flex items-center justify-between">
                 <div>
@@ -320,19 +320,16 @@
                 </div>
             </div>
             
-            <div class="relative w-full">
-                <div class="hidden sm:block absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-slate-900 to-transparent z-10 pointer-events-none"></div>
-                <div class="hidden sm:block absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-900 to-transparent z-10 pointer-events-none"></div>
-
-                <!-- 2 Ulasan per Slide (1 Atas & 1 Bawah, Pas 1 Halaman Tanpa Kepotong) -->
-                <div id="reviews-slider" class="overflow-x-auto scroll-smooth no-scrollbar select-none" style="cursor: grab; scroll-snap-type: x mandatory;">
-                    <div class="flex w-max">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+                <!-- 2 Ulasan per Slide: 100% Full Container Width, Tidak Ada yang Muncul di Kanan -->
+                <div id="reviews-slider" class="w-full overflow-hidden select-none" style="cursor: grab;">
+                    <div id="reviews-track" class="flex transition-transform duration-500 ease-out w-full">
                         @php
                             $reviewPairs = $customerReviews->chunk(2);
                         @endphp
 
                         @foreach($reviewPairs as $pair)
-                        <div class="review-slide scroll-snap-start flex-shrink-0 w-[calc(100vw-2rem)] sm:w-[calc(100vw-4rem)] max-w-7xl flex flex-col gap-3 px-1 box-border">
+                        <div class="review-slide flex-shrink-0 w-full flex flex-col gap-3 box-border">
                             @foreach($pair as $rev)
                             <div class="w-full bg-slate-800/90 border border-slate-700/80 rounded-2xl p-4 sm:p-5 flex flex-col justify-between shadow-md transition hover:border-amber-500/50 box-border">
                                 <div class="flex items-center gap-1 mb-1.5">
@@ -357,60 +354,39 @@
             </div>
         </section>
 
-        <style>
-            .no-scrollbar::-webkit-scrollbar {
-                display: none;
-            }
-            .no-scrollbar {
-                -ms-overflow-style: none;
-                scrollbar-width: none;
-            }
-            .scroll-snap-start {
-                scroll-snap-align: start;
-            }
-        </style>
-
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const slider = document.getElementById('reviews-slider');
+                const track = document.getElementById('reviews-track');
                 const btnPrev = document.getElementById('review-prev');
                 const btnNext = document.getElementById('review-next');
 
-                if (!slider) return;
+                if (!slider || !track) return;
 
-                let isDown = false;
-                let startX;
-                let scrollLeft;
+                const slides = track.querySelectorAll('.review-slide');
+                const totalSlides = slides.length;
+                if (totalSlides <= 1) return;
+
+                let currentIndex = 0;
                 let autoSlideInterval = null;
 
-                const getScrollStep = () => {
-                    const firstSlide = slider.querySelector('.review-slide');
-                    return firstSlide ? firstSlide.offsetWidth : slider.clientWidth;
+                const updateSlidePosition = () => {
+                    track.style.transform = `translateX(-${currentIndex * 100}%)`;
                 };
 
-                const slideNext = () => {
-                    const step = getScrollStep();
-                    const maxScroll = slider.scrollWidth - slider.clientWidth;
-                    if (slider.scrollLeft >= maxScroll - 20) {
-                        slider.scrollTo({ left: 0, behavior: 'smooth' });
-                    } else {
-                        slider.scrollBy({ left: step, behavior: 'smooth' });
-                    }
+                const nextSlide = () => {
+                    currentIndex = (currentIndex + 1) % totalSlides;
+                    updateSlidePosition();
                 };
 
-                const slidePrev = () => {
-                    const step = getScrollStep();
-                    if (slider.scrollLeft <= 20) {
-                        slider.scrollTo({ left: slider.scrollWidth - slider.clientWidth, behavior: 'smooth' });
-                    } else {
-                        slider.scrollBy({ left: -step, behavior: 'smooth' });
-                    }
+                const prevSlide = () => {
+                    currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+                    updateSlidePosition();
                 };
 
-                // Otomatis geser tiap 5 detik
                 const startAutoSlide = () => {
                     stopAutoSlide();
-                    autoSlideInterval = setInterval(slideNext, 5000);
+                    autoSlideInterval = setInterval(nextSlide, 5000);
                 };
 
                 const stopAutoSlide = () => {
@@ -422,62 +398,70 @@
 
                 startAutoSlide();
 
-                // Tombol Navigasi Manual
                 if (btnNext) {
                     btnNext.addEventListener('click', () => {
-                        slideNext();
+                        nextSlide();
                         startAutoSlide();
                     });
                 }
+
                 if (btnPrev) {
                     btnPrev.addEventListener('click', () => {
-                        slidePrev();
+                        prevSlide();
                         startAutoSlide();
                     });
                 }
 
-                // Pause otomatis saat mouse diarahkan ke slider / sentuhan layar
+                // Pause on hover
                 slider.addEventListener('mouseenter', stopAutoSlide);
-                slider.addEventListener('mouseleave', () => {
-                    if (!isDown) startAutoSlide();
-                });
+                slider.addEventListener('mouseleave', startAutoSlide);
 
-                // Manual Drag dengan Mouse (Laptop/PC)
+                // Swipe Touch Support
+                let touchStartX = 0;
+                let touchEndX = 0;
+
+                slider.addEventListener('touchstart', (e) => {
+                    touchStartX = e.changedTouches[0].screenX;
+                    stopAutoSlide();
+                }, { passive: true });
+
+                slider.addEventListener('touchend', (e) => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    handleSwipe();
+                    startAutoSlide();
+                }, { passive: true });
+
+                // Mouse Drag Support
+                let isMouseDown = false;
+                let mouseStartX = 0;
+
                 slider.addEventListener('mousedown', (e) => {
-                    isDown = true;
-                    slider.style.cursor = 'grabbing';
-                    startX = e.pageX - slider.offsetLeft;
-                    scrollLeft = slider.scrollLeft;
+                    isMouseDown = true;
+                    mouseStartX = e.clientX;
                     stopAutoSlide();
                 });
 
+                slider.addEventListener('mouseup', (e) => {
+                    if (!isMouseDown) return;
+                    isMouseDown = false;
+                    const diff = e.clientX - mouseStartX;
+                    if (diff < -50) nextSlide();
+                    else if (diff > 50) prevSlide();
+                    startAutoSlide();
+                });
+
                 slider.addEventListener('mouseleave', () => {
-                    if (isDown) {
-                        isDown = false;
-                        slider.style.cursor = 'grab';
+                    if (isMouseDown) {
+                        isMouseDown = false;
                         startAutoSlide();
                     }
                 });
 
-                slider.addEventListener('mouseup', () => {
-                    if (isDown) {
-                        isDown = false;
-                        slider.style.cursor = 'grab';
-                        startAutoSlide();
-                    }
-                });
-
-                slider.addEventListener('mousemove', (e) => {
-                    if (!isDown) return;
-                    e.preventDefault();
-                    const x = e.pageX - slider.offsetLeft;
-                    const walk = (x - startX) * 1.5;
-                    slider.scrollLeft = scrollLeft - walk;
-                });
-
-                // Manual Touch di HP/Tablet
-                slider.addEventListener('touchstart', stopAutoSlide, { passive: true });
-                slider.addEventListener('touchend', startAutoSlide, { passive: true });
+                const handleSwipe = () => {
+                    const diff = touchEndX - touchStartX;
+                    if (diff < -50) nextSlide();
+                    else if (diff > 50) prevSlide();
+                };
             });
         </script>
         @endif
