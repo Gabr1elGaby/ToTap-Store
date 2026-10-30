@@ -325,12 +325,12 @@
                 <div class="hidden sm:block absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent z-10 pointer-events-none"></div>
                 <div class="hidden sm:block absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-slate-900 via-slate-900/80 to-transparent z-10 pointer-events-none"></div>
 
-                <!-- 2-Row Horizontal Scroll Container -->
-                <div id="reviews-slider" class="overflow-x-auto scroll-smooth no-scrollbar px-4 sm:px-8 py-2 select-none" style="cursor: grab; scroll-snap-type: x mandatory; max-height: 310px;">
-                    <div style="display: grid; grid-template-rows: repeat(2, 135px); grid-auto-flow: column; grid-auto-columns: minmax(280px, 340px); gap: 16px; width: max-content;">
+                <!-- 2-Row Horizontal Scroll Container (Lebih Besar & Nyaman Dibaca) -->
+                <div id="reviews-slider" class="overflow-x-auto scroll-smooth no-scrollbar px-4 sm:px-8 py-2 select-none" style="cursor: grab; scroll-snap-type: x mandatory; max-height: 350px;">
+                    <div style="display: grid; grid-template-rows: repeat(2, 140px); grid-auto-flow: column; gap: 20px; width: max-content;">
                         @foreach($customerReviews as $rev)
-                        <div class="review-card scroll-snap-start bg-slate-800/90 border border-slate-700/80 rounded-2xl p-4 flex flex-col justify-between shadow-md transition hover:border-amber-500/50 box-border overflow-hidden" style="width: 320px; height: 135px;">
-                            <div class="flex items-center gap-1 mb-1">
+                        <div class="review-card scroll-snap-start bg-slate-800/90 border border-slate-700/80 rounded-2xl p-5 flex flex-col justify-between shadow-md transition hover:border-amber-500/50 box-border overflow-hidden" style="width: 440px; max-width: 85vw; height: 140px;">
+                            <div class="flex items-center gap-1 mb-2">
                                 @for($i = 1; $i <= 5; $i++)
                                     @if($i <= (int)$rev->rating)
                                         <span class="text-amber-400 text-sm">★</span>
@@ -340,7 +340,7 @@
                                 @endfor
                                 <span class="text-xs font-bold text-amber-400 ml-1.5">{{ number_format($rev->rating, 1) }}</span>
                             </div>
-                            <p class="text-gray-200 text-xs sm:text-[13px] leading-relaxed line-clamp-3 italic m-0">
+                            <p class="text-gray-200 text-sm leading-relaxed line-clamp-3 italic m-0">
                                 "{{ $rev->review_text }}"
                             </p>
                         </div>
