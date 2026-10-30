@@ -301,63 +301,178 @@
         </section>
 
         @if(isset($customerReviews) && $customerReviews->count() > 0)
-        <!-- Running Customer Reviews Slider (Continuous Loop - Rating & Review Only) -->
+        <!-- Running Customer Reviews Slider (2 Rows, Auto 5s & Manual Swipe/Scroll) -->
         <section class="py-8 bg-slate-900 border-b border-gray-800 overflow-hidden relative z-20 transition-colors duration-200">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4 text-center">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 uppercase tracking-widest">
-                    <span class="text-amber-400">★</span> Ulasan Pembeli Real-Time
-                </span>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4 flex items-center justify-between">
+                <div>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 uppercase tracking-widest">
+                        <span class="text-amber-400">★</span> Ulasan Pembeli Real-Time
+                    </span>
+                </div>
+                <!-- Navigation Buttons (Manual) -->
+                <div class="flex items-center gap-2">
+                    <button type="button" id="review-prev" class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 hover:border-amber-400 text-slate-300 hover:text-amber-400 flex items-center justify-center transition text-xs shadow" aria-label="Ulasan Sebelumnya">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button type="button" id="review-next" class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 hover:border-amber-400 text-slate-300 hover:text-amber-400 flex items-center justify-center transition text-xs shadow" aria-label="Ulasan Selanjutnya">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
             </div>
             
-            <div class="relative w-full overflow-hidden">
-                <!-- Fade Edges for Smooth Look -->
-                <div class="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent z-10 pointer-events-none"></div>
-                <div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-slate-900 via-slate-900/80 to-transparent z-10 pointer-events-none"></div>
+            <div class="relative w-full">
+                <!-- Fade Edges for Smooth Look on Large Screens -->
+                <div class="hidden sm:block absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent z-10 pointer-events-none"></div>
+                <div class="hidden sm:block absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-slate-900 via-slate-900/80 to-transparent z-10 pointer-events-none"></div>
 
-                @php
-                    // Repeat collection to ensure continuous smooth infinite marquee loop
-                    $loopItems = $customerReviews;
-                    while ($loopItems->count() < 12) {
-                        $loopItems = $loopItems->concat($customerReviews);
-                    }
-                @endphp
-
-                <div class="animate-marquee-track flex gap-4 py-2">
-                    @foreach($loopItems as $rev)
-                    <div class="flex-shrink-0 bg-slate-800/90 border border-slate-700/80 rounded-2xl p-4 w-[320px] max-w-[320px] h-32 flex flex-col justify-between shadow-md transition hover:border-amber-500/50">
-                        <div class="flex items-center gap-1">
-                            @for($i = 1; $i <= 5; $i++)
-                                @if($i <= (int)$rev->rating)
-                                    <span class="text-amber-400 text-sm">★</span>
-                                @else
-                                    <span class="text-slate-600 text-sm">★</span>
-                                @endif
-                            @endfor
-                            <span class="text-xs font-bold text-amber-400 ml-1.5">{{ number_format($rev->rating, 1) }}</span>
+                <!-- 2-Row Horizontal Scroll Container -->
+                <div id="reviews-slider" class="overflow-x-auto scroll-smooth no-scrollbar px-4 sm:px-8 py-2 select-none" style="cursor: grab; scroll-snap-type: x mandatory;">
+                    <div class="grid grid-rows-2 grid-flow-col gap-4 w-max">
+                        @foreach($customerReviews as $rev)
+                        <div class="review-card scroll-snap-start flex-shrink-0 bg-slate-800/90 border border-slate-700/80 rounded-2xl p-4 w-[280px] sm:w-[320px] h-[130px] flex flex-col justify-between shadow-md transition hover:border-amber-500/50">
+                            <div class="flex items-center gap-1">
+                                @for($i = 1; $i <= 5; $i++)
+                                    @if($i <= (int)$rev->rating)
+                                        <span class="text-amber-400 text-sm">★</span>
+                                    @else
+                                        <span class="text-slate-600 text-sm">★</span>
+                                    @endif
+                                @endfor
+                                <span class="text-xs font-bold text-amber-400 ml-1.5">{{ number_format($rev->rating, 1) }}</span>
+                            </div>
+                            <p class="text-gray-200 text-xs leading-relaxed line-clamp-3 italic">
+                                "{{ $rev->review_text }}"
+                            </p>
                         </div>
-                        <p class="text-gray-200 text-xs leading-relaxed line-clamp-3 italic">
-                            "{{ $rev->review_text }}"
-                        </p>
+                        @endforeach
                     </div>
-                    @endforeach
                 </div>
             </div>
         </section>
 
         <style>
-            @keyframes marqueeScroll {
-                0% { transform: translateX(0%); }
-                100% { transform: translateX(-50%); }
+            .no-scrollbar::-webkit-scrollbar {
+                display: none;
             }
-            .animate-marquee-track {
-                display: flex;
-                width: max-content;
-                animation: marqueeScroll 40s linear infinite;
+            .no-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
             }
-            .animate-marquee-track:hover {
-                animation-play-state: paused;
+            .scroll-snap-start {
+                scroll-snap-align: start;
             }
         </style>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const slider = document.getElementById('reviews-slider');
+                const btnPrev = document.getElementById('review-prev');
+                const btnNext = document.getElementById('review-next');
+
+                if (!slider) return;
+
+                let isDown = false;
+                let startX;
+                let scrollLeft;
+                let autoSlideInterval = null;
+
+                const getScrollStep = () => {
+                    const firstCard = slider.querySelector('.review-card');
+                    return firstCard ? (firstCard.offsetWidth + 16) : 300;
+                };
+
+                const slideNext = () => {
+                    const step = getScrollStep();
+                    const maxScroll = slider.scrollWidth - slider.clientWidth;
+                    if (slider.scrollLeft >= maxScroll - 10) {
+                        slider.scrollTo({ left: 0, behavior: 'smooth' });
+                    } else {
+                        slider.scrollBy({ left: step, behavior: 'smooth' });
+                    }
+                };
+
+                const slidePrev = () => {
+                    const step = getScrollStep();
+                    if (slider.scrollLeft <= 10) {
+                        slider.scrollTo({ left: slider.scrollWidth - slider.clientWidth, behavior: 'smooth' });
+                    } else {
+                        slider.scrollBy({ left: -step, behavior: 'smooth' });
+                    }
+                };
+
+                // Otomatis geser tiap 5 detik
+                const startAutoSlide = () => {
+                    stopAutoSlide();
+                    autoSlideInterval = setInterval(slideNext, 5000);
+                };
+
+                const stopAutoSlide = () => {
+                    if (autoSlideInterval) {
+                        clearInterval(autoSlideInterval);
+                        autoSlideInterval = null;
+                    }
+                };
+
+                startAutoSlide();
+
+                // Tombol Navigasi Manual
+                if (btnNext) {
+                    btnNext.addEventListener('click', () => {
+                        slideNext();
+                        startAutoSlide();
+                    });
+                }
+                if (btnPrev) {
+                    btnPrev.addEventListener('click', () => {
+                        slidePrev();
+                        startAutoSlide();
+                    });
+                }
+
+                // Pause otomatis saat mouse diarahkan ke slider / sentuhan layar
+                slider.addEventListener('mouseenter', stopAutoSlide);
+                slider.addEventListener('mouseleave', () => {
+                    if (!isDown) startAutoSlide();
+                });
+
+                // Manual Drag dengan Mouse (Laptop/PC)
+                slider.addEventListener('mousedown', (e) => {
+                    isDown = true;
+                    slider.style.cursor = 'grabbing';
+                    startX = e.pageX - slider.offsetLeft;
+                    scrollLeft = slider.scrollLeft;
+                    stopAutoSlide();
+                });
+
+                slider.addEventListener('mouseleave', () => {
+                    if (isDown) {
+                        isDown = false;
+                        slider.style.cursor = 'grab';
+                        startAutoSlide();
+                    }
+                });
+
+                slider.addEventListener('mouseup', () => {
+                    if (isDown) {
+                        isDown = false;
+                        slider.style.cursor = 'grab';
+                        startAutoSlide();
+                    }
+                });
+
+                slider.addEventListener('mousemove', (e) => {
+                    if (!isDown) return;
+                    e.preventDefault();
+                    const x = e.pageX - slider.offsetLeft;
+                    const walk = (x - startX) * 1.5;
+                    slider.scrollLeft = scrollLeft - walk;
+                });
+
+                // Manual Touch di HP/Tablet
+                slider.addEventListener('touchstart', stopAutoSlide, { passive: true });
+                slider.addEventListener('touchend', startAutoSlide, { passive: true });
+            });
+        </script>
         @endif
 
         <!-- Kenapa ToTap Store Section -->
