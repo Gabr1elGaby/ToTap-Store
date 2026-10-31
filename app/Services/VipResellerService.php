@@ -417,6 +417,10 @@ class VipResellerService
                     if (!empty($updateData)) {
                         $transaction->update($updateData);
                         $transaction->refresh();
+
+                        if (($updateData['status'] ?? '') === 'success' || (!empty($sn) && $transaction->status === 'success')) {
+                            \App\Services\NotificationService::sendOrderSuccessNotification($transaction);
+                        }
                     }
                     if (!empty($sn)) {
                         return true;
@@ -464,6 +468,11 @@ class VipResellerService
 
                             $transaction->update($updateData);
                             $transaction->refresh();
+
+                            if (($updateData['status'] ?? '') === 'success' || (!empty($sn) && $transaction->status === 'success')) {
+                                \App\Services\NotificationService::sendOrderSuccessNotification($transaction);
+                            }
+
                             return true;
                         }
                     }

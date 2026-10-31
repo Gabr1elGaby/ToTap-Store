@@ -15,16 +15,18 @@ class NotificationService
     public static function sendOrderSuccessNotification(Transaction $transaction)
     {
         try {
-            // 1. Tentukan target email customer
+            // 1. Tentukan target email customer secara tepat & cerdas:
+            // Jika target_field_1 merupakan email valid (misal pada pembelian Canva, ChatGPT, Akun Premium),
+            // prioritaskan kirim langsung ke email yang diisi di form tersebut!
             $recipientEmail = null;
+            $rawField1 = trim($transaction->target_field_1 ?? '');
 
-            // Jika transaksi terkait user terdaftar yang punya email
-            if ($transaction->user && !empty($transaction->user->email) && filter_var($transaction->user->email, FILTER_VALIDATE_EMAIL)) {
-                $recipientEmail = $transaction->user->email;
+            if (!empty($rawField1) && filter_var($rawField1, FILTER_VALIDATE_EMAIL)) {
+                $recipientEmail = $rawField1;
             } 
-            // Atau jika target_field_1 merupakan email (misalnya pembelian Canva, Akun Premium, dll)
-            elseif (!empty($transaction->target_field_1) && filter_var($transaction->target_field_1, FILTER_VALIDATE_EMAIL)) {
-                $recipientEmail = $transaction->target_field_1;
+            // Jika bukan email (misal ID game pada Top Up Game), gunakan email akun ToTap Store yang terdaftar saat login
+            elseif ($transaction->user && !empty($transaction->user->email) && filter_var($transaction->user->email, FILTER_VALIDATE_EMAIL)) {
+                $recipientEmail = $transaction->user->email;
             }
 
             if (!$recipientEmail) {
