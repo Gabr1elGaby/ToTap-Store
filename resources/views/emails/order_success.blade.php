@@ -192,14 +192,20 @@
             @if(!empty($transaction->provider_sn) && !\App\Services\VipResellerService::isPendingSn($transaction->provider_sn))
                 <div class="account-box">
                     <h3>Data Akun / Nomor Seri (SN)</h3>
-                    <div class="account-content">{{ $transaction->provider_sn }}</div>
+                    <div class="account-content" id="sn-content">{{ $transaction->provider_sn }}</div>
                 </div>
             @endif
 
-            <!-- Tombol Cek Invoice -->
-            <a href="{{ url('/transactions/' . $transaction->id . '/invoice') }}" class="btn-invoice" target="_blank">
-                Lihat Invoice Resmi di Website
-            </a>
+            <!-- Tombol Copy / Invoice -->
+            @if(!empty($transaction->provider_sn) && !\App\Services\VipResellerService::isPendingSn($transaction->provider_sn))
+                <a href="{{ url('/transactions/' . $transaction->id . '/invoice') }}" class="btn-invoice" target="_blank">
+                    📋 Salin Data Akun
+                </a>
+            @else
+                <a href="{{ url('/transactions/' . $transaction->id . '/invoice') }}" class="btn-invoice" target="_blank">
+                    Lihat Invoice
+                </a>
+            @endif
         </div>
 
         <div class="footer">
