@@ -602,6 +602,8 @@ class TopUpController extends Controller
                         'provider_sn' => $sn,
                     ]);
 
+                    \App\Services\NotificationService::sendAdminPaymentReceivedNotification($transaction->fresh(), 'transaction');
+
                     if ($finalStatus === 'success') {
                         return redirect()->route('topup.checkout.show', $transaction->id)->with('success', 'Pembayaran via Saldo Akun berhasil! Diamond/Item langsung masuk ke akun Anda.');
                     } else {
@@ -611,13 +613,14 @@ class TopUpController extends Controller
                     $errMsg = $orderRes['message'] ?? 'Provider gagal memproses pesanan.';
                     $isSaldoIssue = str_contains(strtolower($errMsg), 'saldo') || str_contains(strtolower($errMsg), 'balance');
                     
-                    if (!$isApp && $isSaldoIssue) {
-                        // Masukkan ke antrean otomatis 1x24 jam
+                    if ($isSaldoIssue) {
+                        // Masukkan ke antrean otomatis 1x24 jam (baik Game maupun Aplikasi Premium)
                         $transaction->update([
                             'status' => 'processing',
                             'provider_sn' => 'MENUNGGU SALDO ADMIN',
                         ]);
-                        return redirect()->route('topup.checkout.show', $transaction->id)->with('info', 'Pembayaran via Saldo Akun berhasil diterima! Pesanan Anda telah masuk antrean otomatis (Estimasi 1 x 24 Jam) dan akan diproses segera.');
+                        \App\Services\NotificationService::sendAdminPaymentReceivedNotification($transaction->fresh(), 'transaction');
+                        return redirect()->route('topup.checkout.show', $transaction->id)->with('info', 'Pembayaran via Saldo Akun berhasil diterima! Pesanan Anda telah masuk antrean otomatis dan akan diproses segera.');
                     }
 
                     // JIKA PROVIDER GAGAL/MENOLAK KARENA ALASAN LAIN: OTOMATIS REFUND DANA KE SALDO AKUN USER!
@@ -632,6 +635,7 @@ class TopUpController extends Controller
             }
         } else {
             $fulfilled = \App\Models\GameProductStock::fulfillManualStock($transaction);
+            \App\Services\NotificationService::sendAdminPaymentReceivedNotification($transaction->fresh(), 'transaction');
             if ($fulfilled) {
                 return redirect()->route('topup.checkout.show', $transaction->id)->with('success', 'Pembayaran via Saldo Akun berhasil! Akses Claude Code / item Anda langsung aktif.');
             }

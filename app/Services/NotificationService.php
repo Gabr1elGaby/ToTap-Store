@@ -43,4 +43,26 @@ class NotificationService
             return false;
         }
     }
+
+    /**
+     * Kirim notifikasi pembayaran masuk ke Email Admin (gabriel.gaby1277@gmail.com).
+     * Berlaku untuk: Top Up Game, Aplikasi Premium, dan Software SaaS.
+     */
+    public static function sendAdminPaymentReceivedNotification($item, string $type = 'transaction')
+    {
+        try {
+            $adminEmail = config('mail.admin_notification_email', env('ADMIN_NOTIFICATION_EMAIL', 'gabriel.gaby1277@gmail.com'));
+            if (empty($adminEmail) || !filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
+                return false;
+            }
+
+            Mail::to($adminEmail)->send(new \App\Mail\AdminPaymentNotificationMail($item, $type));
+            $identifier = ($type === 'order') ? ($item->order_number ?? $item->id) : $item->id;
+            Log::info("Email notifikasi pembayaran masuk berhasil dikirim ke Admin ({$adminEmail}) untuk {$type} #{$identifier}");
+            return true;
+        } catch (\Throwable $e) {
+            Log::error("Gagal mengirim email notifikasi ke admin: " . $e->getMessage());
+            return false;
+        }
+    }
 }

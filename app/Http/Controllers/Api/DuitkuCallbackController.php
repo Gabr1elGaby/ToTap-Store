@@ -90,6 +90,9 @@ class DuitkuCallbackController extends Controller
                 } catch (\Exception $e) {
                     Log::error('Duitku Auto-Fulfillment Error: ' . $e->getMessage());
                 }
+
+                // Kirim notifikasi pembayaran masuk ke Email Admin
+                \App\Services\NotificationService::sendAdminPaymentReceivedNotification($transaction->fresh(), 'transaction');
             }
         } else {
             $transaction->update(['status' => 'failed']);

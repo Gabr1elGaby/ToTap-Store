@@ -235,6 +235,9 @@ class GoPayWebhookController extends Controller
             Log::error('GoPay Webhook: Fulfillment Error: ' . $e->getMessage());
         }
 
+        // Kirim Notifikasi Pembayaran Masuk ke Email Admin (gabriel.gaby1277@gmail.com)
+        \App\Services\NotificationService::sendAdminPaymentReceivedNotification($transaction->fresh(), 'transaction');
+
         Log::info("GoPay Webhook: Transaction {$transaction->id} successfully matched and processed.");
 
         return response()->json([

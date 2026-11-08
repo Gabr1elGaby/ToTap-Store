@@ -171,6 +171,9 @@ class WebhookController extends Controller
                     }
                 }
 
+                // Kirim notifikasi pembayaran masuk ke Email Admin untuk Software SaaS
+                \App\Services\NotificationService::sendAdminPaymentReceivedNotification($order->fresh(['product', 'plan', 'user']), 'order');
+
             } elseif ($transactionStatus === 'cancel' || $transactionStatus === 'deny' || $transactionStatus === 'expire') {
                 $order->update([
                     'payment_status' => 'FAILED',

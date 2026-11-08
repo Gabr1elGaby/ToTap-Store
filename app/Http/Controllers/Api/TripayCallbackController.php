@@ -93,6 +93,9 @@ class TripayCallbackController extends Controller
                 } catch (\Exception $e) {
                     Log::error('TriPay Auto-Fulfillment Error: ' . $e->getMessage());
                 }
+
+                // Kirim notifikasi pembayaran masuk ke Email Admin
+                \App\Services\NotificationService::sendAdminPaymentReceivedNotification($transaction->fresh(), 'transaction');
             }
         } elseif (in_array($status, ['EXPIRED', 'FAILED'])) {
             $transaction->update(['status' => 'failed']);
