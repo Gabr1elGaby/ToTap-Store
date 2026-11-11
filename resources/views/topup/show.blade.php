@@ -975,11 +975,27 @@
             .catch(err => {
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
+                
+                // FAIL-SAFE ANTI-MACET: Jika koneksi server/VIP lambat atau timeout, beri opsi pembeli untuk tetap lanjut checkout
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal Memeriksa ID',
-                    text: 'Terjadi gangguan jaringan saat memvalidasi ID. Silakan coba beberapa saat lagi.',
-                    confirmButtonColor: '#4f46e5'
+                    icon: 'warning',
+                    title: 'Jaringan Provider Sedang Sibuk',
+                    text: 'Pengecekan live ID sedang memakan waktu. Apakah Anda ingin tetap melanjutkan proses ke pembayaran sekarang?',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Lanjut Bayar 👉',
+                    cancelButtonText: 'Coba Lagi',
+                    confirmButtonColor: '#4f46e5',
+                    cancelButtonColor: '#6b7280',
+                    reverseButtons: true,
+                    customClass: {
+                        popup: 'rounded-3xl dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 shadow-2xl'
+                    }
+                }).then((resAlert) => {
+                    if (resAlert.isConfirmed) {
+                        submitBtn.innerHTML = 'Memproses Pesanan... <i class="fas fa-spinner fa-spin ml-2"></i>';
+                        submitBtn.disabled = true;
+                        HTMLFormElement.prototype.submit.call(form);
+                    }
                 });
             });
         });

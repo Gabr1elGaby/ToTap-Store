@@ -147,16 +147,21 @@ class VipResellerService
 
     public function checkNickname($gameCode, $target1, $target2 = '')
     {
-        $response = Http::asForm()->post("{$this->baseUrl}/game-feature", [
-            'key' => $this->apiKey,
-            'sign' => $this->generateSign(),
-            'type' => 'get-nickname',
-            'code' => $gameCode,
-            'target' => $target1,
-            'additional_target' => $target2
-        ]);
-        
-        return $response->json();
+        try {
+            $response = Http::connectTimeout(2)->timeout(4)->asForm()->post("{$this->baseUrl}/game-feature", [
+                'key' => $this->apiKey,
+                'sign' => $this->generateSign(),
+                'type' => 'get-nickname',
+                'code' => $gameCode,
+                'target' => $target1,
+                'additional_target' => $target2
+            ]);
+            
+            return $response->json();
+        } catch (\Throwable $e) {
+            Log::warning('VIP Reseller checkNickname timeout/error (bypassed): ' . $e->getMessage());
+            return ['result' => false, 'message' => 'Fails.'];
+        }
     }
 
     public function checkServiceStock($serviceCode)
@@ -173,15 +178,15 @@ class VipResellerService
         ];
 
         try {
-            // 1. Coba endpoint game-feature
-            $response = Http::connectTimeout(10)->timeout(20)->asForm()->post("{$this->baseUrl}/game-feature", $payload);
+            // 1. Coba endpoint game-feature (Timeout singkat 3 detik agar tidak menggantung checkout user)
+            $response = Http::connectTimeout(2)->timeout(3)->asForm()->post("{$this->baseUrl}/game-feature", $payload);
             $res = $response->json();
             if (isset($res['result']) && $res['result'] === true && isset($res['data'])) {
                 return $res;
             }
 
-            // 2. Fallback ke endpoint prepaid
-            $responsePrepaid = Http::connectTimeout(10)->timeout(20)->asForm()->post("{$this->baseUrl}/prepaid", $payload);
+            // 2. Fallback ke endpoint prepaid (Timeout singkat 3 detik)
+            $responsePrepaid = Http::connectTimeout(2)->timeout(3)->asForm()->post("{$this->baseUrl}/prepaid", $payload);
             $resPrepaid = $responsePrepaid->json();
             if (isset($resPrepaid['result']) && $resPrepaid['result'] === true && isset($resPrepaid['data'])) {
                 return $resPrepaid;
@@ -189,8 +194,8 @@ class VipResellerService
 
             return $res ?: ($resPrepaid ?: ['result' => false, 'message' => 'Gagal memeriksa stok']);
         } catch (\Throwable $e) {
-            Log::error('VIP Reseller checkServiceStock error: ' . $e->getMessage());
-            return ['result' => false, 'message' => $e->getMessage()];
+            Log::warning('VIP Reseller checkServiceStock timeout/error (bypass agar tidak macet): ' . $e->getMessage());
+            return ['result' => true, 'message' => 'Bypassed'];
         }
     }
 
