@@ -807,7 +807,15 @@
                     'Accept': 'application/json'
                 }
             })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) {
+                    return res.text().then(text => {
+                        console.error('Check-nickname HTTP error:', res.status, text);
+                        throw new Error('HTTP ' + res.status);
+                    });
+                }
+                return res.json();
+            })
             .then(data => {
                 // 1. JIKA ID BENAR (result: true): TAMPILKAN MODAL KONFIRMASI PESANAN DENGAN NICKNAME!
                 if (data.result === true) {
