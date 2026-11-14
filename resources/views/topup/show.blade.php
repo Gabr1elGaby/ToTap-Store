@@ -875,6 +875,10 @@
                         submitBtn.innerHTML = 'Memproses Pesanan... <i class="fas fa-spinner fa-spin ml-2"></i>';
                         submitBtn.disabled = true;
                         HTMLFormElement.prototype.submit.call(form);
+                    } else {
+                        // KEMBALIKAN TOMBOL KE SEMULA JIKA DIBATALKAN / KLIK UBAH
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
                     }
                 });
                 return;
