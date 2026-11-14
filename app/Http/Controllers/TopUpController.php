@@ -723,6 +723,7 @@ class TopUpController extends Controller
                 || str_contains(strtolower($game->category ?? ''), 'voucher')
                 || str_contains($gameSlug, 'capcut')
                 || str_contains($gameSlug, 'canva')
+                || str_contains($gameSlug, 'canvaa')
                 || str_contains($gameSlug, 'netflix')
                 || str_contains($gameSlug, 'chatgpt')
                 || str_contains($gameSlug, 'claude')
