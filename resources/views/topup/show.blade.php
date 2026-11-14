@@ -798,6 +798,88 @@
             submitBtn.innerHTML = 'Mengecek ID... <i class="fas fa-spinner fa-spin ml-2"></i>';
             submitBtn.disabled = true;
             
+            @php
+                $isAppCategory = str_contains($catLower, 'app') || str_contains($catLower, 'aplikasi') || str_contains($catLower, 'streaming') || str_contains($catLower, 'voucher');
+            @endphp
+
+            @if($isAppCategory)
+                // KHUSUS SEMUA APLIKASI PREMIUM & STREAMING:
+                // Tidak perlu request ke backend / provider! Langsung hitung biaya layanan & tampilkan pop-up rincian harga!
+                const serviceFeeVal = (payMethodVal === 'qris') ? (Math.floor(Math.random() * 399) + 100) : 0;
+                const serviceFeeEl = document.getElementById('service-fee-input');
+                if (serviceFeeEl) {
+                    serviceFeeEl.value = serviceFeeVal;
+                }
+
+                let feeHtml = '';
+                let finalTotalVal = productRawPrice + serviceFeeVal;
+
+                if (payMethodVal === 'qris' && serviceFeeVal > 0) {
+                    feeHtml = `
+                        <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700 text-indigo-600 dark:text-indigo-400">
+                            <span class="font-bold flex items-center gap-1">Biaya Layanan:</span>
+                            <span class="font-black font-mono">+ Rp${Number(serviceFeeVal).toLocaleString('id-ID')}</span>
+                        </div>
+                    `;
+                }
+
+                const priceBreakdownHtml = `
+                    <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
+                        <span class="text-gray-500 dark:text-gray-400 font-semibold">Harga Produk:</span>
+                        <span class="font-bold text-gray-900 dark:text-white font-mono">Rp${Number(productRawPrice).toLocaleString('id-ID')}</span>
+                    </div>
+                    ${feeHtml}
+                    <div class="flex justify-between items-center pt-2">
+                        <span class="text-gray-900 dark:text-white font-black text-sm">Total Pembayaran:</span>
+                        <span class="font-black text-base text-emerald-600 dark:text-emerald-400 font-mono">Rp${Number(finalTotalVal).toLocaleString('id-ID')}</span>
+                    </div>
+                `;
+
+                const payMethodDisplay = payMethodVal === 'balance' ? 'Saldo Akun (Dompet Web)' : 'QRIS All Payment';
+
+                Swal.fire({
+                    title: '<span class="text-lg font-black text-gray-900 dark:text-white">Konfirmasi Data Pesanan</span>',
+                    html: `
+                        <div class="text-left text-xs space-y-2.5 p-4 rounded-2xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 my-2">
+                            <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-gray-500 dark:text-gray-400 font-semibold">Layanan:</span>
+                                <span class="font-bold text-gray-900 dark:text-white">{{ $game->name }}</span>
+                            </div>
+                            <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-gray-500 dark:text-gray-400 font-semibold">Email / Tujuan:</span>
+                                <span class="font-mono font-bold text-gray-900 dark:text-white">${formData.get('player_id')}</span>
+                            </div>
+                            <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-gray-500 dark:text-gray-400 font-semibold">Paket:</span>
+                                <span class="font-bold text-indigo-600 dark:text-indigo-400">${productName}</span>
+                            </div>
+                            <div class="flex justify-between items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-gray-500 dark:text-gray-400 font-semibold">Metode Bayar:</span>
+                                <span class="font-bold text-gray-900 dark:text-white">${payMethodDisplay}</span>
+                            </div>
+                            ${priceBreakdownHtml}
+                        </div>
+                        <p class="text-[11px] text-gray-500 dark:text-gray-400 text-center mt-2">Pastikan email tujuan sudah benar sebelum melanjutkan pembayaran.</p>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Lanjutkan Pembayaran 👉',
+                    cancelButtonText: 'Batal / Ubah',
+                    confirmButtonColor: '#4f46e5',
+                    cancelButtonColor: '#6b7280',
+                    reverseButtons: true,
+                    customClass: {
+                        popup: 'rounded-3xl dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 shadow-2xl'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        submitBtn.innerHTML = 'Memproses Pesanan... <i class="fas fa-spinner fa-spin ml-2"></i>';
+                        submitBtn.disabled = true;
+                        HTMLFormElement.prototype.submit.call(form);
+                    }
+                });
+                return;
+            @endif
+
             fetch('{{ route("topup.check-nickname", $game->slug) }}', {
                 method: 'POST',
                 body: formData,
