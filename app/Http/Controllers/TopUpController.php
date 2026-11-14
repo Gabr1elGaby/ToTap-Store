@@ -716,30 +716,61 @@ class TopUpController extends Controller
             $target2 = trim($request->zone_id ?? '');
             $gameSlug = strtolower($game->slug);
 
+            $isAppOrVoucher = in_array($game->category, ['Aplikasi Premium', 'Voucher', 'App & Entertainment']) 
+                || str_contains(strtolower($game->category ?? ''), 'app') 
+                || str_contains(strtolower($game->category ?? ''), 'aplikasi')
+                || str_contains(strtolower($game->category ?? ''), 'streaming')
+                || str_contains(strtolower($game->category ?? ''), 'voucher')
+                || str_contains($gameSlug, 'capcut')
+                || str_contains($gameSlug, 'canva')
+                || str_contains($gameSlug, 'netflix')
+                || str_contains($gameSlug, 'chatgpt')
+                || str_contains($gameSlug, 'claude')
+                || str_contains($gameSlug, 'spotify')
+                || str_contains($gameSlug, 'youtube');
+
             $product = GameProduct::find($request->product_id);
             $originalPrice = $product ? (float)$product->price_sell : 0;
             $selectedPromoType = $request->input('selected_promo');
             $discountInfo = \App\Helpers\PromoHelper::calculateDiscount(auth()->user(), $originalPrice, $game, (float)($product ? $product->price_modal : 0), $selectedPromoType);
 
-            // CEK STOK REAL-TIME KE VIP RESELLER (Khusus Aplikasi / Streaming / Voucher)
-            $isAppOrVoucher = in_array($game->category, ['Aplikasi Premium', 'Voucher', 'App & Entertainment']) 
-                || str_contains(strtolower($game->category ?? ''), 'app') 
-                || str_contains(strtolower($game->category ?? ''), 'aplikasi')
-                || str_contains(strtolower($game->category ?? ''), 'streaming')
-                || str_contains(strtolower($game->category ?? ''), 'voucher');
+            // 0. KHUSUS APLIKASI PREMIUM & STREAMING:
+            // Tidak perlu cek nickname / API provider sama sekali! Langsung tampilkan modal konfirmasi
+            if ($isAppOrVoucher) {
+                $payMethod = $request->input('payment_method', 'qris');
+                $serviceFee = 0;
+                if ($payMethod === 'qris') {
+                    $pendingAmounts = \App\Models\Transaction::where('payment_method', 'qris')
+                        ->where('status', 'pending')
+                        ->where('created_at', '>=', now()->subMinutes(60))
+                        ->where('amount', '>=', $discountInfo['final_amount'])
+                        ->where('amount', '<=', $discountInfo['final_amount'] + 999)
+                        ->pluck('amount')
+                        ->toArray();
 
-            if ($product && !empty($product->product_code) && $isAppOrVoucher) {
-                try {
-                    $inStock = $api->isProductInStock($product->product_code);
-                    if (!$inStock) {
-                        $product->update(['status' => 'empty']);
-                        Cache::put('vip_stock_prod_' . $product->product_code, false, 180);
-                        return response()->json([
-                            'result' => false,
-                            'message' => 'Mohon maaf, stok akun/layanan ' . $product->name . ' dari provider pusat saat ini sedang habis. Silakan pilih paket lain atau coba lagi nanti.',
-                        ]);
+                    $randomCandidates = range(100, 499);
+                    shuffle($randomCandidates);
+                    foreach ($randomCandidates as $candidate) {
+                        $candidateAmount = (int) $discountInfo['final_amount'] + $candidate;
+                        if (!in_array($candidateAmount, $pendingAmounts)) {
+                            $serviceFee = $candidate;
+                            break;
+                        }
                     }
-                } catch (\Throwable $eStock) {}
+                    if ($serviceFee === 0) {
+                        $serviceFee = rand(100, 499);
+                    }
+                }
+
+                $discountInfo['service_fee'] = $serviceFee;
+                $discountInfo['total_with_fee'] = (int)$discountInfo['final_amount'] + $serviceFee;
+
+                return response()->json([
+                    'result' => true,
+                    'is_checked' => false,
+                    'nickname' => $target1 . ($target2 ? ' (' . $target2 . ')' : ''),
+                    'discount_info' => $discountInfo,
+                ]);
             }
 
             $payMethod = $request->input('payment_method', 'qris');
