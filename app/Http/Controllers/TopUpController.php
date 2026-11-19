@@ -24,16 +24,18 @@ class TopUpController extends Controller
         $vipBalance = ($threshold !== null && $threshold !== '') ? (float)$threshold : 0.0;
         
         try {
-            $vipApi = app(VipResellerService::class);
-            $profile = $vipApi->getProfile();
-            if (isset($profile['result']) && $profile['result'] === true && isset($profile['data']['balance'])) {
-                $liveBal = (float) $profile['data']['balance'];
-                if ($liveBal > 0) {
-                    $vipBalance = $liveBal;
-                }
-            }
+            $vipBalance = (float) Cache::remember('vip_profile_balance', 120, function () {
+                try {
+                    $profile = app(VipResellerService::class)->getProfile();
+                    if (isset($profile['result']) && $profile['result'] === true && isset($profile['data']['balance'])) {
+                        return (float) $profile['data']['balance'];
+                    }
+                } catch (\Throwable $e) {}
+                $threshold = \App\Models\Setting::get('vip_balance_threshold');
+                return ($threshold !== null && $threshold !== '') ? (float)$threshold : 0.0;
+            });
 
-            // AUTO-UPDATE STOK & HARGA MODAL OTOMATIS DARI VIP RESELLER (Cache 5 Menit)
+            // AUTO-UPDATE STOK & HARGA MODAL OTOMATIS DARI VIP RESELLER (Cache 15 Menit)
             $cacheKey = 'vip_auto_sync_' . $game->slug;
             if (!Cache::has($cacheKey)) {
                 $filterMap = [
@@ -269,17 +271,8 @@ class TopUpController extends Controller
                     $isQueue = true;
                 }
             } else {
-                // Baik Game maupun Aplikasi/Voucher: jangan tandai Stok Habis karena saldo provider kurang
+                // Status stok menggunakan data tersinkronisasi dari database (Super Cepat & Bebas Lag)
                 $isOutOfStock = ($p->status !== 'available');
-                if (!$isOutOfStock && !empty($p->product_code)) {
-                    $stockCacheKey = 'vip_stock_prod_' . $p->product_code;
-                    $inStock = Cache::remember($stockCacheKey, 10, function () use ($p) {
-                        return app(\App\Services\VipResellerService::class)->isProductInStock($p->product_code);
-                    });
-                    if (!$inStock) {
-                        $isOutOfStock = true;
-                    }
-                }
                 if ($hasBalanceThreshold && $modal > $vipBalance) {
                     $isQueue = true;
                 }
@@ -319,16 +312,18 @@ class TopUpController extends Controller
         $vipBalance = ($threshold !== null && $threshold !== '') ? (float)$threshold : 0.0;
         
         try {
-            $vipApi = app(VipResellerService::class);
-            $profile = $vipApi->getProfile();
-            if (isset($profile['result']) && $profile['result'] === true && isset($profile['data']['balance'])) {
-                $liveBal = (float) $profile['data']['balance'];
-                if ($liveBal > 0) {
-                    $vipBalance = $liveBal;
-                }
-            }
+            $vipBalance = (float) Cache::remember('vip_profile_balance', 120, function () {
+                try {
+                    $profile = app(VipResellerService::class)->getProfile();
+                    if (isset($profile['result']) && $profile['result'] === true && isset($profile['data']['balance'])) {
+                        return (float) $profile['data']['balance'];
+                    }
+                } catch (\Throwable $e) {}
+                $threshold = \App\Models\Setting::get('vip_balance_threshold');
+                return ($threshold !== null && $threshold !== '') ? (float)$threshold : 0.0;
+            });
 
-            // AUTO-UPDATE STOK & HARGA MODAL OTOMATIS DARI VIP RESELLER (Cache 5 Menit)
+            // AUTO-UPDATE STOK & HARGA MODAL OTOMATIS DARI VIP RESELLER (Cache 15 Menit)
             $cacheKey = 'vip_auto_sync_' . $game->slug;
             if (!Cache::has($cacheKey)) {
                 $filterMap = [
@@ -409,17 +404,8 @@ class TopUpController extends Controller
                     $isQueue = true;
                 }
             } else {
-                // Baik Game maupun Aplikasi/Voucher: jangan tandai Stok Habis karena saldo provider kurang
+                // Status stok menggunakan data tersinkronisasi dari database (Super Cepat & Bebas Lag)
                 $isOutOfStock = ($p->status !== 'available');
-                if (!$isOutOfStock && !empty($p->product_code)) {
-                    $stockCacheKey = 'vip_stock_prod_' . $p->product_code;
-                    $inStock = Cache::remember($stockCacheKey, 10, function () use ($p) {
-                        return app(\App\Services\VipResellerService::class)->isProductInStock($p->product_code);
-                    });
-                    if (!$inStock) {
-                        $isOutOfStock = true;
-                    }
-                }
                 if ($hasBalanceThreshold && $modal > $vipBalance) {
                     $isQueue = true;
                 }
