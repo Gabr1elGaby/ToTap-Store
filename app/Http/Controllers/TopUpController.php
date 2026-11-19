@@ -16,9 +16,32 @@ class TopUpController extends Controller
         return view('topup.index');
     }
 
+    protected function findGameBySlug(string $slug, bool $onlyActive = false): Game
+    {
+        $slugAliases = [
+            'mobile-legends' => 'mobile-legend',
+            'mobile-legend'  => 'mobile-legend',
+            'freefire'       => 'free-fire',
+            'free-fire'      => 'free-fire',
+            'pubg'           => 'pubg-mobile',
+            'pubg-mobile'    => 'pubg-mobile',
+        ];
+        $canonical = $slugAliases[strtolower($slug)] ?? $slug;
+
+        $query = Game::where(function ($q) use ($slug, $canonical) {
+            $q->where('slug', $slug)->orWhere('slug', $canonical);
+        });
+
+        if ($onlyActive) {
+            $query->where('is_active', true);
+        }
+
+        return $query->firstOrFail();
+    }
+
     public function show($slug)
     {
-        $game = Game::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $game = $this->findGameBySlug($slug, true);
 
         $threshold = \App\Models\Setting::get('vip_balance_threshold');
         $vipBalance = ($threshold !== null && $threshold !== '') ? (float)$threshold : 0.0;
@@ -38,6 +61,7 @@ class TopUpController extends Controller
             // AUTO-UPDATE STOK & HARGA MODAL OTOMATIS DARI VIP RESELLER (Cache 15 Menit)
             $cacheKey = 'vip_auto_sync_' . $game->slug;
             if (!Cache::has($cacheKey)) {
+                $vipApi = app(VipResellerService::class);
                 $filterMap = [
                     'mobile-legend' => 'Mobile Legends',
                     'mobile-legends' => 'Mobile Legends',
@@ -75,9 +99,9 @@ class TopUpController extends Controller
                         }
                     }
                 }
-                Cache::put($cacheKey, true, 300); // 5 minutes cache
+                Cache::put($cacheKey, true, 900); // 15 minutes cache
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             // Fallback ke $vipBalance
         }
 
@@ -307,7 +331,7 @@ class TopUpController extends Controller
 
     public function stockStatus($slug)
     {
-        $game = Game::where('slug', $slug)->firstOrFail();
+        $game = $this->findGameBySlug($slug);
         $threshold = \App\Models\Setting::get('vip_balance_threshold');
         $vipBalance = ($threshold !== null && $threshold !== '') ? (float)$threshold : 0.0;
         
@@ -326,6 +350,7 @@ class TopUpController extends Controller
             // AUTO-UPDATE STOK & HARGA MODAL OTOMATIS DARI VIP RESELLER (Cache 15 Menit)
             $cacheKey = 'vip_auto_sync_' . $game->slug;
             if (!Cache::has($cacheKey)) {
+                $vipApi = app(VipResellerService::class);
                 $filterMap = [
                     'mobile-legend' => 'Mobile Legends',
                     'mobile-legends' => 'Mobile Legends',
@@ -363,9 +388,9 @@ class TopUpController extends Controller
                         }
                     }
                 }
-                Cache::put($cacheKey, true, 300); // 5 minutes cache
+                Cache::put($cacheKey, true, 900); // 15 minutes cache
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             // Fallback ke $vipBalance
         }
 
@@ -429,7 +454,7 @@ class TopUpController extends Controller
             return back()->with('error', 'Silakan masuk (login) ke akun ToTap Store Anda terlebih dahulu untuk melanjutkan pembayaran.');
         }
 
-        $game = Game::where('slug', $slug)->firstOrFail();
+        $game = $this->findGameBySlug($slug);
         $gameSlug = strtolower($game->slug);
         $playerId = trim($request->player_id);
         $zoneId = trim($request->zone_id ?? '');
@@ -695,7 +720,7 @@ class TopUpController extends Controller
     public function checkNickname(Request $request, $slug)
     {
         try {
-            $game = Game::where('slug', $slug)->firstOrFail();
+            $game = $this->findGameBySlug($slug);
             $api = app(\App\Services\VipResellerService::class);
             
             $target1 = trim($request->player_id);

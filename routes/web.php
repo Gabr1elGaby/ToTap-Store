@@ -437,6 +437,12 @@ Route::get('/aplikasi-premium', function () {
     return view('aplikasi-premium.index', compact('apps'));
 })->name('aplikasi-premium.index');
 
+// Dynamic robots.txt
+Route::get('/robots.txt', function () {
+    $robots = "User-agent: *\nAllow: /\n\nSitemap: " . url('/sitemap.xml') . "\n";
+    return response($robots, 200, ['Content-Type' => 'text/plain']);
+});
+
 // Dynamic XML Sitemap for Google Search Console
 Route::get('/sitemap.xml', function () {
     $baseUrl = url('/');

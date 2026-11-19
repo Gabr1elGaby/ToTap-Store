@@ -29,11 +29,17 @@ class PromoHelper
         'voucher'  => '🎟️ Voucher Game & Digital',
     ];
 
+    protected static $cachedSettings = null;
+
     /**
      * Get all promo settings with clean defaults
      */
     public static function getSettings(): array
     {
+        if (static::$cachedSettings !== null) {
+            return static::$cachedSettings;
+        }
+
         $dayPromoDaysRaw = Setting::get('promo_day_days', json_encode([5])); // default Jumat
         $dayPromoDays = is_string($dayPromoDaysRaw) ? json_decode($dayPromoDaysRaw, true) : $dayPromoDaysRaw;
         if (!is_array($dayPromoDays)) {
@@ -52,7 +58,7 @@ class PromoHelper
             $dayPromoCats = ['all'];
         }
 
-        return [
+        static::$cachedSettings = [
             // 1. Pengguna Pertama (First Time User)
             'first_user_active'       => (bool) Setting::get('promo_first_user_active', false),
             'first_user_title'        => Setting::get('promo_first_user_title', 'Diskon Spesial Pengguna Baru'),
@@ -76,6 +82,8 @@ class PromoHelper
             'day_promo_categories'    => array_values($dayPromoCats), // e.g. ['all'] or ['games', 'apps']
             'day_promo_banner'        => Setting::get('promo_day_banner', 'images/banner-promo-hari-minggu.png'),
         ];
+
+        return static::$cachedSettings;
     }
 
     /**

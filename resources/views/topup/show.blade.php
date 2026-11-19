@@ -11,6 +11,9 @@
     }
 </style>
 <x-app-layout>
+    <x-slot name="pageTitle">Top Up {{ $game->name }} Murah & Cepat 24 Jam - ToTap Store</x-slot>
+    <x-slot name="metaDescription">Beli paket top up {{ $game->name }} termurah, proses otomatis 24 jam instan via QRIS dan Saldo Akun di ToTap Store. 100% legal, aman, dan bergaransi.</x-slot>
+    <x-slot name="metaKeywords">top up {{ strtolower($game->name) }} murah, diamond {{ strtolower($game->name) }}, beli {{ strtolower($game->name) }}, voucher {{ strtolower($game->name) }}, totap store</x-slot>
     <x-slot name="header">
         @php
             $catLowerHeader = strtolower($game->category ?? '');
@@ -213,19 +216,18 @@
             </div>
         @php
             $productPromoMap = [];
-            foreach ($game->products as $p) {
+            $activeCategoryProducts = collect($categories)->flatten();
+            foreach ($activeCategoryProducts as $p) {
                 $calc = \App\Helpers\PromoHelper::calculateDiscount(auth()->user(), (float)$p->price_sell, $game, (float)$p->price_modal);
-                $productPromoMap[$p->id] = [
+                $productPromoMap[$p->id] = array_merge([
                     'original_price' => (float)$p->price_sell,
                     'original_formatted' => 'Rp' . number_format($p->price_sell, 0, ',', '.'),
                     'modal_price' => (float)$p->price_modal,
-                    'has_discount' => $calc['has_discount'],
                     'default_promo_type' => $calc['promo_type'],
                     'default_final_amount' => $calc['final_amount'],
                     'default_final_formatted' => 'Rp' . number_format($calc['final_amount'], 0, ',', '.'),
                     'default_savings' => $calc['savings_text'],
-                    'eligible_promos' => $calc['eligible_promos'] ?? [],
-                ];
+                ], $calc);
             }
         @endphp
 
@@ -526,7 +528,11 @@
                                           <div class="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
                                              @foreach($catProducts as $product)
                                                  @php
-                                                     $prodCalc = \App\Helpers\PromoHelper::calculateDiscount(auth()->user(), (float)$product->price_sell, $game, (float)$product->price_modal);
+                                                     $prodCalc = $productPromoMap[$product->id] ?? [
+                                                         'final_amount' => $product->price_sell,
+                                                         'has_discount' => false,
+                                                         'default_final_amount' => $product->price_sell,
+                                                     ];
                                                      $displayName = $product->name;
                                                      $displayName = preg_replace('/\s*\(\s*\d+\s*(?:\+\s*\d+)?\s*(?:Bonus|bonus)?\s*\)/i', '', $displayName);
                                                      if (preg_match('/(?:Mobile Legends|Free Fire)\s*-\s*(\d+)\s*Diamonds?\s*\+\s*(\d+)\s*Bonus/i', $displayName, $m)) {

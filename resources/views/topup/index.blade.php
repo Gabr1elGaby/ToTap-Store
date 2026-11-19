@@ -1,4 +1,7 @@
 <x-app-layout>
+    <x-slot name="pageTitle">Pusat Top Up Game Murah & Legal 24 Jam - ToTap Store</x-slot>
+    <x-slot name="metaDescription">Pusat top up game online termurah dan tercepat di Indonesia. Beli Diamond Mobile Legends, Free Fire, Valorant, UC PUBG Mobile, Roblox otomatis 24 jam via QRIS di ToTap Store.</x-slot>
+    <x-slot name="metaKeywords">top up game murah, top up mobile legends murah diamond, top up ff murah, voucher game murah, totap store</x-slot>
     <div class="py-12 bg-slate-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Back Button -->

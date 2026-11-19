@@ -22,7 +22,13 @@
         </script>
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ $pageTitle ?? ($title ?? config('app.name', 'ToTap Store') . ' - Top Up Game & Aplikasi Premium Murah Terpercaya') }}</title>
+        <meta name="description" content="{{ $metaDescription ?? 'ToTap Store: Layanan Top Up Game Murah (Mobile Legends, Free Fire, Valorant, Roblox) dan Aplikasi Premium 24 Jam Otomatis & Terpercaya di Indonesia.' }}">
+        <meta name="keywords" content="{{ $metaKeywords ?? 'top up mobile legends murah diamond, top up ff murah, diamond mlbb, top up game murah, totap store, beli voucher game, aplikasi premium' }}">
+        <meta property="og:title" content="{{ $pageTitle ?? ($title ?? 'ToTap Store - Top Up Game & Aplikasi Premium Murah') }}">
+        <meta property="og:description" content="{{ $metaDescription ?? 'Top up game murah dan cepat 24 jam otomatis via QRIS di ToTap Store.' }}">
+        <meta property="og:image" content="{{ asset('images/logo-totap-v2.png') }}">
+        <meta property="og:type" content="website">
 
         <!-- Early Theme Initialization to prevent flicker -->
         <script>

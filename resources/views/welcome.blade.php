@@ -20,7 +20,14 @@
 
           gtag('config', 'G-JN1N5Z9NFH');
         </script>
-        <title>ToTap Store - Enterprise Software Solutions & Top Up Game</title>
+        <title>ToTap Store - Pusat Top Up Game Murah & Layanan Digital Terpercaya</title>
+        <meta name="description" content="ToTap Store adalah platform resmi & terpercaya untuk Top Up Game murah 24 jam (Mobile Legends, Free Fire, Valorant, Roblox, PUBG), Aplikasi Premium, dan Solusi Software digital terlengkap.">
+        <meta name="keywords" content="top up mobile legends murah diamond, top up ff murah, diamond ml murah, top up game murah, totap store, aplikasi premium murah, top up valorant, roblox indonesia">
+        <meta property="og:title" content="ToTap Store - Pusat Top Up Game Murah & Layanan Digital">
+        <meta property="og:description" content="Top Up Game 24 jam otomatis termurah dan terpercaya di Indonesia via QRIS & Saldo Akun.">
+        <meta property="og:image" content="{{ asset('images/logo-totap-v2.png') }}">
+        <meta property="og:url" content="{{ url('/') }}">
+        <meta property="og:type" content="website">
 
         <!-- Early Theme Initialization to prevent flicker -->
         <script>
