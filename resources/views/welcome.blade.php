@@ -241,8 +241,11 @@
         </section>
         @endif
 
+        <!-- Wallet & Quick Action Dashboard (Dashboard Saldo Beranda) -->
+        <x-home-wallet-card />
+
         <!-- Hero Section -->
-        <section class="relative bg-slate-100 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 pt-20 pb-24 overflow-hidden transition-colors duration-200" id="beranda" 
+        <section class="relative bg-slate-100 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 pt-10 pb-20 overflow-hidden transition-colors duration-200" id="beranda" 
             x-data="{ scrollY: 0 }" 
             @scroll.window="scrollY = window.scrollY">
             
