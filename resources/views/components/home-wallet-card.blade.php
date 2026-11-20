@@ -98,58 +98,50 @@
                 </div>
             </a>
 
-            <!-- 4 Quick Action Buttons di Bawah Kartu (Dijamin 100% Selalu Sejajar Horizontal) -->
-            <div class="mt-5 pt-5 border-t border-white/10 text-center" style="display: flex; justify-content: space-between; align-items: stretch; gap: 8px; width: 100%;">
+            <!-- 3 Quick Action Buttons di Bawah Kartu (Dijamin 100% Selalu Sejajar Horizontal) -->
+            <div class="mt-5 pt-5 border-t border-white/10 text-center" style="display: flex; justify-content: space-between; align-items: stretch; gap: 12px; width: 100%;">
                 
                 <!-- Aksi 1: Isi Saldo -->
                 @auth
-                    <a href="{{ route('deposit.index') }}" style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none;" class="p-2 rounded-xl hover:bg-white/5 transition group">
-                        <div style="width: 40px; height: 40px; border-radius: 12px; background: rgba(59, 130, 246, 0.2); color: #60a5fa; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;" class="group-hover:scale-110 transition-transform">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                    <a href="{{ route('deposit.index') }}" style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none;" class="p-2.5 rounded-2xl hover:bg-white/5 transition group">
+                        <div style="width: 44px; height: 44px; border-radius: 14px; background: rgba(59, 130, 246, 0.2); color: #60a5fa; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;" class="group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                         </div>
-                        <span class="text-[11px] sm:text-xs font-bold text-gray-200 group-hover:text-white whitespace-nowrap">Isi Saldo</span>
+                        <span class="text-xs sm:text-sm font-bold text-gray-200 group-hover:text-white whitespace-nowrap">Isi Saldo</span>
                     </a>
                 @else
-                    <button type="button" onclick="openLoginModal()" style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; padding: 0.5rem;" class="rounded-xl hover:bg-white/5 transition group">
-                        <div style="width: 40px; height: 40px; border-radius: 12px; background: rgba(59, 130, 246, 0.2); color: #60a5fa; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;" class="group-hover:scale-110 transition-transform">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                    <button type="button" onclick="openLoginModal()" style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; padding: 0.625rem;" class="rounded-2xl hover:bg-white/5 transition group">
+                        <div style="width: 44px; height: 44px; border-radius: 14px; background: rgba(59, 130, 246, 0.2); color: #60a5fa; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;" class="group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                         </div>
-                        <span class="text-[11px] sm:text-xs font-bold text-gray-200 group-hover:text-white whitespace-nowrap">Isi Saldo</span>
+                        <span class="text-xs sm:text-sm font-bold text-gray-200 group-hover:text-white whitespace-nowrap">Isi Saldo</span>
                     </button>
                 @endauth
 
                 <!-- Aksi 2: Top Up -->
-                <a href="#kategori" style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none;" class="p-2 rounded-xl hover:bg-white/5 transition group">
-                    <div style="width: 40px; height: 40px; border-radius: 12px; background: rgba(99, 102, 241, 0.2); color: #818cf8; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;" class="group-hover:scale-110 transition-transform">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
+                <a href="#kategori" style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none;" class="p-2.5 rounded-2xl hover:bg-white/5 transition group">
+                    <div style="width: 44px; height: 44px; border-radius: 14px; background: rgba(99, 102, 241, 0.2); color: #818cf8; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;" class="group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
                     </div>
-                    <span class="text-[11px] sm:text-xs font-bold text-gray-200 group-hover:text-white whitespace-nowrap">Top Up</span>
+                    <span class="text-xs sm:text-sm font-bold text-gray-200 group-hover:text-white whitespace-nowrap">Top Up</span>
                 </a>
 
                 <!-- Aksi 3: Pesanan -->
                 @auth
-                    <a href="{{ route('transactions.history') }}" style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none;" class="p-2 rounded-xl hover:bg-white/5 transition group">
-                        <div style="width: 40px; height: 40px; border-radius: 12px; background: rgba(16, 185, 129, 0.2); color: #34d399; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;" class="group-hover:scale-110 transition-transform">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                    <a href="{{ route('transactions.history') }}" style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none;" class="p-2.5 rounded-2xl hover:bg-white/5 transition group">
+                        <div style="width: 44px; height: 44px; border-radius: 14px; background: rgba(16, 185, 129, 0.2); color: #34d399; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;" class="group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
                         </div>
-                        <span class="text-[11px] sm:text-xs font-bold text-gray-200 group-hover:text-white whitespace-nowrap">Pesanan</span>
+                        <span class="text-xs sm:text-sm font-bold text-gray-200 group-hover:text-white whitespace-nowrap">Pesanan</span>
                     </a>
                 @else
-                    <button type="button" onclick="openLoginModal()" style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; padding: 0.5rem;" class="rounded-xl hover:bg-white/5 transition group">
-                        <div style="width: 40px; height: 40px; border-radius: 12px; background: rgba(16, 185, 129, 0.2); color: #34d399; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;" class="group-hover:scale-110 transition-transform">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                    <button type="button" onclick="openLoginModal()" style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; padding: 0.625rem;" class="rounded-2xl hover:bg-white/5 transition group">
+                        <div style="width: 44px; height: 44px; border-radius: 14px; background: rgba(16, 185, 129, 0.2); color: #34d399; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;" class="group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
                         </div>
-                        <span class="text-[11px] sm:text-xs font-bold text-gray-200 group-hover:text-white whitespace-nowrap">Pesanan</span>
+                        <span class="text-xs sm:text-sm font-bold text-gray-200 group-hover:text-white whitespace-nowrap">Pesanan</span>
                     </button>
                 @endauth
-
-                <!-- Aksi 4: Aplikasi -->
-                <a href="{{ route('aplikasi-premium.index') }}" style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none;" class="p-2 rounded-xl hover:bg-white/5 transition group">
-                    <div style="width: 40px; height: 40px; border-radius: 12px; background: rgba(236, 72, 153, 0.2); color: #f472b6; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;" class="group-hover:scale-110 transition-transform">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                    </div>
-                    <span class="text-[11px] sm:text-xs font-bold text-gray-200 group-hover:text-white whitespace-nowrap">Aplikasi</span>
-                </a>
 
             </div>
         </div>
