@@ -38,7 +38,7 @@
 @endphp
 
 <!-- Hero Wallet & Stats Card (Dashboard Beranda) -->
-<div class="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-4">
+<div class="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-4 pb-2">
     
     <!-- 1. KARTU UTAMA (WALLET CARD) -->
     <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0c1322] via-[#16233d] to-[#0c1322] border border-blue-900/40 p-5 sm:p-7 text-white shadow-2xl transition-all duration-300">
@@ -72,7 +72,7 @@
             <div class="mt-3">
                 <span class="text-xs text-gray-400 font-medium uppercase tracking-wider">Saldo kamu</span>
                 <div class="flex items-baseline gap-2 mt-0.5">
-                    <span class="text-3xl sm:text-4xl font-black tracking-tight" style="font-family: 'Orbitron', sans-serif;">
+                    <span class="text-3xl sm:text-4xl font-black tracking-tight text-white" style="font-family: 'Orbitron', sans-serif;">
                         Rp{{ number_format($currentUser->balance ?? 0, 0, ',', '.') }}
                     </span>
                     @auth
@@ -84,7 +84,7 @@
             </div>
 
             <!-- Mini Promo / Info Banner Bar di Dalam Kartu -->
-            <a href="#kategori" class="mt-4 p-2.5 sm:p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl flex items-center justify-between text-xs transition group cursor-pointer">
+            <a href="#kategori" class="mt-4 p-2.5 sm:p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl flex items-center justify-between text-xs transition group cursor-pointer" style="text-decoration: none;">
                 <div class="flex items-center gap-2 overflow-hidden">
                     <span class="px-2 py-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-black text-[10px] rounded-md uppercase tracking-wider shrink-0 shadow-sm">
                         ToTap VIP
@@ -98,84 +98,84 @@
                 </div>
             </a>
 
-            <!-- 4 Quick Action Buttons di Bawah Kartu -->
-            <div class="grid grid-cols-4 gap-2 sm:gap-4 mt-5 pt-5 border-t border-white/10 text-center">
+            <!-- 4 Quick Action Buttons di Bawah Kartu (Dijamin 100% Selalu Sejajar Horizontal) -->
+            <div class="mt-5 pt-5 border-t border-white/10 text-center" style="display: flex; justify-content: space-between; align-items: stretch; gap: 8px; width: 100%;">
                 
                 <!-- Aksi 1: Isi Saldo -->
                 @auth
-                    <a href="{{ route('deposit.index') }}" class="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-white/5 transition group">
-                        <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
-                            <i class="fas fa-wallet text-base"></i>
+                    <a href="{{ route('deposit.index') }}" style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none;" class="p-2 rounded-xl hover:bg-white/5 transition group">
+                        <div style="width: 40px; height: 40px; border-radius: 12px; background: rgba(59, 130, 246, 0.2); color: #60a5fa; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;" class="group-hover:scale-110 transition-transform">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                         </div>
-                        <span class="text-[11px] sm:text-xs font-bold text-gray-200 group-hover:text-white">Isi Saldo</span>
+                        <span class="text-[11px] sm:text-xs font-bold text-gray-200 group-hover:text-white whitespace-nowrap">Isi Saldo</span>
                     </a>
                 @else
-                    <button type="button" onclick="openLoginModal()" class="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-white/5 transition group cursor-pointer">
-                        <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
-                            <i class="fas fa-wallet text-base"></i>
+                    <button type="button" onclick="openLoginModal()" style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; padding: 0.5rem;" class="rounded-xl hover:bg-white/5 transition group">
+                        <div style="width: 40px; height: 40px; border-radius: 12px; background: rgba(59, 130, 246, 0.2); color: #60a5fa; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;" class="group-hover:scale-110 transition-transform">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                         </div>
-                        <span class="text-[11px] sm:text-xs font-bold text-gray-200 group-hover:text-white">Isi Saldo</span>
+                        <span class="text-[11px] sm:text-xs font-bold text-gray-200 group-hover:text-white whitespace-nowrap">Isi Saldo</span>
                     </button>
                 @endauth
 
-                <!-- Aksi 2: Top Up (Langsung Scroll ke Kategori) -->
-                <a href="#kategori" class="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-white/5 transition group">
-                    <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
-                        <i class="fas fa-gamepad text-base"></i>
+                <!-- Aksi 2: Top Up -->
+                <a href="#kategori" style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none;" class="p-2 rounded-xl hover:bg-white/5 transition group">
+                    <div style="width: 40px; height: 40px; border-radius: 12px; background: rgba(99, 102, 241, 0.2); color: #818cf8; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;" class="group-hover:scale-110 transition-transform">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
                     </div>
-                    <span class="text-[11px] sm:text-xs font-bold text-gray-200 group-hover:text-white">Top Up</span>
+                    <span class="text-[11px] sm:text-xs font-bold text-gray-200 group-hover:text-white whitespace-nowrap">Top Up</span>
                 </a>
 
                 <!-- Aksi 3: Pesanan -->
                 @auth
-                    <a href="{{ route('transactions.history') }}" class="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-white/5 transition group">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
-                            <i class="fas fa-receipt text-base"></i>
+                    <a href="{{ route('transactions.history') }}" style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none;" class="p-2 rounded-xl hover:bg-white/5 transition group">
+                        <div style="width: 40px; height: 40px; border-radius: 12px; background: rgba(16, 185, 129, 0.2); color: #34d399; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;" class="group-hover:scale-110 transition-transform">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
                         </div>
-                        <span class="text-[11px] sm:text-xs font-bold text-gray-200 group-hover:text-white">Pesanan</span>
+                        <span class="text-[11px] sm:text-xs font-bold text-gray-200 group-hover:text-white whitespace-nowrap">Pesanan</span>
                     </a>
                 @else
-                    <button type="button" onclick="openLoginModal()" class="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-white/5 transition group cursor-pointer">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
-                            <i class="fas fa-receipt text-base"></i>
+                    <button type="button" onclick="openLoginModal()" style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; padding: 0.5rem;" class="rounded-xl hover:bg-white/5 transition group">
+                        <div style="width: 40px; height: 40px; border-radius: 12px; background: rgba(16, 185, 129, 0.2); color: #34d399; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;" class="group-hover:scale-110 transition-transform">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
                         </div>
-                        <span class="text-[11px] sm:text-xs font-bold text-gray-200 group-hover:text-white">Pesanan</span>
+                        <span class="text-[11px] sm:text-xs font-bold text-gray-200 group-hover:text-white whitespace-nowrap">Pesanan</span>
                     </button>
                 @endauth
 
-                <!-- Aksi 4: Mutasi / Aplikasi -->
-                <a href="{{ route('aplikasi-premium.index') }}" class="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-white/5 transition group">
-                    <div class="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
-                        <i class="fas fa-tv text-base"></i>
+                <!-- Aksi 4: Aplikasi -->
+                <a href="{{ route('aplikasi-premium.index') }}" style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none;" class="p-2 rounded-xl hover:bg-white/5 transition group">
+                    <div style="width: 40px; height: 40px; border-radius: 12px; background: rgba(236, 72, 153, 0.2); color: #f472b6; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;" class="group-hover:scale-110 transition-transform">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                     </div>
-                    <span class="text-[11px] sm:text-xs font-bold text-gray-200 group-hover:text-white">Aplikasi</span>
+                    <span class="text-[11px] sm:text-xs font-bold text-gray-200 group-hover:text-white whitespace-nowrap">Aplikasi</span>
                 </a>
 
             </div>
         </div>
     </div>
 
-    <!-- 2. TIGA KOTAK STATISTIK BULAN INI (DI BAWAH KARTU) -->
-    <div class="grid grid-cols-3 gap-2.5 sm:gap-4 mt-3">
+    <!-- 2. TIGA KOTAK STATISTIK BULAN INI (DIJAMIN 100% SEJAJAR 3 KOLOM) -->
+    <div class="mt-3.5" style="display: flex; justify-content: space-between; gap: 8px; width: 100%;">
         <!-- Box 1: Pesanan Bulan Ini -->
-        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700/80 rounded-2xl p-3 sm:p-4 shadow-sm text-left transition-colors">
-            <span class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-semibold block truncate">Pesanan bulan ini</span>
+        <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200 dark:border-gray-700/80 rounded-2xl p-3 sm:p-4 shadow-sm text-left transition-all hover:border-blue-500/40" style="flex: 1; min-width: 0;">
+            <span class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-bold block leading-tight truncate">Pesanan bulan ini</span>
             <p class="text-base sm:text-2xl font-black text-gray-900 dark:text-white mt-1" style="font-family: 'Orbitron', sans-serif;">
                 {{ $userOrdersMonthCount }}
             </p>
         </div>
 
         <!-- Box 2: Belanja Bulan Ini -->
-        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700/80 rounded-2xl p-3 sm:p-4 shadow-sm text-left transition-colors">
-            <span class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-semibold block truncate">Belanja bulan ini</span>
-            <p class="text-base sm:text-xl font-black text-blue-600 dark:text-blue-400 mt-1 truncate" style="font-family: 'Orbitron', sans-serif;">
+        <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200 dark:border-gray-700/80 rounded-2xl p-3 sm:p-4 shadow-sm text-left transition-all hover:border-blue-500/40" style="flex: 1; min-width: 0;">
+            <span class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-bold block leading-tight truncate">Belanja bulan ini</span>
+            <p class="text-xs sm:text-xl font-black text-blue-600 dark:text-blue-400 mt-1 truncate" style="font-family: 'Orbitron', sans-serif;">
                 Rp{{ number_format($userSpendMonth, 0, ',', '.') }}
             </p>
         </div>
 
         <!-- Box 3: Sedang Diproses -->
-        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700/80 rounded-2xl p-3 sm:p-4 shadow-sm text-left transition-colors">
-            <span class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-semibold block truncate">Sedang diproses</span>
+        <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200 dark:border-gray-700/80 rounded-2xl p-3 sm:p-4 shadow-sm text-left transition-all hover:border-blue-500/40" style="flex: 1; min-width: 0;">
+            <span class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-bold block leading-tight truncate">Sedang diproses</span>
             <p class="text-base sm:text-2xl font-black {{ $userProcessingCount > 0 ? 'text-amber-500 animate-pulse' : 'text-gray-900 dark:text-white' }} mt-1" style="font-family: 'Orbitron', sans-serif;">
                 {{ $userProcessingCount }}
             </p>
