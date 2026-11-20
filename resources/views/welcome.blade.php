@@ -715,7 +715,7 @@
         </section>
 
         <!-- Footer -->
-        <footer class="bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 py-8 border-t border-gray-200 dark:border-gray-800 transition-colors duration-200">
+        <footer class="bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 pt-8 pb-24 md:pb-8 border-t border-gray-200 dark:border-gray-800 transition-colors duration-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center" data-aos="fade-in">
                 <div class="flex items-center gap-1 mb-4 md:mb-0">
                     <img src="{{ asset('images/logo-totap-v2.png') }}" alt="ToTap Store" class="h-16 w-auto object-contain drop-shadow-md">
@@ -726,5 +726,6 @@
         </footer>
 
         <x-auth-modals />
+        <x-mobile-bottom-nav />
     </body>
 </html>

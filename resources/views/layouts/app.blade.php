@@ -85,10 +85,11 @@
             @endisset
 
             <!-- Page Content -->
-            <main>
+            <main class="pb-20 md:pb-0">
                 {{ $slot }}
             </main>
         </div>
         <x-auth-modals />
+        <x-mobile-bottom-nav />
 </body>
 </html>
