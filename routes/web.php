@@ -433,6 +433,16 @@ Route::get('/aplikasi-premium', function () {
               ->orWhere('category', 'LIKE', '%aplikasi%')
               ->orWhere('category', 'LIKE', '%streaming%');
         })
+        ->withCount(['products' => function($q) {
+            $q->where('status', 'available')
+              ->where('price_modal', '>', 0)
+              ->where('name', 'not like', '%first top%')
+              ->where('name', 'not like', '%first-top%')
+              ->where('name', 'not like', '%first topup%')
+              ->where('name', 'not like', '%skin%')
+              ->where('product_code', 'not like', '%skin%');
+        }])
+        ->orderBy('name')
         ->get();
     return view('aplikasi-premium.index', compact('apps'));
 })->name('aplikasi-premium.index');

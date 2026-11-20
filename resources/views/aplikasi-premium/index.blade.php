@@ -26,30 +26,48 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
                     @foreach($apps as $app)
                     @php
-                        $promoProduct = $app->products()->where('is_promo', true)->where('status', 'available')->where('price_normal', '>', 0)->orderByRaw('((price_normal - price_sell) / price_normal) DESC')->first();
+                        $itemCount = isset($app->products_count) ? $app->products_count : $app->products()->where('status', 'available')->count();
+                        $isAvailable = $itemCount > 0;
+                        $promoProduct = $isAvailable ? $app->products()->where('is_promo', true)->where('status', 'available')->where('price_normal', '>', 0)->orderByRaw('((price_normal - price_sell) / price_normal) DESC')->first() : null;
                         $maxDiscount = 0;
                         if ($promoProduct) {
                             $maxDiscount = floor((($promoProduct->price_normal - $promoProduct->price_sell) / $promoProduct->price_normal) * 100);
                         }
                     @endphp
-                    <a href="{{ route('topup.show', $app->slug) }}" class="relative block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group">
-                        @if($maxDiscount > 0)
+                    <a href="{{ route('topup.show', $app->slug) }}" class="relative block bg-white dark:bg-gray-800 border {{ $isAvailable ? 'border-gray-200 dark:border-gray-700 hover:border-blue-500' : 'border-red-500/40 dark:border-red-500/40' }} rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group">
+                        @if(!$isAvailable)
+                            <div class="absolute top-3 left-3 bg-red-600 text-white text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider z-20 shadow-md flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+                                KOSONG
+                            </div>
+                        @elseif($maxDiscount > 0)
                             <div class="absolute top-5 -right-10 w-40 transform rotate-45 bg-gradient-to-r from-red-600 to-rose-500 text-white text-[10px] font-extrabold py-1 text-center shadow-md z-20 animate-pulse tracking-wider">
                                 DISKON {{ $maxDiscount }}%
                             </div>
                         @endif
                         <div class="w-full h-48 relative overflow-hidden bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                             @if(!empty($app->thumbnail))
-                                <img src="{{ $app->thumbnail }}" alt="{{ $app->name }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" onerror="this.classList.add('hidden')">
+                                <img src="{{ $app->thumbnail }}" alt="{{ $app->name }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 {{ !$isAvailable ? 'grayscale-[40%] opacity-80' : '' }}" onerror="this.classList.add('hidden')">
                             @endif
                             <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-amber-600 to-orange-900 flex flex-col items-center justify-center text-white p-4 shadow-inner {{ !empty($app->thumbnail) ? 'hidden' : '' }}">
                                 <span class="text-3xl mb-1">👑</span>
                                 <span class="font-black text-sm tracking-wider uppercase text-center">{{ $app->name }}</span>
                             </div>
+                            @if(!$isAvailable)
+                                <div class="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center z-10">
+                                    <span class="px-3.5 py-1.5 bg-red-600/90 text-white text-xs font-black rounded-xl uppercase tracking-widest shadow-xl border border-white/20">
+                                        STOK KOSONG
+                                    </span>
+                                </div>
+                            @endif
                         </div>
                         <div class="p-4 text-center bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700">
                             <h3 class="font-bold text-gray-900 dark:text-white truncate" style="font-family: 'Orbitron', sans-serif; font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase;">{{ $app->name }}</h3>
-                            <p class="text-xs text-amber-600 dark:text-amber-400 font-bold mt-1 tracking-wide">LANGGANAN SEKARANG</p>
+                            @if($isAvailable)
+                                <p class="text-xs text-amber-600 dark:text-amber-400 font-bold mt-1 tracking-wide">LANGGANAN SEKARANG</p>
+                            @else
+                                <p class="text-xs text-red-500 dark:text-red-400 font-black mt-1 tracking-wider uppercase">KOSONG</p>
+                            @endif
                         </div>
                     </a>
                     @endforeach
