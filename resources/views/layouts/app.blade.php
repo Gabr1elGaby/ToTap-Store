@@ -57,6 +57,14 @@
         <link rel="apple-touch-icon-precomposed" href="{{ asset('images/logo-totap-v2.png') }}">
         <link rel="manifest" href="{{ asset('manifest.json') }}">
     <style>
+        /* SVG Safety fallback to prevent unstyled icon overflow */
+        svg { max-width: 100%; }
+        svg.w-4 { width: 1rem !important; height: 1rem !important; }
+        svg.w-5 { width: 1.25rem !important; height: 1.25rem !important; }
+        svg.w-6 { width: 1.5rem !important; height: 1.5rem !important; }
+        svg.w-8 { width: 2rem !important; height: 2rem !important; }
+        svg.w-10 { width: 2.5rem !important; height: 2.5rem !important; }
+        svg.w-12 { width: 3rem !important; height: 3rem !important; }
         .nav-item-glow {
             border-bottom: 2px solid transparent;
             transition: all 0.3s ease;

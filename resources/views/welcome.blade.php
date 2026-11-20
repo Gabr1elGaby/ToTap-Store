@@ -48,6 +48,14 @@
         <style>
             html { scroll-behavior: smooth; }
             body { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif; }
+            /* SVG Safety fallback to prevent unstyled icon overflow */
+            svg { max-width: 100%; }
+            svg.w-4 { width: 1rem !important; height: 1rem !important; }
+            svg.w-5 { width: 1.25rem !important; height: 1.25rem !important; }
+            svg.w-6 { width: 1.5rem !important; height: 1.5rem !important; }
+            svg.w-8 { width: 2rem !important; height: 2rem !important; }
+            svg.w-10 { width: 2.5rem !important; height: 2.5rem !important; }
+            svg.w-12 { width: 3rem !important; height: 3rem !important; }
             .bg-grid-pattern {
                 background-image: linear-gradient(to right, rgba(0,0,0,0.04) 1px, transparent 1px),
                                   linear-gradient(to bottom, rgba(0,0,0,0.04) 1px, transparent 1px);
