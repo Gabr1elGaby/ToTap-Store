@@ -141,7 +141,7 @@ class AdminArticleController extends Controller
         $publishedAt = null;
         if ($isPublished) {
             if ($request->input('publish_mode') === 'schedule' && $request->filled('published_at')) {
-                $publishedAt = \Carbon\Carbon::parse($request->published_at);
+                $publishedAt = \Carbon\Carbon::parse($request->published_at, 'Asia/Jakarta')->setTimezone(config('app.timezone', 'UTC'));
             } else {
                 $publishedAt = now();
             }
@@ -259,7 +259,7 @@ class AdminArticleController extends Controller
         $publishedAt = null;
         if ($isPublished) {
             if ($request->input('publish_mode') === 'schedule' && $request->filled('published_at')) {
-                $publishedAt = \Carbon\Carbon::parse($request->published_at);
+                $publishedAt = \Carbon\Carbon::parse($request->published_at, 'Asia/Jakarta')->setTimezone(config('app.timezone', 'UTC'));
             } elseif ($request->input('publish_mode') === 'now') {
                 $publishedAt = now();
             } else {

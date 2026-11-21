@@ -278,7 +278,7 @@
                             <label class="block text-xs font-bold text-emerald-400">
                                 Tentukan Tanggal & Jam Tayang (WIB):
                             </label>
-                            <input type="datetime-local" name="published_at" id="published_at_input" value="{{ old('published_at', now()->addDay()->format('Y-m-d\TH:00')) }}"
+                            <input type="datetime-local" name="published_at" id="published_at_input" value="{{ old('published_at', now('Asia/Jakarta')->addHour()->format('Y-m-d\TH:i')) }}"
                                 class="w-full sm:w-auto px-4 py-2 bg-white dark:bg-gray-900 border border-emerald-500/30 rounded-xl text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
                             <div class="text-[11px] text-emerald-400/90">
                                 💡 <strong>Otomatis:</strong> Saat tanggal & jam tayang tersebut tiba, artikel akan otomatis muncul di website dan otomatis didaftarkan ke <code>/sitemap.xml</code> agar segera dibaca Google.

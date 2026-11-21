@@ -175,7 +175,7 @@
                                     <td class="py-3 px-4 text-center whitespace-nowrap">
                                         @if($article->is_published)
                                             @if($article->published_at && $article->published_at->isFuture())
-                                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20" title="Jadwal Tayang: {{ $article->published_at->format('d M Y, H:i') }} WIB">
+                                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20" title="Jadwal Tayang: {{ $article->published_at->setTimezone('Asia/Jakarta')->format('d M Y, H:i') }} WIB">
                                                     ⏰ Terjadwal
                                                 </span>
                                             @else
@@ -192,10 +192,10 @@
                                     <td class="py-3 px-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">
                                         @if($article->published_at && $article->published_at->isFuture())
                                             <span class="text-blue-400 font-medium flex items-center gap-1">
-                                                <i class="far fa-clock text-[10px]"></i> {{ $article->published_at->format('d M Y, H:i') }} WIB
+                                                <i class="far fa-clock text-[10px]"></i> {{ $article->published_at->setTimezone('Asia/Jakarta')->format('d M Y, H:i') }} WIB
                                             </span>
                                         @else
-                                            {{ $article->published_at ? $article->published_at->format('d M Y, H:i') : '-' }}
+                                            {{ $article->published_at ? $article->published_at->setTimezone('Asia/Jakarta')->format('d M Y, H:i') . ' WIB' : '-' }}
                                         @endif
                                     </td>
                                     <td class="py-3 px-4 text-right whitespace-nowrap">
