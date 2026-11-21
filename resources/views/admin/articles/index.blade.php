@@ -30,13 +30,13 @@
             @endif
 
             {{-- Summary Stats Cards --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center gap-4">
                     <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-xl text-indigo-400">
                         📚
                     </div>
                     <div>
-                        <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider">Total Artikel</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider">Total</span>
                         <div class="text-2xl font-black text-gray-900 dark:text-white font-mono mt-0.5">
                             {{ $totalArticles }}
                         </div>
@@ -51,6 +51,18 @@
                         <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider">Published</span>
                         <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono mt-0.5">
                             {{ $publishedCount }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-xl text-blue-400">
+                        ⏰
+                    </div>
+                    <div>
+                        <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider">Terjadwal</span>
+                        <div class="text-2xl font-black text-blue-500 font-mono mt-0.5">
+                            {{ $scheduledCount ?? 0 }}
                         </div>
                     </div>
                 </div>
@@ -72,7 +84,7 @@
                         👁️
                     </div>
                     <div>
-                        <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider">Total Pembaca (Views)</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider">Views</span>
                         <div class="text-2xl font-black text-cyan-600 dark:text-cyan-400 font-mono mt-0.5">
                             {{ number_format($totalViews) }}
                         </div>
@@ -100,7 +112,8 @@
 
                     <select name="status" class="py-2 px-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
                         <option value="">Semua Status</option>
-                        <option value="published" {{ request('status') === 'published' ? 'selected' : '' }}>Published</option>
+                        <option value="published" {{ request('status') === 'published' ? 'selected' : '' }}>Published (Live)</option>
+                        <option value="scheduled" {{ request('status') === 'scheduled' ? 'selected' : '' }}>Terjadwal</option>
                         <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
                     </select>
 
@@ -161,9 +174,15 @@
                                     </td>
                                     <td class="py-3 px-4 text-center whitespace-nowrap">
                                         @if($article->is_published)
-                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                                ✓ Published
-                                            </span>
+                                            @if($article->published_at && $article->published_at->isFuture())
+                                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20" title="Jadwal Tayang: {{ $article->published_at->format('d M Y, H:i') }} WIB">
+                                                    ⏰ Terjadwal
+                                                </span>
+                                            @else
+                                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                                    ✓ Published
+                                                </span>
+                                            @endif
                                         @else
                                             <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
                                                 Draft
@@ -171,11 +190,17 @@
                                         @endif
                                     </td>
                                     <td class="py-3 px-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">
-                                        {{ $article->published_at ? $article->published_at->format('d M Y, H:i') : '-' }}
+                                        @if($article->published_at && $article->published_at->isFuture())
+                                            <span class="text-blue-400 font-medium flex items-center gap-1">
+                                                <i class="far fa-clock text-[10px]"></i> {{ $article->published_at->format('d M Y, H:i') }} WIB
+                                            </span>
+                                        @else
+                                            {{ $article->published_at ? $article->published_at->format('d M Y, H:i') : '-' }}
+                                        @endif
                                     </td>
                                     <td class="py-3 px-4 text-right whitespace-nowrap">
                                         <div class="flex items-center justify-end gap-1.5">
-                                            @if($article->is_published)
+                                            @if($article->is_published && (!$article->published_at || $article->published_at->isPast()))
                                                 <a href="{{ route('articles.show', $article->slug) }}" target="_blank" title="Lihat Live" class="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 transition">
                                                     <i class="fas fa-eye text-xs"></i>
                                                 </a>

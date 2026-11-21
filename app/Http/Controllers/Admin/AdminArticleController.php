@@ -31,7 +31,11 @@ class AdminArticleController extends Controller
 
         if ($request->filled('status')) {
             if ($request->status === 'published') {
-                $query->where('is_published', true);
+                $query->where('is_published', true)->where(function($q) {
+                    $q->whereNull('published_at')->orWhere('published_at', '<=', now());
+                });
+            } elseif ($request->status === 'scheduled') {
+                $query->where('is_published', true)->where('published_at', '>', now());
             } elseif ($request->status === 'draft') {
                 $query->where('is_published', false);
             }
@@ -39,11 +43,12 @@ class AdminArticleController extends Controller
 
         $articles = $query->paginate(15)->withQueryString();
         $totalArticles = Article::count();
-        $publishedCount = Article::where('is_published', true)->count();
+        $publishedCount = Article::published()->count();
+        $scheduledCount = Article::where('is_published', true)->where('published_at', '>', now())->count();
         $draftCount = Article::where('is_published', false)->count();
         $totalViews = Article::sum('views');
 
-        return view('admin.articles.index', compact('articles', 'totalArticles', 'publishedCount', 'draftCount', 'totalViews'));
+        return view('admin.articles.index', compact('articles', 'totalArticles', 'publishedCount', 'scheduledCount', 'draftCount', 'totalViews'));
     }
 
     /**
@@ -74,6 +79,8 @@ class AdminArticleController extends Controller
             'meta_keywords' => 'nullable|string|max:255',
             'author_name' => 'nullable|string|max:100',
             'is_published' => 'nullable|boolean',
+            'publish_mode' => 'nullable|string|in:now,schedule',
+            'published_at' => 'nullable|date',
         ], [
             'thumbnail_file.uploaded' => 'File gambar gagal diunggah ke server (ukuran file asli kemungkinan melebihi batas upload hosting). Coba gunakan gambar di bawah 3MB atau kompres terlebih dahulu.',
             'thumbnail_file.max' => 'Ukuran file gambar maksimal adalah 30MB.',
@@ -131,6 +138,14 @@ class AdminArticleController extends Controller
         }
 
         $isPublished = $request->has('is_published') && (bool) $request->is_published;
+        $publishedAt = null;
+        if ($isPublished) {
+            if ($request->input('publish_mode') === 'schedule' && $request->filled('published_at')) {
+                $publishedAt = \Carbon\Carbon::parse($request->published_at);
+            } else {
+                $publishedAt = now();
+            }
+        }
 
         Article::create([
             'title' => $validated['title'],
@@ -144,7 +159,7 @@ class AdminArticleController extends Controller
             'meta_keywords' => $validated['meta_keywords'] ?? null,
             'author_name' => !empty($validated['author_name']) ? $validated['author_name'] : 'ToTap Store Official',
             'is_published' => $isPublished,
-            'published_at' => $isPublished ? now() : null,
+            'published_at' => $publishedAt,
         ]);
 
         return redirect()->route('admin.articles.index')->with('success', 'Artikel berhasil diterbitkan!');
@@ -178,6 +193,8 @@ class AdminArticleController extends Controller
             'meta_keywords' => 'nullable|string|max:255',
             'author_name' => 'nullable|string|max:100',
             'is_published' => 'nullable|boolean',
+            'publish_mode' => 'nullable|string|in:now,schedule',
+            'published_at' => 'nullable|date',
         ], [
             'thumbnail_file.uploaded' => 'File gambar gagal diunggah ke server (ukuran file asli kemungkinan melebihi batas upload hosting). Coba gunakan gambar di bawah 3MB atau kompres terlebih dahulu.',
             'thumbnail_file.max' => 'Ukuran file gambar maksimal adalah 30MB.',
@@ -239,9 +256,15 @@ class AdminArticleController extends Controller
 
         $isPublished = $request->has('is_published') && (bool) $request->is_published;
 
-        $publishedAt = $article->published_at;
-        if ($isPublished && !$article->published_at) {
-            $publishedAt = now();
+        $publishedAt = null;
+        if ($isPublished) {
+            if ($request->input('publish_mode') === 'schedule' && $request->filled('published_at')) {
+                $publishedAt = \Carbon\Carbon::parse($request->published_at);
+            } elseif ($request->input('publish_mode') === 'now') {
+                $publishedAt = now();
+            } else {
+                $publishedAt = $article->published_at ?: now();
+            }
         }
 
         $article->update([

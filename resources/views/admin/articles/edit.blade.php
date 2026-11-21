@@ -247,25 +247,70 @@
                     </div>
                 </div>
 
-                {{-- Status Publikasi --}}
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-between">
-                    <div>
-                        <div class="font-bold text-sm text-gray-900 dark:text-white">Status Publikasi</div>
-                        <div class="text-xs text-gray-500 dark:text-gray-400">
-                            Status saat ini: 
-                            <strong class="{{ $article->is_published ? 'text-emerald-500' : 'text-amber-500' }}">
-                                {{ $article->is_published ? 'Published (Aktif & Tayang)' : 'Draft (Belum Tayang)' }}
-                            </strong>
-                            @if($article->published_at)
-                                (Dirilis {{ $article->published_at->format('d M Y') }})
-                            @endif
+                @php
+                    $isScheduled = $article->is_published && $article->published_at && $article->published_at->isFuture();
+                    $initialMode = old('publish_mode', $isScheduled ? 'schedule' : 'now');
+                @endphp
+
+                {{-- Status & Jadwal Publikasi --}}
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-700/60">
+                        <div>
+                            <div class="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-2">
+                                <span class="text-blue-500">🚀</span> Status Publikasi
+                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                Status saat ini: 
+                                @if($isScheduled)
+                                    <strong class="text-blue-500">⏰ Terjadwal tayang {{ $article->published_at->format('d M Y H:i') }} WIB</strong>
+                                @elseif($article->is_published)
+                                    <strong class="text-emerald-500">✓ Published (Aktif & Tayang)</strong>
+                                @else
+                                    <strong class="text-amber-500">Draft (Belum Tayang)</strong>
+                                @endif
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" name="is_published" id="is_published_toggle" value="1" {{ old('is_published', $article->is_published) ? 'checked' : '' }} class="sr-only peer" onchange="togglePublishOptions(this.checked)">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-600"></div>
+                            <span class="ml-3 text-xs font-bold text-gray-700 dark:text-gray-300" id="publish_toggle_label">Publikasikan</span>
+                        </label>
+                    </div>
+
+                    {{-- Opsi Waktu Tayang / Jadwal Upload --}}
+                    <div id="schedule_section" class="space-y-3 pt-1 {{ old('is_published', $article->is_published) ? '' : 'hidden' }}">
+                        <label class="text-xs font-bold text-gray-800 dark:text-gray-200 block">
+                            ⏰ Opsi Waktu Tayang:
+                        </label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <label class="flex items-center gap-3 p-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 cursor-pointer hover:border-emerald-500 transition">
+                                <input type="radio" name="publish_mode" value="now" id="mode_now" {{ $initialMode === 'now' ? 'checked' : '' }} onchange="toggleScheduleInput(false)" class="text-emerald-600 focus:ring-emerald-500">
+                                <div>
+                                    <div class="text-xs font-bold text-gray-900 dark:text-white">⚡ Terbitkan Sekarang</div>
+                                    <div class="text-[11px] text-gray-400">Langsung tayang dan didaftarkan ke sitemap.xml hari ini.</div>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 cursor-pointer hover:border-emerald-500 transition">
+                                <input type="radio" name="publish_mode" value="schedule" id="mode_schedule" {{ $initialMode === 'schedule' ? 'checked' : '' }} onchange="toggleScheduleInput(true)" class="text-emerald-600 focus:ring-emerald-500">
+                                <div>
+                                    <div class="text-xs font-bold text-gray-900 dark:text-white">📅 Jadwalkan Tanggal & Jam Tayang</div>
+                                    <div class="text-[11px] text-gray-400">Pilih hari & jam kapan artikel akan otomatis tayang.</div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div id="schedule_datetime_box" class="{{ $initialMode === 'schedule' ? '' : 'hidden' }} p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-2">
+                            <label class="block text-xs font-bold text-emerald-400">
+                                Tentukan Tanggal & Jam Tayang (WIB):
+                            </label>
+                            <input type="datetime-local" name="published_at" id="published_at_input" value="{{ old('published_at', ($article->published_at ? $article->published_at->format('Y-m-d\TH:i') : now()->addDay()->format('Y-m-d\TH:00'))) }}"
+                                class="w-full sm:w-auto px-4 py-2 bg-white dark:bg-gray-900 border border-emerald-500/30 rounded-xl text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                            <div class="text-[11px] text-emerald-400/90">
+                                💡 <strong>Otomatis:</strong> Saat tanggal & jam tayang tersebut tiba, artikel akan otomatis muncul di website dan otomatis didaftarkan ke <code>/sitemap.xml</code> agar segera dibaca Google.
+                            </div>
                         </div>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" name="is_published" value="1" {{ old('is_published', $article->is_published) ? 'checked' : '' }} class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-600"></div>
-                        <span class="ml-3 text-xs font-bold text-gray-700 dark:text-gray-300">Terbitkan</span>
-                    </label>
                 </div>
 
                 <div class="flex items-center justify-end gap-3">
@@ -436,5 +481,28 @@
                 fileInput.value = '';
             }
         });
+
+        // Publish & Schedule UI controls
+        function togglePublishOptions(isPublished) {
+            const section = document.getElementById('schedule_section');
+            if (section) {
+                if (isPublished) {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            }
+        }
+
+        function toggleScheduleInput(isScheduled) {
+            const box = document.getElementById('schedule_datetime_box');
+            if (box) {
+                if (isScheduled) {
+                    box.classList.remove('hidden');
+                } else {
+                    box.classList.add('hidden');
+                }
+            }
+        }
     </script>
 </x-app-layout>

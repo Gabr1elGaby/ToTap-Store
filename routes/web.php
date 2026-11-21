@@ -479,9 +479,9 @@ Route::get('/sitemap.xml', function () {
         $xml .= '<url><loc>' . $baseUrl . '/topup/' . $g->slug . '</loc><changefreq>daily</changefreq><priority>0.9</priority></url>';
     }
 
-    // Dynamic Articles & Blog SEO
+    // Dynamic Articles & Blog SEO (only include currently live articles)
     $articles = \Illuminate\Support\Facades\Schema::hasTable('articles')
-        ? \App\Models\Article::where('is_published', true)->get(['slug', 'updated_at'])
+        ? \App\Models\Article::published()->get(['slug', 'updated_at'])
         : collect();
 
     if ($articles->isNotEmpty()) {
