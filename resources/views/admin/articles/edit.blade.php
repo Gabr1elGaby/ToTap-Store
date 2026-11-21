@@ -36,12 +36,12 @@
                 </div>
             @endif
 
-            <form action="{{ route('admin.articles.update', $article) }}" method="POST" class="space-y-6">
+            <form action="{{ route('admin.articles.update', $article) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
                 @method('PUT')
 
                 {{-- Konten Utama Artikel --}}
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm space-y-4">
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm space-y-5">
                     <h3 class="text-sm font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
                         <span>📄</span> Informasi Artikel
                     </h3>
@@ -75,22 +75,60 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
-                                Slug URL
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                            Slug URL
+                        </label>
+                        <input type="text" name="slug" value="{{ old('slug', $article->slug) }}"
+                            class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-xs text-gray-900 dark:text-white font-mono focus:ring-2 focus:ring-emerald-500">
+                        <span class="text-[11px] text-gray-400 mt-1 block">URL: /artikel/{{ $article->slug }}</span>
+                    </div>
+
+                    {{-- Upload Gambar Thumbnail dari Komputer --}}
+                    <div class="p-5 rounded-2xl bg-gray-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-700 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                <span class="text-emerald-500 text-sm">🖼️</span> Upload Gambar Cover / Thumbnail dari Komputer
                             </label>
-                            <input type="text" name="slug" value="{{ old('slug', $article->slug) }}"
-                                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white font-mono text-xs focus:ring-2 focus:ring-emerald-500">
-                            <span class="text-[11px] text-gray-400 mt-1 block">URL: /artikel/{{ $article->slug }}</span>
+                            <span class="text-[11px] text-gray-400">Format: JPG, PNG, WEBP (Maks 5MB)</span>
                         </div>
 
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
-                                URL Thumbnail / Gambar Cover
-                            </label>
-                            <input type="url" name="thumbnail" value="{{ old('thumbnail', $article->thumbnail) }}" placeholder="https://..."
-                                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                        <div class="flex flex-col sm:flex-row items-center gap-4">
+                            <!-- Preview Box -->
+                            <div class="w-32 h-24 sm:w-40 sm:h-28 rounded-xl bg-gray-100 dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 relative group">
+                                @if($article->thumbnail)
+                                    <img id="preview-image" src="{{ $article->thumbnail }}" alt="{{ $article->title }}" class="w-full h-full object-cover">
+                                    <div id="placeholder-box" class="text-center p-2 text-gray-400 hidden">
+                                        <i class="fas fa-image text-2xl mb-1 block"></i>
+                                        <span class="text-[10px] block font-semibold">Preview Gambar</span>
+                                    </div>
+                                @else
+                                    <img id="preview-image" src="" alt="Preview Gambar" class="w-full h-full object-cover hidden">
+                                    <div id="placeholder-box" class="text-center p-2 text-gray-400">
+                                        <i class="fas fa-image text-2xl mb-1 block"></i>
+                                        <span class="text-[10px] block font-semibold">Preview Gambar</span>
+                                    </div>
+                                @endif
+                            </div>
+
+                            <!-- File Input Controls -->
+                            <div class="flex-1 space-y-2 w-full">
+                                <input type="file" name="thumbnail_file" id="thumbnail_file" accept="image/*" onchange="previewThumbnail(this)"
+                                    class="w-full text-xs text-gray-500 dark:text-gray-400 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-500 file:cursor-pointer cursor-pointer border border-gray-200 dark:border-gray-700 rounded-xl p-1 bg-white dark:bg-gray-800">
+                                
+                                <div class="text-[11px] text-gray-400">
+                                    Pilih file baru dari komputer Anda untuk mengganti gambar saat ini.
+                                </div>
+
+                                <!-- Secondary URL fallback (if preferred) -->
+                                <div class="pt-2 border-t border-gray-200 dark:border-gray-700/60">
+                                    <label class="text-[11px] font-semibold text-gray-500 dark:text-gray-400 block mb-1">
+                                        Atau ubah melalui link URL (Opsional):
+                                    </label>
+                                    <input type="url" name="thumbnail" value="{{ old('thumbnail', $article->thumbnail) }}" placeholder="https://..."
+                                        class="w-full px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-xs text-gray-900 dark:text-white placeholder-gray-400 focus:ring-1 focus:ring-emerald-500">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -179,4 +217,20 @@
 
         </div>
     </div>
+
+    <script>
+        function previewThumbnail(input) {
+            const preview = document.getElementById('preview-image');
+            const placeholder = document.getElementById('placeholder-box');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    if (placeholder) placeholder.classList.add('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
 </x-app-layout>

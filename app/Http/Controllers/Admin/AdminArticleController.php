@@ -64,6 +64,7 @@ class AdminArticleController extends Controller
             'title' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|unique:articles,slug',
             'category' => 'required|string|max:100',
+            'thumbnail_file' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg,gif|max:5120',
             'thumbnail' => 'nullable|string|max:500',
             'excerpt' => 'nullable|string|max:1000',
             'content' => 'required|string',
@@ -84,13 +85,33 @@ class AdminArticleController extends Controller
             $counter++;
         }
 
+        // Process Image Upload directly from computer
+        $thumbnail = $validated['thumbnail'] ?? null;
+        if ($request->hasFile('thumbnail_file')) {
+            $file = $request->file('thumbnail_file');
+            $ext = $file->getClientOriginalExtension() ?: 'png';
+            $fileName = time() . '_art_' . Str::random(8) . '.' . $ext;
+
+            $destDirs = [
+                public_path('images/articles'),
+                base_path('images/articles'),
+                base_path('public/images/articles'),
+            ];
+            foreach ($destDirs as $d) {
+                @mkdir($d, 0777, true);
+                @copy($file->getRealPath(), $d . '/' . $fileName);
+            }
+            $file->move(public_path('images/articles'), $fileName);
+            $thumbnail = '/images/articles/' . $fileName;
+        }
+
         $isPublished = $request->has('is_published') && (bool) $request->is_published;
 
         Article::create([
             'title' => $validated['title'],
             'slug' => $slug,
             'category' => $validated['category'],
-            'thumbnail' => $validated['thumbnail'] ?? null,
+            'thumbnail' => $thumbnail,
             'excerpt' => $validated['excerpt'] ?? Str::limit(strip_tags($validated['content']), 160),
             'content' => $validated['content'],
             'meta_title' => $validated['meta_title'] ?? $validated['title'],
@@ -122,6 +143,7 @@ class AdminArticleController extends Controller
             'title' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|unique:articles,slug,' . $article->id,
             'category' => 'required|string|max:100',
+            'thumbnail_file' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg,gif|max:5120',
             'thumbnail' => 'nullable|string|max:500',
             'excerpt' => 'nullable|string|max:1000',
             'content' => 'required|string',
@@ -142,6 +164,29 @@ class AdminArticleController extends Controller
             }
         }
 
+        // Process Image Upload directly from computer or keep existing/URL
+        $thumbnail = $article->thumbnail;
+        if ($request->filled('thumbnail')) {
+            $thumbnail = $request->thumbnail;
+        }
+        if ($request->hasFile('thumbnail_file')) {
+            $file = $request->file('thumbnail_file');
+            $ext = $file->getClientOriginalExtension() ?: 'png';
+            $fileName = time() . '_art_' . Str::random(8) . '.' . $ext;
+
+            $destDirs = [
+                public_path('images/articles'),
+                base_path('images/articles'),
+                base_path('public/images/articles'),
+            ];
+            foreach ($destDirs as $d) {
+                @mkdir($d, 0777, true);
+                @copy($file->getRealPath(), $d . '/' . $fileName);
+            }
+            $file->move(public_path('images/articles'), $fileName);
+            $thumbnail = '/images/articles/' . $fileName;
+        }
+
         $isPublished = $request->has('is_published') && (bool) $request->is_published;
 
         $publishedAt = $article->published_at;
@@ -153,7 +198,7 @@ class AdminArticleController extends Controller
             'title' => $validated['title'],
             'slug' => $slug,
             'category' => $validated['category'],
-            'thumbnail' => $validated['thumbnail'] ?? null,
+            'thumbnail' => $thumbnail,
             'excerpt' => $validated['excerpt'] ?? Str::limit(strip_tags($validated['content']), 160),
             'content' => $validated['content'],
             'meta_title' => $validated['meta_title'] ?? $validated['title'],
