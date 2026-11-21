@@ -361,9 +361,8 @@
                                         @endfor
                                         <span class="text-xs font-bold text-amber-400 ml-1.5">{{ number_format($rev->rating, 1) }}</span>
                                     </div>
-                                    <div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-900/90 border border-slate-700 text-[11px] text-slate-300 font-mono">
+                                    <div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-900/90 border border-slate-700 text-[11px] font-mono">
                                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
-                                        <span class="text-slate-400 text-[10px]">Tujuan:</span>
                                         <span class="text-emerald-400 font-semibold">{{ $rev->masked_contact }}</span>
                                     </div>
                                 </div>
