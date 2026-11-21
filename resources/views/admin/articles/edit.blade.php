@@ -1,4 +1,51 @@
 <x-app-layout>
+    <!-- Quill WYSIWYG Editor Styles -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <style>
+        .ql-toolbar {
+            border-top-left-radius: 0.75rem !important;
+            border-top-right-radius: 0.75rem !important;
+        }
+        .ql-container {
+            border-bottom-left-radius: 0.75rem !important;
+            border-bottom-right-radius: 0.75rem !important;
+            min-height: 380px;
+            font-family: inherit;
+        }
+        .dark .ql-toolbar {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+        }
+        .dark .ql-toolbar .ql-stroke { stroke: #94a3b8 !important; }
+        .dark .ql-toolbar .ql-fill { fill: #94a3b8 !important; }
+        .dark .ql-toolbar .ql-picker { color: #94a3b8 !important; }
+        .dark .ql-toolbar button:hover .ql-stroke,
+        .dark .ql-toolbar button.ql-active .ql-stroke { stroke: #34d399 !important; }
+        .dark .ql-toolbar button:hover .ql-fill,
+        .dark .ql-toolbar button.ql-active .ql-fill { fill: #34d399 !important; }
+        .dark .ql-toolbar .ql-picker-options {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+        }
+        .dark .ql-container {
+            background-color: #0f172a !important;
+            border-color: #334155 !important;
+            color: #f1f5f9 !important;
+        }
+        .dark .ql-editor.ql-blank::before {
+            color: #64748b !important;
+        }
+        .ql-editor img {
+            border-radius: 0.75rem;
+            margin: 1.25rem auto;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div>
@@ -36,7 +83,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('admin.articles.update', $article) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <form id="article-form" action="{{ route('admin.articles.update', $article) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
                 @method('PUT')
 
@@ -84,11 +131,11 @@
                         <span class="text-[11px] text-gray-400 mt-1 block">URL: /artikel/{{ $article->slug }}</span>
                     </div>
 
-                    {{-- Upload Gambar Thumbnail dari Komputer --}}
+                    {{-- Upload Gambar Thumbnail / Cover Utama --}}
                     <div class="p-5 rounded-2xl bg-gray-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-700 space-y-3">
                         <div class="flex items-center justify-between">
                             <label class="text-xs font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                                <span class="text-emerald-500 text-sm">🖼️</span> Upload Gambar Cover / Thumbnail dari Komputer
+                                <span class="text-emerald-500 text-sm">🖼️</span> Upload Gambar Cover Utama dari Komputer
                             </label>
                             <span class="text-[11px] text-gray-400">Format: JPG, PNG, WEBP (Maks 5MB)</span>
                         </div>
@@ -100,13 +147,13 @@
                                     <img id="preview-image" src="{{ $article->thumbnail }}" alt="{{ $article->title }}" class="w-full h-full object-cover">
                                     <div id="placeholder-box" class="text-center p-2 text-gray-400 hidden">
                                         <i class="fas fa-image text-2xl mb-1 block"></i>
-                                        <span class="text-[10px] block font-semibold">Preview Gambar</span>
+                                        <span class="text-[10px] block font-semibold">Preview Cover</span>
                                     </div>
                                 @else
                                     <img id="preview-image" src="" alt="Preview Gambar" class="w-full h-full object-cover hidden">
                                     <div id="placeholder-box" class="text-center p-2 text-gray-400">
                                         <i class="fas fa-image text-2xl mb-1 block"></i>
-                                        <span class="text-[10px] block font-semibold">Preview Gambar</span>
+                                        <span class="text-[10px] block font-semibold">Preview Cover</span>
                                     </div>
                                 @endif
                             </div>
@@ -117,7 +164,7 @@
                                     class="w-full text-xs text-gray-500 dark:text-gray-400 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-500 file:cursor-pointer cursor-pointer border border-gray-200 dark:border-gray-700 rounded-xl p-1 bg-white dark:bg-gray-800">
                                 
                                 <div class="text-[11px] text-gray-400">
-                                    Pilih file baru dari komputer Anda untuk mengganti gambar saat ini.
+                                    Pilih file baru dari komputer untuk mengganti gambar cover saat ini.
                                 </div>
 
                                 <!-- Secondary URL fallback (if preferred) -->
@@ -140,14 +187,30 @@
                             class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">{{ old('excerpt', $article->excerpt) }}</textarea>
                     </div>
 
+                    {{-- Isi Lengkap Artikel dengan Visual Editor & Sisip Gambar Fleksibel --}}
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
-                            Isi Lengkap Artikel (Format HTML Didukung) <span class="text-red-500">*</span>
-                        </label>
-                        <textarea name="content" rows="14" required
-                            class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white font-mono focus:ring-2 focus:ring-emerald-500 leading-relaxed">{{ old('content', $article->content) }}</textarea>
-                        <div class="mt-2 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl text-[11px] text-blue-400">
-                            💡 <strong>Tips Penulisan SEO:</strong> Gunakan tag <code>&lt;h2&gt;</code> untuk sub-judul topik utama, dan <code>&lt;h3&gt;</code> untuk rincian. Masukkan kata kunci seperti "Top Up Game", nama game, dan sebutkan ToTap Store secara alami.
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                            <label class="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                                <span>📝</span> Isi Lengkap Artikel <span class="text-red-500">*</span>
+                            </label>
+                            <span class="text-[11px] text-emerald-500 font-semibold flex items-center gap-1">
+                                <i class="fas fa-camera"></i> Anda bisa memasukkan gambar di posisi manapun menggunakan tombol 🖼️ di bilah alat di bawah!
+                            </span>
+                        </div>
+
+                        <!-- Editor Container -->
+                        <div id="editor-container" class="rounded-xl overflow-hidden">
+                            {!! old('content', $article->content) !!}
+                        </div>
+                        <input type="hidden" name="content" id="hidden_content">
+
+                        <div class="mt-2 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl text-[11px] text-blue-400 space-y-1">
+                            <div>📸 <strong>Cara Memasukkan Gambar di Dalam Artikel:</strong></div>
+                            <ol class="list-decimal pl-4 space-y-0.5">
+                                <li>Arahkan kursor ketik di baris manapun Anda ingin menaruh gambar (misal di bawah Langkah 1 atau antara paragraf).</li>
+                                <li>Klik ikon <strong>🖼️ (Gambar)</strong> pada bilah alat editor di atas.</li>
+                                <li>Pilih foto dari komputer Anda. Gambar akan langsung otomatis terupload dan muncul tepat di posisi tersebut!</li>
+                            </ol>
                         </div>
                     </div>
                 </div>
@@ -218,6 +281,8 @@
         </div>
     </div>
 
+    <!-- Quill WYSIWYG Scripts -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
     <script>
         function previewThumbnail(input) {
             const preview = document.getElementById('preview-image');
@@ -232,5 +297,74 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
+
+        // Initialize Quill Editor
+        const quill = new Quill('#editor-container', {
+            theme: 'snow',
+            placeholder: 'Tulis isi artikel Anda di sini... Anda bebas mengetik, memformat teks, dan menyisipkan gambar di posisi manapun!',
+            modules: {
+                toolbar: {
+                    container: [
+                        [{ 'header': [2, 3, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'align': [] }],
+                        ['blockquote', 'code-block'],
+                        ['link', 'image'],
+                        ['clean']
+                    ],
+                    handlers: {
+                        image: imageHandler
+                    }
+                }
+            }
+        });
+
+        // Custom Image Handler: upload image directly from computer to server and insert at cursor
+        function imageHandler() {
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+            input.click();
+
+            input.onchange = async () => {
+                const file = input.files[0];
+                if (file) {
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    formData.append('_token', '{{ csrf_token() }}');
+
+                    const range = quill.getSelection(true);
+                    quill.insertText(range.index, '⏳ Mengupload gambar...', { 'italic': true, 'color': '#34d399' });
+
+                    try {
+                        const response = await fetch('{{ route("admin.articles.upload-content-image") }}', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const data = await response.json();
+
+                        // Remove loading placeholder
+                        quill.deleteText(range.index, 23);
+
+                        if (data.success && data.url) {
+                            quill.insertEmbed(range.index, 'image', data.url);
+                            quill.setSelection(range.index + 1);
+                        } else {
+                            alert('Gagal mengupload gambar. Silakan coba lagi.');
+                        }
+                    } catch (err) {
+                        quill.deleteText(range.index, 23);
+                        alert('Terjadi kesalahan jaringan saat mengupload gambar.');
+                    }
+                }
+            };
+        }
+
+        // Sync Quill HTML to hidden input before submitting form
+        document.getElementById('article-form').addEventListener('submit', function() {
+            const content = quill.root.innerHTML;
+            document.getElementById('hidden_content').value = content;
+        });
     </script>
 </x-app-layout>

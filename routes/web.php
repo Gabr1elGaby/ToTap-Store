@@ -380,6 +380,7 @@ HTML;
     Route::post('/promos/simulate', [\App\Http\Controllers\Admin\PromoSettingController::class, 'simulate'])->name('promos.simulate');
 
     // Article & Blog Management
+    Route::post('articles/upload-content-image', [\App\Http\Controllers\Admin\AdminArticleController::class, 'uploadContentImage'])->name('articles.upload-content-image');
     Route::resource('articles', \App\Http\Controllers\Admin\AdminArticleController::class);
 
     // Maintenance Mode Toggle

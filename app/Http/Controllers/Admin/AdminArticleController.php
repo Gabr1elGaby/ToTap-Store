@@ -220,4 +220,34 @@ class AdminArticleController extends Controller
         $article->delete();
         return redirect()->route('admin.articles.index')->with('success', 'Artikel berhasil dihapus!');
     }
+
+    /**
+     * Upload an image to be embedded directly into article content.
+     */
+    public function uploadContentImage(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,webp,gif,svg|max:5120',
+        ]);
+
+        $file = $request->file('image');
+        $ext = $file->getClientOriginalExtension() ?: 'png';
+        $fileName = 'content_' . time() . '_' . Str::random(8) . '.' . $ext;
+
+        $destDirs = [
+            public_path('images/articles'),
+            base_path('images/articles'),
+            base_path('public/images/articles'),
+        ];
+        foreach ($destDirs as $d) {
+            @mkdir($d, 0777, true);
+            @copy($file->getRealPath(), $d . '/' . $fileName);
+        }
+        $file->move(public_path('images/articles'), $fileName);
+
+        return response()->json([
+            'success' => true,
+            'url' => asset('images/articles/' . $fileName),
+        ]);
+    }
 }
