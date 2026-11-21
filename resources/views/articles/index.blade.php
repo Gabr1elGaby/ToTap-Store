@@ -216,8 +216,6 @@
                 <a href="{{ route('articles.index') }}" class="text-emerald-400 font-bold hover:underline">Artikel & Blog</a>
                 <span>•</span>
                 <a href="{{ url('/#games') }}" class="hover:text-white transition">Top Up Games</a>
-                <span>•</span>
-                <a href="{{ url('/sitemap.xml') }}" target="_blank" class="hover:text-white transition">Sitemap XML</a>
             </div>
             <div>
                 &copy; {{ date('Y') }} ToTap Store. Hak Cipta Dilindungi.
