@@ -49,6 +49,9 @@
                     <x-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">
                         <span class="mr-1 text-amber-400">⭐</span> {{ __('Ulasan') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('admin.articles.index')" :active="request()->routeIs('admin.articles.*')">
+                        <span class="mr-1 text-emerald-400">📝</span> {{ __('Artikel') }}
+                    </x-nav-link>
                 </div>
                 @endif
             </div>
@@ -212,6 +215,9 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">
                     <i class="fas fa-star mr-2 text-amber-500"></i> {{ __('Ulasan') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.articles.index')" :active="request()->routeIs('admin.articles.*')">
+                    <i class="fas fa-newspaper mr-2 text-emerald-500"></i> {{ __('Artikel SEO') }}
                 </x-responsive-nav-link>
             </div>
             <div class="pt-4 pb-2 border-t border-gray-200 dark:border-gray-700 space-y-1">

@@ -732,7 +732,11 @@
                     <img src="{{ asset('images/logo-totap-v2.png') }}" alt="ToTap Store" class="h-16 w-auto object-contain drop-shadow-md">
                     <span class="ml-3 text-2xl text-gray-900 dark:text-white tracking-widest whitespace-nowrap" style="font-family: 'Righteous', cursive; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">TOTAP STORE</span>
                 </div>
-                <div class="text-sm">&copy; {{ date('Y') }} ToTap Store. Hak Cipta Dilindungi.</div>
+                <div class="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-sm">
+                    <a href="{{ route('articles.index') }}" class="text-xs text-gray-500 hover:text-emerald-500 transition">Artikel & Panduan</a>
+                    <span class="hidden md:inline text-gray-400">•</span>
+                    <div>&copy; {{ date('Y') }} ToTap Store. Hak Cipta Dilindungi.</div>
+                </div>
             </div>
         </footer>
 

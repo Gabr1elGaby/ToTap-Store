@@ -126,6 +126,8 @@ Route::post('/api/customer-reviews', [\App\Http\Controllers\CustomerReviewContro
 
 
 // Rute Tampilan (Bisa Dilihat Publik, tapi transaksi ditahan via Pop-up)
+Route::get('/artikel', [\App\Http\Controllers\ArticleController::class, 'index'])->name('articles.index');
+Route::get('/artikel/{slug}', [\App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
 Route::get('/produk/{slug}', [\App\Http\Controllers\PublicProductController::class, 'show'])->name('product.show');
 Route::get('/cv', [\App\Http\Controllers\CvController::class, 'index'])->name('cv.index');
 Route::get('/cv/create', [\App\Http\Controllers\CvController::class, 'create'])->name('cv.create');
@@ -377,6 +379,9 @@ HTML;
     Route::post('/promos', [\App\Http\Controllers\Admin\PromoSettingController::class, 'update'])->name('promos.update');
     Route::post('/promos/simulate', [\App\Http\Controllers\Admin\PromoSettingController::class, 'simulate'])->name('promos.simulate');
 
+    // Article & Blog Management
+    Route::resource('articles', \App\Http\Controllers\Admin\AdminArticleController::class);
+
     // Maintenance Mode Toggle
     Route::post('/maintenance/toggle', function (\Illuminate\Http\Request $request) {
         $enabled = $request->input('enabled') == '1' ? '1' : '0';
@@ -471,6 +476,19 @@ Route::get('/sitemap.xml', function () {
     // Game & App Pages
     foreach ($games as $g) {
         $xml .= '<url><loc>' . $baseUrl . '/topup/' . $g->slug . '</loc><changefreq>daily</changefreq><priority>0.9</priority></url>';
+    }
+
+    // Dynamic Articles & Blog SEO
+    $articles = \Illuminate\Support\Facades\Schema::hasTable('articles')
+        ? \App\Models\Article::where('is_published', true)->get(['slug', 'updated_at'])
+        : collect();
+
+    if ($articles->isNotEmpty()) {
+        $xml .= '<url><loc>' . $baseUrl . '/artikel</loc><changefreq>daily</changefreq><priority>0.8</priority></url>';
+        foreach ($articles as $a) {
+            $lastMod = $a->updated_at ? $a->updated_at->toAtomString() : now()->toAtomString();
+            $xml .= '<url><loc>' . $baseUrl . '/artikel/' . $a->slug . '</loc><lastmod>' . $lastMod . '</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>';
+        }
     }
 
     $xml .= '</urlset>';
