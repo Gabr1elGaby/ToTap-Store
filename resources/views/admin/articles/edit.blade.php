@@ -288,13 +288,50 @@
             const preview = document.getElementById('preview-image');
             const placeholder = document.getElementById('placeholder-box');
             if (input.files && input.files[0]) {
+                const file = input.files[0];
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.classList.remove('hidden');
-                    if (placeholder) placeholder.classList.add('hidden');
+                    const img = new Image();
+                    img.onload = function() {
+                        preview.src = e.target.result;
+                        preview.classList.remove('hidden');
+                        if (placeholder) placeholder.classList.add('hidden');
+
+                        // Automatic Smart Web Compression: downscale large images (e.g. Unsplash 10MB+) to max 1280px WebP
+                        try {
+                            const canvas = document.createElement('canvas');
+                            let w = img.width;
+                            let h = img.height;
+                            const maxDim = 1280;
+                            if (w > maxDim || h > maxDim) {
+                                if (w > h) {
+                                    h = Math.round((h * maxDim) / w);
+                                    w = maxDim;
+                                } else {
+                                    w = Math.round((w * maxDim) / h);
+                                    h = maxDim;
+                                }
+                            }
+                            canvas.width = w;
+                            canvas.height = h;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, w, h);
+
+                            canvas.toBlob(function(blob) {
+                                if (blob && window.DataTransfer) {
+                                    const newFile = new File([blob], 'cover_' + Date.now() + '.webp', { type: 'image/webp' });
+                                    const dt = new DataTransfer();
+                                    dt.items.add(newFile);
+                                    input.files = dt.files;
+                                }
+                            }, 'image/webp', 0.88);
+                        } catch (err) {
+                            console.warn('Canvas optimization skipped:', err);
+                        }
+                    };
+                    img.src = e.target.result;
                 };
-                reader.readAsDataURL(input.files[0]);
+                reader.readAsDataURL(file);
             }
         }
 
@@ -320,7 +357,7 @@
             }
         });
 
-        // Custom Image Handler: upload image directly from computer to server and insert at cursor
+        // Custom Image Handler: upload image directly from computer to server with auto compression
         function imageHandler() {
             const input = document.createElement('input');
             input.setAttribute('type', 'file');
@@ -330,33 +367,61 @@
             input.onchange = async () => {
                 const file = input.files[0];
                 if (file) {
-                    const formData = new FormData();
-                    formData.append('image', file);
-                    formData.append('_token', '{{ csrf_token() }}');
-
                     const range = quill.getSelection(true);
                     quill.insertText(range.index, '⏳ Mengupload gambar...', { 'italic': true, 'color': '#34d399' });
 
-                    try {
-                        const response = await fetch('{{ route("admin.articles.upload-content-image") }}', {
-                            method: 'POST',
-                            body: formData
-                        });
-                        const data = await response.json();
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = new Image();
+                        img.onload = function() {
+                            const canvas = document.createElement('canvas');
+                            let w = img.width;
+                            let h = img.height;
+                            const maxDim = 1280;
+                            if (w > maxDim || h > maxDim) {
+                                if (w > h) {
+                                    h = Math.round((h * maxDim) / w);
+                                    w = maxDim;
+                                } else {
+                                    w = Math.round((w * maxDim) / h);
+                                    h = maxDim;
+                                }
+                            }
+                            canvas.width = w;
+                            canvas.height = h;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, w, h);
 
-                        // Remove loading placeholder
-                        quill.deleteText(range.index, 23);
+                            canvas.toBlob(async function(blob) {
+                                const sendFile = blob ? new File([blob], 'art_' + Date.now() + '.webp', { type: 'image/webp' }) : file;
+                                const formData = new FormData();
+                                formData.append('image', sendFile);
+                                formData.append('_token', '{{ csrf_token() }}');
 
-                        if (data.success && data.url) {
-                            quill.insertEmbed(range.index, 'image', data.url);
-                            quill.setSelection(range.index + 1);
-                        } else {
-                            alert('Gagal mengupload gambar. Silakan coba lagi.');
-                        }
-                    } catch (err) {
-                        quill.deleteText(range.index, 23);
-                        alert('Terjadi kesalahan jaringan saat mengupload gambar.');
-                    }
+                                try {
+                                    const response = await fetch('{{ route("admin.articles.upload-content-image") }}', {
+                                        method: 'POST',
+                                        body: formData
+                                    });
+                                    const data = await response.json();
+
+                                    quill.deleteText(range.index, 23);
+
+                                    if (data.success && data.url) {
+                                        quill.insertEmbed(range.index, 'image', data.url);
+                                        quill.setSelection(range.index + 1);
+                                    } else {
+                                        alert('Gagal mengupload gambar. Silakan coba lagi.');
+                                    }
+                                } catch (err) {
+                                    quill.deleteText(range.index, 23);
+                                    alert('Terjadi kesalahan jaringan saat mengupload gambar.');
+                                }
+                            }, 'image/webp', 0.88);
+                        };
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
                 }
             };
         }

@@ -64,7 +64,7 @@ class AdminArticleController extends Controller
             'title' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|unique:articles,slug',
             'category' => 'required|string|max:100',
-            'thumbnail_file' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg,gif|max:5120',
+            'thumbnail_file' => 'nullable|file|max:30720',
             'thumbnail' => 'nullable|string|max:500',
             'excerpt' => 'nullable|string|max:1000',
             'content' => 'required|string',
@@ -73,6 +73,9 @@ class AdminArticleController extends Controller
             'meta_keywords' => 'nullable|string|max:255',
             'author_name' => 'nullable|string|max:100',
             'is_published' => 'nullable|boolean',
+        ], [
+            'thumbnail_file.uploaded' => 'File gambar gagal diunggah ke server (ukuran file asli kemungkinan melebihi batas upload hosting). Coba gunakan gambar di bawah 3MB atau kompres terlebih dahulu.',
+            'thumbnail_file.max' => 'Ukuran file gambar maksimal adalah 30MB.',
         ]);
 
         $slug = !empty($validated['slug']) ? Str::slug($validated['slug']) : Str::slug($validated['title']);
@@ -143,7 +146,7 @@ class AdminArticleController extends Controller
             'title' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|unique:articles,slug,' . $article->id,
             'category' => 'required|string|max:100',
-            'thumbnail_file' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg,gif|max:5120',
+            'thumbnail_file' => 'nullable|file|max:30720',
             'thumbnail' => 'nullable|string|max:500',
             'excerpt' => 'nullable|string|max:1000',
             'content' => 'required|string',
@@ -152,6 +155,9 @@ class AdminArticleController extends Controller
             'meta_keywords' => 'nullable|string|max:255',
             'author_name' => 'nullable|string|max:100',
             'is_published' => 'nullable|boolean',
+        ], [
+            'thumbnail_file.uploaded' => 'File gambar gagal diunggah ke server (ukuran file asli kemungkinan melebihi batas upload hosting). Coba gunakan gambar di bawah 3MB atau kompres terlebih dahulu.',
+            'thumbnail_file.max' => 'Ukuran file gambar maksimal adalah 30MB.',
         ]);
 
         $slug = !empty($validated['slug']) ? Str::slug($validated['slug']) : Str::slug($validated['title']);
