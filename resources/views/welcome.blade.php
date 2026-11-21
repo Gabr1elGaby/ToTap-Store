@@ -350,15 +350,22 @@
                         <div class="review-slide flex-shrink-0 w-full flex flex-col gap-3 box-border">
                             @foreach($pair as $rev)
                             <div class="w-full bg-slate-800/90 border border-slate-700/80 rounded-2xl p-4 sm:p-5 flex flex-col justify-between shadow-md transition hover:border-amber-500/50 box-border">
-                                <div class="flex items-center gap-1 mb-1.5">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        @if($i <= (int)$rev->rating)
-                                            <span class="text-amber-400 text-sm">★</span>
-                                        @else
-                                            <span class="text-slate-600 text-sm">★</span>
-                                        @endif
-                                    @endfor
-                                    <span class="text-xs font-bold text-amber-400 ml-1.5">{{ number_format($rev->rating, 1) }}</span>
+                                <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                                    <div class="flex items-center gap-1">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            @if($i <= (int)$rev->rating)
+                                                <span class="text-amber-400 text-sm">★</span>
+                                            @else
+                                                <span class="text-slate-600 text-sm">★</span>
+                                            @endif
+                                        @endfor
+                                        <span class="text-xs font-bold text-amber-400 ml-1.5">{{ number_format($rev->rating, 1) }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-900/90 border border-slate-700 text-[11px] text-slate-300 font-mono">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                                        <span class="text-slate-400 text-[10px]">Tujuan:</span>
+                                        <span class="text-emerald-400 font-semibold">{{ $rev->masked_contact }}</span>
+                                    </div>
                                 </div>
                                 <p class="text-gray-200 text-xs sm:text-sm leading-relaxed italic m-0">
                                     "{{ $rev->review_text }}"
