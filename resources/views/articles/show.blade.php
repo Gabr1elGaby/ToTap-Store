@@ -33,29 +33,29 @@
 
     <!-- Schema.org JSON-LD Structured Data for Google -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Article",
-      "headline": "{{ addslashes($article->title) }}",
-      "image": [
-        "{{ $article->thumbnail ?? asset('images/logo-totap-v2.png') }}"
-      ],
-      "datePublished": "{{ $article->published_at ? $article->published_at->toIso8601String() : $article->created_at->toIso8601String() }}",
-      "dateModified": "{{ $article->updated_at->toIso8601String() }}",
-      "author": {
-        "@type": "Person",
-        "name": "{{ addslashes($article->author_name) }}"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "ToTap Store",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "{{ asset('images/logo-totap-v2.png') }}"
-        }
-      },
-      "description": "{{ addslashes($article->meta_description ?? Str::limit(strip_tags($article->excerpt ?? $article->content), 160)) }}"
-    }
+    {!! json_encode([
+        chr(64) . 'context' => 'https://schema.org',
+        chr(64) . 'type' => 'Article',
+        'headline' => $article->title,
+        'image' => [
+            $article->thumbnail ?? asset('images/logo-totap-v2.png')
+        ],
+        'datePublished' => $article->published_at ? $article->published_at->toIso8601String() : $article->created_at->toIso8601String(),
+        'dateModified' => $article->updated_at->toIso8601String(),
+        'author' => [
+            chr(64) . 'type' => 'Person',
+            'name' => $article->author_name,
+        ],
+        'publisher' => [
+            chr(64) . 'type' => 'Organization',
+            'name' => 'ToTap Store',
+            'logo' => [
+                chr(64) . 'type' => 'ImageObject',
+                'url' => asset('images/logo-totap-v2.png'),
+            ]
+        ],
+        'description' => $article->meta_description ?? Str::limit(strip_tags($article->excerpt ?? $article->content), 160),
+    ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
     </script>
 
     <!-- Google Tag Manager / Analytics -->
