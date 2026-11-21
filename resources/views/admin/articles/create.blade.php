@@ -146,6 +146,7 @@
                             <div class="flex-1 space-y-2 w-full">
                                 <input type="file" name="thumbnail_file" id="thumbnail_file" accept="image/*" onchange="previewThumbnail(this)"
                                     class="w-full text-xs text-gray-500 dark:text-gray-400 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 file:cursor-pointer cursor-pointer border border-gray-200 dark:border-gray-700 rounded-xl p-1 bg-white dark:bg-gray-800">
+                                <input type="hidden" name="thumbnail_base64" id="thumbnail_base64">
                                 
                                 <div class="text-[11px] text-gray-400">
                                     Pilih file cover depan artikel dari komputer/laptop Anda.
@@ -265,6 +266,8 @@
         function previewThumbnail(input) {
             const preview = document.getElementById('preview-image');
             const placeholder = document.getElementById('placeholder-box');
+            const hiddenBase64 = document.getElementById('thumbnail_base64');
+
             if (input.files && input.files[0]) {
                 const file = input.files[0];
                 const reader = new FileReader();
@@ -275,7 +278,7 @@
                         preview.classList.remove('hidden');
                         if (placeholder) placeholder.classList.add('hidden');
 
-                        // Automatic Smart Web Compression: downscale large images (e.g. Unsplash 10MB+) to max 1280px WebP
+                        // Automatic Smart Web Compression: downscale large images (e.g. Unsplash 10MB+) to max 1280px WebP Base64
                         try {
                             const canvas = document.createElement('canvas');
                             let w = img.width;
@@ -295,14 +298,10 @@
                             const ctx = canvas.getContext('2d');
                             ctx.drawImage(img, 0, 0, w, h);
 
-                            canvas.toBlob(function(blob) {
-                                if (blob && window.DataTransfer) {
-                                    const newFile = new File([blob], 'cover_' + Date.now() + '.webp', { type: 'image/webp' });
-                                    const dt = new DataTransfer();
-                                    dt.items.add(newFile);
-                                    input.files = dt.files;
-                                }
-                            }, 'image/webp', 0.88);
+                            const compressedData = canvas.toDataURL('image/webp', 0.85);
+                            if (hiddenBase64) {
+                                hiddenBase64.value = compressedData;
+                            }
                         } catch (err) {
                             console.warn('Canvas optimization skipped:', err);
                         }
@@ -404,10 +403,16 @@
             };
         }
 
-        // Sync Quill HTML to hidden input before submitting form
+        // Sync Quill HTML to hidden input before submitting form & bypass PHP upload limits
         document.getElementById('article-form').addEventListener('submit', function() {
             const content = quill.root.innerHTML;
             document.getElementById('hidden_content').value = content;
+
+            const hiddenBase64 = document.getElementById('thumbnail_base64');
+            const fileInput = document.getElementById('thumbnail_file');
+            if (hiddenBase64 && hiddenBase64.value && hiddenBase64.value.length > 100) {
+                fileInput.value = '';
+            }
         });
     </script>
 </x-app-layout>

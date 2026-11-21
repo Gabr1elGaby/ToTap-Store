@@ -65,6 +65,7 @@ class AdminArticleController extends Controller
             'slug' => 'nullable|string|max:255|unique:articles,slug',
             'category' => 'required|string|max:100',
             'thumbnail_file' => 'nullable|file|max:30720',
+            'thumbnail_base64' => 'nullable|string',
             'thumbnail' => 'nullable|string|max:500',
             'excerpt' => 'nullable|string|max:1000',
             'content' => 'required|string',
@@ -88,9 +89,30 @@ class AdminArticleController extends Controller
             $counter++;
         }
 
-        // Process Image Upload directly from computer
+        // Process Image Upload directly from Base64 (client-compressed), file upload, or URL
         $thumbnail = $validated['thumbnail'] ?? null;
-        if ($request->hasFile('thumbnail_file')) {
+        if ($request->filled('thumbnail_base64')) {
+            $base64Data = $request->input('thumbnail_base64');
+            if (preg_match('/^data:image\/(\w+);base64,/', $base64Data, $type)) {
+                $rawBase64 = substr($base64Data, strpos($base64Data, ',') + 1);
+                $ext = strtolower($type[1]);
+                if ($ext === 'jpeg') $ext = 'jpg';
+                $decoded = base64_decode($rawBase64);
+                if ($decoded !== false) {
+                    $fileName = 'cover_' . time() . '_' . Str::random(8) . '.' . $ext;
+                    $destDirs = [
+                        public_path('images/articles'),
+                        base_path('images/articles'),
+                        base_path('public/images/articles'),
+                    ];
+                    foreach ($destDirs as $d) {
+                        @mkdir($d, 0777, true);
+                        @file_put_contents($d . '/' . $fileName, $decoded);
+                    }
+                    $thumbnail = '/images/articles/' . $fileName;
+                }
+            }
+        } elseif ($request->hasFile('thumbnail_file')) {
             $file = $request->file('thumbnail_file');
             $ext = $file->getClientOriginalExtension() ?: 'png';
             $fileName = time() . '_art_' . Str::random(8) . '.' . $ext;
@@ -147,6 +169,7 @@ class AdminArticleController extends Controller
             'slug' => 'nullable|string|max:255|unique:articles,slug,' . $article->id,
             'category' => 'required|string|max:100',
             'thumbnail_file' => 'nullable|file|max:30720',
+            'thumbnail_base64' => 'nullable|string',
             'thumbnail' => 'nullable|string|max:500',
             'excerpt' => 'nullable|string|max:1000',
             'content' => 'required|string',
@@ -170,12 +193,33 @@ class AdminArticleController extends Controller
             }
         }
 
-        // Process Image Upload directly from computer or keep existing/URL
+        // Process Image Upload directly from Base64 (client-compressed), file upload, or keep existing/URL
         $thumbnail = $article->thumbnail;
         if ($request->filled('thumbnail')) {
             $thumbnail = $request->thumbnail;
         }
-        if ($request->hasFile('thumbnail_file')) {
+        if ($request->filled('thumbnail_base64')) {
+            $base64Data = $request->input('thumbnail_base64');
+            if (preg_match('/^data:image\/(\w+);base64,/', $base64Data, $type)) {
+                $rawBase64 = substr($base64Data, strpos($base64Data, ',') + 1);
+                $ext = strtolower($type[1]);
+                if ($ext === 'jpeg') $ext = 'jpg';
+                $decoded = base64_decode($rawBase64);
+                if ($decoded !== false) {
+                    $fileName = 'cover_' . time() . '_' . Str::random(8) . '.' . $ext;
+                    $destDirs = [
+                        public_path('images/articles'),
+                        base_path('images/articles'),
+                        base_path('public/images/articles'),
+                    ];
+                    foreach ($destDirs as $d) {
+                        @mkdir($d, 0777, true);
+                        @file_put_contents($d . '/' . $fileName, $decoded);
+                    }
+                    $thumbnail = '/images/articles/' . $fileName;
+                }
+            }
+        } elseif ($request->hasFile('thumbnail_file')) {
             $file = $request->file('thumbnail_file');
             $ext = $file->getClientOriginalExtension() ?: 'png';
             $fileName = time() . '_art_' . Str::random(8) . '.' . $ext;
