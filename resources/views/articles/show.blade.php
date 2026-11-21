@@ -159,12 +159,6 @@
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NVR2XKKS" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
-    <!-- Top Announcement Bar -->
-    <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 text-white text-[11px] sm:text-xs py-2 px-4 text-center font-bold tracking-wide shadow-sm flex items-center justify-center gap-2">
-        <span>⚡ Butuh Top Up Instan? Proses 24 Jam Otomatis via QRIS</span>
-        <a href="{{ url('/') }}" class="underline hover:text-emerald-200 transition">Beli Sekarang →</a>
-    </div>
-
     <!-- Header / Navbar -->
     <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -233,8 +227,10 @@
                     <a href="https://api.whatsapp.com/send?text={{ urlencode($article->title . ' ' . url()->current()) }}" target="_blank" title="Share ke WhatsApp" class="w-8 h-8 rounded-lg bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600 hover:text-white transition flex items-center justify-center">
                         <i class="fab fa-whatsapp"></i>
                     </a>
-                    <a href="https://twitter.com/intent/tweet?text={{ urlencode($article->title) }}&url={{ urlencode(url()->current()) }}" target="_blank" title="Share ke X / Twitter" class="w-8 h-8 rounded-lg bg-sky-600/20 text-sky-400 hover:bg-sky-600 hover:text-white transition flex items-center justify-center">
-                        <i class="fab fa-x-twitter"></i>
+                    <a href="https://twitter.com/intent/tweet?text={{ urlencode($article->title) }}&url={{ urlencode(url()->current()) }}" target="_blank" title="Share ke X" class="w-8 h-8 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition flex items-center justify-center">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+                        </svg>
                     </a>
                     <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(url()->current()) }}" target="_blank" title="Share ke Facebook" class="w-8 h-8 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white transition flex items-center justify-center">
                         <i class="fab fa-facebook-f"></i>

@@ -45,12 +45,6 @@
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NVR2XKKS" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
-    <!-- Top Announcement Bar -->
-    <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 text-white text-[11px] sm:text-xs py-2 px-4 text-center font-bold tracking-wide shadow-sm flex items-center justify-center gap-2">
-        <span>⚡ Promo Spesial Hari Ini! Top Up Game & Aplikasi Premium Diskon s/d 50%</span>
-        <a href="{{ url('/') }}" class="underline hover:text-emerald-200 transition">Beli Sekarang →</a>
-    </div>
-
     <!-- Header / Navbar -->
     <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
