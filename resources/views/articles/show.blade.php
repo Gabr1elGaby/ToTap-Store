@@ -72,13 +72,26 @@
       gtag('config', 'G-JN1N5Z9NFH');
     </script>
 
+    <!-- Early Theme Initialization to prevent flicker -->
+    <script>
+        if (localStorage.getItem('totap_theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.style.backgroundColor = '#f8fafc';
+        } else {
+            document.documentElement.classList.add('dark');
+            document.documentElement.style.backgroundColor = '#111827';
+        }
+    </script>
+
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <!-- Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="icon" href="{{ asset('images/logo-totap-v2.png') }}" type="image/png">
+    <link rel="shortcut icon" href="{{ asset('images/logo-totap-v2.png') }}">
 
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -180,12 +193,19 @@
         }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-emerald-500 selection:text-white">
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-white"
+      x-data="{ showLogin: false, showRegister: false }"
+      @open-login.window="showLogin = true"
+      @open-register.window="showRegister = true"
+      :class="{ 'overflow-hidden': showLogin || showRegister }">
     <!-- Reading Progress Bar -->
     <div id="reading-progress"></div>
 
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NVR2XKKS" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <!-- Official Standard ToTap Store Navbar (Consistent, Solid, No Bleed-Through) -->
+    @include('layouts.navigation')
 
     @php
         $catMeta = [
@@ -197,33 +217,6 @@
         ];
         $currentBadge = $catMeta[$article->category]['badge'] ?? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
     @endphp
-
-    <!-- Header / Navbar -->
-    <header class="sticky top-0 z-40 bg-slate-950/85 backdrop-blur-xl border-b border-slate-800/80 transition-all">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
-            <a href="{{ url('/') }}" class="flex items-center gap-3 group">
-                <img src="{{ asset('images/logo-totap-v2.png') }}" alt="ToTap Store" class="h-10 sm:h-11 w-auto object-contain drop-shadow group-hover:scale-105 transition-transform duration-300">
-                <div class="flex flex-col">
-                    <span class="logo-font text-lg sm:text-2xl text-white tracking-wider flex items-center gap-1.5">
-                        TOTAP STORE
-                    </span>
-                    <span class="text-[10px] text-emerald-400 font-semibold tracking-widest uppercase -mt-1 hidden sm:block">
-                        Media & Knowledge Hub
-                    </span>
-                </div>
-            </a>
-
-            <nav class="flex items-center gap-2 sm:gap-3">
-                <a href="{{ route('articles.index') }}" class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-900 border border-slate-800 transition flex items-center gap-2">
-                    <i class="fas fa-layer-group text-emerald-400 text-xs"></i>
-                    <span class="hidden sm:inline">Daftar</span> Artikel
-                </a>
-                <a href="{{ url('/#games') }}" class="px-4 py-2 rounded-xl text-xs font-black text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 transition shadow-lg shadow-emerald-500/25 flex items-center gap-2">
-                    <i class="fas fa-gamepad"></i> Top Up Game
-                </a>
-            </nav>
-        </div>
-    </header>
 
     <!-- Main Article Body -->
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-1 w-full">
@@ -493,5 +486,7 @@
             }
         }
     </script>
+    <!-- Auth Modals -->
+    @include('components.auth-modals')
 </body>
 </html>
