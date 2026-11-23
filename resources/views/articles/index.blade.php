@@ -83,11 +83,9 @@
             </div>
             
             <!-- Headline with Generous Line Height and Clear Contrast -->
-            <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight sm:leading-snug mb-5 max-w-4xl mx-auto">
+            <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-snug sm:leading-relaxed mb-6 max-w-4xl mx-auto">
                 Panduan, Tips, & Info Terkini <br class="hidden sm:inline">
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">
-                    Dunia Game & Digital
-                </span>
+                <span class="text-emerald-400">Dunia Game & Digital</span>
             </h1>
             
             <!-- Subtitle -->
@@ -208,13 +206,16 @@
 
         <!-- Pagination -->
         @if($articles->hasPages())
-            <div class="mt-14">
+            <div class="mt-14 mb-8">
                 {{ $articles->links() }}
             </div>
         @endif
 
+        <!-- Spacious Section Divider (Eliminates 'Mepet' Look) -->
+        <div class="w-full my-24 sm:my-32 border-t border-gray-800/80"></div>
+
         <!-- Floating CTA Banner (Spacious, Roomy Padding) -->
-        <section class="mt-20 sm:mt-24 bg-gradient-to-r from-emerald-950/70 via-gray-900 to-indigo-950/70 border border-emerald-500/30 rounded-3xl p-8 sm:p-12 text-center relative overflow-hidden shadow-2xl">
+        <section class="bg-gradient-to-r from-emerald-950/70 via-gray-900 to-indigo-950/70 border border-emerald-500/30 rounded-3xl p-8 sm:p-14 text-center relative overflow-hidden shadow-2xl mb-16">
             <div class="relative z-10 max-w-2xl mx-auto space-y-4">
                 <span class="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                     ⚡ Siap Jadi Juara?
