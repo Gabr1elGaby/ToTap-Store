@@ -12,9 +12,22 @@ class ArticleController extends Controller
      */
     public function index(Request $request)
     {
-        $categories = ['Semua', 'Panduan & Tips', 'Tips Game', 'Review & Keamanan', 'Promo'];
+        $defaultCategories = ['Panduan & Tips', 'Tips Game', 'Review & Keamanan', 'Promo', 'Berita'];
+        try {
+            $dbCategories = Article::published()
+                ->whereNotNull('category')
+                ->where('category', '!=', '')
+                ->distinct()
+                ->pluck('category')
+                ->toArray();
+            $mergedCategories = array_values(array_unique(array_merge($defaultCategories, $dbCategories)));
+        } catch (\Throwable $e) {
+            $mergedCategories = $defaultCategories;
+        }
+        $categories = array_merge(['Semua'], $mergedCategories);
+
         $selectedCategory = $request->query('category', 'Semua');
-        $search = $request->query('q');
+        $search = trim($request->query('q', ''));
 
         $query = Article::published();
 
@@ -22,7 +35,7 @@ class ArticleController extends Controller
             $query->where('category', $selectedCategory);
         }
 
-        if ($search) {
+        if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
                   ->orWhere('excerpt', 'like', "%{$search}%")
