@@ -211,8 +211,8 @@
             </div>
         @endif
 
-        <!-- Spacious Section Divider (Eliminates 'Mepet' Look) -->
-        <div class="w-full my-24 sm:my-32 border-t border-gray-800/80"></div>
+        <!-- Spacer (Menambah Ruang Kosong Tanpa Garis) -->
+        <div class="h-24 sm:h-36"></div>
 
         <!-- Floating CTA Banner (Spacious, Roomy Padding) -->
         <section class="bg-gradient-to-r from-emerald-950/70 via-gray-900 to-indigo-950/70 border border-emerald-500/30 rounded-3xl p-8 sm:p-14 text-center relative overflow-hidden shadow-2xl mb-16">
