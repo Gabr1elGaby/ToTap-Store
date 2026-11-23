@@ -91,14 +91,6 @@
                     </div>
                     @endif
 
-                    <!-- Product Image -->
-                    <div class="w-full h-44 mb-6 rounded-xl bg-gradient-to-br from-blue-900/40 to-slate-900/60 flex items-center justify-center p-4 border border-gray-100 dark:border-gray-700/60 overflow-hidden">
-                        <picture>
-                            <source srcset="{{ asset('images/software-logo.webp') }}" type="image/webp">
-                            <img src="{{ asset('images/software-logo.png') }}" alt="{{ $product->name }}" class="max-h-full max-w-full object-contain drop-shadow-md">
-                        </picture>
-                    </div>
-
                     <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ $product->name }}</h3>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">{{ $product->description }}</p>
                     

@@ -19,10 +19,7 @@
                 <div class="shrink-0 flex items-center">
                     <a href="/" class="no-underline">
                         <div class="flex items-center gap-2">
-                            <picture>
-                                <source srcset="{{ asset('images/logo-totap-v2.webp') }}" type="image/webp">
-                                <img src="{{ asset('images/logo-totap-v2.png') }}" class="h-10 w-auto object-contain drop-shadow-md" alt="Logo">
-                            </picture>
+                            <img src="{{ asset('images/logo-totap-v2.png') }}" class="h-10 w-auto object-contain drop-shadow-md" alt="Logo">
                             <span class="text-xl text-gray-900 dark:text-white tracking-widest whitespace-nowrap" style="font-family: 'Righteous', cursive; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">TOTAP STORE</span>
                         </div>
                     </a>

@@ -684,10 +684,7 @@
                         
                         <!-- Icon -->
                         <div class="relative flex items-center justify-center mb-2 group-hover:-translate-y-2 transition-transform duration-300" style="width: 130px; height: 130px;">
-                            <picture>
-                                <source srcset="{{ asset('images/kategori-game-4.webp') }}" type="image/webp">
-                                <img src="{{ asset('images/kategori-game-4.png') }}" alt="Top Up Game" class="w-full h-full object-contain" style="filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.1));">
-                            </picture>
+                            <img src="{{ asset('images/kategori-game-4.png') }}" alt="Top Up Game" class="w-full h-full object-contain" style="filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.1));">
                         </div>
                         
                         <h3 class="text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors" style="font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 14px; letter-spacing: 0.5px;">TOP UP GAME</h3>
@@ -706,10 +703,7 @@
                         
                         <!-- Icon -->
                         <div class="relative flex items-center justify-center mb-2 group-hover:-translate-y-2 transition-transform duration-300" style="width: 130px; height: 130px;">
-                            <picture>
-                                <source srcset="{{ asset('images/software-logo.webp') }}" type="image/webp">
-                                <img src="{{ asset('images/software-logo.png') }}" alt="Software" class="w-full h-full object-contain" style="filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.1));">
-                            </picture>
+                            <img src="{{ asset('images/software-logo.png') }}" alt="Software" class="w-full h-full object-contain" style="filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.1));">
                         </div>
                         
                         <h3 class="text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors" style="font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 14px; letter-spacing: 0.5px;">SOFTWARE</h3>
@@ -728,10 +722,7 @@
                         
                         <!-- Icon -->
                         <div class="relative flex items-center justify-center mb-2 group-hover:-translate-y-2 transition-transform duration-300" style="width: 130px; height: 130px;">
-                            <picture>
-                                <source srcset="{{ asset('images/aplikasi-premium-logo.webp') }}" type="image/webp">
-                                <img src="{{ asset('images/aplikasi-premium-logo.png') }}" alt="Aplikasi Premium" class="w-full h-full object-contain" style="filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.1));" onerror="this.onerror=null; this.src='{{ asset('images/aplikasi-premium-logo.png') }}';">
-                            </picture>
+                            <img src="{{ asset('images/aplikasi-premium-logo.png') }}" alt="Aplikasi Premium" class="w-full h-full object-contain" style="filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.1));" onerror="this.onerror=null; this.src='{{ asset('images/aplikasi-premium-logo.jpg') }}';">
                         </div>
                         
                         <h3 class="text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors text-center" style="font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 13px; letter-spacing: 0.5px;">APLIKASI PREMIUM</h3>
@@ -745,10 +736,7 @@
         <footer class="bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 pt-8 pb-24 md:pb-8 border-t border-gray-200 dark:border-gray-800 transition-colors duration-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center" data-aos="fade-in">
                 <div class="flex items-center gap-1 mb-4 md:mb-0">
-                    <picture>
-                        <source srcset="{{ asset('images/logo-totap-v2.webp') }}" type="image/webp">
-                        <img src="{{ asset('images/logo-totap-v2.png') }}" alt="ToTap Store" class="h-16 w-auto object-contain drop-shadow-md">
-                    </picture>
+                    <img src="{{ asset('images/logo-totap-v2.png') }}" alt="ToTap Store" class="h-16 w-auto object-contain drop-shadow-md">
                     <span class="ml-3 text-2xl text-gray-900 dark:text-white tracking-widest whitespace-nowrap" style="font-family: 'Righteous', cursive; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">TOTAP STORE</span>
                 </div>
                 <div class="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-sm">

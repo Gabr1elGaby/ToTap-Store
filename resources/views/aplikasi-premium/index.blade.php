@@ -45,12 +45,9 @@
                                 DISKON {{ $maxDiscount }}%
                             </div>
                         @endif
-                        <div class="w-full h-48 relative overflow-hidden bg-slate-900/90 flex items-center justify-center p-3">
+                        <div class="w-full h-48 relative overflow-hidden bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                             @if(!empty($app->thumbnail))
-                                <!-- Ambient blurred backdrop to prevent harsh cutoffs -->
-                                <img src="{{ $app->thumbnail }}" alt="" class="absolute inset-0 w-full h-full object-cover blur-md opacity-30 scale-125" aria-hidden="true">
-                                <!-- Crisp uncropped logo -->
-                                <img src="{{ $app->thumbnail }}" alt="{{ $app->name }}" class="relative z-10 max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300 {{ !$isAvailable ? 'grayscale-[40%] opacity-80' : '' }}" onerror="this.classList.add('hidden')">
+                                <img src="{{ $app->thumbnail }}" alt="{{ $app->name }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 {{ !$isAvailable ? 'grayscale-[40%] opacity-80' : '' }}" onerror="this.classList.add('hidden')">
                             @endif
                             <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-amber-600 to-orange-900 flex flex-col items-center justify-center text-white p-4 shadow-inner {{ !empty($app->thumbnail) ? 'hidden' : '' }}">
                                 <span class="text-3xl mb-1">👑</span>
