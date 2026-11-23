@@ -67,8 +67,9 @@
                                   linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
             }
         </style>
+        <link rel="icon" href="{{ asset('images/logo-totap-v2.png') }}" type="image/png">
         <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
-        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+        <link rel="shortcut icon" href="{{ asset('images/logo-totap-v2.png') }}">
         <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/logo-totap-v2.png') }}">
         <link rel="apple-touch-icon-precomposed" href="{{ asset('images/logo-totap-v2.png') }}">
         <link rel="manifest" href="{{ asset('manifest.json') }}">

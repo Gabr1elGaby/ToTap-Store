@@ -46,7 +46,7 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <link rel="icon" href="{{ asset('images/logo-totap-v2.png') }}" type="image/png">
-        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+        <link rel="shortcut icon" href="{{ asset('images/logo-totap-v2.png') }}">
         <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/logo-totap-v2.png') }}">
         <link rel="apple-touch-icon-precomposed" href="{{ asset('images/logo-totap-v2.png') }}">
         <link rel="manifest" href="{{ asset('manifest.json') }}">
