@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="id" class="dark">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="canonical" href="{{ url()->current() }}">
         <meta name="google-site-verification" content="oxfKQl2rW_hSKMa0neoDOXt1oeVRlOwxuADP8NE4fkg" />
         <!-- Google Tag Manager -->
         <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -93,9 +94,24 @@
             @endisset
 
             <!-- Page Content -->
-            <main class="pb-20 md:pb-0">
+            <main class="pb-16 md:pb-0">
                 {{ $slot }}
             </main>
+
+            <!-- Global Footer -->
+            <footer class="bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 pt-8 pb-24 md:pb-8 border-t border-gray-200 dark:border-gray-800 transition-colors duration-200">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
+                    <div class="flex items-center gap-1 mb-4 md:mb-0">
+                        <img src="{{ asset('images/logo-totap-v2.png') }}" alt="ToTap Store" class="h-14 w-auto object-contain drop-shadow-md">
+                        <span class="ml-3 text-2xl text-gray-900 dark:text-white tracking-widest whitespace-nowrap" style="font-family: 'Righteous', cursive; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">TOTAP STORE</span>
+                    </div>
+                    <div class="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-sm">
+                        <a href="{{ route('articles.index') }}" class="text-xs text-gray-500 hover:text-emerald-500 transition">Artikel & Panduan</a>
+                        <span class="hidden md:inline text-gray-400">•</span>
+                        <div>&copy; {{ date('Y') }} ToTap Store. Hak Cipta Dilindungi.</div>
+                    </div>
+                </div>
+            </footer>
         </div>
         <x-auth-modals />
         <x-mobile-bottom-nav />

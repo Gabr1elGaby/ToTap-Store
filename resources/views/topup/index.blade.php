@@ -5,8 +5,8 @@
     <div class="py-12 bg-slate-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Back Button -->
-            <div class="mb-4">
-                <a href="{{ url('/') }}" class="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white rounded-xl border border-gray-300 dark:border-gray-700 transition-all shadow-sm">
+            <div class="pt-2 sm:pt-4 mb-8">
+                <a href="{{ url('/') }}" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white rounded-xl border border-gray-300 dark:border-gray-700 transition-all shadow-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                     Kembali
                 </a>
@@ -43,9 +43,12 @@
                             DISKON {{ $maxDiscount }}%
                         </div>
                     @endif
-                    <div class="w-full h-48 relative overflow-hidden bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                    <div class="w-full h-48 relative overflow-hidden bg-slate-900/90 flex items-center justify-center p-3">
                         @if(!empty($game->thumbnail))
-                            <img src="{{ $game->thumbnail }}" alt="{{ $game->name }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" onerror="this.classList.add('hidden')">
+                            <!-- Ambient blurred backdrop to prevent dark gaps -->
+                            <img src="{{ $game->thumbnail }}" alt="" class="absolute inset-0 w-full h-full object-cover blur-md opacity-30 scale-125" aria-hidden="true">
+                            <!-- Full crisp logo without cropping -->
+                            <img src="{{ $game->thumbnail }}" alt="{{ $game->name }}" class="relative z-10 max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-md" onerror="this.classList.add('hidden')">
                         @endif
                         <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-indigo-600 to-slate-900 flex flex-col items-center justify-center text-white p-4 shadow-inner {{ !empty($game->thumbnail) ? 'hidden' : '' }}">
                             <span class="text-3xl mb-1">🎮</span>

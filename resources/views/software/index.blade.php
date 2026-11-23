@@ -56,7 +56,8 @@
                         if (!empty($promoSettings['first_user_active']) && $promoSettings['first_user_type'] === 'percent') {
                             $activePromoPct = max($activePromoPct, (int)$promoSettings['first_user_value']);
                         }
-                        if (!empty($promoSettings['day_promo_active']) && $promoSettings['day_promo_type'] === 'percent') {
+                        $dayCheck = \App\Helpers\PromoHelper::isDayPromoActiveToday();
+                        if (!empty($promoSettings['day_promo_active']) && !empty($dayCheck['active']) && $promoSettings['day_promo_type'] === 'percent') {
                             $activePromoPct = max($activePromoPct, (int)$promoSettings['day_promo_value']);
                         }
 
@@ -68,7 +69,7 @@
                             }
                             $discountPercent = $activePromoPct;
                         } else {
-                            $bestPlan = $product->plans->first();
+                            $bestPlan = $product->plans->sortBy('price')->first();
                             if ($bestPlan) {
                                 $minPrice = $bestPlan->price;
                                 $minPriceNormal = $bestPlan->price_normal;
@@ -78,6 +79,7 @@
                                     $discountPercent = $activePromoPct;
                                 }
                             } else {
+                                $minPrice = 50000;
                                 $discountPercent = $activePromoPct;
                             }
                         }
@@ -88,6 +90,14 @@
                         Diskon s/d {{ $discountPercent }}%
                     </div>
                     @endif
+
+                    <!-- Product Image -->
+                    <div class="w-full h-44 mb-6 rounded-xl bg-gradient-to-br from-blue-900/40 to-slate-900/60 flex items-center justify-center p-4 border border-gray-100 dark:border-gray-700/60 overflow-hidden">
+                        <picture>
+                            <source srcset="{{ asset('images/software-logo.webp') }}" type="image/webp">
+                            <img src="{{ asset('images/software-logo.png') }}" alt="{{ $product->name }}" class="max-h-full max-w-full object-contain drop-shadow-md">
+                        </picture>
+                    </div>
 
                     <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ $product->name }}</h3>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">{{ $product->description }}</p>
@@ -110,30 +120,41 @@
                     </ul>
 
                     <div class="mt-auto border-t border-gray-100 dark:border-gray-700/80 pt-6">
-                        @if($product->slug === 'sistem-kasir-pos')
-                            <a href="/produk/sistem-kasir-pos" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition text-sm shadow-md py-3" style="letter-spacing: 0.5px;">Beli Layanan</a>
-                        @else
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-1">HARGA MULAI</p>
-                                    @if(!is_null($minPrice))
-                                        @if($minPriceNormal > 0 && $minPriceNormal > $minPrice)
-                                            <div class="text-xs text-gray-400 line-through mb-0.5">Rp {{ number_format($minPriceNormal, 0, ',', '.') }}</div>
-                                        @endif
-                                        <p class="text-2xl font-extrabold text-gray-900 dark:text-white">Rp {{ number_format($minPrice, 0, ',', '.') }}</p>
-                                    @else
-                                        <p class="text-lg font-bold text-gray-900 dark:text-white">Belum tersedia</p>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-1">HARGA MULAI</p>
+                                @if(!is_null($minPrice))
+                                    @if($minPriceNormal > 0 && $minPriceNormal > $minPrice)
+                                        <div class="text-xs text-gray-400 line-through mb-0.5">Rp {{ number_format($minPriceNormal, 0, ',', '.') }}</div>
                                     @endif
-                                </div>
-                                <a href="/cv" class="bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition text-sm shadow-md px-6 py-2.5" style="letter-spacing: 0.5px;">Beli Layanan</a>
+                                    <p class="text-2xl font-extrabold text-blue-600 dark:text-blue-400">Rp {{ number_format($minPrice, 0, ',', '.') }}</p>
+                                @else
+                                    <p class="text-lg font-bold text-gray-900 dark:text-white">Belum tersedia</p>
+                                @endif
                             </div>
-                        @endif
+                            <a href="{{ $product->slug === 'sistem-kasir-pos' ? '/produk/sistem-kasir-pos' : '/cv' }}" class="bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition text-sm shadow-md px-6 py-2.5" style="letter-spacing: 0.5px;">Beli Layanan</a>
+                        </div>
                     </div>
                 </div>
                 @endforeach
             </div>
         </div>
     </div>
+
+    <!-- Global Footer -->
+    <footer class="bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 pt-8 pb-24 md:pb-8 border-t border-gray-200 dark:border-gray-800 transition-colors duration-200 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center gap-1 mb-4 md:mb-0">
+                <img src="{{ asset('images/logo-totap-v2.png') }}" alt="ToTap Store" class="h-14 w-auto object-contain drop-shadow-md">
+                <span class="ml-3 text-2xl text-gray-900 dark:text-white tracking-widest whitespace-nowrap" style="font-family: 'Righteous', cursive; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">TOTAP STORE</span>
+            </div>
+            <div class="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-sm">
+                <a href="{{ route('articles.index') }}" class="text-xs text-gray-500 hover:text-emerald-500 transition">Artikel & Panduan</a>
+                <span class="hidden md:inline text-gray-400">•</span>
+                <div>&copy; {{ date('Y') }} ToTap Store. Hak Cipta Dilindungi.</div>
+            </div>
+        </div>
+    </footer>
 
     <x-auth-modals />
 </body>

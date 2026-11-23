@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="id" class="dark">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="canonical" href="{{ url()->current() }}">
         <title>{{ $product->name }} - ToTap Store</title>
         <link rel="icon" href="{{ asset('images/logo-totap-v2.png') }}" type="image/png">
         

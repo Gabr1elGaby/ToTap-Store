@@ -408,8 +408,8 @@
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
     AOS.init({
-        once: false,
-        offset: 50,
-        duration: 800,
+        once: true,
+        offset: 30,
+        duration: 400,
     });
 </script>

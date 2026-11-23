@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="id" class="dark">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="canonical" href="https://totapstore.com">
         <meta name="google-site-verification" content="oxfKQl2rW_hSKMa0neoDOXt1oeVRlOwxuADP8NE4fkg" />
         <!-- Google Tag Manager -->
         <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -66,7 +67,7 @@
                                   linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
             }
         </style>
-        <link rel="icon" href="{{ asset('images/logo-totap-v2.png') . '?v=' . time() }}" type="image/png">
+        <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
         <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
         <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/logo-totap-v2.png') }}">
         <link rel="apple-touch-icon-precomposed" href="{{ asset('images/logo-totap-v2.png') }}">
@@ -498,7 +499,7 @@
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-                    <div class="p-6 border border-gray-200 dark:border-gray-700 rounded-2xl hover:border-blue-500 transition shadow-sm bg-white dark:bg-gray-800" data-aos="fade-up" data-aos-delay="0">
+                    <div class="p-6 border border-gray-200 dark:border-gray-700 rounded-2xl hover:border-blue-500 transition shadow-sm bg-white dark:bg-gray-800" data-aos="fade-up">
                         <div class="w-12 h-12 bg-blue-50 dark:bg-gray-900 rounded-xl flex items-center justify-center text-blue-600 dark:text-white mb-6 shadow-sm">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                         </div>
@@ -506,7 +507,7 @@
                         <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">Semua pesanan mulai dari top up game hingga lisensi software diproses secara otomatis dalam hitungan detik tanpa perlu menunggu.</p>
                     </div>
                     
-                    <div class="p-6 border border-gray-200 dark:border-gray-700 rounded-2xl hover:border-blue-500 transition shadow-sm bg-white dark:bg-gray-800" data-aos="fade-up" data-aos-delay="100">
+                    <div class="p-6 border border-gray-200 dark:border-gray-700 rounded-2xl hover:border-blue-500 transition shadow-sm bg-white dark:bg-gray-800" data-aos="fade-up">
                         <div class="w-12 h-12 bg-blue-50 dark:bg-gray-900 rounded-xl flex items-center justify-center text-blue-600 dark:text-white mb-6 shadow-sm">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                         </div>
@@ -514,7 +515,7 @@
                         <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">Sistem pembayaran kami menggunakan enkripsi tingkat tinggi untuk menjamin keamanan setiap transaksi dan privasi data Anda.</p>
                     </div>
                     
-                    <div class="p-6 border border-gray-200 dark:border-gray-700 rounded-2xl hover:border-blue-500 transition shadow-sm bg-white dark:bg-gray-800" data-aos="fade-up" data-aos-delay="200">
+                    <div class="p-6 border border-gray-200 dark:border-gray-700 rounded-2xl hover:border-blue-500 transition shadow-sm bg-white dark:bg-gray-800" data-aos="fade-up">
                         <div class="w-12 h-12 bg-blue-50 dark:bg-gray-900 rounded-xl flex items-center justify-center text-blue-600 dark:text-white mb-6 shadow-sm">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                         </div>
@@ -683,7 +684,10 @@
                         
                         <!-- Icon -->
                         <div class="relative flex items-center justify-center mb-2 group-hover:-translate-y-2 transition-transform duration-300" style="width: 130px; height: 130px;">
-                            <img src="{{ asset('images/kategori-game-4.png') }}" alt="Top Up Game" class="w-full h-full object-contain" style="filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.1));">
+                            <picture>
+                                <source srcset="{{ asset('images/kategori-game-4.webp') }}" type="image/webp">
+                                <img src="{{ asset('images/kategori-game-4.png') }}" alt="Top Up Game" class="w-full h-full object-contain" style="filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.1));">
+                            </picture>
                         </div>
                         
                         <h3 class="text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors" style="font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 14px; letter-spacing: 0.5px;">TOP UP GAME</h3>
@@ -702,7 +706,10 @@
                         
                         <!-- Icon -->
                         <div class="relative flex items-center justify-center mb-2 group-hover:-translate-y-2 transition-transform duration-300" style="width: 130px; height: 130px;">
-                            <img src="{{ asset('images/software-logo.png') }}" alt="Software" class="w-full h-full object-contain" style="filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.1));">
+                            <picture>
+                                <source srcset="{{ asset('images/software-logo.webp') }}" type="image/webp">
+                                <img src="{{ asset('images/software-logo.png') }}" alt="Software" class="w-full h-full object-contain" style="filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.1));">
+                            </picture>
                         </div>
                         
                         <h3 class="text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors" style="font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 14px; letter-spacing: 0.5px;">SOFTWARE</h3>
@@ -721,7 +728,10 @@
                         
                         <!-- Icon -->
                         <div class="relative flex items-center justify-center mb-2 group-hover:-translate-y-2 transition-transform duration-300" style="width: 130px; height: 130px;">
-                            <img src="{{ asset('images/aplikasi-premium-logo.png') }}?v={{ time() }}" alt="Aplikasi Premium" class="w-full h-full object-contain" style="filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.1));" onerror="this.onerror=null; this.src='{{ asset('images/aplikasi-premium-logo.jpg') }}?v={{ time() }}';">
+                            <picture>
+                                <source srcset="{{ asset('images/aplikasi-premium-logo.webp') }}" type="image/webp">
+                                <img src="{{ asset('images/aplikasi-premium-logo.png') }}" alt="Aplikasi Premium" class="w-full h-full object-contain" style="filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.1));" onerror="this.onerror=null; this.src='{{ asset('images/aplikasi-premium-logo.png') }}';">
+                            </picture>
                         </div>
                         
                         <h3 class="text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors text-center" style="font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 13px; letter-spacing: 0.5px;">APLIKASI PREMIUM</h3>
@@ -735,7 +745,10 @@
         <footer class="bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 pt-8 pb-24 md:pb-8 border-t border-gray-200 dark:border-gray-800 transition-colors duration-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center" data-aos="fade-in">
                 <div class="flex items-center gap-1 mb-4 md:mb-0">
-                    <img src="{{ asset('images/logo-totap-v2.png') }}" alt="ToTap Store" class="h-16 w-auto object-contain drop-shadow-md">
+                    <picture>
+                        <source srcset="{{ asset('images/logo-totap-v2.webp') }}" type="image/webp">
+                        <img src="{{ asset('images/logo-totap-v2.png') }}" alt="ToTap Store" class="h-16 w-auto object-contain drop-shadow-md">
+                    </picture>
                     <span class="ml-3 text-2xl text-gray-900 dark:text-white tracking-widest whitespace-nowrap" style="font-family: 'Righteous', cursive; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">TOTAP STORE</span>
                 </div>
                 <div class="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-sm">
