@@ -37,7 +37,7 @@ return [
 
     'vip_reseller' => [
         'api_id' => env('NEW_API_ID', env('VIP_RESELLER_API_ID', env('VIP_API_ID', 'UEsJ21pX'))),
-        'api_key' => env('NEW_API_KEY', env('VIP_RESELLER_API_KEY', env('VIP_API_KEY', 'wTpFb8UKOona2Hm56HODEruuB7F2aAE0MQU2dXgjjRy1Q2lCUUfL7Un9mcgxtLRy'))),
+        'api_key' => env('NEW_API_KEY', env('VIP_RESELLER_API_KEY', env('VIP_API_KEY', '643539764a19dbfe3bf09c343bb816f8dc9985522545ab0c1fcbcc921ea6c111'))),
         'base_url' => env('VIP_RESELLER_BASE_URL', 'https://vip-reseller.co.id/api'),
     ],
 

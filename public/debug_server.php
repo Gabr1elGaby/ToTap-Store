@@ -21,7 +21,7 @@ print_r($rows);
 
 // Test API VIP Reseller
 $apiId = "UEsJ21pX";
-$apiKey = "wTpFb8UKOona2Hm56HODEruuB7F2aAE0MQU2dXgjjRy1Q2lCUUfL7Un9mcgxtLRy";
+$apiKey = "643539764a19dbfe3bf09c343bb816f8dc9985522545ab0c1fcbcc921ea6c111";
 $sign = md5($apiId . $apiKey);
 
 $ch = curl_init("https://vip-reseller.co.id/api/profile");

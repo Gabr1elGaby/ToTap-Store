@@ -13,8 +13,11 @@ class VipResellerService
 
     public function __construct()
     {
-        $this->apiId = config('services.vip_reseller.api_id', env('NEW_API_ID', env('VIP_RESELLER_API_ID', env('VIP_API_ID', 'UEsJ21pX'))));
-        $this->apiKey = config('services.vip_reseller.api_key', env('NEW_API_KEY', env('VIP_RESELLER_API_KEY', env('VIP_API_KEY', 'wTpFb8UKOona2Hm56HODEruuB7F2aAE0MQU2dXgjjRy1Q2lCUUfL7Un9mcgxtLRy'))));
+        $dbApiId = class_exists('\App\Models\Setting') ? \App\Models\Setting::get('vip_api_id') : null;
+        $dbApiKey = class_exists('\App\Models\Setting') ? \App\Models\Setting::get('vip_api_key') : null;
+
+        $this->apiId = $dbApiId ?: config('services.vip_reseller.api_id', env('NEW_API_ID', env('VIP_RESELLER_API_ID', env('VIP_API_ID', 'UEsJ21pX'))));
+        $this->apiKey = $dbApiKey ?: config('services.vip_reseller.api_key', env('NEW_API_KEY', env('VIP_RESELLER_API_KEY', env('VIP_API_KEY', '643539764a19dbfe3bf09c343bb816f8dc9985522545ab0c1fcbcc921ea6c111'))));
         $this->baseUrl = config('services.vip_reseller.base_url', 'https://vip-reseller.co.id/api');
     }
 
