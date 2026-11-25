@@ -204,9 +204,12 @@
             @endforelse
         </div>
 
+        <!-- Spacer Antara Grid Artikel & Pagination (Menghilangkan Tampilan Mepet) -->
+        <div style="height: 64px; width: 100%;"></div>
+
         <!-- Pagination -->
         @if($articles->hasPages())
-            <div class="mt-14 mb-8">
+            <div style="margin-top: 16px; margin-bottom: 48px;" class="py-4">
                 {{ $articles->links() }}
             </div>
         @endif

@@ -117,7 +117,15 @@ class TopUpController extends Controller
         $threshold = (float) \App\Models\Setting::get('vip_balance_threshold', 0);
         $hasBalanceThreshold = ($threshold > 0 && $vipBalance > 0);
 
-        $allProducts = $game->products()->where('status', 'available')->where('price_modal', '>', 0)->orderBy('price_sell')->get();
+        $allProducts = $game->products()
+            ->where('status', 'available')
+            ->where(function($sq) {
+                $sq->where('price_modal', '>', 0)
+                   ->orWhere('provider', '!=', 'vip_reseller')
+                   ->orWhere('price_sell', '>', 0);
+            })
+            ->orderBy('price_sell')
+            ->get();
 
         $uniqueProducts = collect();
         $seenKeys = [];

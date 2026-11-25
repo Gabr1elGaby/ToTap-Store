@@ -15,7 +15,11 @@ class GameController extends Controller
         $categoryFilter = $request->query('category', 'all');
         $query = Game::withCount(['products' => function($q) {
             $q->where('status', 'available')
-              ->where('price_modal', '>', 0)
+              ->where(function($sq) {
+                  $sq->where('price_modal', '>', 0)
+                     ->orWhere('provider', '!=', 'vip_reseller')
+                     ->orWhere('price_sell', '>', 0);
+              })
               ->where('name', 'not like', '%first top%')
               ->where('name', 'not like', '%first-top%')
               ->where('name', 'not like', '%first topup%')
