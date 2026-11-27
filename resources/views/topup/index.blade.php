@@ -26,6 +26,7 @@
                             $q->whereNull('category')
                               ->orWhereNotIn('category', ['Aplikasi Premium', 'App & Entertainment']);
                         })
+                        ->orderBy('name', 'asc')
                         ->get();
                 @endphp
                 @foreach($activeGames as $game)
