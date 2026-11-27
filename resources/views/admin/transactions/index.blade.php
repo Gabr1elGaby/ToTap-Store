@@ -142,8 +142,31 @@
                             <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                                 @foreach($orders as $ord)
                                     <tr class="hover:bg-slate-50 dark:hover:bg-gray-700/50 transition">
-                                        <td class="py-4 px-6 font-mono text-xs text-blue-600 dark:text-blue-400 font-bold">
-                                            {{ $ord->order_number }}
+                                        <td class="py-4 px-6 font-mono text-xs text-blue-600 dark:text-blue-400 font-bold whitespace-nowrap">
+                                            <div>{{ $ord->order_number }}</div>
+                                            @php
+                                                $ordRev = null;
+                                                $checkKeys = array_filter([$ord->order_number, (string)$ord->id, 'POS-' . $ord->id]);
+                                                foreach ($checkKeys as $k) {
+                                                    if (isset($reviewedMap[$k])) {
+                                                        $ordRev = $reviewedMap[$k];
+                                                        break;
+                                                    }
+                                                }
+                                            @endphp
+                                            @if($ordRev)
+                                                <div class="mt-1">
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/10 text-amber-500 border border-amber-500/20" title="{{ $ordRev->review_text ?? ('Rating ' . $ordRev->rating . '/5') }}">
+                                                        <i class="fas fa-star text-[9px]"></i> {{ $ordRev->rating }}/5 (Ada Review)
+                                                    </span>
+                                                </div>
+                                            @elseif(in_array(strtoupper($ord->payment_status), ['PAID', 'SUCCESS']))
+                                                <div class="mt-1">
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-gray-500/10 text-gray-400 border border-gray-500/20">
+                                                        <i class="far fa-clock text-[9px]"></i> Belum Review
+                                                    </span>
+                                                </div>
+                                            @endif
                                         </td>
                                         <td class="py-4 px-6">
                                             @if($ord->user)
@@ -246,18 +269,25 @@
                         </div>
                         <div>
                             <select name="status" class="bg-slate-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500">
-                                <option value="">Semua Status</option>
+                                <option value="">Semua Status Bayar</option>
                                 <option value="paid" {{ request('status') == 'paid' ? 'selected' : '' }}>Paid / Success</option>
                                 <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
                                 <option value="failed" {{ request('status') == 'failed' ? 'selected' : '' }}>Failed</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select name="review_status" class="bg-slate-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500">
+                                <option value="">Semua Status Review</option>
+                                <option value="unreviewed" {{ request('review_status') == 'unreviewed' ? 'selected' : '' }}>⏳ Belum Review</option>
+                                <option value="reviewed" {{ request('review_status') == 'reviewed' ? 'selected' : '' }}>⭐ Sudah Review</option>
                             </select>
                         </div>
                         <div class="flex items-center gap-2">
                             <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition shadow-md shadow-indigo-600/30 cursor-pointer">
                                 <i class="fas fa-search mr-1.5"></i> Filter
                             </button>
-                            @if(request('search') || request('status'))
-                                <a href="{{ route('admin.transactions.index') }}" class="p-2.5 text-gray-400 hover:text-gray-900 dark:hover:text-white transition">
+                            @if(request('search') || request('status') || request('review_status'))
+                                <a href="{{ route('admin.transactions.index') }}" class="p-2.5 text-gray-400 hover:text-gray-900 dark:hover:text-white transition" title="Reset Filter">
                                     <i class="fas fa-undo"></i>
                                 </a>
                             @endif
@@ -300,7 +330,35 @@
                                     @foreach($transactions as $trx)
                                         <tr class="hover:bg-slate-50 dark:hover:bg-gray-700/50 transition">
                                             <td class="py-4 px-6 font-mono text-xs text-indigo-600 dark:text-indigo-400 font-bold whitespace-nowrap">
-                                                {{ $trx->invoice_number ?? $trx->id }}
+                                                <div>{{ $trx->invoice_number ?? $trx->id }}</div>
+                                                @php
+                                                    $rev = null;
+                                                    $checkKeys = array_filter([$trx->invoice_number, $trx->id, 'TRX-' . $trx->id]);
+                                                    foreach ($checkKeys as $k) {
+                                                        if (isset($reviewedMap[$k])) {
+                                                            $rev = $reviewedMap[$k];
+                                                            break;
+                                                        }
+                                                    }
+                                                @endphp
+                                                @if($rev)
+                                                    <div class="mt-1">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/10 text-amber-500 border border-amber-500/20" title="{{ $rev->review_text ?? ('Rating ' . $rev->rating . '/5') }}">
+                                                            <i class="fas fa-star text-[9px]"></i> {{ $rev->rating }}/5 (Ada Review)
+                                                        </span>
+                                                        @if(!empty($rev->review_text))
+                                                            <div class="text-[10px] text-gray-400 font-normal italic mt-0.5 truncate max-w-[190px]" title="{{ $rev->review_text }}">
+                                                                "{{ Str::limit($rev->review_text, 28) }}"
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                @elseif(in_array(strtolower($trx->status), ['success', 'paid']))
+                                                    <div class="mt-1">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-gray-500/10 text-gray-400 border border-gray-500/20">
+                                                            <i class="far fa-clock text-[9px]"></i> Belum Review
+                                                        </span>
+                                                    </div>
+                                                @endif
                                             </td>
                                             <td class="py-4 px-6">
                                                 @if($trx->user)
@@ -487,7 +545,35 @@
                                     @foreach($appTransactions as $appTrx)
                                         <tr class="hover:bg-slate-50 dark:hover:bg-gray-700/50 transition">
                                             <td class="py-4 px-6 font-mono text-xs text-amber-600 dark:text-amber-400 font-bold whitespace-nowrap">
-                                                {{ $appTrx->invoice_number ?? $appTrx->id }}
+                                                <div>{{ $appTrx->invoice_number ?? $appTrx->id }}</div>
+                                                @php
+                                                    $appRev = null;
+                                                    $checkKeys = array_filter([$appTrx->invoice_number, $appTrx->id, 'TRX-' . $appTrx->id]);
+                                                    foreach ($checkKeys as $k) {
+                                                        if (isset($reviewedMap[$k])) {
+                                                            $appRev = $reviewedMap[$k];
+                                                            break;
+                                                        }
+                                                    }
+                                                @endphp
+                                                @if($appRev)
+                                                    <div class="mt-1">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/10 text-amber-500 border border-amber-500/20" title="{{ $appRev->review_text ?? ('Rating ' . $appRev->rating . '/5') }}">
+                                                            <i class="fas fa-star text-[9px]"></i> {{ $appRev->rating }}/5 (Ada Review)
+                                                        </span>
+                                                        @if(!empty($appRev->review_text))
+                                                            <div class="text-[10px] text-gray-400 font-normal italic mt-0.5 truncate max-w-[190px]" title="{{ $appRev->review_text }}">
+                                                                "{{ Str::limit($appRev->review_text, 28) }}"
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                @elseif(in_array(strtolower($appTrx->status), ['success', 'paid']))
+                                                    <div class="mt-1">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-gray-500/10 text-gray-400 border border-gray-500/20">
+                                                            <i class="far fa-clock text-[9px]"></i> Belum Review
+                                                        </span>
+                                                    </div>
+                                                @endif
                                             </td>
                                             <td class="py-4 px-6">
                                                 @if($appTrx->user)

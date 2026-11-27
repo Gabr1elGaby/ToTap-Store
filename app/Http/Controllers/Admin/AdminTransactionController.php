@@ -16,6 +16,13 @@ class AdminTransactionController extends Controller
 
         $search = $request->query('search');
         $status = $request->query('status');
+        $reviewStatus = $request->query('review_status');
+
+        // Data ulasan pelanggan untuk cek status review transaksi
+        $reviewedList = \App\Models\CustomerReview::whereNotNull('order_id')
+            ->get(['id', 'order_id', 'rating', 'review_text', 'customer_name']);
+        $reviewedOrderIds = $reviewedList->pluck('order_id')->filter()->unique()->toArray();
+        $reviewedMap = $reviewedList->keyBy('order_id');
 
         // Top Up Game Query (Hanya game biasa, pisahkan dari aplikasi premium)
         $gameQuery = Transaction::with(['game', 'gameProduct', 'user'])
@@ -56,6 +63,38 @@ class AdminTransactionController extends Controller
         if ($status) {
             $gameQuery->where('status', $status);
             $appQuery->where('status', $status);
+        }
+
+        // Filter berdasarkan status review pelanggan
+        if ($reviewStatus === 'reviewed') {
+            $strippedIds = array_map(function($id) {
+                return str_starts_with($id, 'TRX-') ? substr($id, 4) : $id;
+            }, $reviewedOrderIds);
+            $allKeys = array_unique(array_merge($reviewedOrderIds, $strippedIds));
+
+            $gameQuery->where(function ($q) use ($allKeys) {
+                $q->whereIn('invoice_number', $allKeys)
+                  ->orWhereIn('id', $allKeys);
+            });
+            $appQuery->where(function ($q) use ($allKeys) {
+                $q->whereIn('invoice_number', $allKeys)
+                  ->orWhereIn('id', $allKeys);
+            });
+        } elseif ($reviewStatus === 'unreviewed') {
+            $strippedIds = array_map(function($id) {
+                return str_starts_with($id, 'TRX-') ? substr($id, 4) : $id;
+            }, $reviewedOrderIds);
+            $allKeys = array_unique(array_merge($reviewedOrderIds, $strippedIds));
+
+            $gameQuery->where(function ($q) use ($allKeys) {
+                $q->whereNotIn('invoice_number', $allKeys)
+                  ->whereNotIn('id', $allKeys);
+            })->whereIn('status', ['success', 'paid']);
+
+            $appQuery->where(function ($q) use ($allKeys) {
+                $q->whereNotIn('invoice_number', $allKeys)
+                  ->whereNotIn('id', $allKeys);
+            })->whereIn('status', ['success', 'paid']);
         }
 
         $transactions = $gameQuery->paginate(20, ['*'], 'topup_page')->withQueryString();
@@ -130,7 +169,7 @@ class AdminTransactionController extends Controller
             }
         } catch (\Throwable $e) {}
 
-        return view('admin.transactions.index', compact('transactions', 'appTransactions', 'orders', 'cvOrders', 'deposits', 'search', 'status'));
+        return view('admin.transactions.index', compact('transactions', 'appTransactions', 'orders', 'cvOrders', 'deposits', 'search', 'status', 'reviewedMap', 'reviewStatus'));
     }
 
     public function invoice(string $id)
